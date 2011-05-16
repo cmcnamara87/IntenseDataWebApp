@@ -1,0 +1,152 @@
+Image annotation
+	Cancel button
+	Width/height select
+	Word wrapping
+	Delete
+Video annotation
+	Cancel button
+	Width/height select
+	Word wrapping
+	Delete
+Audio annotation
+	Cancel button
+	Word wrapping
+	Delete
+
+Hook up upload for video and documents
+
+LEFT TO DO
+========
+Build and test user management system [Recensio | Recensio | Andrew Dekker]
+URL View whining about modify (directly go via url to view asset)
+
+X Create authentication utility
+X Create url utility which looks at URL changes, and loads the appropriate controller
+X Setup dispatcher to switch controllers
+X Create login view
+X Setup template
+X get events setup properly
+X Check for auth each time
+X Pop up login controller if no auth
+X Pop back to current controller once authed
+X Get asset previews drawing correctly
+X Get asset preview clicks handling correctly
+X Fix redraw lag bug
+X get next screen switch (with dispatcher path correct)
+X get dispatcher path allowing arguments in the url
+X load asset view screen
+X do live filter search
+X Do model architecture
+X Get comments view done
+X (M)Comments
+X Fix up search method
+X (M)Annotations
+X Resizing asset previews
+X Get toggle on toolbar working
+X Show/hide comments
+X Get the annotation modules in 1/2
+X Get comments view done
+X Get the editing options view done
+X Only deselect the appropriate button
+X Collections model
+X Collections design
+X (M)Do Mflux API
+X Collections view finish
+X Collections interaction
+X Collections search
+X Collection asset click (both view and edit on/off)
+X Collections deleting save (fake)
+X (M)Delete asset (fake)
+X Resize of collection assets should force resize of container
+X Collections editing save (fake)
+X Refresh collections after save
+X New collection
+X New collection save (fake)
+X Media Options save (fake)
+X Edit comments view
+X New comments view
+X Reply comments view
+X Set the username/date for new comments
+X Make a note that new comments won't have ID's yet - need a callback
+X Comments save (fake)
+X Bad file type annotation view
+X Redo image annotation view layout
+X Image annotation - toolbar
+X Image annotation - interaction
+X Image annotation - show annotations
+X Image annotation - add annotations
+X (M)Saving annotations (fake)
+X Add new asset view
+X Asset chosen
+X Save button colours
+X Validation
+X Asset upload progress
+X (M)Add new asset (fake)
+X Fix up annotation modules
+X Fix audio annotation view
+X Saving stuff
+X Saving Annotations
+XX Establish stable audio playback control and annotation
+XX Review Media Management systems and Operational Status [Recensio | Recensio | Andrew Dekker]
+XX Determine work to implement user management system [Recensio | Recensio | Andrew Dekker]
+XX Review current operations of User Permissions system [Recensio | Recensio | Andrew Dekker]
+X Saving comments
+X Comment ID needs to get updated
+X Delete comment
+X Comment ordering
+X Updating comments
+X Update asset
+X Delete asset
+X Upload asset
+X Saving stuff
+X Save collection
+X Delete collection
+X Bug - New collection not expanding properly
+X Reorder collecitons properly
+X Fix long comments
+X Creative Common types
+X Date on the type thingy
+X ACL Model (Fake)
+X Server setup
+X Fix PDF Toolbar
+X Manually add a PDF
+X Fix PDF annotation view
+X PDF2SWF Some extra pdfs
+X Loading screen on Image View
+X ACL View
+X ACL Model (Fake)
+X Shared / ACL Editing
+X ACL - (read)need to ignore the asset owner
+X ACL - (read)need to go through and get who has access and add them in on it
+X ACL - (save)need to remove all acl's
+X ACL - (save)need to go through anyone who has read/write access and give new acl's
+X ACL - (shared)shared
+X ACL - (shared)need to find all assets that have acl's of read
+X Comment Code
+X Change audio icon
+X Server information document
+X (ACLs need to be fixed)
+X ACL read vs read-write
+X Large file uploader bug fix
+X video - fullscreen and zooming
+X RED5 (now FMS)
+X Loading animation around the place
+X Establish a system for background video upload (large files) [Recensio | Recensio | Andrew Dekker]
+X Access User Management - Mediaflux services [Recensio | Recensio | Andrew Dekker]
+X video - write test annotation
+X video - read in annotations
+X video - create annotations
+X Establish stable video annotation (informal and formal) [Recensio | Recensio | Andrew Dekker]
+X Go through document
+X Full title not showing on asset view for long names
+X Check comment length problem
+X Fix comment heirarchy
+X Fix intermittent bug with annotations showing/hiding in video
+X Fix bug with video timeline annotations overlapping
+X Volume control better on video and audio
+X Shorter minimum audio length (instant)
+X Show annotation text on audio/video when highlighted
+X Tool tips 
+X Logo
+X How do I start the service (install service not selectable)
+X Image annotations show up on left

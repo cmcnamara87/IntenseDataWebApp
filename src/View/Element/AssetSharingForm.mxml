@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="211" height="300" xmlns:Element="View.Element.*" x="54" y="14">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+		<mx:VBox verticalGap="0">
+			<!--<mx:Button label="Update Shared Access" id="saveShareButton"></mx:Button>-->
+			
+			<mx:HBox>
+				<mx:Label text="Username" width="89" textAlign="left" fontWeight="bold"></mx:Label>
+				<mx:Label text="Annotate" width="56" textAlign="center" fontWeight="bold"></mx:Label>
+				<mx:Label text="View" width="34" textAlign="center" fontWeight="bold"></mx:Label>
+			</mx:HBox>
+			<mx:VBox id="sharetable" top="20">
+			</mx:VBox>
+
+
+		</mx:VBox>
+</s:Group>

@@ -1,0 +1,54 @@
+===
+General process
+===
+1. Main file loaded
+2. Dispatcher loaded
+3. Dispatcher sets up the template view 
+4. Dispatcher checks route for the right controller
+5. Dispatcher loads a specific controller
+6. The controller sets the view to be loaded
+7. The controller loads the its specific view
+8. The controller logic then takes action
+9. Usually the controller will call AppModel to retrieve some data
+10. The data from mediaflux is send back to the controller, which forwards the information onto the view
+11. When an user action occurs in the view, it is forwarded back to the controller, which takes action
+12. The controller may call the dispatcher call(), which will change the controller over (go to 4)
+
+===
+Class Structure
+===
+
+/Recensio_Flex_Beta - The starting MXML File
+
+/Assets - All assets that aren't code
+/Assets/Fonts - Fonts used in the application
+/Assets/Module - Assets used by modules
+/Assets/Template - Assets used in the layout of the application
+/Assets/style.css - The stylesheet for the application
+
+/Controller - All logic for the application
+/Controller/AppController.as - The base controller. All other controllers extend this
+/Controller/*****Controller.as - A controller (logic) for a specific view
+/Controller/Dispatcher.as - The controller which manages the switching between controllers
+/Controller/RecensioEvent.as - All custom events for the application
+/Controller/Utilities - Logic which isn't around a specific controller
+/Controller/Utilities/AssetLookup.as - All information related to media assets
+/Controller/Utilities/Auth.as - Deals with authentication with mediaflux
+/Controller/Utilities/Router.as - Deals with pretty URLs and paths for the dispatcher
+
+/Lib - Any external libraries
+
+/Model - Anything dealing with mediaflux
+/Model/AppModel.as - All calls to mediaflux
+/Model/Model_Base.as - The base model which all other models extend
+/Model/Model_*****.as - A class representing a mediaflux object
+/Model/Transactions - Any requests with mediaflux which require multiple steps
+/Model/Utilities/Connection.as - Packages and sends requests to mediaflux
+
+/Module/*** - A module for a specific asset media type
+
+/View/ - Anything that is shown on screen
+/View/Element/*** - Not a view, but part of a view
+/View/ModuleWrapper - A wrapper which will load a module
+/View/*** - A view specific to a controller
+/View/Layout.mxml - The layout for the application

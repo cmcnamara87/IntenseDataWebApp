@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	<mx:VBox backgroundColor="0xdddddd" width="100%" height="100%" borderColor="0xb9b9bb" borderStyle="solid" cornerRadius="8" verticalGap="0" paddingBottom="10" paddingTop="10" paddingLeft="10" paddingRight="10">
+		<mx:HBox id="toolbar" width="100%" height="30">
+			<mx:HBox verticalAlign="middle">
+				<mx:Button id="viewButton" label="View"></mx:Button>
+				<mx:Button id="annotateButton" label="Annotate"></mx:Button>
+				<mx:Button id="showAnnotationButton" label="Hide Annotations"></mx:Button>
+				<mx:Button id="listAnnotationButton" label="Show Annotations List"></mx:Button>
+			</mx:HBox>
+			<mx:HBox paddingRight="0" width="100%" horizontalAlign="right" verticalAlign="middle">
+				<s:Button id="fitScreenButton" label="Fit"></s:Button>
+				<s:HSlider id="zoomScroller" minimum="10" maximum="200" value="100" height="20"></s:HSlider>
+				<s:Button id="fullSizeButton" label="100%"></s:Button>
+			</mx:HBox>
+		</mx:HBox>
+		<mx:HBox horizontalGap="0" width="100%" height="100%">
+			<mx:VBox id="annotationsidebar" width="0" height="100%" backgroundColor="0xFFFFFF" borderStyle="solid" borderVisible="true" borderColor="0xb9b9bb" verticalGap="1"></mx:VBox>
+			<mx:Canvas id="imagearea" backgroundColor="0xFFFFFF" borderColor="0xb9b9bb" borderStyle="solid" width="100%" height="100%">
+				<mx:Image id="img" width="600" height="600"></mx:Image>
+				<mx:Canvas id="annotationarea" width="600" height="600" alpha="1" mouseEnabled="false"></mx:Canvas>
+			</mx:Canvas>
+		</mx:HBox>
+	</mx:VBox>
+</s:Group>

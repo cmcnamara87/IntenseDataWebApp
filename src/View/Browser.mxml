@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" 
+		 xmlns:Element="View.Element.*"
+		 xmlns:components="View.components.*" xmlns:View="View.*">
+	<!-- Navigation Bar -->
+	<!--<Element:NavigationBar id="navbar" width="100%" visible="false">	
+	</Element:NavigationBar>-->
+
+	<View:BrowserView id="craigsbrowser" width="100%" height="100%" />
+	
+	
+	<!-- Asset Browser -->
+	<!--<Element:AssetBrowser visible="false" top="{navbar.height+40}" width="100%" bottom="0" id='browser'></Element:AssetBrowser>-->
+	<!-- Collection Browser -->
+	<!--<Element:CollectionBrowser top="{navbar.height+40}" width="100%" bottom="0" id='collectionbrowser'></Element:CollectionBrowser>-->
+</s:Group>

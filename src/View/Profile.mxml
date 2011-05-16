@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:Element="View.Element.*">
+	<!--<Element:NavigationBar id="navbar" width="100%"></Element:NavigationBar>
+	<mx:VBox top="{navbar.height}" width="100%" bottom="0" verticalGap="0" backgroundColor="#dfdfdf" cornerRadius="12">
+		<mx:Form>
+			<s:DropDownList id='userselect' visible="false">
+				
+			</s:DropDownList>
+			Options Form -->
+			<mx:HBox>
+				<mx:Form id="myForm"> <!-- defaultButton="{updateProfileInformation}">-->
+					<mx:FormItem label="First Name:" required="true">
+						<mx:TextInput id="meta_firstname"/>
+					</mx:FormItem>
+					<mx:FormItem label="Middle Initial:">
+						<mx:TextInput id="meta_initial"/>
+					</mx:FormItem>
+					<mx:FormItem label="Last Name:" required="true">
+						<mx:TextInput id="meta_lastname"/>
+					</mx:FormItem>
+					<mx:FormItem label="Email Address:" required="true">
+						<mx:TextInput id="meta_email"/>
+					</mx:FormItem>
+					
+					
+					<mx:FormItem label="Organisation:">
+						<mx:TextInput id="meta_organisation"/>
+					</mx:FormItem>
+					<mx:FormItem label="Homepage:">
+						<mx:TextInput id="meta_url"/>
+					</mx:FormItem>
+					<mx:FormItem label="Home Address:">
+						<mx:TextArea id="meta_Address_1"/>
+					</mx:FormItem>
+					<mx:FormItem label="Postal Address:">
+						<mx:TextArea id="meta_Address_2"/>
+					</mx:FormItem>
+					<mx:FormItem label="Business Address:">
+						<mx:TextArea id="meta_Address_3"/>
+					</mx:FormItem>
+					<mx:FormItem label="Home Phone Number:">
+						<mx:TextInput id="meta_tel_home"/>
+					</mx:FormItem>
+					<mx:FormItem label="Mobile Phone Number:">
+						<mx:TextInput id="meta_tel_mobile"/>
+					</mx:FormItem>
+					<mx:FormItem label="Business Phone Number:">
+						<mx:TextInput id="meta_tel_business"/>
+					</mx:FormItem>
+					<mx:FormItem>
+						<mx:Button label="Update My Profile" id="updateProfileInformation" width="160"/>
+					</mx:FormItem>
+					<mx:FormItem>
+						<mx:Label id="profilevalidation" color="#FF0000" text=""></mx:Label>
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form  id="passForm" defaultButton="{changePassword}">
+					<mx:FormItem label="New Password:" required="true">
+						<mx:TextInput id="password" displayAsPassword="true" />
+					</mx:FormItem>
+					<mx:FormItem label="Confirm Password:" required="true">
+						<mx:TextInput id="confirm_password" displayAsPassword="true" />
+					</mx:FormItem>
+					<mx:FormItem>
+						<!-- Change Password Button -->
+						<mx:Button label="Change Password" id="changePassword" width="160"/>
+					</mx:FormItem>
+					<mx:FormItem>
+						<mx:Label id="passwordvalidation" color="#FF0000" text=""></mx:Label>
+					</mx:FormItem>
+				</mx:Form>
+				<!--<mx:Form  id="resetPassForm" defaultButton="{resetPass}">
+					<mx:Button label="Reset Password" id="resetPass" width="160"/>
+				</mx:Form>-->
+			</mx:HBox>
+		<!--</mx:Form>
+	</mx:VBox>-->
+</s:Group>

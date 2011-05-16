@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="200" xmlns:Element="View.Element.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<mx:Form id="myForm" defaultButton="{updateAssetInformation}">
+		<!-- Options Form -->
+		<mx:HBox>
+			<mx:Form>
+				<mx:FormItem label="Title:" required="true">
+					<mx:TextInput id="meta_title"/>
+				</mx:FormItem>
+				<mx:FormItem label="Description:" required="true">
+					<mx:TextInput id="meta_description"/>
+				</mx:FormItem>
+				<mx:FormItem label="Publish Date:" required="true">
+					<mx:DateField id="meta_datepublished" width="160"/>
+				</mx:FormItem>
+			</mx:Form>
+			<mx:Form>
+				<mx:FormItem label="Subject:" required="true">
+					<mx:TextInput id="meta_subject"/>
+				</mx:FormItem>
+				<mx:FormItem label="Keywords:" required="true">
+					<mx:TextInput id="meta_keywords"/>
+				</mx:FormItem>
+				<mx:FormItem label="Contributers:" required="true">
+					<mx:TextInput id="meta_othercontrib"/>
+				</mx:FormItem>
+			</mx:Form>
+			<mx:Form>
+				<mx:FormItem label="Sponsors/Funders:" required="true">
+					<mx:TextInput id="meta_sponsorfunder"/>
+				</mx:FormItem>
+				<mx:FormItem label="Creative Work Type:" required="true">
+					<s:DropDownList id="meta_creativeworktype" width="160"></s:DropDownList>
+				</mx:FormItem>
+				<mx:FormItem label="Creative Work Subtype:" required="true">
+					<s:DropDownList id="meta_creativeworksubtype" width="160"></s:DropDownList>
+				</mx:FormItem>
+				<mx:FormItem>
+					<!-- Options Submit Button -->
+					<mx:Button label="Update Asset Information" id="updateAssetInformation" width="160"/>
+				</mx:FormItem>
+			</mx:Form>
+		</mx:HBox>
+	</mx:Form>
+</s:Group>

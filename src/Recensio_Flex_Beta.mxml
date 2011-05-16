@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="400" applicationComplete="init()">
+	<!-- Stylesheet for alert box and text field font -->
+	<fx:Style source="Assets/style.css" />
+	<fx:Script>
+		<![CDATA[
+			import Controller.Dispatcher;
+			
+			import Model.AppModel; 
+			
+			//The mediaflux server address
+			//private var serverAddress:String = "localhost";
+			private var serverAddress:String = "recensio.dyndns.org";
+			//The mediaflux server port
+			private var serverPort:Number = 8082;
+			//Shows frames per second monitor
+			private var useFPSMonitor:Boolean = false;
+			//Automatically logs on as manager
+			private var autoLogin:Boolean = false;
+			
+			//Starts up the dispatcher
+			public function init():void {
+				Dispatcher.debug(useFPSMonitor,autoLogin);
+				Dispatcher.setServerDetails(serverAddress,serverPort);
+				Dispatcher.start(this);
+				stage.addEventListener(Event.RESIZE, onStageResize);
+			}
+			
+			//Fixes resize bugs
+			private function onStageResize(e:Event):void {
+				validateNow();   
+			}
+		]]>
+	</fx:Script>
+</s:Application>

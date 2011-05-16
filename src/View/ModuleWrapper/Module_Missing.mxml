@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	<fx:Script>
+		<![CDATA[
+			public var external:Boolean = false;
+		]]>
+	</fx:Script>
+	<mx:HBox backgroundColor="0xdddddd" width="100%" height="100%" borderColor="0xb9b9bb" borderStyle="solid" cornerRadius="8"></mx:HBox>
+	<mx:Label id="failureText" text="Asset not available" horizontalCenter="0" verticalCenter="-15" fontSize="24" color="0x333333" fontFamily="Helvetica"></mx:Label>
+	<mx:Label id="failureDescription" text="Could not find module for specified media format" horizontalCenter="0" verticalCenter="15" fontSize="16" color="0x333333" fontFamily="Helvetica"></mx:Label>
+</s:Group>
