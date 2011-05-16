@@ -29,9 +29,9 @@ package View.components
 		
 		private var heading:Label; // The heading at the top of the panel
 		
-		private var searchInput:TextInput;
+		private var searchInput:TextInput; // The search input text box for the panel
 		
-		private const PLACEHOLDERTEXT:String = "Search";
+		protected const PLACEHOLDERTEXT:String = "Search";
 		public static const DEFAULT_WIDTH:Number = 300; // The width of side panels e.g. sharing, comments etc
 		public static const EXPANDED_WIDTH:Number = 500;
 		

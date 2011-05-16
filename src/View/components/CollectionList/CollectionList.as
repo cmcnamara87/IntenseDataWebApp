@@ -7,11 +7,16 @@ package View.components.CollectionList
 	
 	import View.BrowserView;
 	import View.Element.Collection;
+	import View.components.PanelElement;
+	import View.components.SubToolbar;
 	import View.components.Toolbar;
 	
+	import flash.events.Event;
+	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
 	
 	import mx.controls.Button;
+	import mx.controls.TextInput;
 	import mx.graphics.SolidColor;
 	import mx.graphics.SolidColorStroke;
 	
@@ -33,7 +38,8 @@ package View.components.CollectionList
 		private var fixedCollectionListItems:VGroup; // the list of fixed collections
 		private var regularCollectionListItems:VGroup; // Where all the non-fxied collection list elements sit
 		private var createCollectionButton:ToggleButton // The create collection button
-		
+		private var searchInput:TextInput; // The search input text box for the panel
+		private const PLACEHOLDERTEXT:String = "Search";
 		/**
 		 * The collection list sits on the left side on the main asset browser 
 		 * and shows all the collections the user has.
@@ -57,7 +63,7 @@ package View.components.CollectionList
 			this.backgroundFill = new SolidColor(0xFFFFFF);
 			this.borderStroke = new SolidColorStroke(0xCCCCCC,1,1);
 			
-			// Add a toolbar, work out what to put in it later TODO
+			// Add a toolbar, work out what to put in it later
 			var myToolbar:Toolbar = new Toolbar();
 			this.addElement(myToolbar);
 			
@@ -77,6 +83,18 @@ package View.components.CollectionList
 			createCollectionButton.selected = false;
 			createCollectionButton.percentHeight = 100;
 			myToolbar.addElement(createCollectionButton);
+			
+			// Add in the search collections box
+			var searchToolbar:SubToolbar = new SubToolbar();
+			searchToolbar.setStyle("resizeEffect", null);
+			searchToolbar.setColor(SubToolbar.GREY);
+			this.addElement(searchToolbar);
+			// Add the search input;
+			searchInput = new TextInput();
+			searchInput.text = "Search";
+			searchInput.percentWidth = 100;
+			searchInput.percentHeight = 100;
+			searchToolbar.addElement(searchInput);
 			
 			// Create the space for the fixed collections (these wont scroll)
 			fixedCollectionListItems = new VGroup();
@@ -99,6 +117,8 @@ package View.components.CollectionList
 			hLine.percentWidth = 100;
 			hLine.stroke = new SolidColorStroke(0xEEEEEE,1,1);
 			this.addElement(hLine);
+			
+
 			
 			// lets add a scroller, so it...scrolls lol
 			myScroller = new Scroller();
@@ -130,6 +150,13 @@ package View.components.CollectionList
 			
 			// Event Listeners
 			createCollectionButton.addEventListener(MouseEvent.CLICK, createCollectionButtonClicked);
+			
+			// Listen for search input focus/lost focus
+			searchInput.addEventListener(FocusEvent.FOCUS_IN, searchInputHasFocus);
+			searchInput.addEventListener(FocusEvent.FOCUS_OUT, searchInputHasLostFocus);
+			
+			// Listen for Text Input
+			searchInput.addEventListener(Event.CHANGE, searchTermEntered);
 
 		}
 		
@@ -229,5 +256,50 @@ package View.components.CollectionList
 			clickEvent.data.shelfState = createCollectionButton.selected;
 			this.dispatchEvent(clickEvent);
 		}
+		
+		private function searchInputHasFocus(e:FocusEvent):void {
+			if(searchInput.text == PLACEHOLDERTEXT) {
+				searchInput.text = "";
+			}
+		}
+		
+		private function searchInputHasLostFocus(e:FocusEvent):void {
+			if(searchInput.text == "") {
+				searchInput.text = PLACEHOLDERTEXT;
+			}
+		}
+		
+		/**
+		 * Called when search term is etnered. Passed to @see AssetBrowser 
+		 * @param e
+		 * 
+		 */		
+		private function searchTermEntered(e:Event):void {
+			trace('Searching for: ', (e.target as TextInput).text);
+			
+			for(var i:Number = 0; i < fixedCollectionListItems.numElements; i++) {
+				var element:PanelElement = fixedCollectionListItems.getElementAt(i) as PanelElement;
+				if(!element.searchMatches((e.target as TextInput).text)) {
+					fixedCollectionListItems.getElementAt(i).visible = false;
+					fixedCollectionListItems.getElementAt(i).includeInLayout = false;
+				} else {
+					fixedCollectionListItems.getElementAt(i).visible = true;
+					fixedCollectionListItems.getElementAt(i).includeInLayout = true;
+				}
+			}
+			
+			
+			for(i = 0; i < regularCollectionListItems.numElements; i++) {
+				element = regularCollectionListItems.getElementAt(i) as PanelElement;
+				if(!element.searchMatches((e.target as TextInput).text)) {
+					regularCollectionListItems.getElementAt(i).visible = false;
+					regularCollectionListItems.getElementAt(i).includeInLayout = false;
+				} else {
+					regularCollectionListItems.getElementAt(i).visible = true;
+					regularCollectionListItems.getElementAt(i).includeInLayout = true;
+				}
+			}
+		}
+		
 	}
 }

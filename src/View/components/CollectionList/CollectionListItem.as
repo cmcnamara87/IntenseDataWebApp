@@ -6,6 +6,7 @@ package View.components.CollectionList
 	import Model.Model_Collection;
 	
 	import View.Element.Collection;
+	import View.components.PanelElement;
 	
 	import flash.events.MouseEvent;
 	
@@ -24,7 +25,7 @@ package View.components.CollectionList
 	import spark.layouts.HorizontalLayout;
 	import spark.primitives.Rect;
 
-	public class CollectionListItem extends Group
+	public class CollectionListItem extends Group implements PanelElement
 	{
 		private var myLabel:spark.components.Label; // The collection list label
 		private const LABEL_CHARACTER_LENGTH:Number = 28; 	// The number of characters of text the label can dsiplay
@@ -85,5 +86,14 @@ package View.components.CollectionList
 		public function getCollectionID():Number {
 			throw new Error("getCollectionID() must be overwritten by subclasses");
 		}
+		
+		public function searchMatches(search:String):Boolean {
+			if(myLabel.text.toLowerCase().indexOf(search.toLowerCase()) == -1) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		
 	}
 }
