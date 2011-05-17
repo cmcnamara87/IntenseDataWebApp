@@ -2,11 +2,9 @@ package Model {
 	
 	public class Model_Commentary extends Model_Base {
 		
-		private static const ANNOTATION_TYPE_ID:Number = 2;
-		private static const COMMENT_TYPE_ID:Number = 3;
-		
-		public static const ANNOTATION_TYPE:Number = 2;
-		public static const COMMENT_TYPE:Number = 3;
+		public static const ANNOTATION_BOX_TYPE_ID:Number = 2;
+		public static const ANNOTATION_PEN_TYPE_ID:Number = 5;
+		public static const COMMENT_TYPE_ID:Number = 3;
 		
 		public var type:String = "";
 		public var commontype:String;
@@ -20,7 +18,7 @@ package Model {
 		public var annotation_height:Number;
 		public var annotation_start:Number;
 		public var annotation_end:Number;
-		public var annotation_text:String;
+		public var annotation_text:String = "";
 		public var annotation_path:String = "";
 		public var annotation_type:Number; // Either ANNOTATION_TYPE_ID or COMMENT_TYPE_ID
 		
@@ -145,11 +143,14 @@ package Model {
 			annotation_type = rawData.meta.r_annotation.annotationType;
 			//Figure out whether an annotation or a comment
 			switch(annotation_type) {
-				case ANNOTATION_TYPE_ID:
+				case ANNOTATION_BOX_TYPE_ID:
 					type = "Annotation";
 					break;
 				case COMMENT_TYPE_ID:
 					type = "Comment";
+					break;
+				case ANNOTATION_PEN_TYPE_ID:
+					type = 'Pen Annotation';
 					break;
 				default:
 					throw new Error(this.base_asset_id+" IS NOT A COMMENT OR AN ANNOTATION");

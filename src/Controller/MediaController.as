@@ -88,7 +88,8 @@ package Controller {
 			mediaView.addEventListener(RecensioEvent.SHARING_CHANGED, sharingInfoChanged);
 			
 			// Listen for 'Save Annotation'
-			mediaView.addEventListener(RecensioEvent.ANNOTATION_SAVE, saveNewAnnotation);
+			mediaView.addEventListener(RecensioEvent.ANNOTATION_SAVE_BOX, saveNewBoxAnnotation);
+			mediaView.addEventListener(RecensioEvent.ANNOTATION_SAVE_PEN, saveNewPenAnnotation);
 			// Listen for 'Annotation Deleted'
 			mediaView.addEventListener(RecensioEvent.ANNOTATION_DELETED, deleteAnnotation);
 			
@@ -184,7 +185,7 @@ package Controller {
 		
 		
  		//Called when an annotation is saved.  Sets the data correctly and pushes the information to the model
-		private function saveNewAnnotation(e:RecensioEvent):void {
+		private function saveNewBoxAnnotation(e:RecensioEvent):void {
 			trace("- Media Controller: Saving Annotation...");
 			// Unpack the event data
 			var percentX:Number = e.data.percentX;
@@ -193,7 +194,7 @@ package Controller {
 			var percentHeight:Number = e.data.percentHeight;
 			var annotationText:String = e.data.annotationText;
 			
-			AppModel.getInstance().saveNewAnnotation(
+			AppModel.getInstance().saveNewBoxAnnotation(
 				currentAssetID,
 				percentX,
 				percentY,
@@ -202,6 +203,18 @@ package Controller {
 				0,
 				0,
 				annotationText,
+				newAnnotationSaved
+			);
+		}
+		
+		private function saveNewPenAnnotation(e:RecensioEvent):void {
+			trace("- Media Controller: Saving Annotation...");
+			// Unpack the event data
+			var path:String = e.data.path;
+			
+			AppModel.getInstance().saveNewPenAnnotation(
+				currentAssetID,
+				path,
 				newAnnotationSaved
 			);
 		}
@@ -337,7 +350,8 @@ package Controller {
 			var dataXML:XML = XML(e.target.data);
 			if (dataXML.reply.@type != "result") {
 				// Failed to save.
-				Alert.show("Could not save annotation class");
+				Alert.show("Could not save annotation");
+				trace("Could not save annotation", e.target.data);
 				return;
 			}
 			

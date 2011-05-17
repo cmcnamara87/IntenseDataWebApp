@@ -76,7 +76,7 @@ package Model.Transactions
 			baseXML.service.args["meta"]["r_annotation"]["text"] = commentText;
 			
 			// The type of the annotation (either COmment or Annotation)
-			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.COMMENT_TYPE + "";
+			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.COMMENT_TYPE_ID + "";
 			
 			// Its not transcoded, but its an annotation....so wathever :P lol
 			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";

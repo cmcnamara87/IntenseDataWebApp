@@ -7,6 +7,7 @@ package Model {
 	import Model.Transactions.Transaction_CreateUser;
 	import Model.Transactions.Transaction_GetAccess;
 	import Model.Transactions.Transaction_GetCollections;
+	import Model.Transactions.Transaction_GetThisCollectionsMediaAssets;
 	import Model.Transactions.Transaction_SaveCollection;
 	import Model.Transactions.Transaction_SaveNewComment;
 	import Model.Transactions.Transaction_SetAccess;
@@ -152,26 +153,8 @@ package Model {
 		 * @param 	callback	The function to call when asset lookup is completed	 
 		 */		
 		public function getThisCollectionsMediaAssets(collectionID:Number, callback:Function):void {
-			var args:Object = new Object();
-			
-			// Get out all the media assets that are a child of this collection
-			args.where = "namespace = recensio and r_base/active=true and class >= 'recensio:base/resource/media'" +
-				" and related to{is_child} (id =  " + collectionID + ")";
-				
-			// Get out the meta data for these assets
-			args.action = "get-meta";	
-			
-			// But, dont just get the asset data, get the data for all of its children
-			// That is, all the comments/annotations on all the media assets
-			args['related-type'] = "has_child";			
-			args['get-related-meta'] = true;
-			
-			//"id = " + collectionID + " and namespace = recensio and r_base/active=true";
-			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
-				//All good
-			} else {
-				Alert.show("Could not get assets");
-			}
+			var transaction:Transaction_GetThisCollectionsMediaAssets = new
+					Transaction_GetThisCollectionsMediaAssets(collectionID, callback, _connection);
 		}
 		
 		/**
@@ -375,16 +358,63 @@ package Model {
 			}
 		}
 		
+
+		public function saveNewPenAnnotation(mediaAssetID:Number, path:String, callback:Function):void {
+			trace("- App Model: Saving Pen annotation...");	
+			var args:Object = new Object();
+			args.namespace = "recensio";
+			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
+			
+			// Set the annotations parent media asset
+			baseXML.service.args["related"]["to"] = mediaAssetID;
+			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
+			baseXML.service.args["meta"]["r_base"]["active"] = "true";
+			
+			// Set the creator to be the current user
+			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
+			baseXML.service.args["meta"]["r_base"].@id = 2;
+			
+			// Set it as an annotation
+			baseXML.service.args["meta"]["r_resource"]["title"] = "Annotation";
+			baseXML.service.args["meta"]["r_resource"]["description"] = " ";
+			
+			// Set All of the annotations data
+			baseXML.service.args["meta"]["r_annotation"]["path"] = path;
+			baseXML.service.args["meta"]["r_annotation"]["text"] = "Could have text here";
+
+			// This annotation is a 'Annotation' annotation, lol, not a comment
+			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.ANNOTATION_PEN_TYPE_ID;
+			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
+
+			// Try and save, then call the callback.
+			if(_connection.sendRequest(baseXML, callback)) {
+				trace("- App Model: Annotation Saved");
+				//All good
+			} else {
+				Alert.show("Could not save annotation");
+			}
+			
+		}
 		/**
-		 * Saves a new Annotation 
+		 * Saves a new Box Annotation. 
+		 * @param mediaAssetID	The ID of the media asset, the annotation is on
+		 * @param percentX		The x (top left) of the annotation box (in relation to the assets size, e.g. 0.5 for 50%)
+		 * @param percentY		The y (top right) of the annotation box (same as above)
+		 * @param percentWidth	The width of the annotation box (50% is now 50 not, 0.5)
+		 * @param percentHeight The height of the annotation box
+		 * @param startTime		The time where the box first appears
+		 * @param endTime		The time where the box disappears
+		 * @param annotationText	The text that is part of the annotation
+		 * @param callback			The function to call when the anntoation is saved
 		 * 
 		 */		
-		public function saveNewAnnotation(	mediaAssetID:Number, percentX:Number,percentY:Number,
+		public function saveNewBoxAnnotation(	mediaAssetID:Number, percentX:Number,percentY:Number,
 											percentWidth:Number, percentHeight:Number,
 											startTime:Number, endTime:Number,
 											annotationText:String, callback:Function):void {
 			
-			trace("- App Model: Saving annotation...");
+			trace("- App Model: Saving box annotation...");
 			var args:Object = new Object();
 			args.namespace = "recensio";
 			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
@@ -418,7 +448,7 @@ package Model {
 //			}
 		
 			// This annotation is a 'Annotation' annotation, lol, not a comment
-			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.ANNOTATION_TYPE + "";
+			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.ANNOTATION_BOX_TYPE_ID + "";
 			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
 			trace(baseXML);
 			
@@ -826,7 +856,7 @@ package Model {
 				asset.setData(assetXML);
 				
 				// Only add it to the return array if its a Comment
-				if(asset.annotationType == Model_Commentary.COMMENT_TYPE) {
+				if(asset.annotationType == Model_Commentary.COMMENT_TYPE_ID) {
 					assets.push(asset);
 				}
 				
@@ -845,7 +875,7 @@ package Model {
 				asset.setData(assetXML);
 				
 				// Only add it to the return array if its a Annotation
-				if(asset.annotationType == Model_Commentary.ANNOTATION_TYPE) {
+				if(asset.annotationType == Model_Commentary.ANNOTATION_BOX_TYPE_ID || asset.annotationType == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
 					assets.push(asset);
 				}
 				

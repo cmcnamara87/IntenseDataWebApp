@@ -9,6 +9,9 @@ package Controller {
 	public class LoginController extends AppController {
 		
 		private var _authOverride:Boolean = false;
+		
+		private var quickLogin:Boolean = true;
+		private var assetID:Number = 996;
 		 
 		// TODO For some reason, the login is being received twice, i cant work out why, so this
 		// test it hasnt been recieved twice, needs to really be fixed.
@@ -26,7 +29,9 @@ package Controller {
 		//INIT
 		override public function init():void {
 			setupEventListeners();
-			//Auth.getInstance().login("manager","change_me");
+			if(quickLogin) {
+				Auth.getInstance().login("manager","change_me");
+			}
 		}
 		
 		// Setup specific event listeners
@@ -71,7 +76,12 @@ package Controller {
 		
 		// Log in was successful, so redirect to either the default route or the last used route
 		private function redirect():void {
-			var redirectURL:String = Auth.getInstance().getRedirectURL();
+			if(quickLogin) {
+				var redirectURL:String = "view/" + assetID;
+			} else {
+				redirectURL = Auth.getInstance().getRedirectURL();
+			}
+			trace("redirectURL", redirectURL);
 			if(redirectURL == 'login') {
 				redirectURL = Router.defaultURL;
 			}

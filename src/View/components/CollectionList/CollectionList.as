@@ -277,6 +277,7 @@ package View.components.CollectionList
 		private function searchTermEntered(e:Event):void {
 			trace('Searching for: ', (e.target as TextInput).text);
 			
+			// Searches the fixed Collection List for matches
 			for(var i:Number = 0; i < fixedCollectionListItems.numElements; i++) {
 				var element:PanelElement = fixedCollectionListItems.getElementAt(i) as PanelElement;
 				if(!element.searchMatches((e.target as TextInput).text)) {
@@ -288,7 +289,7 @@ package View.components.CollectionList
 				}
 			}
 			
-			
+			// Searches the regular collection list for matches
 			for(i = 0; i < regularCollectionListItems.numElements; i++) {
 				element = regularCollectionListItems.getElementAt(i) as PanelElement;
 				if(!element.searchMatches((e.target as TextInput).text)) {

@@ -3,6 +3,7 @@ package View.components.MediaViewer.ImageViewer
 	import Controller.RecensioEvent;
 	import Controller.Utilities.Auth;
 	
+	import Lib.AnnotationCoordinateCollection;
 	import Lib.it.transitions.Tweener;
 	
 	import Model.Model_Commentary;
@@ -60,6 +61,7 @@ package View.components.MediaViewer.ImageViewer
 		private var scrollerContents:Group; // The contents of the scrollbar (the image and the annotations)
 		private var annotationsGroup:Group; // THe group containing the annotations
 		private var newAnnotationsGroup:Group; // Where we put the new annotation while we are drawing them
+		private var canvas:Group; // inside the new annotations group, we actually draw on this
 		
 		private var isImageLoaded:Boolean = false; // True when an image has been loaded
 		private var annotationsAreLoaded:Boolean = false; // True when the annotations have been loaded
@@ -77,6 +79,11 @@ package View.components.MediaViewer.ImageViewer
 		private var startAnnotationMouseY:Number = -1; // The y position of the mouse when they start 
 		private var finishAnnotationMouseX:Number = -1;  // the X position when they stop drawing
 		private var finishAnnotationMouseY:Number = -1; // The Y position when they stop
+		
+		private var annotationCoordinates:AnnotationCoordinateCollection = new AnnotationCoordinateCollection(); 
+															// The array that stores the annotation coordinates for when we are using
+															// The free draw tool
+		
 		private var drawing:Boolean = false; // if we are in the process of drawing a new annotaiton
 		
 		private var actualImageWidth:Number = -1;
@@ -498,27 +505,59 @@ package View.components.MediaViewer.ImageViewer
 		
 		private function annotationSaveClicked(e:Event):void {
 			trace("Save Button Clicked");
-			// Work out the X, Y, width and height as percentages
-			// So that this will work, when scaling
 			
-			// Just a reminder, percentX is < 0, e.g. like 0.5 is 50%
-			// And the widths/heights are like, 50 for 50%
-			// Because the DB stores percentX as a float, and widths/height as an Integer
-			var percentX:Number = Math.min(startAnnotationMouseX, finishAnnotationMouseX) / image.width;
-			var percentY:Number = Math.min(startAnnotationMouseY, finishAnnotationMouseY) / image.height;
-			var percentWidth:Number = Math.abs(finishAnnotationMouseX - startAnnotationMouseX) / image.width * 100;
-			var percentHeight:Number = Math.abs(finishAnnotationMouseY - startAnnotationMouseY) / image.height * 100;
-			var annotationText:String = annotationTextOverlayBox.getText();
+			// Check what drawing mode we are in
+			var drawingMode:String = annotationToolbar.getAnnotationDrawingMode();
 			
-			// Send the event
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_SAVE, true);
-			myEvent.data.percentX = percentX;
-			myEvent.data.percentY = percentY;
-			myEvent.data.percentWidth = percentWidth;
-			myEvent.data.percentHeight = percentHeight;
-			myEvent.data.annotationText = annotationText;
-			this.dispatchEvent(myEvent);
-			
+			if(drawingMode == AnnotationToolbar.BOX) {
+				// Work out the X, Y, width and height as percentages
+				// So that this will work, when scaling
+
+				// Just a reminder, percentX is < 0, e.g. like 0.5 is 50%
+				// And the widths/heights are like, 50 for 50%
+				// Because the DB stores percentX as a float, and widths/height as an Integer
+				var percentX:Number = Math.min(startAnnotationMouseX, finishAnnotationMouseX) / image.width;
+				var percentY:Number = Math.min(startAnnotationMouseY, finishAnnotationMouseY) / image.height;
+				var percentWidth:Number = Math.abs(finishAnnotationMouseX - startAnnotationMouseX) / image.width * 100;
+				var percentHeight:Number = Math.abs(finishAnnotationMouseY - startAnnotationMouseY) / image.height * 100;
+				var annotationText:String = annotationTextOverlayBox.getText();
+				
+				// Send the event
+				var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_SAVE_BOX, true);
+				myEvent.data.percentX = percentX;
+				myEvent.data.percentY = percentY;
+				myEvent.data.percentWidth = percentWidth;
+				myEvent.data.percentHeight = percentHeight;
+				myEvent.data.annotationText = annotationText;
+				this.dispatchEvent(myEvent);
+				
+				// Add this as an annotation to the view
+				// This is done temporarily, and will be reloaded once the controller
+				// has finished saving the annotation
+				var annotation:Annotation = new Annotation(
+					-1,
+					Auth.getInstance().getUsername(), 
+					annotationText,
+					percentHeight, 
+					percentWidth, 
+					percentX,
+					percentY,
+					image.width,
+					image.height
+				);
+				
+				annotationsGroup.addElement(annotation);
+				
+				// Listen for this annotation being mouse-overed
+				annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
+				annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
+			} else if (drawingMode == AnnotationToolbar.PEN) {
+				myEvent = new RecensioEvent(RecensioEvent.ANNOTATION_SAVE_PEN, true);
+				myEvent.data.path = annotationCoordinates.getString(image.height, image.width);
+				trace("XML for drawing path", myEvent.data.path);
+				this.dispatchEvent(myEvent);
+			}
+
 			// Stop listening for drawings
 			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_DOWN, startDrawingNewAnnotation);
 			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_MOVE, drawingNewAnnotation);
@@ -533,27 +572,6 @@ package View.components.MediaViewer.ImageViewer
 			
 			// Show the current saved annotations again
 			annotationsGroup.visible = true;
-			
-			// Add this as an annotation to the view
-			// This is done temporarily, and will be reloaded once the controller
-			// has finished saving the annotation
-			var annotation:Annotation = new Annotation(
-				-1,
-				Auth.getInstance().getUsername(), 
-				annotationText,
-				percentHeight, 
-				percentWidth, 
-				percentX,
-				percentY,
-				image.width,
-				image.height
-			);
-			
-			annotationsGroup.addElement(annotation);
-			
-			// Listen for this annotation being mouse-overed
-			annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
-			annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 		}
 		
 		
@@ -656,9 +674,10 @@ package View.components.MediaViewer.ImageViewer
 		private function startDrawingNewAnnotation(e:MouseEvent):void {
 			trace("started drawing", e.target.mouseX, e.target.mouseY);
 			
-			// Clear any of the previous annotations
-			newAnnotationsGroup.removeAllElements();
+			// Check what drawing mode we are in
+			var drawingMode:String = annotationToolbar.getAnnotationDrawingMode();
 			
+			trace("Starting to draw in Mode", drawingMode);
 			// Clear the annotations values from previous draw
 			startAnnotationMouseX = -1;
 			startAnnotationMouseY = -1;
@@ -674,29 +693,67 @@ package View.components.MediaViewer.ImageViewer
 			
 			// Start drawing the box
 			drawing = true;
+			
+			if(drawingMode == AnnotationToolbar.BOX) {
+				// For the box, we want to make a new box, everytime 
+				// you click (erases old boxes)
+				// Clear any of the previous annotations
+				newAnnotationsGroup.removeAllElements();
+				// Create a new stop for the annotations
+				canvas = new Group();
+				canvas.percentWidth = 100;
+				canvas.percentHeight = 100;
+				newAnnotationsGroup.addElement(canvas);
+			} else if (drawingMode == AnnotationToolbar.PEN) {
+				if(!canvas || !newAnnotationsGroup.contains(canvas)) {
+					// If we havent already got a canvas
+					// Create one, and put it in the new annotations group
+					canvas = new Group();
+					canvas.percentWidth = 100;
+					canvas.percentHeight = 100;
+					newAnnotationsGroup.addElement(canvas);
+				}
+			}
 		}
 		
 		private function drawingNewAnnotation(e:MouseEvent):void {
+			// We are drawing
+			
 			if(drawing) {
+				// Check what drawing mode we are in
+				var drawingMode:String = annotationToolbar.getAnnotationDrawingMode();
 				
-				trace("mouse moved on:", e.target);
-				
-				// Clear any of the previous annotations
-				newAnnotationsGroup.removeAllElements();
-				
-				trace("mouse pos:", e.target.mouseX, e.target.mouseY);
-				
-				var width:Number = e.target.mouseX - startAnnotationMouseX;
-				var height:Number = e.target.mouseY - startAnnotationMouseY;
-				
-				// Redraw the box to new finish coordinates
-				var box:Group = new Group();
-				box.percentWidth = 100;
-				box.percentHeight = 100;
-				box.graphics.beginFill(0xFF0000, 0.5);
-				box.graphics.drawRect(startAnnotationMouseX, startAnnotationMouseY, width, height);
-				newAnnotationsGroup.addElement(box);
-				
+				if(drawingMode == AnnotationToolbar.BOX) {
+					// We are drawing a box
+					
+					var width:Number = e.target.mouseX - startAnnotationMouseX;
+					var height:Number = e.target.mouseY - startAnnotationMouseY;
+					
+					canvas.graphics.clear();
+					canvas.graphics.lineStyle(1, annotationToolbar.getSelectedColor(), 1);
+					canvas.graphics.beginFill(annotationToolbar.getSelectedColor(), 0.5);
+					
+					canvas.graphics.drawRect(startAnnotationMouseX, startAnnotationMouseY, width, height);					
+
+				} else if (drawingMode == AnnotationToolbar.PEN) {
+					// We are using the PEN TOOL
+					// The Straight line tool in flash, draws a line from the current pos
+					// to a finish pos
+					canvas.graphics.lineStyle(3, annotationToolbar.getSelectedColor(), 1);
+					canvas.graphics.beginFill(annotationToolbar.getSelectedColor(), 0.5);
+
+					canvas.graphics.moveTo(startAnnotationMouseX, startAnnotationMouseY); 
+					canvas.graphics.lineTo(e.target.mouseX, e.target.mouseY);
+					
+					trace("drawing", startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
+					
+					// Push values into array here
+					annotationCoordinates.addCoordinates(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
+					
+					startAnnotationMouseX = e.target.mouseX;
+					startAnnotationMouseY = e.target.mouseY;
+				}
+			
 			}
 		}
 		private function stopDrawingNewAnnotation(e:MouseEvent):void {
@@ -704,41 +761,85 @@ package View.components.MediaViewer.ImageViewer
 		
 			// Stop drawing
 			drawing = false;
-			newAnnotationsGroup.removeAllElements();
+			
+			// Check what drawing mode we are in
+			var drawingMode:String = annotationToolbar.getAnnotationDrawingMode();
 			
 			// Save the stopping coordinates
 			finishAnnotationMouseX = e.target.mouseX;
 			finishAnnotationMouseY = e.target.mouseY;
 			
-			// 
-			var width:Number = finishAnnotationMouseX - startAnnotationMouseX;
-			var height:Number = finishAnnotationMouseY - startAnnotationMouseY;
-			
-			// Check if they havent drawn a box (i.e. the width/heihgt are zero)
-			if(width == 0 && height == 0) {
-				// Clear the annotations values
-				startAnnotationMouseX = -1;
-				startAnnotationMouseY = -1;
-				finishAnnotationMouseX = -1;
-				finishAnnotationMouseY  = -1;
+			if(drawingMode == AnnotationToolbar.BOX) {
+				// 
+				var width:Number = finishAnnotationMouseX - startAnnotationMouseX;
+				var height:Number = finishAnnotationMouseY - startAnnotationMouseY;
 				
-				return;
+				// Check if they havent drawn a box (i.e. the width/heihgt are zero)
+				if(width == 0 && height == 0) {
+					// Clear the annotations values
+					startAnnotationMouseX = -1;
+					startAnnotationMouseY = -1;
+					finishAnnotationMouseX = -1;
+					finishAnnotationMouseY  = -1;
+					
+					return;
+				}	
+				
+				trace('X', startAnnotationMouseX, finishAnnotationMouseX);
+				trace('Y', startAnnotationMouseY, finishAnnotationMouseY);
+				
+				// create a box for the drawing
+				canvas.graphics.clear();
+				canvas.graphics.lineStyle(1, annotationToolbar.getSelectedColor(), 1);
+				canvas.graphics.beginFill(annotationToolbar.getSelectedColor(), 0.5);
+				canvas.graphics.drawRect(startAnnotationMouseX, startAnnotationMouseY, width, height);
+				
+				// Setup the text input 
+				// The text input box for the annotation
+				// The next 5 lines are to fix a bug
+				// If you set the bottom, and then set the top on
+				// displaying it for another annotation, it remmebers 
+				// both, and becomes 100% height, so removing it, and making a new one
+				// solves that problem.
+				if(scrollerAndOverlayGroup.contains(annotationTextOverlayBox)) {
+					scrollerAndOverlayGroup.removeElement(annotationTextOverlayBox);
+				}
+				annotationTextOverlayBox = new AnnotationTextOverlayBox();
+				scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
+				
+				// Put the Annotation Text Overlay in edit mode
+				// So the user can write the text for their new annotation
+				annotationTextOverlayBox.setAuthor(Auth.getInstance().getUsername());
+				annotationTextOverlayBox.enterEditMode();
+				
+				// Position the entry for the text for an annotation
+				// if the mouse finished in hte bottom half of the image have it at the top
+				// and in the bottom, if the mouse is in the top half
+				if(finishAnnotationMouseY > (scrollerAndOverlayGroup.height / 2)) {
+					annotationTextOverlayBox.top = 0;
+				} else {
+					annotationTextOverlayBox.bottom = 0;
+				}
+				
+				// Make the editable text overlay box appear
+				annotationTextOverlayBox.visible = true;
+				
+			} else if (drawingMode == AnnotationToolbar.PEN) {
+				// We are using the PEN TOOL
+				// The Straight line tool in flash, draws a line from the current pos
+				// to a finish pos
+				canvas.graphics.lineStyle(3, annotationToolbar.getSelectedColor(), 1);
+				canvas.graphics.beginFill(annotationToolbar.getSelectedColor(), 0.5);
+				
+				canvas.graphics.moveTo(startAnnotationMouseX, startAnnotationMouseY); 
+				canvas.graphics.lineTo(e.target.mouseX, e.target.mouseY);
+				
+				// Push values into array here
+				annotationCoordinates.addCoordinates(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
+				
+				startAnnotationMouseX = e.target.mouseX;
+				startAnnotationMouseX = e.target.mouseY;
 			}
-			
-			trace('X', startAnnotationMouseX, finishAnnotationMouseX);
-			trace('Y', startAnnotationMouseY, finishAnnotationMouseY);
-			
-			// Try just drawing a box
-			// create a box for the drawing
-			var box:Group = new Group();
-			box.percentWidth = 100;
-			box.percentHeight = 100;
-			box.graphics.beginFill(0xFF0000, 0.5);
-			box.graphics.drawRect(startAnnotationMouseX, startAnnotationMouseY, width, height);
-			newAnnotationsGroup.addElement(box);
-			
-			// Make the editable text overlay box appear
-			annotationTextOverlayBox.visible = true;
 		}
 		
 		/**
@@ -762,6 +863,25 @@ package View.components.MediaViewer.ImageViewer
 				var annotation:Annotation = annotationsGroup.getElementAt(i) as Annotation;
 				annotation.readjustXY(image.width, image.height);
 			}
+			
+			// Remove all the pen annotations
+			annotationsGroup.graphics.clear();
+			for(i = 0; i < annotationsArray.length; i++) {
+				var annotationData:Model_Commentary = annotationsArray[i] as Model_Commentary;
+			
+				if (annotationData.annotationType == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
+					var pathCoordinates:XMLList = XML(annotationData.path).item;
+					
+					for each(var line:XML in pathCoordinates) {
+						annotationsGroup.graphics.lineStyle(5, 0xFF0000, 1);
+						annotationsGroup.graphics.beginFill(0xFF0000, 0.5);
+						
+						annotationsGroup.graphics.moveTo(line.x1 * image.width, line.y1 * image.height);
+						annotationsGroup.graphics.lineTo(line.x2 * image.width, line.y2 * image.height);
+					}
+				}
+			}
+			
 		}
 		
 		/**
@@ -906,37 +1026,56 @@ package View.components.MediaViewer.ImageViewer
 			clearAnnotations();
 			
 			trace("image dimensions:", image.width, image.height);
+			
+			// Go through all the annotations
 			for(var i:Number = 0; i < annotationsArray.length; i++) {
 				
 				var annotationData:Model_Commentary = annotationsArray[i] as Model_Commentary;
 				
-				var annotation:Annotation = new Annotation(
-					annotationData.base_asset_id,
-					annotationData.meta_creator, 
-					annotationData.annotation_text,
-					annotationData.annotation_height, 
-					annotationData.annotation_width, 
-					annotationData.annotation_x,
-					annotationData.annotation_y,
-					image.width,
-					image.height
-				);
-//				annotation.alpha = 0;
-
-				annotationsGroup.addElement(annotation);
-				
-//				if(!annotationsAreLoaded) {
-					// We havent previously loaded the annotaitons
-					// If we had, we would just be replacing them, so we dont want them to
-					// fade in. 
-//					Lib.it.transitions.Tweener.addTween(annotation, {transition:"easeInOutCubic", time:1, alpha:1});
-//				} else {
-//					annotation.alpha = 1;
-//				}
-				
-				// Listen for this annotation being mouse-overed
-				annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
-				annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
+				if(annotationData.annotationType == Model_Commentary.ANNOTATION_BOX_TYPE_ID) {
+					// Its a annotation box
+					
+					// Make a new annotation box
+					var annotation:Annotation = new Annotation(
+						annotationData.base_asset_id,
+						annotationData.meta_creator, 
+						annotationData.annotation_text,
+						annotationData.annotation_height, 
+						annotationData.annotation_width, 
+						annotationData.annotation_x,
+						annotationData.annotation_y,
+						image.width,
+						image.height
+					);
+	//				annotation.alpha = 0;
+	
+					annotationsGroup.addElement(annotation);
+					
+	//				if(!annotationsAreLoaded) {
+						// We havent previously loaded the annotaitons
+						// If we had, we would just be replacing them, so we dont want them to
+						// fade in. 
+	//					Lib.it.transitions.Tweener.addTween(annotation, {transition:"easeInOutCubic", time:1, alpha:1});
+	//				} else {
+	//					annotation.alpha = 1;
+	//				}
+					
+					// Listen for this annotation being mouse-overed
+					annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
+					annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
+				} else if (annotationData.annotationType == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
+					var pathCoordinates:XMLList = XML(annotationData.path).item;
+					
+					for each(var line:XML in pathCoordinates) {
+						trace("line", line.x1, line.x2, line.y1, line.y2);
+						
+						annotationsGroup.graphics.lineStyle(5, 0xFF0000, 1);
+						annotationsGroup.graphics.beginFill(0xFF0000, 0.5);
+						
+						annotationsGroup.graphics.moveTo(line.x1 * image.width, line.y1 * image.height);
+						annotationsGroup.graphics.lineTo(line.x2 * image.width, line.y2 * image.height);
+					}
+				}
 				
 			}
 		}

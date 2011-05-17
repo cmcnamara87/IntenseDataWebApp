@@ -201,7 +201,7 @@ package Controller {
 			currentView.showMediaLoading();
 			
 			// Get the Media inside/ this collection
-			Model.AppModel.getInstance().getThisCollectionsMediaAssets(collectionID, collectionMediaLoaded);
+			AppModel.getInstance().getThisCollectionsMediaAssets(collectionID, collectionMediaLoaded);
 			
 			// Get the Commentary for this collection
 			AppModel.getInstance().getThisAssetsCommentary(collectionID, collectionCommentsLoaded);
@@ -230,6 +230,14 @@ package Controller {
 		 * @param e
 		 */		
 		public function fixedCollectionAssetsLoaded(e:Event):void {
+			// TODO need to add in another transaction for this similar to the regular collections
+			
+			if(currentCollectionID != ALLASSETID && currentCollectionID != SHAREDID) {
+				trace("returned a fixed collection, but we arent looking at one currently," +
+					"FIX ME UP lol", currentCollectionID);
+				return;
+			}
+			
 			var data:String = e.target.data;
 			
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
@@ -279,7 +287,13 @@ package Controller {
 		 * @param e
 		 */		
 		// 
-		public function collectionMediaLoaded(e:Event):void {
+		public function collectionMediaLoaded(collectionID:Number, e:Event):void {
+			// If we have just got data back from a collection we are no longer looking at
+			// ignore it.
+			trace("got data for", collectionID, "we are looking at", currentCollectionID);
+			if(collectionID != currentCollectionID) {
+				return;
+			}
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			// Remove current tiles
@@ -288,6 +302,7 @@ package Controller {
 			// Get out the returned data
 			var data:XML = XML(e.target.data);
 			
+			//trace("Collection data", e.target.data);
 			// Convert the returned data to an array of media assets
 			// and store those assets.
 			BrowserController.currentCollectionAssets = AppModel.getInstance().extractAssetsFromXML(data, Model_Media);

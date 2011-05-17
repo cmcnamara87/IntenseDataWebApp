@@ -106,7 +106,8 @@ package Controller {
 			// When the save button is clicked
 			public static var ANNOTATION_SAVE_CLICKED:String = "recensio_annotationSaveClicked";
 			// When the annotation is actually ready to be saved.
-			public static var ANNOTATION_SAVE:String = "recensio_annotationSave";
+			public static var ANNOTATION_SAVE_BOX:String = "recensio_annotationSaveBox";
+			public static var ANNOTATION_SAVE_PEN:String = "recensio_annotationSavePen";
 			
 			public static var ANNOTATION_LIST_ITEM_MOUSEOVER:String = "recensio_annotationListItemMouseOver";
 			public static var ANNOTATION_LIST_ITEM_MOUSEOUT:String = "recensio_annotationListItemMouseOut";

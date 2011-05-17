@@ -18,14 +18,28 @@ package View.components.Annotation
 
 	public class AnnotationToolbar extends SubToolbar
 	{
-		//public static const ANNOTATION_TOOLBAR_HEIGHT:Number = 40; // The hiehgt of the Annotation Toolbar
+		// Annotation Drawing Modes
+		public static const BOX:String = "box"; // The annotation toolbar is set to box mode 
+		public static const PEN:String = "pen"; // The annotation toolbar is set to PEN mode
+		
+		// Annotation colors
+		public static const RED:uint = 0xFF0000;
+		public static const GREEN:uint = 0x00FF00;
+		public static const BLUE:uint = 0x0000FF;
+		
+		private var mode:String = BOX; // The Drawing mode we are in, box, pen etc (default is BOX) 
+		private var color:uint = BLUE;
+		
+		// GUI elements
+		private var freeDrawButton:ToggleButton;
+		private var drawBoxButton:ToggleButton;
 		
 		public function AnnotationToolbar()
 		{
 			this.hide();
 			
 			// Create the Box Button
-			var drawBoxButton:ToggleButton = new ToggleButton();
+			drawBoxButton = new ToggleButton();
 			drawBoxButton.label = "Draw Box";
 			drawBoxButton.percentHeight = 100;
 			// Select this button
@@ -33,9 +47,9 @@ package View.components.Annotation
 			this.addElement(drawBoxButton);
 			
 			// Create the Pen Button
-			var freeDrawButton:ToggleButton = new ToggleButton();
+			freeDrawButton = new ToggleButton();
 			freeDrawButton.label = "Free Draw";
-			freeDrawButton.enabled = false;
+			freeDrawButton.enabled = true;
 			freeDrawButton.percentHeight = 100;
 			this.addElement(freeDrawButton);
 			
@@ -61,6 +75,11 @@ package View.components.Annotation
 			/* EVENT LISTENERS */
 			cancelButton.addEventListener(MouseEvent.CLICK, cancelButtonClicked);
 			saveButton.addEventListener(MouseEvent.CLICK, saveButtonClicked);
+			
+			// Listen for draw box button click
+			drawBoxButton.addEventListener(MouseEvent.CLICK, drawBoxButtonClicked);
+			// Listen for free draw (pen tool) button click
+			freeDrawButton.addEventListener(MouseEvent.CLICK, freeDrawButtonClicked);
 		}
 		
 		/* =================== EVENT LISTENER FUNCTIONS ====================== */
@@ -89,6 +108,18 @@ package View.components.Annotation
 			this.dispatchEvent(myEvent);
 		}
 		
+		private function drawBoxButtonClicked(e:MouseEvent):void {
+			trace("Draw button clicked");
+			// Unclick the free draw button
+			freeDrawButton.selected = false;
+			mode = BOX;
+		}
+		
+		private function freeDrawButtonClicked(e:MouseEvent):void {
+			// Unclick the draw box button
+			drawBoxButton.selected = false;
+			mode = PEN;
+		} 
 		
 		/* =================== PUBLIC FUNCTIONS ============================== */
 		public function show():void {
@@ -99,6 +130,14 @@ package View.components.Annotation
 		public function hide():void {
 			this.visible = false;
 			this.height = 0;
+		}
+		
+		public function getAnnotationDrawingMode():String {
+			return mode;
+		}
+		
+		public function getSelectedColor():uint {
+			return color;
 		}
 	}
 }
