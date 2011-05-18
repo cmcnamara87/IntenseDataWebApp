@@ -10,7 +10,7 @@ package Controller {
 		
 		private var _authOverride:Boolean = false;
 		
-		private var quickLogin:Boolean = true;
+		private var quickLogin:Boolean = false;
 		private var assetID:Number = 1621;
 		 
 		// TODO For some reason, the login is being received twice, i cant work out why, so this
