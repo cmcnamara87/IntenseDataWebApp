@@ -358,8 +358,15 @@ package Model {
 			}
 		}
 		
-
-		public function saveNewPenAnnotation(mediaAssetID:Number, path:String, callback:Function):void {
+		/**
+		 * Saves a new pen annotation. 
+		 * @param mediaAssetID	The ID of the media asset which the annotation is on
+		 * @param path			The string that contains the path of the pen annotations (in XML)
+		 * @param text			The text to be associated with the annotation
+		 * @param callback		The function to call when the saving is complete.
+		 * 
+		 */
+		public function saveNewPenAnnotation(mediaAssetID:Number, path:String, text:String, callback:Function):void {
 			trace("- App Model: Saving Pen annotation...");	
 			var args:Object = new Object();
 			args.namespace = "recensio";
@@ -381,7 +388,9 @@ package Model {
 			
 			// Set All of the annotations data
 			baseXML.service.args["meta"]["r_annotation"]["path"] = path;
-			baseXML.service.args["meta"]["r_annotation"]["text"] = "Could have text here";
+			if(text != "") {
+				baseXML.service.args["meta"]["r_annotation"]["text"] = text;
+			}
 
 			// This annotation is a 'Annotation' annotation, lol, not a comment
 			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.ANNOTATION_PEN_TYPE_ID;

@@ -105,6 +105,8 @@ package Controller {
 			// ANNOTATION STUFF
 			// When the save button is clicked
 			public static var ANNOTATION_SAVE_CLICKED:String = "recensio_annotationSaveClicked";
+			// Clear any non-saved annotations from the screen
+			public static var ANNOTATION_CLEAR_CLICKED:String = 'recensio_annotationClearClicked';
 			// When the annotation is actually ready to be saved.
 			public static var ANNOTATION_SAVE_BOX:String = "recensio_annotationSaveBox";
 			public static var ANNOTATION_SAVE_PEN:String = "recensio_annotationSavePen";

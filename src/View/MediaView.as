@@ -27,7 +27,9 @@ package View
 	import flash.net.navigateToURL;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	import mx.effects.Resize;
+	import mx.events.CloseEvent;
 	import mx.events.ItemClickEvent;
 	import mx.graphics.SolidColor;
 	import mx.graphics.SolidColorStroke;
@@ -434,11 +436,19 @@ package View
 		 * 
 		 */		
 		private function downloadButtonClicked(e:MouseEvent):void {
-			var url:String = mediaData.getDownloadURL();
-			var req:URLRequest = new URLRequest(url);
-			navigateToURL(req, 'Download');
+			var myAlert:Alert = Alert.show("Are you sure you wish to download this file?", "Download File", 
+					Alert.OK | Alert.CANCEL, null, 
+					function(e:CloseEvent):void {
+						if(e.detail == Alert.OK) {
+							var url:String = mediaData.getDownloadURL();
+							var req:URLRequest = new URLRequest(url);
+							navigateToURL(req, 'Download');
+						}
+					}, 
+					null, Alert.CANCEL);
+			myAlert.height=100;
+			myAlert.width=300;
 		}
-		
 		
 		/*========================== HELPER FUNCTIONS ======================= */
 	

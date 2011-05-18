@@ -9,7 +9,9 @@ package View.components.MediaViewer.ImageViewer
 	import Model.Model_Commentary;
 	
 	import View.MediaView;
-	import View.components.Annotation.Annotation;
+	import View.components.Annotation.AnnotationBox;
+	import View.components.Annotation.AnnotationInterface;
+	import View.components.Annotation.AnnotationPen;
 	import View.components.Annotation.AnnotationTextOverlayBox;
 	import View.components.Annotation.AnnotationToolbar;
 	import View.components.MediaViewer.MediaViewer;
@@ -84,6 +86,8 @@ package View.components.MediaViewer.ImageViewer
 															// The array that stores the annotation coordinates for when we are using
 															// The free draw tool
 		
+		private var addAnnotationMode:Boolean = false;
+		
 		private var drawing:Boolean = false; // if we are in the process of drawing a new annotaiton
 		
 		private var actualImageWidth:Number = -1;
@@ -117,7 +121,7 @@ package View.components.MediaViewer.ImageViewer
 			
 			// Create the Annotation Tools toolbar
 			// Will show 'Box tool', 'Pen Tool', 'Save' and 'Cancel' Buttons
-			annotationToolbar = new AnnotationToolbar();
+			annotationToolbar = new AnnotationToolbar(this);
 			this.addElement(annotationToolbar);
 			
 			// Creatoe a group for the Image Scroller and the Annotation Text Overlay
@@ -254,7 +258,8 @@ package View.components.MediaViewer.ImageViewer
 			// Event Listeners
 			image.addEventListener(Event.COMPLETE, sourceLoaded);
 			this.addEventListener(Event.CANCEL, cancelAnnotationButtonClicked);
-			this.addEventListener(RecensioEvent.ANNOTATION_SAVE_CLICKED, annotationSaveClicked);
+			this.addEventListener(RecensioEvent.ANNOTATION_SAVE_CLICKED, saveAnnotationButtonClicked);
+//			this.addEventListener(RecensioEvent.ANNOTATION_CLEAR_CLICKED, clearAnnotationButtonClicked);
 			resizeSlider.addEventListener(Event.CHANGE, resizeImage);
 			
 			annotationTextOverlayBox.addEventListener(MouseEvent.MOUSE_OVER, textOverlayMouseOver);
@@ -295,31 +300,49 @@ package View.components.MediaViewer.ImageViewer
 		 * 
 		 */		
 		override public function enterNewAnnotationMode():void {
-			trace("Showing annotation toolbar");	
-			annotationToolbar.show();
 			
-			// Hide the currently saved annotations
-			// Just to make it easier for people to draw new ones
-			annotationsGroup.visible = false;
-			
-			// Put the Annotation Text Overlay in edit mode
-			// So the user can write the text for their new annotation
-			annotationTextOverlayBox.setAuthor(Auth.getInstance().getUsername());
-			annotationTextOverlayBox.enterEditMode();
-			
-			// Listen for users to start drawing
-			newAnnotationsGroup.addEventListener(MouseEvent.MOUSE_DOWN, startDrawingNewAnnotation);
-			newAnnotationsGroup.addEventListener(MouseEvent.MOUSE_MOVE, drawingNewAnnotation);
-			// Listen for users to stop drawing
-			newAnnotationsGroup.addEventListener(MouseEvent.MOUSE_UP, stopDrawingNewAnnotation);
+			if(!addAnnotationMode) {
+				trace("Showing annotation toolbar");
+				addAnnotationMode = true;
+				annotationToolbar.show();
+				
+				// Hide the currently saved annotations
+				// Just to make it easier for people to draw new ones
+				annotationsGroup.visible = false;
+				
+				// Put the Annotation Text Overlay in edit mode
+				// So the user can write the text for their new annotation
+				annotationTextOverlayBox.setAuthor(Auth.getInstance().getUsername());
+				annotationTextOverlayBox.enterEditMode();
+				
+				// Listen for users to start drawing
+				newAnnotationsGroup.addEventListener(MouseEvent.MOUSE_DOWN, startDrawingNewAnnotation);
+				newAnnotationsGroup.addEventListener(MouseEvent.MOUSE_MOVE, drawingNewAnnotation);
+				// Listen for users to stop drawing
+				newAnnotationsGroup.addEventListener(MouseEvent.MOUSE_UP, stopDrawingNewAnnotation);
+			} else {
+				trace("Already in add annotation mode");
+			}
 		}
 		
 		/**
 		 * Removes all the current annotations 
-		 * 
 		 */		
 		public function clearAnnotations():void {
 			annotationsGroup.removeAllElements();
+		}
+		
+		/**
+		 * Removes all the non-saved annotations from the image viewer. 
+		 * 
+		 */		
+		public function clearNonSavedAnnotations():void {
+			trace("Image Viewer: Removing all non-saved annotations");
+			// Remove the visual part
+			newAnnotationsGroup.removeAllElements();
+			// Get rid of any saved paths
+			annotationCoordinates = new AnnotationCoordinateCollection();
+			hideAnnotationTextOverlay();
 		}
 		
 		
@@ -357,7 +380,7 @@ package View.components.MediaViewer.ImageViewer
 
 			
 			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
-				var annotation:Annotation = annotationsGroup.getElementAt(i) as Annotation;
+				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
 				trace("Looking at", annotation.getID());
 				if(annotation.getID() == assetID) {
 					annotation.highlight();
@@ -385,7 +408,7 @@ package View.components.MediaViewer.ImageViewer
 		override public function unhighlightAnnotation(assetID:Number):void {
 			trace("Finding annotation to unhighlight");
 			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
-				var annotation:Annotation = annotationsGroup.getElementAt(i) as Annotation;
+				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
 				if(annotation.getID() == assetID) {
 					annotation.unhighlight();
 					annotationTextOverlayBox.visible = false;
@@ -502,10 +525,10 @@ package View.components.MediaViewer.ImageViewer
 			}
 		}
 		
-		
-		private function annotationSaveClicked(e:Event):void {
+
+		private function saveAnnotationButtonClicked(e:Event):void {
 			trace("Save Button Clicked");
-			
+			addAnnotationMode = false;
 			// Check what drawing mode we are in
 			var drawingMode:String = annotationToolbar.getAnnotationDrawingMode();
 			
@@ -534,7 +557,7 @@ package View.components.MediaViewer.ImageViewer
 				// Add this as an annotation to the view
 				// This is done temporarily, and will be reloaded once the controller
 				// has finished saving the annotation
-				var annotation:Annotation = new Annotation(
+				var annotation:AnnotationBox = new AnnotationBox(
 					-1,
 					Auth.getInstance().getUsername(), 
 					annotationText,
@@ -553,9 +576,23 @@ package View.components.MediaViewer.ImageViewer
 				annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 			} else if (drawingMode == AnnotationToolbar.PEN) {
 				myEvent = new RecensioEvent(RecensioEvent.ANNOTATION_SAVE_PEN, true);
+				
 				myEvent.data.path = annotationCoordinates.getString(image.height, image.width);
+				myEvent.data.text = annotationTextOverlayBox.getText();
+				
 				trace("XML for drawing path", myEvent.data.path);
+				
 				this.dispatchEvent(myEvent);
+				
+				var annotationPen:AnnotationPen = new AnnotationPen(
+					-1,
+					Auth.getInstance().getUsername(),
+					myEvent.data.path,
+					image.height,
+					image.width,
+					annotationTextOverlayBox.getText()
+				);
+				annotationsGroup.addElement(annotationPen);
 			}
 
 			// Stop listening for drawings
@@ -565,10 +602,8 @@ package View.components.MediaViewer.ImageViewer
 			
 			// Clear any half/finished annotations
 			newAnnotationsGroup.removeAllElements();
-			
-			// Hide the annotationtextoverlay
-			annotationTextOverlayBox.enterReadOnlyMode();
-			annotationTextOverlayBox.visible = false;
+
+			hideAnnotationTextOverlay();
 			
 			// Show the current saved annotations again
 			annotationsGroup.visible = true;
@@ -595,6 +630,9 @@ package View.components.MediaViewer.ImageViewer
 			
 			// Show the current saved annotations again
 			annotationsGroup.visible = true;
+			
+			// Exit annotation mode
+			addAnnotationMode = false;
 		}
 		
 		/**
@@ -605,41 +643,14 @@ package View.components.MediaViewer.ImageViewer
 		 */		
 		private function annotationMouseOver(e:MouseEvent):void {
 			// Get out the annotation
-			var annotation:Annotation = (e.target as Annotation);
+			var annotation:AnnotationInterface = (e.target as AnnotationInterface);
 			
 			// Highlight this annotation
 			annotation.highlight();
 			
-			// The next 5 lines are to fix a bug
-			// If you set the bottom, and then set the top on
-			// displaying it for another annotation, it remmebers 
-			// both, and becomes 100% height, so removing it, and making a new one
-			// solves that problem.
-			if(scrollerAndOverlayGroup.contains(annotationTextOverlayBox)) {
-				scrollerAndOverlayGroup.removeElement(annotationTextOverlayBox);
-			}
-			annotationTextOverlayBox = new AnnotationTextOverlayBox();
-			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
-			
-			
-			// Position the overlay at the top
-			// if the mouse is in hte bottom half of the image
-			// and in the bottom, if the mouse is in the top half
-			if(scrollerAndOverlayGroup.mouseY > (scrollerAndOverlayGroup.height / 2)) {
-				annotationTextOverlayBox.top = 0;
-			} else {
-				annotationTextOverlayBox.bottom = 0;
-			}
-			annotationTextOverlayBox.visible = true;
+			this.showAnnotationTextOverlayViewMode();
 			annotationTextOverlayBox.setAuthor(annotation.getAuthor());
 			annotationTextOverlayBox.setText(annotation.getText());
-			
-			// Show the close button
-			annotationMouseOverID = annotation.getID();
-//			closeButton.x = annotation.x + annotation.width - 20;
-//			closeButton.y = annotation.y + 1;
-//			annotationsGroup.addElement(closeButton);
-			
 		}
 		
 		/**
@@ -650,19 +661,17 @@ package View.components.MediaViewer.ImageViewer
 		private function annotationMouseOut(e:MouseEvent):void {
 			
 			// Get out the annotation
-			var annotation:Annotation = (e.target as Annotation);
+			var annotation:AnnotationInterface = (e.target as AnnotationInterface);
 			
 			// Highlight this annotation
 			annotation.unhighlight();
 			
-			annotationTextOverlayBox.visible = false;
-//			
-//			annotationsGroup.removeElement(closeButton);
+			this.hideAnnotationTextOverlay();
 		}
 		
 		private function closeAnnotationButtonClicked(e:MouseEvent):void {
 			// Get out the annotation
-			var annotation:Annotation = (e.target as Annotation);
+			var annotation:AnnotationBox = (e.target as AnnotationBox);
 			annotation.visible = false;
 			trace("Annotation Deletion Clicked", assetID);
 			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_DELETED, true);
@@ -739,19 +748,31 @@ package View.components.MediaViewer.ImageViewer
 					// We are using the PEN TOOL
 					// The Straight line tool in flash, draws a line from the current pos
 					// to a finish pos
-					canvas.graphics.lineStyle(3, annotationToolbar.getSelectedColor(), 1);
-					canvas.graphics.beginFill(annotationToolbar.getSelectedColor(), 0.5);
 
-					canvas.graphics.moveTo(startAnnotationMouseX, startAnnotationMouseY); 
-					canvas.graphics.lineTo(e.target.mouseX, e.target.mouseY);
-					
-					trace("drawing", startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
-					
+					// Only save the values if it has been a significant change
+					// Otherwise it becomes too intensive to draw all the points
 					// Push values into array here
-					annotationCoordinates.addCoordinates(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
+					var distanceThreshold:Number = 20;
+					if(Math.abs(startAnnotationMouseX - e.target.mouseX) > distanceThreshold || Math.abs(startAnnotationMouseY - e.target.mouseY) > distanceThreshold) {
+						canvas.graphics.lineStyle(3, annotationToolbar.getSelectedColor(), 1);
+						canvas.graphics.beginFill(annotationToolbar.getSelectedColor(), 0.5);
+						
+						canvas.graphics.moveTo(startAnnotationMouseX, startAnnotationMouseY); 
+						canvas.graphics.lineTo(e.target.mouseX, e.target.mouseY);
+						
+						trace("drawing", startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
+						
+						trace("saving point");
+						annotationCoordinates.addCoordinates(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
+						
+						startAnnotationMouseX = e.target.mouseX;
+						startAnnotationMouseY = e.target.mouseY;
+						
+					} else {
+						trace("not saving point");
+					}
 					
-					startAnnotationMouseX = e.target.mouseX;
-					startAnnotationMouseY = e.target.mouseY;
+					
 				}
 			
 			}
@@ -794,35 +815,8 @@ package View.components.MediaViewer.ImageViewer
 				canvas.graphics.beginFill(annotationToolbar.getSelectedColor(), 0.5);
 				canvas.graphics.drawRect(startAnnotationMouseX, startAnnotationMouseY, width, height);
 				
-				// Setup the text input 
-				// The text input box for the annotation
-				// The next 5 lines are to fix a bug
-				// If you set the bottom, and then set the top on
-				// displaying it for another annotation, it remmebers 
-				// both, and becomes 100% height, so removing it, and making a new one
-				// solves that problem.
-				if(scrollerAndOverlayGroup.contains(annotationTextOverlayBox)) {
-					scrollerAndOverlayGroup.removeElement(annotationTextOverlayBox);
-				}
-				annotationTextOverlayBox = new AnnotationTextOverlayBox();
-				scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
-				
-				// Put the Annotation Text Overlay in edit mode
-				// So the user can write the text for their new annotation
-				annotationTextOverlayBox.setAuthor(Auth.getInstance().getUsername());
-				annotationTextOverlayBox.enterEditMode();
-				
-				// Position the entry for the text for an annotation
-				// if the mouse finished in hte bottom half of the image have it at the top
-				// and in the bottom, if the mouse is in the top half
-				if(finishAnnotationMouseY > (scrollerAndOverlayGroup.height / 2)) {
-					annotationTextOverlayBox.top = 0;
-				} else {
-					annotationTextOverlayBox.bottom = 0;
-				}
-				
-				// Make the editable text overlay box appear
-				annotationTextOverlayBox.visible = true;
+				// Show the annotation text overlay in text entry mode
+				showAnnotationTextOverlayTextEntryMode();
 				
 			} else if (drawingMode == AnnotationToolbar.PEN) {
 				// We are using the PEN TOOL
@@ -838,7 +832,7 @@ package View.components.MediaViewer.ImageViewer
 				annotationCoordinates.addCoordinates(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
 				
 				startAnnotationMouseX = e.target.mouseX;
-				startAnnotationMouseX = e.target.mouseY;
+				startAnnotationMouseY = e.target.mouseY;
 			}
 		}
 		
@@ -860,28 +854,9 @@ package View.components.MediaViewer.ImageViewer
 			
 			// Reposition the annotations based on the new image size
 			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
-				var annotation:Annotation = annotationsGroup.getElementAt(i) as Annotation;
-				annotation.readjustXY(image.width, image.height);
+				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
+				annotation.readjust(image.width, image.height);
 			}
-			
-			// Remove all the pen annotations
-			annotationsGroup.graphics.clear();
-			for(i = 0; i < annotationsArray.length; i++) {
-				var annotationData:Model_Commentary = annotationsArray[i] as Model_Commentary;
-			
-				if (annotationData.annotationType == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
-					var pathCoordinates:XMLList = XML(annotationData.path).item;
-					
-					for each(var line:XML in pathCoordinates) {
-						annotationsGroup.graphics.lineStyle(5, 0xFF0000, 1);
-						annotationsGroup.graphics.beginFill(0xFF0000, 0.5);
-						
-						annotationsGroup.graphics.moveTo(line.x1 * image.width, line.y1 * image.height);
-						annotationsGroup.graphics.lineTo(line.x2 * image.width, line.y2 * image.height);
-					}
-				}
-			}
-			
 		}
 		
 		/**
@@ -897,8 +872,8 @@ package View.components.MediaViewer.ImageViewer
 			
 			// Reposition the annotations based on the new image size
 			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
-				var annotation:Annotation = annotationsGroup.getElementAt(i) as Annotation;
-				annotation.readjustXY(image.width, image.height);
+				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
+				annotation.readjust(image.width, image.height);
 			}
 		}
 		
@@ -985,8 +960,8 @@ package View.components.MediaViewer.ImageViewer
 			
 			// Reposition the annotations based on the new image size
 			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
-				var annotation:Annotation = annotationsGroup.getElementAt(i) as Annotation;
-				annotation.readjustXY(image.width, image.height);
+				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
+				annotation.readjust(image.width, image.height);
 			}
 		}
 		
@@ -1036,7 +1011,7 @@ package View.components.MediaViewer.ImageViewer
 					// Its a annotation box
 					
 					// Make a new annotation box
-					var annotation:Annotation = new Annotation(
+					var annotation:AnnotationBox = new AnnotationBox(
 						annotationData.base_asset_id,
 						annotationData.meta_creator, 
 						annotationData.annotation_text,
@@ -1047,37 +1022,109 @@ package View.components.MediaViewer.ImageViewer
 						image.width,
 						image.height
 					);
-	//				annotation.alpha = 0;
-	
+
 					annotationsGroup.addElement(annotation);
-					
-	//				if(!annotationsAreLoaded) {
-						// We havent previously loaded the annotaitons
-						// If we had, we would just be replacing them, so we dont want them to
-						// fade in. 
-	//					Lib.it.transitions.Tweener.addTween(annotation, {transition:"easeInOutCubic", time:1, alpha:1});
-	//				} else {
-	//					annotation.alpha = 1;
-	//				}
 					
 					// Listen for this annotation being mouse-overed
 					annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
 					annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 				} else if (annotationData.annotationType == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
-					var pathCoordinates:XMLList = XML(annotationData.path).item;
+					var annotationPen:AnnotationPen = new AnnotationPen(
+						annotationData.base_asset_id,
+						annotationData.meta_creator,
+						annotationData.path,
+						image.height,
+						image.width,
+						annotationData.annotation_text
+					);
 					
-					for each(var line:XML in pathCoordinates) {
-						trace("line", line.x1, line.x2, line.y1, line.y2);
-						
-						annotationsGroup.graphics.lineStyle(5, 0xFF0000, 1);
-						annotationsGroup.graphics.beginFill(0xFF0000, 0.5);
-						
-						annotationsGroup.graphics.moveTo(line.x1 * image.width, line.y1 * image.height);
-						annotationsGroup.graphics.lineTo(line.x2 * image.width, line.y2 * image.height);
-					}
+					trace(annotationPen);
+					annotationsGroup.addElement(annotationPen);
+					
+					// Listen for this annotation being mouse-overed
+					annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
+					annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 				}
 				
+				
+				
 			}
+		}
+		
+		/* ============= HELPER FUNCTIONS ============= */
+		
+		/**
+		 * Hide the annotayion text overlay box, and set it to read-only mode 
+		 * 
+		 */		
+		private function hideAnnotationTextOverlay():void {
+			// Hide the annotationtextoverlay
+			annotationTextOverlayBox.enterReadOnlyMode();
+			annotationTextOverlayBox.visible = false;
+		}
+		
+		/**
+		 * Shows hte text overlay in view mode. 
+		 * 
+		 */		
+		private function showAnnotationTextOverlayViewMode():void {
+			// The next 5 lines are to fix a bug
+			// If you set the bottom, and then set the top on
+			// displaying it for another annotation, it remmebers 
+			// both, and becomes 100% height, so removing it, and making a new one
+			// solves that problem.
+			if(scrollerAndOverlayGroup.contains(annotationTextOverlayBox)) {
+				scrollerAndOverlayGroup.removeElement(annotationTextOverlayBox);
+			}
+			annotationTextOverlayBox = new AnnotationTextOverlayBox();
+			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
+			
+			
+			// Position the overlay at the top
+			// if the mouse is in hte bottom half of the image
+			// and in the bottom, if the mouse is in the top half
+			if(scrollerAndOverlayGroup.mouseY > (scrollerAndOverlayGroup.height / 2)) {
+				annotationTextOverlayBox.top = 0;
+			} else {
+				annotationTextOverlayBox.bottom = 0;
+			}
+			annotationTextOverlayBox.visible = true;
+		}
+		
+		/**
+		 * Show the annotation text overlay box, and set it to text entry mode 
+		 * 
+		 */		
+		public function showAnnotationTextOverlayTextEntryMode():void {
+			// Setup the text input 
+			// The text input box for the annotation
+			// The next 5 lines are to fix a bug
+			// If you set the bottom, and then set the top on
+			// displaying it for another annotation, it remmebers 
+			// both, and becomes 100% height, so removing it, and making a new one
+			// solves that problem.
+			if(scrollerAndOverlayGroup.contains(annotationTextOverlayBox)) {
+				scrollerAndOverlayGroup.removeElement(annotationTextOverlayBox);
+			}
+			annotationTextOverlayBox = new AnnotationTextOverlayBox();
+			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
+			
+			// Put the Annotation Text Overlay in edit mode
+			// So the user can write the text for their new annotation
+			annotationTextOverlayBox.setAuthor(Auth.getInstance().getUsername());
+			annotationTextOverlayBox.enterEditMode();
+			
+			// Position the entry for the text for an annotation
+			// if the mouse finished in hte bottom half of the image have it at the top
+			// and in the bottom, if the mouse is in the top half
+			if(finishAnnotationMouseY > (scrollerAndOverlayGroup.height / 2)) {
+				annotationTextOverlayBox.top = 0;
+			} else {
+				annotationTextOverlayBox.bottom = 0;
+			}
+			
+			// Make the editable text overlay box appear
+			annotationTextOverlayBox.visible = true;
 		}
 
 	}

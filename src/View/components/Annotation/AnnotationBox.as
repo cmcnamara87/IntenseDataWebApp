@@ -15,7 +15,7 @@ package View.components.Annotation
 	
 	import spark.components.BorderContainer;
 	
-	public class Annotation extends Canvas
+	public class AnnotationBox extends Canvas implements AnnotationInterface
 	{
 
 		private var author:String; // The author of this annotation
@@ -39,7 +39,7 @@ package View.components.Annotation
 		 * @param imageHeight		The height of the image
 		 * 
 		 */		
-		public function Annotation(assetID:Number, author:String, text:String, percentHeight:Number, percentWidth:Number,
+		public function AnnotationBox(assetID:Number, author:String, text:String, percentHeight:Number, percentWidth:Number,
 									percentX:Number, percentY:Number, imageWidth:Number, imageHeight:Number)
 		{
 			super();
@@ -84,7 +84,7 @@ package View.components.Annotation
 		 * @param imageHeight
 		 * 
 		 */		
-		public function readjustXY(imageWidth:Number, imageHeight:Number):void {
+		public function readjust(imageWidth:Number, imageHeight:Number):void {
 			// Redo position (since we want it to be a percentage of the size of the image
 			this.x = this.percentX * imageWidth;
 			this.y = this.percentY * imageHeight;

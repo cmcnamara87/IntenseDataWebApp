@@ -211,10 +211,11 @@ package Controller {
 			trace("- Media Controller: Saving Annotation...");
 			// Unpack the event data
 			var path:String = e.data.path;
-			
+			var text:String = e.data.text;
 			AppModel.getInstance().saveNewPenAnnotation(
 				currentAssetID,
 				path,
+				text,
 				newAnnotationSaved
 			);
 		}

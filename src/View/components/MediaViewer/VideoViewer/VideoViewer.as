@@ -2,7 +2,7 @@ package View.components.MediaViewer.VideoViewer
 {
 	import Model.Model_Commentary;
 	
-	import View.components.Annotation.Annotation;
+	import View.components.Annotation.AnnotationBox;
 	import View.components.Annotation.AnnotationToolbar;
 	import View.components.MediaViewer.MediaViewer;
 	import View.components.MediaViewer.MediaViewerInterface;
@@ -234,7 +234,7 @@ package View.components.MediaViewer.VideoViewer
 				
 				trace("Adding annotation", annotationData.annotation_text);
 				
-				var annotation:Annotation = new Annotation(
+				var annotation:AnnotationBox = new AnnotationBox(
 					annotationData.base_asset_id,
 					annotationData.meta_creator, 
 					annotationData.annotation_text,

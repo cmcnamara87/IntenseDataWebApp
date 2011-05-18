@@ -10,7 +10,7 @@ package Module.AudioViewer
 	import Module.ImageViewer.ImageAnnotation;
 	
 	import View.MediaView;
-	import View.components.Annotation.Annotation;
+	import View.components.Annotation.AnnotationBox;
 	import View.components.MediaViewer.MediaViewer;
 	import View.components.MediaViewer.MediaViewerInterface;
 	
