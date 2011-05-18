@@ -29,6 +29,7 @@ package View.components.MediaViewer.ImageViewer
 	import flash.utils.setTimeout;
 	
 	import mx.containers.Canvas;
+	import mx.controls.Alert;
 	import mx.controls.Button;
 	import mx.controls.Image;
 	import mx.effects.Resize;
@@ -258,7 +259,7 @@ package View.components.MediaViewer.ImageViewer
 			// Event Listeners
 			image.addEventListener(Event.COMPLETE, sourceLoaded);
 			this.addEventListener(Event.CANCEL, cancelAnnotationButtonClicked);
-			this.addEventListener(RecensioEvent.ANNOTATION_SAVE_CLICKED, saveAnnotationButtonClicked);
+			//this.addEventListener(RecensioEvent.ANNOTATION_SAVE_CLICKED, saveAnnotationButtonClicked);
 //			this.addEventListener(RecensioEvent.ANNOTATION_CLEAR_CLICKED, clearAnnotationButtonClicked);
 			resizeSlider.addEventListener(Event.CHANGE, resizeImage);
 			
@@ -526,13 +527,27 @@ package View.components.MediaViewer.ImageViewer
 		}
 		
 
-		private function saveAnnotationButtonClicked(e:Event):void {
+		public function saveAnnotation():void {
 			trace("Save Button Clicked");
-			addAnnotationMode = false;
+
 			// Check what drawing mode we are in
 			var drawingMode:String = annotationToolbar.getAnnotationDrawingMode();
 			
+			// We are drawing a box (not using the pen tool)
 			if(drawingMode == AnnotationToolbar.BOX) {
+				
+				// Check they have drawn a box and not just hit save
+				if(Math.abs(startAnnotationMouseX - finishAnnotationMouseX) < 2 &&
+				 	Math.abs(startAnnotationMouseY -finishAnnotationMouseY) < 2) {
+					Alert.show("No annotation drawn");
+					this.leaveNewAnnotationMode();
+					return;
+				} else if (annotationTextOverlayBox.getText() == "") {
+					Alert.show("No text given");
+					this.leaveNewAnnotationMode();
+					return;
+				}
+				
 				// Work out the X, Y, width and height as percentages
 				// So that this will work, when scaling
 
@@ -575,6 +590,14 @@ package View.components.MediaViewer.ImageViewer
 				annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
 				annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 			} else if (drawingMode == AnnotationToolbar.PEN) {
+				
+				// Test the user has drawn a path
+				if(annotationCoordinates.getCount() == 0) {
+					Alert.show("No annotation drawn");
+					this.leaveNewAnnotationMode();
+					return;
+				}
+				
 				myEvent = new RecensioEvent(RecensioEvent.ANNOTATION_SAVE_PEN, true);
 				
 				myEvent.data.path = annotationCoordinates.getString(image.height, image.width);
@@ -594,19 +617,8 @@ package View.components.MediaViewer.ImageViewer
 				);
 				annotationsGroup.addElement(annotationPen);
 			}
-
-			// Stop listening for drawings
-			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_DOWN, startDrawingNewAnnotation);
-			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_MOVE, drawingNewAnnotation);
-			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_UP, stopDrawingNewAnnotation);
 			
-			// Clear any half/finished annotations
-			newAnnotationsGroup.removeAllElements();
-
-			hideAnnotationTextOverlay();
-			
-			// Show the current saved annotations again
-			annotationsGroup.visible = true;
+			this.leaveNewAnnotationMode();
 		}
 		
 		
@@ -1054,6 +1066,26 @@ package View.components.MediaViewer.ImageViewer
 		/* ============= HELPER FUNCTIONS ============= */
 		
 		/**
+		 * Leaves new annotation mode.  
+		 * 
+		 */		
+		private function leaveNewAnnotationMode():void {
+			// Stop listening for drawings
+			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_DOWN, startDrawingNewAnnotation);
+			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_MOVE, drawingNewAnnotation);
+			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_UP, stopDrawingNewAnnotation);
+			
+			// Clear any half/finished annotations
+			newAnnotationsGroup.removeAllElements();
+			
+			hideAnnotationTextOverlay();
+			
+			addAnnotationMode = false;
+			
+			// Show the current saved annotations again
+			annotationsGroup.visible = true;
+		}
+		/**
 		 * Hide the annotayion text overlay box, and set it to read-only mode 
 		 * 
 		 */		
@@ -1061,6 +1093,7 @@ package View.components.MediaViewer.ImageViewer
 			// Hide the annotationtextoverlay
 			annotationTextOverlayBox.enterReadOnlyMode();
 			annotationTextOverlayBox.visible = false;
+			annotationTextOverlayBox.setText("");
 		}
 		
 		/**

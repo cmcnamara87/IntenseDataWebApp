@@ -73,13 +73,13 @@ package View.components.Annotation
 				
 				// Draw an invisible (well basically) big fat line, that goes underneath the thin actual annotation we see
 				// This is so this fat line will trigger the mouse over, so we dont have to get exactly on top of the tiny line
-				this.graphics.lineStyle(30, 0x00FF00, 0.001);
+				this.graphics.lineStyle(20, 0x00FF00, 0.001);
 				this.graphics.beginFill(color, 0.01);
 
 				this.graphics.moveTo(line.x1 * mediasWidth, line.y1 * mediasHeight);
 				this.graphics.lineTo(line.x2 * mediasWidth, line.y2 * mediasHeight);
 				
-				this.graphics.lineStyle(5, color, 1);
+				this.graphics.lineStyle(2, color, 1);
 				this.graphics.beginFill(color, 0.5);
 				
 				this.graphics.moveTo(line.x1 * mediasWidth, line.y1 * mediasHeight);

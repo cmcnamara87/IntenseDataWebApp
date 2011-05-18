@@ -7,6 +7,7 @@ package View.components.Annotation
 	import View.components.MediaViewer.MediaViewerInterface;
 	import View.components.SubToolbar;
 	
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
@@ -41,6 +42,9 @@ package View.components.Annotation
 		// The elements for the free drawing tools
 		private var clearButton:Button; // Clears any non-saved annotations from the screen (only for the free-draw tools)
 		private var addTextButton:Button; // Makes the text overlay show, so the user can enter text for a free drawing
+		private var freeDrawToolsEndLine:Line;
+		// Add all the elements of the free draw tools to an array, so we can show/hide them easily
+		private var freeDrawTools:Array = [clearButton, addTextButton, freeDrawToolsEndLine];
 		
 		private var imageViewer:ImageViewer;
 		
@@ -59,15 +63,17 @@ package View.components.Annotation
 			freeDrawButton = IDGUI.makeToggleButton("Free Draw");
 			this.addElement(freeDrawButton);
 			
-			var optionsLine:Line = IDGUI.makeLine(0xBBBB00);
+			// Create the veritcal line, that sits after the 'free draw button'
+			var optionsLine:Line = IDGUI.makeLine(0xBBBB00)
 			this.addElement(optionsLine);
 			
 			// Create the clear non-saved annotations Button
-			clearButton = IDGUI.makeButton("Clear Drawings");
-			this.addElement(clearButton);
-			
-			addTextButton = IDGUI.makeButton("Add Text");
-			this.addElement(addTextButton);
+			this.addElement(clearButton = IDGUI.makeButton("Clear Drawings"));
+			// Create the add text button for pen annotations
+			this.addElement(addTextButton = IDGUI.makeButton("Add Text"));
+
+			// Add a new Free draw end line
+			this.addElement(freeDrawToolsEndLine = IDGUI.makeLine(0xBBBB00));
 			
 			// Since we are in Box mode by default, hide the extra tools
 			// That only come with free draw mode
@@ -127,8 +133,7 @@ package View.components.Annotation
 		private function saveButtonClicked(e:MouseEvent):void {
 			trace("Annotation Toolbar: Save Annotation Clicked");
 			this.hide();
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_SAVE_CLICKED, true);
-			this.dispatchEvent(myEvent);
+			imageViewer.saveAnnotation();
 		}
 		
 		/**
@@ -203,11 +208,14 @@ package View.components.Annotation
 		
 		/* =================== HELPER FUNCTIONS ============================= */
 		private function hideFreeDrawControls():void {
-			//clearButton.visible = false;
+
 			clearButton.includeInLayout = false;
 			clearButton.visible = false;
 			addTextButton.includeInLayout = false;
 			addTextButton.visible = false;
+			freeDrawToolsEndLine.includeInLayout = false;
+			freeDrawToolsEndLine.visible = false;
+			
 		}
 		
 		private function showFreeDrawControls():void {
@@ -216,6 +224,8 @@ package View.components.Annotation
 			clearButton.visible = true;
 			addTextButton.includeInLayout = true;
 			addTextButton.visible = true;
+			freeDrawToolsEndLine.includeInLayout = true;
+			freeDrawToolsEndLine.visible = true;
 		}
 	}
 }

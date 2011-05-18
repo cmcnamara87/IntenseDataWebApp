@@ -14,6 +14,7 @@ package View
 	import View.components.Comments.CommentsPanel;
 	import View.components.Comments.NewComment;
 	import View.components.EditDetails.EditDetailsPanel;
+	import View.components.IDGUI;
 	import View.components.MediaViewer.AudioViewer;
 	import View.components.MediaViewer.ImageViewer.ImageViewer;
 	import View.components.MediaViewer.MediaViewer;
@@ -95,12 +96,9 @@ package View
 			this.addElement(myToolbar);
 			
 			// Add a Back button
-			backButton = new Button();
-			backButton.label = 'Back';
+			myToolbar.addElement(backButton = IDGUI.makeButton("Back"));
 			// Disable the back button until the asset has loaded (solves some deallocing problems)
 			backButton.enabled = false;
-			backButton.percentHeight = 100;
-			myToolbar.addElement(backButton);
 			
 			// Create a heading for the toolbar
 			heading = new Label();
@@ -114,9 +112,7 @@ package View
 			
 			
 			// Add Add Annotation button
-			addAnnotationButton = new Button();
-			addAnnotationButton.percentHeight = 100;
-			addAnnotationButton.label = 'Add Annotation';
+			addAnnotationButton = IDGUI.makeButton("Add Annotation");
 			// Make the button invisible for now, we will only show it
 			// if its the 'image' media type (this is done when the media is loaded below
 			// TODO fix this when refactored
@@ -125,68 +121,48 @@ package View
 			myToolbar.addElement(addAnnotationButton);
 			
 			// Add Hide Annotations Button
-			hideShowAnnotationButton = new Button();
-			hideShowAnnotationButton.percentHeight = 100;
-			hideShowAnnotationButton.label = "Hide Annotations";
+			hideShowAnnotationButton = IDGUI.makeButton("Hide Annotations");
 			// Make it not visible, same as above
 			hideShowAnnotationButton.visible = false;
 			hideShowAnnotationButton.enabled = false;
 			myToolbar.addElement(hideShowAnnotationButton);
 			
-			var addAnnotationEditDetailsLine:Line = new Line();
-			addAnnotationEditDetailsLine.percentHeight = 100;
-			addAnnotationEditDetailsLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
+			var addAnnotationEditDetailsLine:Line = IDGUI.makeLine()
 			myToolbar.addElement(addAnnotationEditDetailsLine);
 			
-			deleteAssetButton = new Button();
-			deleteAssetButton.percentHeight = 100;
+			deleteAssetButton = IDGUI.makeButton("Delete File")
 			deleteAssetButton.enabled = false;
-			deleteAssetButton.label = 'Delete Asset';
 			myToolbar.addElement(deleteAssetButton);
 			
-			var deleteAddLine:Line = new Line();
-			deleteAddLine.percentHeight = 100;
-			deleteAddLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
+			var deleteAddLine:Line = IDGUI.makeLine();
 			myToolbar.addElement(deleteAddLine);
 			
 			// Add Edit Details button
-			editDetailsButton = new Button();
+			editDetailsButton = IDGUI.makeButton('Edit Details');
 			editDetailsButton.enabled = false;
-			editDetailsButton.percentHeight = 100;
-			editDetailsButton.label = 'Edit Details';
 			myToolbar.addElement(editDetailsButton);
 			
 			// Add Share buttons
-			shareButton = new Button();
+			shareButton = IDGUI.makeButton('Share');
 			shareButton.enabled = false;
-			shareButton.percentHeight = 100;
-			shareButton.label = 'Share';
 			myToolbar.addElement(shareButton);
 			
 			// Add annotations button
-			annotationListButton = new Button();
+			annotationListButton = IDGUI.makeButton('Annotation List');
 			annotationListButton.enabled = false;
-			annotationListButton.percentHeight = 100;
-			annotationListButton.label = 'Annotation List';
 			myToolbar.addElement(annotationListButton);
 			
 			// Add comments button
-			commentsButton = new Button();
+			commentsButton = IDGUI.makeButton('Comments');
 			commentsButton.enabled = false;
-			commentsButton.percentHeight = 100;
-			commentsButton.label = 'Comments';
 			myToolbar.addElement(commentsButton);
 			
 			
-			var downloadLine:Line = new Line();
-			downloadLine.percentHeight = 100;
-			downloadLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
+			var downloadLine:Line = IDGUI.makeLine();
 			myToolbar.addElement(downloadLine);
 			
-			downloadButton = new Button();
+			downloadButton = IDGUI.makeButton('Download');
 			downloadButton.enabled = false;
-			downloadButton.percentHeight = 100;
-			downloadButton.label = 'Download';
 			myToolbar.addElement(downloadButton);
 			
 			
@@ -301,6 +277,7 @@ package View
 		public function addComments(commentsArray:Array):void {
 			trace("Adding Comments...");
 			myCommentsPanel.addComments(commentsArray);
+			commentsButton.label = "Comments (" + commentsArray.length + ")";
 		}
 		
 		public function addAnnotations(annotationsArray:Array):void {

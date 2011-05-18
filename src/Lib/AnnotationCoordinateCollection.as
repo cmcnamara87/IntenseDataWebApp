@@ -33,6 +33,15 @@ package Lib
 			//<root><item><x1>160</x1><x2>160</x2><y1>147</y1><y2>149</y2></item><item><x1>160</x1><x2>160</x2><y1>149</y1><y2>156</y2></item>
 		}
 		
+		/**
+		 * Gets the number of coordinate pairs saved 
+		 * @return The number of coordinate pairs saved
+		 * 
+		 */		
+		public function getCount():Number {
+			return coordinateArray.length;
+		}
+		
 		private function objectToXML(obj:Object):XML 
 		{
 			var qName:QName = new QName("root");
