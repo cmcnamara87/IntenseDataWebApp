@@ -84,12 +84,8 @@ package View.components.AnnotationList
 			for(var i:Number = 0; i < annotationArray.length; i++) {
 				var annotationData:Model_Commentary = annotationArray[i] as Model_Commentary;
 
-				if(annotationData.annotation_type == Model_Commentary.ANNOTATION_BOX_TYPE_ID) {
-					// Lets make an annotation
-					content.addElement(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, annotationData.text));
-				} else {
-					content.addElement(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, "Free Drawing"));
-				}
+				content.addElement(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, annotationData.text));
+
 			}
 		}
 		
