@@ -3,6 +3,7 @@ package Controller {
 	import Controller.Utilities.AssetLookup;
 	
 	import Model.AppModel;
+	import Model.Model_Media;
 	
 	import View.NewAsset;
 	
@@ -112,6 +113,22 @@ package Controller {
 				// Get out the new assets ID
 				var assetID:Number = xml.reply.result.id;
 				AppModel.getInstance().setOwnerACL(xml.reply.result.id);
+				if(BrowserController.currentCollectionID != BrowserController.ALLASSETID &&
+					BrowserController.currentCollectionID != BrowserController.SHAREDID) {
+					var temp:Model_Media = new Model_Media();
+					temp.base_asset_id = xml.reply.result.id;
+					BrowserController.currentCollectionAssets.push(temp);
+					AppModel.getInstance().saveCollection(
+						BrowserController.currentCollectionID, 
+						BrowserController.currentCollectionTitle, 
+						BrowserController.currentCollectionAssets, 
+						function(id:Number):void {
+						trace("collection made", id);
+					});
+					trace("uploaded for", BrowserController.currentCollectionID);
+				} else {
+					trace("either all assets, or shared");
+				}
 			}
 			flash.utils.setTimeout(assetSaved,200);
 		}

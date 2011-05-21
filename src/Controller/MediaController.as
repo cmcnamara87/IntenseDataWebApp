@@ -46,7 +46,7 @@ package Controller {
 		// My variables
 		private var mediaView:MediaView;	// The current view we are looking at - The Media View
 		private static var currentAssetID:Number = 0;		// The ID of the media asset we are viewing.
-		
+		private var currentMediaData:Model_Media;
 		
 		//Calls the superclass, sets the AssetID
 		public function MediaController() {
@@ -139,7 +139,7 @@ package Controller {
 		 */		
 		private function deleteAsset(e:CloseEvent):void {
 			if (e.detail==Alert.OK) {
-				AppModel.getInstance().deleteAsset(currentAssetID);
+				AppModel.getInstance().deleteAsset(currentAssetID, currentMediaData.meta_username);
 			}
 		}
 		
@@ -180,7 +180,7 @@ package Controller {
 		private function sharingInfoChanged(e:RecensioEvent):void {
 			var username:String = e.data.username;
 			var access:String = e.data.access;
-			AppModel.getInstance().changeAccess(currentAssetID, username, "system", access, sharingInfoUpdated);
+			AppModel.getInstance().changeAccess(currentAssetID, username, "system", access, false, sharingInfoUpdated);
 		}
 		
 		
@@ -311,7 +311,7 @@ package Controller {
 			
 			var media:Model_Media = AppModel.getInstance().extractMedia(data);
 			
-//			trace("Media Data Loaded", media.meta_title);
+			this.currentMediaData = media;
 			
 			// Pass this data to the view.
 			mediaView.addMediaData(media);
@@ -359,12 +359,18 @@ package Controller {
 			// The annotation was saved
 			var annotationID:Number = dataXML.reply.result.id;
 			
+			// Copy the access from the parent media asset, to the annotation
+			// TODO race issue here, if  we exit the media, before the saving is done
+			AppModel.getInstance().copyAccess(currentAssetID, annotationID);
+			
 			// Set the class for this annotation to be Annotation
 			AppModel.getInstance().setAnnotationClassForID(annotationID);
 			
 			// So lets just get out all the annotations/comments again
 			// so we can update the display with the new annotation
 			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+			
+			
 		}
 		
 		public function annotationDeleted(e:Event):void {

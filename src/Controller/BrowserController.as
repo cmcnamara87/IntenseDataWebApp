@@ -28,7 +28,7 @@ package Controller {
 		private static var editOn:Boolean = false; // stores whether or not we are in edit mode (e.g editing a collection)
 		private static var shelfOn:Boolean = false; // stores whether the shelf is enabled
 		
-		private static var currentCollectionAssets:Array = new Array();// Stores all the assets that are in the current collection.
+		public static var currentCollectionAssets:Array = new Array();// Stores all the assets that are in the current collection.
 		private static var shelfAssets:Array = new Array(); 	// stores all the assets that are currently in the shelf
 															// is static so it is persistant when we go to view an asset etc
 		
@@ -456,7 +456,7 @@ package Controller {
 				trace("Sharing Updated Successfully", e.target.data);
 				trace("-------------------------");
 			} else {
-				Alert.show("Sharing Update Failed");
+				//Alert.show("Sharing Update Failed");
 				trace("Sharing Update Failed", e.target.data);
 			} 
 		}
@@ -826,7 +826,7 @@ package Controller {
 		private function sharingInfoChanged(e:RecensioEvent):void {
 			var username:String = e.data.username;
 			var access:String = e.data.access;
-			AppModel.getInstance().changeAccess(currentCollectionID, username, "system", access, sharingInfoUpdated);
+			AppModel.getInstance().changeAccess(currentCollectionID, username, "system", access, true, sharingInfoUpdated);
 		}
 		
 		

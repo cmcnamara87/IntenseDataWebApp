@@ -438,7 +438,11 @@ package View
 					trace("Updating User Profile");
 					myEvent = new RecensioEvent(RecensioEvent.USER_DETAILS_SAVED);
 					
-					myEvent.data.username = userListComboBox.selectedItem;
+					if(admin) {
+						myEvent.data.username = userListComboBox.selectedItem;
+					} else {
+						myEvent.data.username = Auth.getInstance().getUsername();
+					}
 					myEvent.data.meta_firstname = userDetailsView.meta_firstname.text;
 					myEvent.data.meta_initial = userDetailsView.meta_initial.text;
 					myEvent.data.meta_lastname = userDetailsView.meta_lastname.text;

@@ -4,7 +4,9 @@ package Model {
 	import Controller.Utilities.Auth;
 	
 	import Model.Transactions.Transaction_ChangePassword;
+	import Model.Transactions.Transaction_CopyAccess;
 	import Model.Transactions.Transaction_CreateUser;
+	import Model.Transactions.Transaction_DeleteMediaFromUser;
 	import Model.Transactions.Transaction_GetAccess;
 	import Model.Transactions.Transaction_GetCollections;
 	import Model.Transactions.Transaction_GetThisCollectionsMediaAssets;
@@ -261,7 +263,7 @@ package Model {
 			var transaction:Transaction_SetAccess = new Transaction_SetAccess(_connection,assetID,access,callback);
 		}
 		
-		public function changeAccess(collectionID:Number, username:String, domain:String, access:String, callback:Function=null):void {
+		public function changeAccess(collectionID:Number, username:String, domain:String, access:String, related:Boolean, callback:Function=null):void {
 			var args:Object = new Object();
 			
 			trace("Changing access on collection", collectionID);
@@ -471,6 +473,10 @@ package Model {
 			
 		}
 		
+		public function copyAccess(copyFromID:Number, copyToID:Number):void {
+			var transaction:Transaction_CopyAccess = new Transaction_CopyAccess(copyFromID, copyToID, _connection);
+		}
+		
 		// Saves an annotation
 		public function saveAnnotation(assetData:Object):void {
 			var args:Object = new Object();
@@ -578,7 +584,9 @@ package Model {
 			baseXML.service.args["id"] = id;
 			baseXML.service.args.appendChild(XML('<acl><actor type="user">system:'+Auth.getInstance().getUsername()+'</actor><access>read-write</access></acl>'));
 			
-			if(_connection.sendRequest(baseXML, null)) {
+			if(_connection.sendRequest(baseXML, function(e:Event):void {
+				trace("setting own for", id, "status", e.target.data);
+			})) {
 				trace("- Owner Set");
 			} else {
 				trace("- Failed to set owner");
@@ -651,15 +659,31 @@ package Model {
 			}
 		}
 		
-		// Deletes an asset
-		public function deleteAsset(assetID:Number):void {
+		/**
+		 * Removes access to an asset for a user (or deletes the asset, if only 1 pesron has asset, or if
+		 * the current user is the creator) 
+		 * @param assetID				The ID of the asset to delete
+		 * @param creator_username		The creator of the asset
+		 * 
+		 */		
+		public function deleteAsset(assetID:Number, creatorUsername:String):void {
+			var transaction:Transaction_DeleteMediaFromUser = new Transaction_DeleteMediaFromUser(
+				assetID,
+				creatorUsername,
+				_connection,
+				assetDeleted
+			);
+		}
+		
+		public function assetDestroy(assetID:Number, callback:Function):void {
+			trace("Destroying asset", assetID);
 			var args:Object = new Object();
 			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
 			baseXML.service.args["id"] = assetID;
-			if(_connection.sendRequest(baseXML,assetDeleted)) {
+			if(_connection.sendRequest(baseXML, callback)) {
 				//All good
 			} else {
-				Alert.show("Could not delete asset");
+				Alert.show("Could not destroy asset");
 			}
 		}
 		
@@ -719,7 +743,7 @@ package Model {
 		 * 
 		 */		
 		public function createCollection(collectionTitle:String, shelfAssets:Array, callback:Function):void {
-			
+			trace("Creating collection");
 			// Build up the collection object
 			var args:Object = new Object();
 			args.namespace = "recensio";
@@ -737,6 +761,7 @@ package Model {
 			
 			// Link the collection to all the assets on the shelf.
 			for(var i:Number = 0; i < shelfAssets.length; i++) {
+				trace("Including asset", (shelfAssets[i] as Model_Media).base_asset_id);
 				baseXML.service.args["related"].appendChild(XML('<to relationship="has_child">' + (shelfAssets[i] as Model_Media).base_asset_id + '</to>'));
 			}
 			

@@ -5,6 +5,13 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+
+			private var current_time:Date = new Date();
+			private var timeString:String = current_time.date + "/" + (current_time.getMonth()+1) + "/" + current_time.getFullYear();
+		]]>
+	</fx:Script>
 	<mx:Form id="myForm" defaultButton="{updateAssetInformation}">
 		<!-- Options Form -->
 		<mx:HBox>
@@ -16,7 +23,7 @@
 					<mx:TextInput id="meta_description"/>
 				</mx:FormItem>
 				<mx:FormItem label="Publish Date:" required="true">
-					<mx:DateField id="meta_datepublished" width="160"/>
+					<mx:DateField id="meta_datepublished" width="160" showToday="true" text="{timeString}"/>
 				</mx:FormItem>
 			</mx:Form>
 			<mx:Form>
