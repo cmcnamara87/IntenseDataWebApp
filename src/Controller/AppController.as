@@ -49,6 +49,8 @@ package Controller {
 					layout.header.profileButton.addEventListener(MouseEvent.MOUSE_UP,profileClicked);
 					
 					layout.header.notificationButton.addEventListener(MouseEvent.CLICK, showNotifications);
+					
+					layout.header.notificationButton.visible = showLogoutButton; 
 				}
 			}
 		}

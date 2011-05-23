@@ -31,17 +31,20 @@
 		<s:Button
 			id = "notificationButton"
 			height = "50%"
-			label= "Notifications">
+			label= "Notifications"
+			visible="false">
 		</s:Button>
 		<s:Button
 			id = "profileButton"
 			height = "50%"
-			label= "Profile">
+			label= "Profile"
+			visible="false">
 		</s:Button>
 		<s:Button
 			id = "logoutButton"
 			height = "50%"
-			label = "Logout">
+			label = "Logout"
+			visible="false">
 		</s:Button>
 		
 			
