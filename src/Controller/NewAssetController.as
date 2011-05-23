@@ -4,6 +4,7 @@ package Controller {
 	
 	import Model.AppModel;
 	import Model.Model_Media;
+	import Model.Transactions.Transaction_CopyAccess;
 	
 	import View.NewAsset;
 	
@@ -112,25 +113,42 @@ package Controller {
 				AppModel.getInstance().setMediaClass(e);
 				// Get out the new assets ID
 				var assetID:Number = xml.reply.result.id;
+				
+				// Set the Owner ACLs for the asset
 				AppModel.getInstance().setOwnerACL(xml.reply.result.id);
+				
+				// Add this new asset, to whatever the current collection is
+				// Provided its not All Assets or Shared Assets, since they are smart collections
+				// And assets appear in them authomatically.
 				if(BrowserController.currentCollectionID != BrowserController.ALLASSETID &&
 					BrowserController.currentCollectionID != BrowserController.SHAREDID) {
-					var temp:Model_Media = new Model_Media();
-					temp.base_asset_id = xml.reply.result.id;
-					BrowserController.currentCollectionAssets.push(temp);
+					
+					// Create a shell for the new asset
+					var newAsset:Model_Media = new Model_Media();
+					newAsset.base_asset_id = assetID;
+					// Add it to the current collections assets
+					BrowserController.currentCollectionAssets.push(newAsset);
+					trace("Adding new asset", assetID  ,"to collection", BrowserController.currentCollectionID,
+						BrowserController.currentCollectionTitle, "and saving"); 
 					AppModel.getInstance().saveCollection(
 						BrowserController.currentCollectionID, 
 						BrowserController.currentCollectionTitle, 
 						BrowserController.currentCollectionAssets, 
-						function(id:Number):void {
-						trace("collection made", id);
-					});
-					trace("uploaded for", BrowserController.currentCollectionID);
+						function(collectionID:Number):void {
+							trace("Collection Updated", collectionID);
+							// The asset has been saved
+							// Make sure this asset has the same ACLs as its parent collection
+							AppModel.getInstance().copyAccess(collectionID, assetID);
+							
+							// Display it to the user
+							assetSaved();
+						}
+					);
+					
 				} else {
-					trace("either all assets, or shared");
+					flash.utils.setTimeout(assetSaved,200);
 				}
 			}
-			flash.utils.setTimeout(assetSaved,200);
 		}
 		
 		// Called when the save media asset button is clicked
@@ -183,6 +201,8 @@ package Controller {
 		
 		// After the file is uploaded successfully, switches the view
 		public function assetSaved():void {
+			trace("- Asset Saved");
+			trace("*************************");
 			Dispatcher.call("browse");
 		}
 	}

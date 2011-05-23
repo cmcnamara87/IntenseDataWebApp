@@ -4,6 +4,7 @@ package View.components.AssetBrowser
 	import Controller.RecensioEvent;
 	
 	import View.BrowserView;
+	import View.components.IDGUI;
 	import View.components.Toolbar;
 	
 	import flash.events.Event;
@@ -36,6 +37,8 @@ package View.components.AssetBrowser
 		
 		private var searchEditLine:Line;				// Line between search and edit buttons
 		private var deleteShareLine:Line;				// Line between delete and share buttons
+		private var uploadNewAssetButton:Button;
+		private var uploadSearchLine:Line;
 		
 		private const PLACEHOLDERTEXT:String = "Search for Media";
 		/**
@@ -52,14 +55,16 @@ package View.components.AssetBrowser
 			// 2) the context senstive buttons (share, delete, comment etc)
 			
 			// Create Upload New Asset Button
-			var uploadNewAssetButton:Button = new Button();
-			uploadNewAssetButton.label = "Upload Asset";
-			uploadNewAssetButton.percentHeight = 100;
+			uploadNewAssetButton = IDGUI.makeButton("Upload Asset");
+//			uploadNewAssetButton.visible = false;
+//			uploadNewAssetButton.includeInLayout = false;
 			this.addElement(uploadNewAssetButton);				
 			
-			var uploadSearchLine:Line = new Line();
+			uploadSearchLine = new Line();
 			uploadSearchLine.percentHeight = 100;
 			uploadSearchLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
+//			uploadSearchLine.visible = false;
+//			uploadSearchLine.includeInLayout = false;
 			this.addElement(uploadSearchLine);
 			
 			// Add the search input;
@@ -160,6 +165,12 @@ package View.components.AssetBrowser
 		 * 
 		 */		
 		public function setToolbarToFixedCollectionMode():void {
+			
+//			uploadNewAssetButton.visible = false;
+//			uploadNewAssetButton.includeInLayout = false;
+//			uploadSearchLine.visible = false;
+//			uploadSearchLine.includeInLayout = false;
+			
 			if(this.contains(editButton)) {
 				this.removeElement(editButton);
 			}
@@ -172,6 +183,7 @@ package View.components.AssetBrowser
 			if(this.contains(commentsButton)) {
 				this.removeElement(commentsButton);
 			}
+
 			if(searchEditLine.parent) {
 				this.removeElement(searchEditLine);
 			}
@@ -196,6 +208,11 @@ package View.components.AssetBrowser
 			this.addElement(deleteShareLine);
 			this.addElement(shareButton);
 			this.addElement(commentsButton);
+			
+			uploadNewAssetButton.visible = true;
+			uploadNewAssetButton.includeInLayout = true;
+			uploadSearchLine.visible = true;
+			uploadSearchLine.includeInLayout = true;
 			
 		}
 		

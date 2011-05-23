@@ -699,7 +699,7 @@ package Model {
 			}
 		}
 		
-		// Deletes an annotation
+		// Deletes an annotatio
 		public function deleteAnnotation2(assetID:Number, callback:Function):void {
 			var args:Object = new Object();
 			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
@@ -730,7 +730,7 @@ package Model {
 		
 		// Debug callback for functions which do not have their own callback
 		private function debugCallback(e:Event):void {
-			trace(e.target.data);
+			trace("Returned Data", e.target.data);
 		}
 		
 		
@@ -1012,7 +1012,9 @@ package Model {
 			baseXML.service.args["meta"]["r_media"].@id = "4";
 			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
 			trace(baseXML);
-			if(_connection.uploadFile(data.file,baseXML,debugCallback)) {
+			if(_connection.uploadFile(data.file,baseXML, function(e:Event):void {
+				trace("Upload complete", e.target.data);
+			})) {
 				//All good
 			} else {
 				Alert.show("Could not save asset");
