@@ -4,6 +4,7 @@ package View.components.AssetBrowser
 	import Controller.RecensioEvent;
 	
 	import View.BrowserView;
+	import View.components.IDGUI;
 	import View.components.Toolbar;
 	
 	import flash.events.Event;
@@ -36,6 +37,8 @@ package View.components.AssetBrowser
 		
 		private var searchEditLine:Line;				// Line between search and edit buttons
 		private var deleteShareLine:Line;				// Line between delete and share buttons
+		private var uploadNewAssetButton:Button;
+		private var uploadSearchLine:Line;
 		
 		private const PLACEHOLDERTEXT:String = "Search for Media";
 		/**
@@ -52,12 +55,10 @@ package View.components.AssetBrowser
 			// 2) the context senstive buttons (share, delete, comment etc)
 			
 			// Create Upload New Asset Button
-			var uploadNewAssetButton:Button = new Button();
-			uploadNewAssetButton.label = "Upload Asset";
-			uploadNewAssetButton.percentHeight = 100;
+			uploadNewAssetButton = IDGUI.makeButton("Upload Asset");
 			this.addElement(uploadNewAssetButton);				
 			
-			var uploadSearchLine:Line = new Line();
+			uploadSearchLine = new Line();
 			uploadSearchLine.percentHeight = 100;
 			uploadSearchLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
 			this.addElement(uploadSearchLine);
@@ -91,39 +92,29 @@ package View.components.AssetBrowser
 //			this.addElement(shelfButton);
 			
 			// Add a line to separate the search button and the edit button
-			searchEditLine = new Line();
-			searchEditLine.percentHeight = 100;
-			searchEditLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
-			
+			searchEditLine = IDGUI.makeLine(0xBBBBBB, false, false);
+			this.addElement(searchEditLine);
 			
 			// Add the Edit Button
-			editButton = new ToggleButton();
-			editButton.label = "Edit Collection";
-			editButton.selected = false;
-			editButton.percentHeight = 100;
+			editButton = IDGUI.makeToggleButton('Edit Collection', false, false, false);
+			this.addElement(editButton);
 			
 			// Add the Delete
-			deleteButton = new Button();
-			deleteButton.label = "Delete Collection";
-			deleteButton.percentHeight = 100;
+			deleteButton = IDGUI.makeButton('Delete Collection', false, false);
+			this.addElement(deleteButton);
 			
 			// Add a line to separate the delete and share button
-			deleteShareLine = new Line();
-			deleteShareLine.percentHeight = 100;
-			deleteShareLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
+			deleteShareLine = IDGUI.makeLine(0xBBBBBB, false, false);
+			this.addElement(deleteShareLine);
 			
 			// Add the Share Button
-			shareButton = new Button();
-			shareButton.label = "Share Collection";
-			shareButton.percentHeight = 100;
+			shareButton = IDGUI.makeButton('Share Collection', false, false);
+			this.addElement(shareButton);
 			
 			// Add the Comments
-			commentsButton = new Button();
-			commentsButton.label = "Comments (0)";
-			commentsButton.percentHeight = 100;
-			
-			
-			
+			commentsButton = IDGUI.makeButton('Comments (0)', false, false);
+			this.addElement(commentsButton);
+
 			/* ============== ADD EVENT LISTENERS ============== */
 			
 			// Listen for Shelf Button CLick
@@ -160,24 +151,29 @@ package View.components.AssetBrowser
 		 * 
 		 */		
 		public function setToolbarToFixedCollectionMode():void {
-			if(this.contains(editButton)) {
-				this.removeElement(editButton);
-			}
-			if(this.contains(deleteButton)) {
-				this.removeElement(deleteButton);
-			}
-			if(this.contains(shareButton)) {
-				this.removeElement(shareButton);
-			}
-			if(this.contains(commentsButton)) {
-				this.removeElement(commentsButton);
-			}
-			if(searchEditLine.parent) {
-				this.removeElement(searchEditLine);
-			}
-			if(deleteShareLine.parent) {
-				this.removeElement(deleteShareLine);
-			}
+			
+//			uploadNewAssetButton.visible = false;
+//			uploadNewAssetButton.includeInLayout = false;
+//			uploadSearchLine.visible = false;
+//			uploadSearchLine.includeInLayout = false;
+			
+			searchEditLine.visible = false;
+			searchEditLine.includeInLayout = false;
+			
+			editButton.visible = false;
+			editButton.includeInLayout = false;
+			
+			deleteButton.visible = false;
+			deleteButton.includeInLayout = false;
+			
+			deleteShareLine.visible = false;
+			deleteShareLine.includeInLayout = false;
+			
+			shareButton.visible = false;
+			shareButton.includeInLayout = false;
+			
+			commentsButton.visible = false;
+			commentsButton.includeInLayout = false;
 		}
 		
 		public function unsetEditButton():void {
@@ -189,13 +185,58 @@ package View.components.AssetBrowser
 		 * Shows all buttons on the toolbar. Used for regular collections. 
 		 * 
 		 */		
-		public function setToolbarToRegularCollectionMode():void {
-			this.addElement(searchEditLine);
-			this.addElement(editButton);
-			this.addElement(deleteButton);
-			this.addElement(deleteShareLine);
-			this.addElement(shareButton);
-			this.addElement(commentsButton);
+		public function setToolbarToRegularCollectionMode(modifyAccess:Boolean):void {
+			trace("Setting toolbar to regular collection mode, access type", modifyAccess);
+			if(modifyAccess) {
+				uploadNewAssetButton.visible = true;
+				uploadNewAssetButton.includeInLayout = true;
+				
+				uploadSearchLine.visible = true;
+				uploadSearchLine.includeInLayout = true;
+				
+				searchEditLine.visible = true;
+				searchEditLine.includeInLayout = true;
+				
+				editButton.visible = true;
+				editButton.includeInLayout = true;
+				
+				deleteButton.visible = true;
+				deleteButton.includeInLayout = true;
+				
+				deleteShareLine.visible = true;
+				deleteShareLine.includeInLayout = true;
+				
+				shareButton.visible = true;
+				shareButton.includeInLayout = true;
+				
+				commentsButton.visible = true;
+				commentsButton.includeInLayout = true;
+			} else {
+				uploadNewAssetButton.visible = false;
+				uploadNewAssetButton.includeInLayout = false;
+				
+				uploadSearchLine.visible = false;
+				uploadSearchLine.includeInLayout = false;
+				
+				searchEditLine.visible = false;
+				searchEditLine.includeInLayout = false;
+				
+				editButton.visible = false;
+				editButton.includeInLayout = false;
+				
+				deleteButton.visible = false;
+				deleteButton.includeInLayout = false;
+				
+				deleteShareLine.visible = false;
+				deleteShareLine.includeInLayout = false;
+				
+				shareButton.visible = false;
+				shareButton.includeInLayout = false;
+				
+				commentsButton.visible = false;
+				commentsButton.includeInLayout = false;
+			}
+
 			
 		}
 		

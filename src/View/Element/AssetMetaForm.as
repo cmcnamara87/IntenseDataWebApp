@@ -63,21 +63,21 @@ package View.Element {
 			this.graphics.clear();
 			this.graphics.lineStyle(1,0xCCCCCC);
 			this.graphics.beginFill(0xEEEEEE,1);
-			this.graphics.drawRoundRect(0,0,this.width,150,16);
+			this.graphics.drawRoundRect(0,0,this.width,150, 0);//,16);
 		}
 		
 		// Checks whether valid information has been entered into the form (required fields only)
 		public function validate():Boolean {
 			if(
-				optionsArea.meta_title.text != "" && 
-				optionsArea.meta_description.text != "" && 
-				optionsArea.meta_datepublished.text != "" && 
-				optionsArea.meta_subject.text != "" && 
-				optionsArea.meta_keywords.text != "" && 
-				optionsArea.meta_othercontrib.text != "" && 
-				optionsArea.meta_sponsorfunder.text != "" && 
-				optionsArea.meta_creativeworktype.selectedItem != "" && 
-				optionsArea.meta_creativeworksubtype.selectedItem != "" 
+				optionsArea.meta_title.text != "" //&& 
+//				optionsArea.meta_description.text != "" && 
+//				optionsArea.meta_datepublished.text != "" && 
+//				optionsArea.meta_subject.text != "" && 
+//				optionsArea.meta_keywords.text != "" && 
+//				optionsArea.meta_othercontrib.text != "" && 
+//				optionsArea.meta_sponsorfunder.text != "" && 
+//				optionsArea.meta_creativeworktype.selectedItem != "" && 
+//				optionsArea.meta_creativeworksubtype.selectedItem != "" 
 			) {
 				return true;
 			} else {

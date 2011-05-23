@@ -39,7 +39,7 @@ package View.Element {
 				this.graphics.lineStyle(1,0xCCCCCC);
 			}
 			this.graphics.beginFill(0xEEEEEE,1);
-			this.graphics.drawRoundRect(0,0,this.width,160,16);
+			this.graphics.drawRoundRect(0,0,this.width,160,0);//16);
 		}
 		
 		// Sets the progress of the upload

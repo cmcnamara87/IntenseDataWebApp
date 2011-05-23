@@ -4,7 +4,9 @@ package Model {
 	import Controller.Utilities.Auth;
 	
 	import Model.Transactions.Transaction_ChangePassword;
+	import Model.Transactions.Transaction_CopyAccess;
 	import Model.Transactions.Transaction_CreateUser;
+	import Model.Transactions.Transaction_DeleteMediaFromUser;
 	import Model.Transactions.Transaction_GetAccess;
 	import Model.Transactions.Transaction_GetCollections;
 	import Model.Transactions.Transaction_GetThisCollectionsMediaAssets;
@@ -99,6 +101,11 @@ package Model {
 			var args:Object = new Object();
 			//args.where = "namespace = recensio and r_base/active=true and class>='recensio:base/resource/collection' and xpath(mf-revision-history/user/name)='"+Auth.getInstance().getUsername()+"'";
 			args.where = "namespace = recensio and r_base/active=true and class>='recensio:base/resource/collection'";
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
+			
 			args.action = "get-meta";
 			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
 				//All good
@@ -116,6 +123,10 @@ package Model {
 			trace("Getting all media assets");
 			var args:Object = new Object();
 			args.where = "namespace = recensio and r_base/active = true and class >= 'recensio:base/resource/media'";
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
 			
 			// Dont just get the media assets data, get out all the data for all of its children
 			// that is, all the comments/annotations on all the assets
@@ -139,6 +150,11 @@ package Model {
 			var args:Object = new Object();
 			args.where = "namespace = recensio and r_base/active=true and " +
 				"class >= 'recensio:base/resource/media' and xpath(mf-revision-history/user/name)!='"+Auth.getInstance().getUsername()+"'";
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
+			
 			args.action = "get-meta";
 			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
 				//All good
@@ -170,6 +186,11 @@ package Model {
 			
 			args.where = "namespace = recensio and r_base/active = true and class >= 'recensio:base/resource/annotation' " +
 				"and related to{is_child} (id="+assetID+")";
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
+			
 			args.action = "get-meta";
 			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
 				//All good
@@ -200,6 +221,11 @@ package Model {
 			var args:Object = new Object();
 			args.where = "namespace = recensio and r_base/active=true and class>='recensio:base/resource/media' and id="+assetID;
 			args.action = "get-meta";
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
+			
 			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
 				//All good
 			} else {
@@ -218,6 +244,10 @@ package Model {
 			
 			// Get out all the assets that are a child of this collection
 			args.where = "namespace = recensio and r_base/active=true and id =  " + assetID;
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
 			
 			// Get out the meta data for these assets
 			args.action = "get-meta";	
@@ -245,6 +275,10 @@ package Model {
 			var args:Object = new Object();
 			args.where = "namespace = recensio and r_base/active=true and class>='recensio:base/resource/annotation' and related to{is_child} (id="+assetID+")";
 			args.action = "get-meta";
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
+			
 			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
 				//All good
 			} else {
@@ -484,6 +518,10 @@ package Model {
 			
 		}
 		
+		public function copyAccess(copyFromID:Number, copyToID:Number):void {
+			var transaction:Transaction_CopyAccess = new Transaction_CopyAccess(copyFromID, copyToID, _connection);
+		}
+		
 		// Saves an annotation
 		public function saveAnnotation(assetData:Object):void {
 			var args:Object = new Object();
@@ -540,14 +578,14 @@ package Model {
 		 * @param annotationID	the ID of the annotation to set
 		 * 
 		 */		
-		public function setAnnotationClassForID(annotationID:Number):void {
+		public function setAnnotationClassForID(annotationID:Number, callback:Function = null):void {
 			trace("- App Model: Setting Annotation Class");
 			var args:Object = new Object();
 			var baseXML:XML = _connection.packageRequest('asset.class.add',args,true);
 			baseXML.service.args["scheme"] = "recensio";
 			baseXML.service.args["class"] = "base/resource/annotation";
 			baseXML.service.args["id"] = annotationID;
-			_connection.sendRequest(baseXML,null);
+			_connection.sendRequest(baseXML, callback);
 		}
 		
 		// Sets a saved asset to have the correct class
@@ -588,11 +626,12 @@ package Model {
 			var args:Object = new Object();
 			// Create the request
 			var baseXML:XML = _connection.packageRequest('asset.acl.grant', args, true);
-			baseXML.service.args.id = id;
-			baseXML.service.args.acl
+			baseXML.service.args["id"] = id;
 			baseXML.service.args.appendChild(XML('<acl><actor type="user">system:'+Auth.getInstance().getUsername()+'</actor><access>read-write</access></acl>'));
 			
-			if(_connection.sendRequest(baseXML, null)) {
+			if(_connection.sendRequest(baseXML, function(e:Event):void {
+				trace("setting own for", id, "status", e.target.data);
+			})) {
 				trace("- Owner Set");
 			} else {
 				trace("- Failed to set owner");
@@ -665,15 +704,31 @@ package Model {
 			}
 		}
 		
-		// Deletes an asset
-		public function deleteAsset(assetID:Number):void {
+		/**
+		 * Removes access to an asset for a user (or deletes the asset, if only 1 pesron has asset, or if
+		 * the current user is the creator) 
+		 * @param assetID				The ID of the asset to delete
+		 * @param creator_username		The creator of the asset
+		 * 
+		 */		
+		public function deleteAsset(assetID:Number, creatorUsername:String):void {
+			var transaction:Transaction_DeleteMediaFromUser = new Transaction_DeleteMediaFromUser(
+				assetID,
+				creatorUsername,
+				_connection,
+				assetDeleted
+			);
+		}
+		
+		public function assetDestroy(assetID:Number, callback:Function):void {
+			trace("Destroying asset", assetID);
 			var args:Object = new Object();
 			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
 			baseXML.service.args["id"] = assetID;
-			if(_connection.sendRequest(baseXML,assetDeleted)) {
+			if(_connection.sendRequest(baseXML, callback)) {
 				//All good
 			} else {
-				Alert.show("Could not delete asset");
+				Alert.show("Could not destroy asset");
 			}
 		}
 		
@@ -720,7 +775,7 @@ package Model {
 		
 		// Debug callback for functions which do not have their own callback
 		private function debugCallback(e:Event):void {
-			trace(e.target.data);
+			trace("Returned Data", e.target.data);
 		}
 		
 		
@@ -733,7 +788,7 @@ package Model {
 		 * 
 		 */		
 		public function createCollection(collectionTitle:String, shelfAssets:Array, callback:Function):void {
-			
+			trace("Creating collection");
 			// Build up the collection object
 			var args:Object = new Object();
 			args.namespace = "recensio";
@@ -751,6 +806,7 @@ package Model {
 			
 			// Link the collection to all the assets on the shelf.
 			for(var i:Number = 0; i < shelfAssets.length; i++) {
+				trace("Including asset", (shelfAssets[i] as Model_Media).base_asset_id);
 				baseXML.service.args["related"].appendChild(XML('<to relationship="has_child">' + (shelfAssets[i] as Model_Media).base_asset_id + '</to>'));
 			}
 			
@@ -975,33 +1031,65 @@ package Model {
 		
 		// Uploads and saves a new media asset
 		public function startFileUpload(data:Object):void {
-			var useID:Boolean = true;
+//			var useID:Boolean = true;
 			var args:Object = new Object();
 			args.namespace = "recensio";
-			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
-			if(useID) {
-				baseXML = _connection.packageRequest('id.asset.create',args,true);
-			}
+//			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
+//			if(useID) {
+				var baseXML:XML = _connection.packageRequest('id.asset.create',args,true);
+//			}
 			baseXML.service.args["meta"]["r_base"].@id = "2";
 			baseXML.service.args["meta"]["r_base"]["obtype"] = "7";
 			baseXML.service.args["meta"]["r_base"]["active"] = "true";
-			baseXML.service.args["meta"]["r_base"]["properties"] = "";
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Subject">'+data.meta_subject+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+data.meta_keywords+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+data.meta_datepublished+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+data.meta_othercontrib+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+data.meta_sponsorfunder+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+data.meta_creativeworksubtype+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+data.meta_creativeworktype+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="AuthorCreator">'+data.meta_BLBK+'</property>'));
+			
+			if(data.meta_subjects != "" ||
+				data.meta_keywords != "" ||
+				data.meta_datepublished != "" ||
+				data.meta_othercontrib != "" ||
+				data.meta_sponsorfunder != "" ||
+				data.meta_creativeworksubtype != "" ||
+				data.meta_creativeworktype != "" ||
+				data.meta_BLBK != "") {
+				
+				baseXML.service.args["meta"]["r_base"]["properties"] = "";
+				
+			}
+			if(data.meta_subject != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Subject">'+data.meta_subject+'</property>'));
+			}
+			if(data.meta_keywords != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+data.meta_keywords+'</property>'));
+			}
+			if(data.meta_datepublished != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+data.meta_datepublished+'</property>'));
+			}
+			if(data.meta_othercontrib != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+data.meta_othercontrib+'</property>'));
+			}
+			if(data.meta_sponsorfunder != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+data.meta_sponsorfunder+'</property>'));
+			}
+			if(data.meta_creativeworksubtype != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+data.meta_creativeworksubtype+'</property>'));
+			}
+			if(data.meta_creativeworktype != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+data.meta_creativeworktype+'</property>'));
+			}
+			if(data.meta_BLBK != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="AuthorCreator">'+data.meta_BLBK+'</property>'));
+			}
 			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
 			baseXML.service.args["meta"]["r_resource"].@id = "3";
 			baseXML.service.args["meta"]["r_resource"]["title"] = data.meta_title;
-			baseXML.service.args["meta"]["r_resource"]["description"] = data.meta_description;
+			if(data.meta_description) {
+				baseXML.service.args["meta"]["r_resource"]["description"] = data.meta_description;
+			}
 			baseXML.service.args["meta"]["r_media"].@id = "4";
 			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
 			trace(baseXML);
-			if(_connection.uploadFile(data.file,baseXML,debugCallback)) {
+			if(_connection.uploadFile(data.file,baseXML, function(e:Event):void {
+				trace("Upload complete", e.target.data);
+			})) {
 				//All good
 			} else {
 				Alert.show("Could not save asset");

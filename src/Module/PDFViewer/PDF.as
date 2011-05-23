@@ -1,5 +1,7 @@
 package Module.PDFViewer {
 	
+	import Controller.Dispatcher;
+	
 	import Lib.it.transitions.Tweener;
 	
 	import flash.display.Loader;
@@ -197,12 +199,13 @@ package Module.PDFViewer {
 			SWFData = new URLLoader();
 			SWFData.dataFormat = URLLoaderDataFormat.BINARY;
 			SWFData.addEventListener(Event.COMPLETE,loadComplete);
-			SWFData.addEventListener(IOErrorEvent.IO_ERROR,ioerror);
+			SWFData.addEventListener(IOErrorEvent.IO_ERROR, ioerror);
 			SWFData.load(new URLRequest(this.swfURL));
 		}
 		
 		private function ioerror(e:IOErrorEvent):void {
-			
+			Alert.show("This PDF is still being transcoded so we can display it. It will become available shortly.");
+			Dispatcher.call('browse');
 		}
 		
 		private function loadComplete(e:Event):void {

@@ -89,7 +89,7 @@ package Model.Transactions {
 		private function relationshipDeleted(e:Event):void {
 			existingAssets--;
 			if(existingAssets == 0) {
-				trace("- All existing relationships removed");
+				trace("- All existing relationships removed", e.target.data);
 				createNewRelationships();
 			}
 		}
@@ -113,6 +113,7 @@ package Model.Transactions {
 				baseXML.service.args["related"] = "";
 			}
 			for each (var mediaAsset:Model_Media in mediaAssets) {
+				trace("- Adding relationship to:", mediaAsset.base_asset_id);
 				baseXML.service.args["related"].appendChild(XML('<to relationship="has_child">' + mediaAsset.base_asset_id + '</to>'));
 			}
 			if(_connection.sendRequest(baseXML,relationshipsAdded)) {
@@ -124,7 +125,7 @@ package Model.Transactions {
 		
 		// Returns the information back to the controller which called it
 		private function relationshipsAdded(e:Event):void {
-			trace("- Relationships Added");
+			trace("- Relationships Added", e.target.data);
 			_callback(collectionID);
 		}
 		

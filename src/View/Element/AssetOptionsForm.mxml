@@ -5,6 +5,13 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+
+			private var current_time:Date = new Date();
+			private var timeString:String = (current_time.getMonth()+1) + "/" + current_time.date + "/" + current_time.getFullYear();
+		]]>
+	</fx:Script>
 	<mx:Form id="myForm" defaultButton="{updateAssetInformation}">
 		<!-- Options Form -->
 		<mx:HBox>
@@ -12,32 +19,32 @@
 				<mx:FormItem label="Title:" required="true">
 					<mx:TextInput id="meta_title"/>
 				</mx:FormItem>
-				<mx:FormItem label="Description:" required="true">
+				<mx:FormItem label="Description:" >
 					<mx:TextInput id="meta_description"/>
 				</mx:FormItem>
-				<mx:FormItem label="Publish Date:" required="true">
-					<mx:DateField id="meta_datepublished" width="160"/>
+				<mx:FormItem label="Publish Date:" >
+					<mx:DateField id="meta_datepublished" width="160" showToday="true" text="{timeString}"/>
 				</mx:FormItem>
 			</mx:Form>
 			<mx:Form>
-				<mx:FormItem label="Subject:" required="true">
+				<mx:FormItem label="Subject:" >
 					<mx:TextInput id="meta_subject"/>
 				</mx:FormItem>
-				<mx:FormItem label="Keywords:" required="true">
+				<mx:FormItem label="Keywords:" >
 					<mx:TextInput id="meta_keywords"/>
 				</mx:FormItem>
-				<mx:FormItem label="Contributers:" required="true">
+				<mx:FormItem label="Contributers:" >
 					<mx:TextInput id="meta_othercontrib"/>
 				</mx:FormItem>
 			</mx:Form>
 			<mx:Form>
-				<mx:FormItem label="Sponsors/Funders:" required="true">
+				<mx:FormItem label="Sponsors/Funders:" >
 					<mx:TextInput id="meta_sponsorfunder"/>
 				</mx:FormItem>
-				<mx:FormItem label="Creative Work Type:" required="true">
+				<mx:FormItem label="Creative Work Type:" >
 					<s:DropDownList id="meta_creativeworktype" width="160"></s:DropDownList>
 				</mx:FormItem>
-				<mx:FormItem label="Creative Work Subtype:" required="true">
+				<mx:FormItem label="Creative Work Subtype:" >
 					<s:DropDownList id="meta_creativeworksubtype" width="160"></s:DropDownList>
 				</mx:FormItem>
 				<mx:FormItem>

@@ -140,6 +140,7 @@ package Controller {
 		private function deleteAsset(e:CloseEvent):void {
 			if (e.detail==Alert.OK) {
 				AppModel.getInstance().deleteAsset(currentAssetID);
+				AppModel.getInstance().deleteAsset(currentAssetID, currentMediaData.meta_username);
 			}
 		}
 		
@@ -312,6 +313,7 @@ package Controller {
 			var media:Model_Media = AppModel.getInstance().extractMedia(data);
 			
 //			trace("Media Data Loaded", media.meta_title);
+			this.currentMediaData = media;
 			
 			// Pass this data to the view.
 			mediaView.addMediaData(media);
@@ -361,11 +363,9 @@ package Controller {
 			var annotationID:Number = dataXML.reply.result.id;
 			
 			// Set the class for this annotation to be Annotation
-			AppModel.getInstance().setAnnotationClassForID(annotationID);
 			
 			// So lets just get out all the annotations/comments again
 			// so we can update the display with the new annotation
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
 		}
 		
 		public function annotationDeleted(e:Event):void {

@@ -19,6 +19,8 @@ package Model.Transactions
 		private var commentText:String;
 		private var replyingToID:Number; // The comment we are replying to, 0 if not a reply.
 		private var _connection:Connection;
+		private var commentID:Number; // The ID of the comment after it has been saved
+		private var commentParentID:Number; // The ID of the asset we are commenting on.
 		
 		public function Transaction_SaveNewComment(_connection:Connection, commentText:String, commentParentID:Number, replyingToID:Number,
 												   newCommentObject:NewComment, callback:Function):void
@@ -29,6 +31,7 @@ package Model.Transactions
 			this.replyingToID = replyingToID;
 			this.commentText = commentText;
 			this._connection = _connection;
+			this.commentParentID = commentParentID;
 			// Save the comment
 			saveComment(commentText, commentParentID);
 				
@@ -97,8 +100,11 @@ package Model.Transactions
 		 */		
 		private function setCommentClassifaction(e:Event):void {
 			var dataXML:XML = XML(e.target.data);
-			var commentID:Number = dataXML.reply.result.id;
+			this.commentID = dataXML.reply.result.id;
 
+			// Copy the ACLs from the parent asset, to the comment
+			var transaction:Transaction_CopyAccess = new Transaction_CopyAccess(commentParentID, commentID, _connection);
+			
 			// Add the 'Annotation' Classification to the comment asset
 			var args:Object = new Object();
 			var baseXML:XML = _connection.packageRequest('asset.class.add',args,true);

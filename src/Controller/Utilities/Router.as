@@ -40,11 +40,6 @@ package Controller.Utilities {
 				classname:NewAssetController
 			},
 			{
-				url: 'view_old',
-				title: 'View Media Asset',
-				classname:AssetViewMediaController
-			},
-			{
 				url: 'profile',
 				title: 'Edit Profile',
 				classname:ProfileController

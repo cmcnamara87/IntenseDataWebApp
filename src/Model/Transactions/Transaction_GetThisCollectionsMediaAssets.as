@@ -32,6 +32,10 @@ package Model.Transactions
 			args.where = "namespace = recensio and r_base/active=true and class >= 'recensio:base/resource/media'" +
 				" and related to{is_child} (id =  " + collectionID + ")";
 			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
+			
 			// Get out the meta data for these assets
 			args.action = "get-meta";	
 			

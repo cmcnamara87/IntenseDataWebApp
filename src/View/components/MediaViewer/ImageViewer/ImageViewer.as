@@ -918,8 +918,7 @@ package View.components.MediaViewer.ImageViewer
 					image.width = image.contentWidth * scalePercent;
 					image.height = image.contentHeight * scalePercent;
 					resizeSlider.value = scalePercent * 100;
-				} else 
-					if (widthOutOfBounds < 0 && heightOutOfBounds < 0) {
+				} else if (widthOutOfBounds < 0 && heightOutOfBounds < 0) {
 					if(widthOutOfBounds < heightOutOfBounds) {
 						trace("width out of bounds more");
 						// This means the width is more out of bounds, so we can scale it by the width

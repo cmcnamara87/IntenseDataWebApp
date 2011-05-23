@@ -67,10 +67,11 @@ package Controller.Utilities {
 		private static var imagesSetup:Boolean = false;
 		
 		//File formats that can be uploaded
-		private static var imageFilters:FileFilter = new FileFilter("Images","*.jpg;*.gif;*.png;*.jpeg");
-		private static var videoFilters:FileFilter = new FileFilter("Video","*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;");
-		private static var audioFilters:FileFilter = new FileFilter("Audio","*.mp3;*.wma;*.wav");
-		private static var documentFilters:FileFilter = new FileFilter("Document","*.pdf;*.swf");
+		private static var allFilters:FileFilter = new FileFilter("All Accepted File Types", "*.jpg;*.gif;*.png;*.jpeg;*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;*.mp3;*.wma;*.wavDocument;*.pdf;*.swf;");
+		private static var imageFilters:FileFilter = new FileFilter("Images (jpg, gif, png, jpeg)","*.jpg;*.gif;*.png;*.jpeg");
+		private static var videoFilters:FileFilter = new FileFilter("Video (mov, flv, mp4, avi, mpg, mpeg)","*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;");
+		private static var audioFilters:FileFilter = new FileFilter("Audio (mp3, wma, wav)","*.mp3;*.wma;*.wav");
+		private static var documentFilters:FileFilter = new FileFilter("Document (pdf, swf)","*.pdf;*.swf");
 		
 		//Types of creative work types and subtypes
 		public static var creativeworktypeLookup:ArrayCollection = new ArrayCollection(
@@ -236,7 +237,7 @@ package Controller.Utilities {
 		
 		//Returns all acceptable file types for uploading
 		public static function getFileTypes():Array {
-			var fileTypes:Array = new Array(imageFilters,videoFilters,audioFilters,documentFilters);
+			var fileTypes:Array = new Array(allFilters, imageFilters, videoFilters, audioFilters, documentFilters);
 			return fileTypes;
 		}
 		
