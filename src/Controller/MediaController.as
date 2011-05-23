@@ -47,6 +47,7 @@ package Controller {
 		private var mediaView:MediaView;	// The current view we are looking at - The Media View
 		private static var currentAssetID:Number = 0;		// The ID of the media asset we are viewing.
 		
+		private var currentMediaData:Model_Media;
 		
 		//Calls the superclass, sets the AssetID
 		public function MediaController() {
@@ -139,7 +140,6 @@ package Controller {
 		 */		
 		private function deleteAsset(e:CloseEvent):void {
 			if (e.detail==Alert.OK) {
-				AppModel.getInstance().deleteAsset(currentAssetID);
 				AppModel.getInstance().deleteAsset(currentAssetID, currentMediaData.meta_username);
 			}
 		}
