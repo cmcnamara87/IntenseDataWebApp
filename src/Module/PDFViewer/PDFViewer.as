@@ -77,44 +77,44 @@ package Module.PDFViewer {
 			
 			//annotationSave();
 			//annotationSave();
+			
 			addEventListener(FlexEvent.INITIALIZE, initializeHandler);
-		    
-
 		}
 		
 		
 		
 		override public function load(pdfurl:String):void {
+			// Save the PDF URL
 			_pdfurl = pdfurl;
-			trace("pdf url", pdfurl);
-			//_pdfurl = "http://recensio.dyndns.org/blah.swf";
 			
+			trace("pdf url", pdfurl);
+			
+			// Load the PDF
 			loadPDF();
 			
 		}
 		
 		public  function loadPDF():void {
 			
-			// Generate a new swf from a pdf maybe?? (craig)
-			thePDF = new PDF(this._pdfurl,this,getStyle("selectionColor"),getStyle("selectionAccuracy"));
+			// Make a new PDF from a SWF file
+			thePDF = new PDF(this._pdfurl, this, getStyle("selectionColor"), getStyle("selectionAccuracy"));
+			
+			// The PDF scroll area
 			scrollingContainer = new PDFScrollArea(thePDF,this.width - getStyle("borderThickness")*2-sideAnnotationWidth,this.height - getStyle("toolbarHeight") - getStyle("borderThickness")*2,15,'y',true,0.95,false,false,true,scrollColours);
-			TheStage.addChild(scrollingContainer);
+			// How far down the position the scrolling container
 			scrollingContainer.y = topOffset;
+			// Add it
+			TheStage.addChild(scrollingContainer);
+			
+			// The sidebar that contains the annotation bubbles
 			sideAnnotationsSprite = new PDFSideAnnotationContainer(this);
 			TheStage.addChild(sideAnnotationsSprite);
+			
+			// Listen for progress event from the pdf? i dont know what that is
 			thePDF.addEventListener(ProgressEvent.PROGRESS, onProgressEvent );
-			
-			
 		}
 		
-		
 		//.cs.jvm
-		
-		
-		
-		
-		
-		
 		
 		override protected function measure():void {
             super.measure();
@@ -134,6 +134,7 @@ package Module.PDFViewer {
 					(annotations[i] as Model_Commentary).annotation_end
 				);
 			}
+			
 			if(thePDF.PDFLoaded) {
 				// If we have added some annotations,
 				// add them to the display
