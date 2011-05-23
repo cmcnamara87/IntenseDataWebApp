@@ -47,10 +47,10 @@ package View.Element {
 			if(_chosenFile) {
 				this.graphics.lineStyle(1,0x999999);
 				this.graphics.beginFill(0xFFFFFF,1);
-				imgWidth = 60;
-				imgHeight = 60;
-				uploadAreaIcon.x = 30;
-				uploadAreaIcon.y = 30;
+				imgWidth = 112;//60;
+				imgHeight = 112;//60;
+				uploadAreaIcon.x = 4;//30;
+				uploadAreaIcon.y = 4;//30;
 			} else {
 				if(mouseOverState) {
 					this.graphics.beginFill(0x336699,1);

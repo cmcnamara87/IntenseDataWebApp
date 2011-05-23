@@ -1018,29 +1018,59 @@ package Model {
 		
 		// Uploads and saves a new media asset
 		public function startFileUpload(data:Object):void {
-			var useID:Boolean = true;
+//			var useID:Boolean = true;
 			var args:Object = new Object();
 			args.namespace = "recensio";
-			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
-			if(useID) {
-				baseXML = _connection.packageRequest('id.asset.create',args,true);
-			}
+//			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
+//			if(useID) {
+				var baseXML:XML = _connection.packageRequest('id.asset.create',args,true);
+//			}
 			baseXML.service.args["meta"]["r_base"].@id = "2";
 			baseXML.service.args["meta"]["r_base"]["obtype"] = "7";
 			baseXML.service.args["meta"]["r_base"]["active"] = "true";
-			baseXML.service.args["meta"]["r_base"]["properties"] = "";
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Subject">'+data.meta_subject+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+data.meta_keywords+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+data.meta_datepublished+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+data.meta_othercontrib+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+data.meta_sponsorfunder+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+data.meta_creativeworksubtype+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+data.meta_creativeworktype+'</property>'));
-			baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="AuthorCreator">'+data.meta_BLBK+'</property>'));
+			
+			if(data.meta_subjects != "" ||
+				data.meta_keywords != "" ||
+				data.meta_datepublished != "" ||
+				data.meta_othercontrib != "" ||
+				data.meta_sponsorfunder != "" ||
+				data.meta_creativeworksubtype != "" ||
+				data.meta_creativeworktype != "" ||
+				data.meta_BLBK != "") {
+				
+				baseXML.service.args["meta"]["r_base"]["properties"] = "";
+				
+			}
+			if(data.meta_subject != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Subject">'+data.meta_subject+'</property>'));
+			}
+			if(data.meta_keywords != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+data.meta_keywords+'</property>'));
+			}
+			if(data.meta_datepublished != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+data.meta_datepublished+'</property>'));
+			}
+			if(data.meta_othercontrib != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+data.meta_othercontrib+'</property>'));
+			}
+			if(data.meta_sponsorfunder != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+data.meta_sponsorfunder+'</property>'));
+			}
+			if(data.meta_creativeworksubtype != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+data.meta_creativeworksubtype+'</property>'));
+			}
+			if(data.meta_creativeworktype != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+data.meta_creativeworktype+'</property>'));
+			}
+			if(data.meta_BLBK != "") {
+				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="AuthorCreator">'+data.meta_BLBK+'</property>'));
+			}
 			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
 			baseXML.service.args["meta"]["r_resource"].@id = "3";
 			baseXML.service.args["meta"]["r_resource"]["title"] = data.meta_title;
-			baseXML.service.args["meta"]["r_resource"]["description"] = data.meta_description;
+			if(data.meta_description) {
+				baseXML.service.args["meta"]["r_resource"]["description"] = data.meta_description;
+			}
 			baseXML.service.args["meta"]["r_media"].@id = "4";
 			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
 			trace(baseXML);

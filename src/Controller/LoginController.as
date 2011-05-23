@@ -10,8 +10,8 @@ package Controller {
 		
 		private var _authOverride:Boolean = false;
 		
-		private var quickLogin:Boolean = false;
-		private var assetID:Number = 1621;
+		private var quickLogin:Boolean = true;
+		private var assetID:Number = -1;
 		 
 		// TODO For some reason, the login is being received twice, i cant work out why, so this
 		// test it hasnt been recieved twice, needs to really be fixed.
@@ -76,7 +76,7 @@ package Controller {
 		
 		// Log in was successful, so redirect to either the default route or the last used route
 		private function redirect():void {
-			if(quickLogin) {
+			if(quickLogin && assetID != -1) {
 				var redirectURL:String = "view/" + assetID;
 			} else {
 				redirectURL = Auth.getInstance().getRedirectURL();
