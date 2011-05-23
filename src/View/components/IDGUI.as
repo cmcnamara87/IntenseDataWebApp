@@ -14,14 +14,14 @@ package View.components
 		 * @return 	The button
 		 * 
 		 */		
-		public static function makeButton(label:String):Button {
+		public static function makeButton(label:String, visible:Boolean = true, includeInLayout:Boolean = true):Button {
 			var button:Button = new Button();
 			button.label = label;
 			button.percentHeight = 100;
 			return button
 		}
 		
-		public static function makeToggleButton(label:String, state:Boolean = false):ToggleButton {
+		public static function makeToggleButton(label:String, state:Boolean = false, visible:Boolean = true, includeInLayout:Boolean = true):ToggleButton {
 			var button:ToggleButton = new ToggleButton();
 			button.label = label;
 			button.selected = state;			
@@ -34,10 +34,12 @@ package View.components
 		 * @return The new line
 		 * 
 		 */		
-		public static function makeLine(color:uint = 0xBBBBBB):Line {
+		public static function makeLine(color:uint = 0xBBBBBB, visible:Boolean = true, includeInLayout:Boolean = true):Line {
 			var line:Line = new Line();
 			line.percentHeight = 100;
 			line.stroke = new SolidColorStroke(color, 1, 1);
+			line.visible = visible;
+			line.includeInLayout = includeInLayout;
 			return line;
 		}
 	}

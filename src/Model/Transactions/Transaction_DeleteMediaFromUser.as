@@ -57,13 +57,15 @@ package Model.Transactions
 			// Get out the ACL from the media object in the reply
 			var acls:XMLList = XML(e.target.data).reply.result.asset.acl;
 			
-			if(acls.length() <= 1) {
+			if(acls.length() == 1) {
 				// There is only one user with access to this file, it must be the current user
 				// otherwise how could they see it
 				// <= just as a precaution
 				trace("Only one user has access to file", acls[0].actor, "current user is", Auth.getInstance().getUsername());
 				AppModel.getInstance().assetDestroy(assetID, deleteComplete);
-				
+			} else if (acls.length() == 0) {
+				trace("No user has access to this file, destroying it");
+				AppModel.getInstance().assetDestroy(assetID, deleteComplete);
 			} else {
 				// Other people are still using this file, only
 				// remove this current users access to it, so it remains unchanged for others

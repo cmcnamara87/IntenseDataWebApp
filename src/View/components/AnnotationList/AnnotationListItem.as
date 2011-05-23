@@ -38,7 +38,7 @@ package View.components.AnnotationList
 		 * @param reply			True/false if the comment is a reply or not.
 		 * 
 		 */		
-		public function AnnotationListItem(assetID:Number, creator:String, annotationText:String)
+		public function AnnotationListItem(assetID:Number, creator:String, annotationType:String, annotationText:String)
 		{
 			super();
 			this.assetID = assetID;
@@ -60,7 +60,7 @@ package View.components.AnnotationList
 			
 			var username:spark.components.Label = new spark.components.Label();
 			// Get the Capitalised first letter of hte username (should be persons name, but whatever)
-			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1)
+			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1) + "(" + annotationType + ")";
 			username.percentWidth = 100;
 			username.setStyle('color', 0x1F65A2);
 			username.setStyle('fontWeight', 'bold');
@@ -80,6 +80,7 @@ package View.components.AnnotationList
 			buttonHGroup.paddingRight 	= 5;
 			this.addElement(buttonHGroup);
 			
+			trace("Creator of annotation is", creator, "current user is", Auth.getInstance().getUsername());
 			// If the current user is the author of this annotation
 			// Or if the current user is a sys-admin
 			// then add an Edit and a Delete button
@@ -92,6 +93,7 @@ package View.components.AnnotationList
 //				buttonHGroup.addElement(editButton);
 //				
 //				// Create a Delete button
+				trace("Creating delete button");
 				deleteButton		= new Button();
 				deleteButton.percentHeight 	= 100;
 				deleteButton.percentWidth	= 100;

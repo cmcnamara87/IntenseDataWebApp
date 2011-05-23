@@ -616,6 +616,9 @@ package View.components.MediaViewer.ImageViewer
 					annotationTextOverlayBox.getText()
 				);
 				annotationsGroup.addElement(annotationPen);
+				
+				annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
+				annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 			}
 			
 			this.leaveNewAnnotationMode();
@@ -764,7 +767,7 @@ package View.components.MediaViewer.ImageViewer
 					// Only save the values if it has been a significant change
 					// Otherwise it becomes too intensive to draw all the points
 					// Push values into array here
-					var distanceThreshold:Number = 20;
+					var distanceThreshold:Number = 10;
 					if(Math.abs(startAnnotationMouseX - e.target.mouseX) > distanceThreshold || Math.abs(startAnnotationMouseY - e.target.mouseY) > distanceThreshold) {
 						canvas.graphics.lineStyle(3, annotationToolbar.getSelectedColor(), 1);
 						canvas.graphics.beginFill(annotationToolbar.getSelectedColor(), 0.5);

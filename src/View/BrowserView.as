@@ -301,8 +301,8 @@ package View
 			myAssetBrowserToolbar.setToolbarToFixedCollectionMode();
 		}
 		
-		public function setToolbarToRegularCollectionMode():void {
-			myAssetBrowserToolbar.setToolbarToRegularCollectionMode();
+		public function setToolbarToRegularCollectionMode(modifyAccess:Boolean):void {
+			myAssetBrowserToolbar.setToolbarToRegularCollectionMode(modifyAccess);
 		}
 		
 		/**

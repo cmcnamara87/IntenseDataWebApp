@@ -319,18 +319,9 @@ package Controller {
 			// Add all of the assets inside this collection
 			currentView.addMediaAssets(BrowserController.currentCollectionAssets);
 			
-			// Change to the Fixed toolbar
-			currentView.setToolbarToRegularCollectionMode();
-			
-			//			// Set access ???
-			//			setAccess();
-			
-			// Change to the Fixed toolbar
-			if(modifyAccess) {
-				currentView.setToolbarToRegularCollectionMode();
-			} else {
-				currentView.setToolbarToFixedCollectionMode();
-			}
+			// Change to the Regular toolbar
+			currentView.setToolbarToRegularCollectionMode(modifyAccess);
+
 			
 		}
 		

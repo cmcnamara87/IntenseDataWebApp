@@ -565,14 +565,14 @@ package Model {
 		 * @param annotationID	the ID of the annotation to set
 		 * 
 		 */		
-		public function setAnnotationClassForID(annotationID:Number):void {
+		public function setAnnotationClassForID(annotationID:Number, callback:Function = null):void {
 			trace("- App Model: Setting Annotation Class");
 			var args:Object = new Object();
 			var baseXML:XML = _connection.packageRequest('asset.class.add',args,true);
 			baseXML.service.args["scheme"] = "recensio";
 			baseXML.service.args["class"] = "base/resource/annotation";
 			baseXML.service.args["id"] = annotationID;
-			_connection.sendRequest(baseXML,null);
+			_connection.sendRequest(baseXML, callback);
 		}
 		
 		// Sets a saved asset to have the correct class

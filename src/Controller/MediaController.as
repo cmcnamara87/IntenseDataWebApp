@@ -364,11 +364,15 @@ package Controller {
 			AppModel.getInstance().copyAccess(currentAssetID, annotationID);
 			
 			// Set the class for this annotation to be Annotation
-			AppModel.getInstance().setAnnotationClassForID(annotationID);
+			AppModel.getInstance().setAnnotationClassForID(annotationID, function(e:Event):void {
+				// After setting the annotation class, get all the commentary for this media asset
+				// And reload them so they show on the asset.
+				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);	
+			});
 			
 			// So lets just get out all the annotations/comments again
 			// so we can update the display with the new annotation
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+			
 			
 			
 		}
