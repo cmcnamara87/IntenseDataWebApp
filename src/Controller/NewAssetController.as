@@ -114,6 +114,8 @@ package Controller {
 				// Get out the new assets ID
 				var assetID:Number = xml.reply.result.id;
 				
+				trace("New Asset created", assetID);
+				
 				// Set the Owner ACLs for the asset
 				AppModel.getInstance().setOwnerACL(xml.reply.result.id);
 				

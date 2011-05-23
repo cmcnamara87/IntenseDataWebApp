@@ -100,6 +100,11 @@ package Model {
 			var args:Object = new Object();
 			//args.where = "namespace = recensio and r_base/active=true and class>='recensio:base/resource/collection' and xpath(mf-revision-history/user/name)='"+Auth.getInstance().getUsername()+"'";
 			args.where = "namespace = recensio and r_base/active=true and class>='recensio:base/resource/collection'";
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
+			
 			args.action = "get-meta";
 			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
 				//All good
@@ -117,6 +122,10 @@ package Model {
 			trace("Getting all media assets");
 			var args:Object = new Object();
 			args.where = "namespace = recensio and r_base/active = true and class >= 'recensio:base/resource/media'";
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
 			
 			// Dont just get the media assets data, get out all the data for all of its children
 			// that is, all the comments/annotations on all the assets
@@ -140,6 +149,11 @@ package Model {
 			var args:Object = new Object();
 			args.where = "namespace = recensio and r_base/active=true and " +
 				"class >= 'recensio:base/resource/media' and xpath(mf-revision-history/user/name)!='"+Auth.getInstance().getUsername()+"'";
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
+			
 			args.action = "get-meta";
 			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
 				//All good
@@ -171,6 +185,11 @@ package Model {
 			
 			args.where = "namespace = recensio and r_base/active = true and class >= 'recensio:base/resource/annotation' " +
 				"and related to{is_child} (id="+assetID+")";
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
+			
 			args.action = "get-meta";
 			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
 				//All good
@@ -201,6 +220,11 @@ package Model {
 			var args:Object = new Object();
 			args.where = "namespace = recensio and r_base/active=true and class>='recensio:base/resource/media' and id="+assetID;
 			args.action = "get-meta";
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
+			
 			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
 				//All good
 			} else {
@@ -219,6 +243,10 @@ package Model {
 			
 			// Get out all the assets that are a child of this collection
 			args.where = "namespace = recensio and r_base/active=true and id =  " + assetID;
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
 			
 			// Get out the meta data for these assets
 			args.action = "get-meta";	
@@ -246,6 +274,10 @@ package Model {
 			var args:Object = new Object();
 			args.where = "namespace = recensio and r_base/active=true and class>='recensio:base/resource/annotation' and related to{is_child} (id="+assetID+")";
 			args.action = "get-meta";
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
+			
 			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
 				//All good
 			} else {
