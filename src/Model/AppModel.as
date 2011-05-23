@@ -674,16 +674,45 @@ package Model {
 			
 			
 			trace("saving", assetData.assetID, assetData.meta_title, assetData.meta_description);
+			
+			// The title is compulsory, so if its not there, it should error.
 			baseXMLUpdate.service.args["meta"]["r_resource"]["title"] = assetData.meta_title;
-			baseXMLUpdate.service.args["meta"]["r_resource"]["description"] = assetData.meta_description;
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"] = "";
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Subject">'+assetData.meta_subject+'</property>'));
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+assetData.meta_keywords+'</property>'));
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+assetData.meta_datepublished+'</property>'));
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+assetData.meta_othercontrib+'</property>'));
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+assetData.meta_sponsorfunder+'</property>'));
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+assetData.meta_creativeworksubtype+'</property>'));
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+assetData.meta_creativeworktype+'</property>'));
+			
+			
+			if(assetData.meta_description != "") {
+				baseXMLUpdate.service.args.meta.r_resource.description = assetData.meta_description;	
+			}
+			
+			baseXMLUpdate.service.args.meta.r_base.properties = "";
+			
+			if(assetData.meta_subject != "") {
+				baseXMLUpdate.service.args.meta.r_base.properties.appendChild(XML('<property name="Subject">'+assetData.meta_subject+'</property>'));
+			}
+			
+			if(assetData.meta_keywords != "") {
+				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+assetData.meta_keywords+'</property>'));
+			}
+			
+			if(assetData.meta_datepublished != "") {
+				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+assetData.meta_datepublished+'</property>'));
+			}
+			
+			if(assetData.meta_othercontrib != "") {
+				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+assetData.meta_othercontrib+'</property>'));
+			}
+			
+			if(assetData.meta_sponsorfunder != "") {
+				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+assetData.meta_sponsorfunder+'</property>'));
+			}
+			
+			if(assetData.meta_creativeworksubtype != "") {
+				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+assetData.meta_creativeworksubtype+'</property>'));
+			}
+			
+			if(assetData.meta_creativeworktype != "") {
+				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+assetData.meta_creativeworktype+'</property>'));
+			}
+			
 			if(_connection.sendRequest(baseXMLUpdate, callback)) {
 				//All good
 			} else {
