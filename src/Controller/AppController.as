@@ -1,6 +1,9 @@
 package Controller {
 	import Controller.Utilities.Auth;
 	
+	import Model.AppModel;
+	import Model.Model_Notification;
+	
 	import View.Layout;
 	
 	import flash.display.DisplayObject;
@@ -11,6 +14,7 @@ package Controller {
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.setTimeout;
 	
+	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	
 	import spark.components.Group;
@@ -25,8 +29,11 @@ package Controller {
 		//Whether the logout button is shown or not
 		protected var showLogoutButton:Boolean = true;
 		
+		private var notifications:XML;
+		
 		public function AppController() {
 			setLogoutButton();
+			getNotifications();
 			loadView();
 			super();
 		}
@@ -38,10 +45,10 @@ package Controller {
 					layout.header.logoutButton.visible = showLogoutButton;
 					layout.header.logoutButton.addEventListener(MouseEvent.MOUSE_UP,logoutClicked);
 					layout.header.profileButton.visible = showLogoutButton;
-					layout.header.profileButton.setText(Auth.getInstance().getUsername(),true);
-					layout.header.profileButton.visible = showLogoutButton;
-					layout.header.profileButton.setText(Auth.getInstance().getUsername(),true);
+					layout.header.profileButton.label = Auth.getInstance().getUsername();;
 					layout.header.profileButton.addEventListener(MouseEvent.MOUSE_UP,profileClicked);
+					
+					layout.header.notificationButton.addEventListener(MouseEvent.CLICK, showNotifications);
 				}
 			}
 		}
@@ -81,6 +88,27 @@ package Controller {
 		public function init():void {
 			var classname:String = getQualifiedClassName(this);
 			throw new Error(classname+" must implement the init() method");
+		}
+		
+		
+		private function getNotifications():void {
+			AppModel.getInstance().getNotifications(gotNotifications);
+		}
+		private function gotNotifications(e:Event):void {
+			trace("got notifications", e.target.data);
+			var dataXML:XML = XML(e.target.data);
+			notifications = dataXML;
+			var notificationsList:XMLList = dataXML.reply.result.asset
+			layout.header.notificationButton.label = "Notifications (" + notificationsList.length() + ")";
+		}
+		
+		private function showNotifications(e:MouseEvent):void {
+			var notificationArray:Array = AppModel.getInstance().extractAssetsFromXML(notifications, Model_Notification);
+			
+			for each(var notification:Model_Notification in notificationArray) {
+				Alert.show(notification.username + " " + notification.message + " on " + 
+					notification.notification_on_title + " " + notification.notification_of_content);
+			}
 		}
 	}
 }

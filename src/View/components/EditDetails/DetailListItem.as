@@ -18,6 +18,7 @@ package View.components.EditDetails
 	public class DetailListItem extends VGroup implements PanelElement
 	{
 		private var detailName:String;
+		private var detailValue:String;
 		private var textArea:TextArea;
 		private var dropdownArea:DropDownList;
 		private var dateArea:DateField;
@@ -28,6 +29,7 @@ package View.components.EditDetails
 			super();
 			this.type = type;
 			this.detailName = detailName;
+			this.detailValue = detailValue;
 			
 			this.percentWidth = 100;
 			
@@ -89,7 +91,7 @@ package View.components.EditDetails
 		}
 		
 		public function searchMatches(search:String):Boolean {
-			if(detailName.toLowerCase().indexOf(search.toLowerCase()) == -1) {
+			if(detailName.toLowerCase().indexOf(search.toLowerCase()) == -1 && detailValue.toLowerCase().indexOf(search.toLowerCase()) == -1) {
 				return false;
 			} else {
 				return true;

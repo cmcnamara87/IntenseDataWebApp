@@ -8,6 +8,7 @@ package Model {
 	import Model.Transactions.Transaction_GetAccess;
 	import Model.Transactions.Transaction_GetCollections;
 	import Model.Transactions.Transaction_GetThisCollectionsMediaAssets;
+	import Model.Transactions.Transaction_Notification;
 	import Model.Transactions.Transaction_SaveCollection;
 	import Model.Transactions.Transaction_SaveNewComment;
 	import Model.Transactions.Transaction_SetAccess;
@@ -261,10 +262,22 @@ package Model {
 			var transaction:Transaction_SetAccess = new Transaction_SetAccess(_connection,assetID,access,callback);
 		}
 		
-		public function changeAccess(collectionID:Number, username:String, domain:String, access:String, callback:Function=null):void {
+		/**
+		 * Changes the access (ACL) for a given asset. (collection, media, etc) 
+		 * @param collectionID	The ID of the collection where we want to grant/restrict access
+		 * @param username		The username of the user to be granted/restricted access
+		 * @param domain		The domain of that user
+		 * @param access		The access for that users, @see SharingPanel consts (e.g. READ, READWRITE, NOACESS)
+		 * @param related		Change the access for related assets, e.g. TRUE for a collection, since we want 
+		 * 						it to propogate to the assets inside it, but FALSE for a mediaAsset since we dont want the ACLS
+		 * 						on our annotations.
+		 * @param callback		The function to call when the access has be chagned.
+		 * 
+		 */		
+		public function changeAccess(assetID:Number, username:String, domain:String, access:String, related:Boolean, callback:Function=null):void {
 			var args:Object = new Object();
 			
-			trace("Changing access on collection", collectionID);
+			trace("Changing access on asset", assetID);
 			trace("Access for", domain, username, access);
 			var baseXML:XML;
 			
@@ -272,7 +285,7 @@ package Model {
 				trace("Should be revoking access");
 				// We want to revoke a users access to this asset
 				baseXML = _connection.packageRequest('asset.acl.revoke', args, true);
-				baseXML.service.args.acl.id = collectionID;
+				baseXML.service.args.acl.id = assetID;
 				baseXML.service.args.acl.actor = domain + ":" + username;
 				baseXML.service.args.acl.actor.@type = "user";
 				// Update all the related assets
@@ -282,7 +295,7 @@ package Model {
 				// We are granting access to the asset for a user
 				// Example mediaflux statement asset.acl.grant :acl < :id 1718 :actor system:coke -type user :access read-write >
 				baseXML = _connection.packageRequest('asset.acl.grant', args, true);
-				baseXML.service.args.acl.id = collectionID;
+				baseXML.service.args.acl.id = assetID;
 				baseXML.service.args.acl.actor = domain + ":" + username;
 				baseXML.service.args.acl.actor.@type = "user";
 				baseXML.service.args.acl.access = access;
@@ -575,7 +588,8 @@ package Model {
 			var args:Object = new Object();
 			// Create the request
 			var baseXML:XML = _connection.packageRequest('asset.acl.grant', args, true);
-			baseXML.service.args["id"] = id;
+			baseXML.service.args.id = id;
+			baseXML.service.args.acl
 			baseXML.service.args.appendChild(XML('<acl><actor type="user">system:'+Auth.getInstance().getUsername()+'</actor><access>read-write</access></acl>'));
 			
 			if(_connection.sendRequest(baseXML, null)) {
@@ -1124,6 +1138,26 @@ package Model {
 		 */		
 		public function changePassword(domain:String, newPassword:String, callback:Function):void {
 			var transaction:Transaction_ChangePassword = new Transaction_ChangePassword(domain, newPassword, callback, _connection);
+		}
+		
+		/**
+		 * Sends a notification to users who have access to this media asset
+		 * @param mediaID 	The ID of the media that was affected. e.g. If someone comments on an image, this is the image's ID
+		 * @param msg		A msg that describes the change (e.g. Added a comment)
+		 * @param assetID	(opt) The ID of the asset that as added/changed (e.g. the ID of the comment)
+		 * 
+		 */		
+		public function sendNotification(mediaID:Number, msg:String, assetID:Number = 0):void {
+			var transaction:Transaction_Notification = new Transaction_Notification(mediaID, msg, _connection, assetID);
+		}
+		
+		public function getNotifications(callback:Function):void {
+			var args:Object = new Object();
+			args.where = "class>='recensio:base/notification'";
+			args.action = "get-meta";
+			args['get-related-meta'] = true;
+			var baseXML:XML = _connection.packageRequest('asset.query', args, true);
+			_connection.sendRequest(baseXML, callback);
 		}
 	}
 		

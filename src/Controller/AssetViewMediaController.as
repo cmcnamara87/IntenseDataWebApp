@@ -213,7 +213,8 @@ package Controller {
 			(view as AssetView).assetsharing.addEventListener(RecensioEvent.SHARED_SAVED,sharedUpdated);
 		}
 		
-		// Called when the update shared information button is clicked.  Sends the new access rights to the model and hides the sharing view
+		// Called when the update shared information button is clicked.  
+		// Sends the new access rights to the model and hides the sharing view
 		private function sharedUpdated(e:RecensioEvent):void {
 			AppModel.getInstance().setAccess(assetID,e.data.access);
 			toggleComments();

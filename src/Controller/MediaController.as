@@ -31,7 +31,7 @@ package Controller {
 	
 	import spark.components.Group;
 	
-	public class MediaController extends AppController {
+	public class MediaController extends CollaborationController {
 		
 		
 		private var assetData:Model_Media;
@@ -180,7 +180,7 @@ package Controller {
 		private function sharingInfoChanged(e:RecensioEvent):void {
 			var username:String = e.data.username;
 			var access:String = e.data.access;
-			AppModel.getInstance().changeAccess(currentAssetID, username, "system", access, sharingInfoUpdated);
+			AppModel.getInstance().changeAccess(currentAssetID, username, "system", access, true, sharingInfoUpdated);
 		}
 		
 		
@@ -342,6 +342,7 @@ package Controller {
 		 * 
 		 */		
 		public function commentSaved(commentID:Number, commentText:String, newCommentObject:NewComment):void {
+			AppModel.getInstance().sendNotification(currentAssetID,  "added a comment.", commentID);
 			mediaView.commentSaved(commentID, commentText, newCommentObject);
 		}
 

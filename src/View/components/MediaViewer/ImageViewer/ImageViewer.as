@@ -616,6 +616,10 @@ package View.components.MediaViewer.ImageViewer
 					annotationTextOverlayBox.getText()
 				);
 				annotationsGroup.addElement(annotationPen);
+				
+				// Listen for this annotation being mouse-overed
+				annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
+				annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 			}
 			
 			this.leaveNewAnnotationMode();
@@ -764,7 +768,7 @@ package View.components.MediaViewer.ImageViewer
 					// Only save the values if it has been a significant change
 					// Otherwise it becomes too intensive to draw all the points
 					// Push values into array here
-					var distanceThreshold:Number = 20;
+					var distanceThreshold:Number = 5;
 					if(Math.abs(startAnnotationMouseX - e.target.mouseX) > distanceThreshold || Math.abs(startAnnotationMouseY - e.target.mouseY) > distanceThreshold) {
 						canvas.graphics.lineStyle(3, annotationToolbar.getSelectedColor(), 1);
 						canvas.graphics.beginFill(annotationToolbar.getSelectedColor(), 0.5);
@@ -914,7 +918,8 @@ package View.components.MediaViewer.ImageViewer
 					image.width = image.contentWidth * scalePercent;
 					image.height = image.contentHeight * scalePercent;
 					resizeSlider.value = scalePercent * 100;
-				} else if (widthOutOfBounds < 0 && heightOutOfBounds < 0) {
+				} else 
+					if (widthOutOfBounds < 0 && heightOutOfBounds < 0) {
 					if(widthOutOfBounds < heightOutOfBounds) {
 						trace("width out of bounds more");
 						// This means the width is more out of bounds, so we can scale it by the width

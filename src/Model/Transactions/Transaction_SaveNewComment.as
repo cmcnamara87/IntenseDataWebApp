@@ -81,7 +81,8 @@ package Model.Transactions
 			// Its not transcoded, but its an annotation....so wathever :P lol
 			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
 			
-			if(_connection.sendRequest(baseXML, commentSaved)) {
+			trace("new comment stuff", baseXML);
+			if(_connection.sendRequest(baseXML, setCommentClassifaction)) {
 				//All good
 			} else {
 				Alert.show("Could not save comment");
@@ -94,7 +95,7 @@ package Model.Transactions
 		 * @param e
 		 * 
 		 */		
-		private function commentSaved(e:Event):void {
+		private function setCommentClassifaction(e:Event):void {
 			var dataXML:XML = XML(e.target.data);
 			var commentID:Number = dataXML.reply.result.id;
 

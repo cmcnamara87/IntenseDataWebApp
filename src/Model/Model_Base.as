@@ -69,9 +69,11 @@ package Model {
 			access_modify_content = stringToBool(rawData.access["modify-content"]);
 			
 			// Set some common meta data
-			meta_title = rawData.meta.r_resource.title;
-			meta_description = rawData.meta.r_resource.description;
-			meta_username = rawData.meta["mf-revision-history"].user.name;
+			if(rawData.meta.r_resource) {
+				meta_title = rawData.meta.r_resource.title;
+				meta_description = rawData.meta.r_resource.description;
+				meta_username = rawData.meta["mf-revision-history"].user.name;
+			}
 		}
 		
 		// Gets the creation date of an asset

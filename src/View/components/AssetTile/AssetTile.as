@@ -7,8 +7,6 @@ package View.components.AssetTile
 	import Model.Model_Commentary;
 	import Model.Model_Media;
 	
-	import View.Element.BackgroundImage;
-	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Loader;

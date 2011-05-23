@@ -130,13 +130,6 @@ package View
 			var addAnnotationEditDetailsLine:Line = IDGUI.makeLine()
 			myToolbar.addElement(addAnnotationEditDetailsLine);
 			
-			deleteAssetButton = IDGUI.makeButton("Delete File")
-			deleteAssetButton.enabled = false;
-			myToolbar.addElement(deleteAssetButton);
-			
-			var deleteAddLine:Line = IDGUI.makeLine();
-			myToolbar.addElement(deleteAddLine);
-			
 			// Add Edit Details button
 			editDetailsButton = IDGUI.makeButton('Edit Details');
 			editDetailsButton.enabled = false;
@@ -157,10 +150,16 @@ package View
 			commentsButton.enabled = false;
 			myToolbar.addElement(commentsButton);
 			
-			
+			// Add a line divider
 			var downloadLine:Line = IDGUI.makeLine();
 			myToolbar.addElement(downloadLine);
 			
+			// Creat ethe select button
+			deleteAssetButton = IDGUI.makeButton("Delete")
+			deleteAssetButton.enabled = false;
+			myToolbar.addElement(deleteAssetButton);
+
+			// And the download button
 			downloadButton = IDGUI.makeButton('Download');
 			downloadButton.enabled = false;
 			myToolbar.addElement(downloadButton);

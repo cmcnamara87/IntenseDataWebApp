@@ -40,5 +40,6 @@ package View.components
 			line.stroke = new SolidColorStroke(color, 1, 1);
 			return line;
 		}
+
 	}
 }

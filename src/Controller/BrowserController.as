@@ -1,4 +1,5 @@
 package Controller {
+	import Controller.Utilities.Auth;
 	import Controller.Utilities.Router;
 	
 	import Lib.LoadingAnimation.LoadAnim;
@@ -12,6 +13,7 @@ package Controller {
 	import View.BrowserView;
 	import View.Element.SmallButton;
 	import View.components.Comments.NewComment;
+	import View.components.Sharing.SharingPanel;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -826,7 +828,7 @@ package Controller {
 		private function sharingInfoChanged(e:RecensioEvent):void {
 			var username:String = e.data.username;
 			var access:String = e.data.access;
-			AppModel.getInstance().changeAccess(currentCollectionID, username, "system", access, sharingInfoUpdated);
+			AppModel.getInstance().changeAccess(currentCollectionID, username, "system", access, true, sharingInfoUpdated);
 		}
 		
 		

@@ -2,8 +2,11 @@ package Controller {
 	import Controller.Utilities.Auth;
 	import Controller.Utilities.Router;
 	
+	import Model.AppModel;
+	
 	import View.Login;
 	
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
 	public class LoginController extends AppController {
@@ -71,6 +74,9 @@ package Controller {
 		// Called if login was successful
 		private function loginSuccessful():void {
 			trace("- Login Successful, redirecting");
+			AppModel.getInstance().getNotifications(function(e:Event):void {
+				trace("Notifications", e.target.data);
+			});
 			redirect();
 		}
 		
