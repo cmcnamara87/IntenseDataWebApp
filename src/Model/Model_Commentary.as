@@ -4,6 +4,7 @@ package Model {
 		
 		public static const ANNOTATION_BOX_TYPE_ID:Number = 2;
 		public static const ANNOTATION_PEN_TYPE_ID:Number = 5;
+		public static const ANNOTATION_HIGHLIGHT_TYPE_ID:Number = 6;
 		public static const COMMENT_TYPE_ID:Number = 3;
 		
 		public var type:String = "";

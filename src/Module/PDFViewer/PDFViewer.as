@@ -175,6 +175,7 @@ package Module.PDFViewer {
 			data.end = data.stopTextPos;
 			data.text = data.text; 
 			var annotationArray:Array = new Array(data);
+			trace("exporting annotation", annotationArray);
 			annotationSave(annotationArray);
 		}
 		

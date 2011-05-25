@@ -18,6 +18,7 @@ package View
 	import View.components.MediaViewer.AudioViewer;
 	import View.components.MediaViewer.ImageViewer.ImageViewer;
 	import View.components.MediaViewer.MediaViewer;
+	import View.components.MediaViewer.PDFViewer.PDFViewer;
 	import View.components.MediaViewer.VideoViewer.VideoViewer;
 	import View.components.Panel;
 	import View.components.Sharing.SharingPanel;
@@ -220,7 +221,11 @@ package View
 					mediaViewer = new Videoview();
 					break;
 				case "document":
-					mediaViewer = new Module.PDFViewer.PDFViewer();
+//					mediaViewer = new Module.PDFViewer.PDFViewer();
+					mediaViewer = new View.components.MediaViewer.PDFViewer.PDFViewer();
+					addAnnotationButton.visible = true;
+					hideShowAnnotationButton.visible = true;
+//					mediaViewer = new Module.PDFViewer.PDFViewer();
 					break;
 				default:
 					mediaViewer = new MediaViewer();
