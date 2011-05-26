@@ -80,6 +80,7 @@ package View.components.Annotation
 		 * 
 		 */		
 		public function save():void {
+			trace("Saving an annotation box");
 			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_BOX, true);
 			myEvent.data.percentX = percentX;
 			myEvent.data.percentY = percentY;

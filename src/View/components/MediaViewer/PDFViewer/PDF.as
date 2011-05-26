@@ -108,7 +108,7 @@ package View.components.MediaViewer.PDFViewer {
 			SWFData.dataFormat = URLLoaderDataFormat.BINARY;
 			
 			SWFData.addEventListener(Event.COMPLETE, loadComplete);
-			
+
 			// Listen for errors (which in most cases, means the PDF is still being converted to a SWF)
 			SWFData.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent):void {
 				Alert.show("This PDF is still being transcoded so we can display it. It will become available shortly.");
@@ -131,6 +131,7 @@ package View.components.MediaViewer.PDFViewer {
 			SWFLoader = new Loader();
 			SWFLoader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
 				// The loading has progressed. 
+				trace("loading event 2", e.bytesLoaded, e.bytesTotal);
 				dispatchEvent(e);
 			});
 			
@@ -211,9 +212,13 @@ package View.components.MediaViewer.PDFViewer {
 				
 				
 			}
-			setZoomLevel();
+			//setZoomLevel();
 		}
 		
+		public function highlightFromIndexes(page1:Number, startTextIndex:Number, finishTextIndex:Number, highlight:Boolean, page2:Number=0):void {
+			var currentSnapshot:TextSnapshot = textSnapshotArray[page1] as TextSnapshot;
+			currentSnapshot.setSelected(startTextIndex, finishTextIndex, highlight);
+		}
 		/**
 		 * Highlights text between x,y coordinate pairs.  
 		 * @param startX	The X Coordinate of where we started to highlight
@@ -222,12 +227,12 @@ package View.components.MediaViewer.PDFViewer {
 		 * @param finishY	The Y Coordinate of where we finished highlighting
 		 * 
 		 */		
-		public function highlight(startX:Number, startY:Number, finishX:Number, finishY:Number):void {
+		public function highlightFromCoordinates(startX:Number, startY:Number, finishX:Number, finishY:Number):void {
 			trace("Highlighting start:", startX, startY, "end:", finishX, finishY);
 			
 			// We need to know which page we started highlighting on, and which page we finished on
-			var startPage:Number = Math.floor(startY / pdfHeight);
-			var finishPage:Number = Math.floor(finishY / pdfHeight);
+			var startPage:Number = Math.floor(startY / (pdfHeight * this.scaleY));
+			var finishPage:Number = Math.floor(finishY / (pdfHeight * this.scaleY));
 			trace("highlight on pages", startPage, finishPage);
 			
 			if(startPage != finishPage) {
@@ -244,9 +249,9 @@ package View.components.MediaViewer.PDFViewer {
 				// We started and finished highlight on the same page
 				
 				// Convert the x,y to an index number of hte text
-				trace("new x y", startX - (startPage * pdfHeight), startY - (startPage * pdfHeight));
-				var startTextIndex:Number = currentSnapshot.hitTestTextNearPos(startX, startY - (startPage * pdfHeight), 10);
-				var endTextIndex:Number = currentSnapshot.hitTestTextNearPos(finishX, finishY - (startPage * pdfHeight), 10);
+				trace("new x y", startX, startY - (startPage * pdfHeight));
+				var startTextIndex:Number = currentSnapshot.hitTestTextNearPos(startX / this.scaleX, (startY / this.scaleY)  - (startPage * pdfHeight), 10);
+				var endTextIndex:Number = currentSnapshot.hitTestTextNearPos(finishX / this.scaleX, (finishY / this.scaleY) - (startPage * pdfHeight), 10);
 				
 				trace("indexes", startTextIndex, endTextIndex);
 				// Make sure we are highlighting the right way (in case people drag backwards etc)
@@ -320,6 +325,9 @@ package View.components.MediaViewer.PDFViewer {
 		public function getSelectionPage():Number {
 			return this.selectionPage;
 		} 
+		public function getSelectedText():String {
+			return (textSnapshotArray[selectionPage] as TextSnapshot).getText(startTextIndex, endTextIndex);
+		}
 			
 		public function zoomWidth(zoomWidth:Number):void {
 			pdfScale = zoomWidth / (pdfContainer.width / pdfContainer.scaleX) * 100;

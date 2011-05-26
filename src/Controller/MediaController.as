@@ -90,6 +90,7 @@ package Controller {
 			// Listen for 'Save Annotation'
 			mediaView.addEventListener(IDEvent.ANNOTATION_SAVE_BOX, saveNewBoxAnnotation);
 			mediaView.addEventListener(IDEvent.ANNOTATION_SAVE_PEN, saveNewPenAnnotation);
+			mediaView.addEventListener(IDEvent.ANNOTATION_SAVE_HIGHLIGHT, saveNewHighlightAnnotation);
 			// Listen for 'Annotation Deleted'
 			mediaView.addEventListener(IDEvent.ANNOTATION_DELETED, deleteAnnotation);
 			
@@ -218,6 +219,27 @@ package Controller {
 				text,
 				newAnnotationSaved
 			);
+		}
+		
+		private function saveNewHighlightAnnotation(e:IDEvent):void {
+			trace("- Saving annotation highlight");
+			var percentX:Number = e.data.percentX;
+			var percentY:Number = e.data.percentY;
+			var page1:Number = e.data.page1;
+			var startTextIndex:Number = e.data.startTextIndex;
+			var endTextIndex:Number = e.data.endTextIndex;
+			var text:String = e.data.text;
+			
+			AppModel.getInstance().saveNewHighlightAnnotation(
+				currentAssetID,
+				percentX,
+				percentY,
+				page1,
+				startTextIndex,
+				endTextIndex,
+				text,
+				newAnnotationSaved
+			)
 		}
 		
 		// DEKKERS ANNOTATION CODE TODO REMOVE THIS FUNCTION

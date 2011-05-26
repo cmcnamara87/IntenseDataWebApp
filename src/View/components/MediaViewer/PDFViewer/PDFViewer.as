@@ -106,6 +106,8 @@ package View.components.MediaViewer.PDFViewer
 		
 		private var imageAndAnnotationsGroup:Group; // Holds the PDF and the annotations
 		
+		private var myScroller:Scroller; // The scroller that surrounds the content
+		
 		public function PDFViewer()
 		{
 			super();
@@ -125,7 +127,7 @@ package View.components.MediaViewer.PDFViewer
 			
 			// Create the Annotation Tools toolbar
 			// Will show 'Box tool', 'Pen Tool', 'Save' and 'Cancel' Buttons
-			annotationToolbar = new AnnotationToolbar(this);
+			annotationToolbar = new AnnotationToolbar(this, true);
 			this.addElement(annotationToolbar);
 			
 			// Creatoe a group for the Image Scroller and the Annotation Text Overlay
@@ -135,7 +137,7 @@ package View.components.MediaViewer.PDFViewer
 			this.addElement(scrollerAndOverlayGroup);
 			
 			// Create scroller so we can scroll
-			var myScroller:Scroller = new Scroller();
+			myScroller = new Scroller();
 			myScroller.percentHeight = 100;
 			myScroller.percentWidth = 100;
 			
@@ -262,6 +264,7 @@ package View.components.MediaViewer.PDFViewer
 			pdf.addEventListener(ProgressEvent.PROGRESS, progressUpdate);
 			
 			imageAndAnnotationsGroup.addElement(pdf);
+			
 			// Where we are going to put the annotations
 			annotationsGroup = new Group();
 			annotationsGroup.percentHeight = 100;
@@ -283,27 +286,7 @@ package View.components.MediaViewer.PDFViewer
 			newAnnotationsGroup.percentWidth = 100;
 			newAnnotationsGroup.mouseChildren = false;
 			imageAndAnnotationsGroup.addElement(newAnnotationsGroup);
-			// Where we are going to put the annotations
-			annotationsGroup = new Group();
-			annotationsGroup.percentHeight = 100;
-			annotationsGroup.percentWidth = 100;
-			imageAndAnnotationsGroup.addElement(annotationsGroup);
 			
-			loadingLabel = new Label();
-			loadingLabel.text = 'Loading...';
-			loadingLabel.setStyle('color', 'white');
-			loadingLabel.setStyle('fontSize', 16);
-			imageAndAnnotationsGroup.addElement(loadingLabel);
-			
-			// Create New annotations group
-			// This is where the temporary place where we are drawing 
-			// the new annotations (while they are being drawn)
-			// once they are saved, they go to the annotationsGroup
-			newAnnotationsGroup = new Group();
-			newAnnotationsGroup.percentHeight = 100;
-			newAnnotationsGroup.percentWidth = 100;
-			newAnnotationsGroup.mouseChildren = false;
-			imageAndAnnotationsGroup.addElement(newAnnotationsGroup);
 		}
 		
 		/**
@@ -441,6 +424,7 @@ package View.components.MediaViewer.PDFViewer
 			var percentLoaded:Number = Math.round(e.bytesLoaded / e.bytesTotal * 100);
 			loadingLabel.text = 'Loading... ' + percentLoaded + '%';
 			if(e.bytesLoaded == e.bytesTotal) {
+				loadingLabel.text = '';
 				isImageLoaded = true;
 				if(annotationsAreLoaded) {
 					this.addAnnotationsToView();
@@ -553,7 +537,7 @@ package View.components.MediaViewer.PDFViewer
 			
 			if(drawingMode == AnnotationToolbar.BOX || drawingMode == AnnotationToolbar.NOTE)  {
 				// We are drawing a box (not using the pen tool)	
-				// Check they have drawn a box and not just hit save (its at least 2px x 2px)
+				// Check they have drawn a box and not just hxit save (its at least 2px x 2px)
 				if(Math.abs(startAnnotationMouseX - finishAnnotationMouseX) < 2 &&
 					Math.abs(startAnnotationMouseY -finishAnnotationMouseY) < 2) {
 					Alert.show("No annotation drawn");
@@ -571,10 +555,10 @@ package View.components.MediaViewer.PDFViewer
 				// Just a reminder, percentX is < 0, e.g. like 0.5 is 50%
 				// And the widths/heights are like, 50 for 50%
 				// Because the DB stores percentX as a float, and widths/height as an Integer
-				var percentX:Number = Math.min(startAnnotationMouseX, finishAnnotationMouseX) / pdf.width;
-				var percentY:Number = Math.min(startAnnotationMouseY, finishAnnotationMouseY) / pdf.height;
-				var percentWidth:Number = Math.abs(finishAnnotationMouseX - startAnnotationMouseX) / pdf.width * 100;
-				var percentHeight:Number = Math.abs(finishAnnotationMouseY - startAnnotationMouseY) / pdf.height * 100;
+				var percentX:Number = Math.min(startAnnotationMouseX, finishAnnotationMouseX) / (pdf.width * pdf.scaleX);
+				var percentY:Number = Math.min(startAnnotationMouseY, finishAnnotationMouseY) / (pdf.height * pdf.scaleY);
+				var percentWidth:Number = Math.abs(finishAnnotationMouseX - startAnnotationMouseX) / (pdf.width * pdf.scaleX) * 100;
+				var percentHeight:Number = Math.abs(finishAnnotationMouseY - startAnnotationMouseY) / (pdf.height * pdf.scaleY) * 100;
 				var annotationText:String = annotationTextOverlayBox.getText();
 				
 				// Add this as an annotation to the view
@@ -588,13 +572,12 @@ package View.components.MediaViewer.PDFViewer
 					percentWidth, 
 					percentX,
 					percentY,
-					pdf.width,
-					pdf.height
+					pdf.width * pdf.scaleX,
+					pdf.height * pdf.scaleY
 				);
-				annotation.save();
-				
 				annotationsGroup.addElement(annotation);
-				
+				annotation.save();
+
 				// Listen for this annotation being mouse-overed
 				annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
 				annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
@@ -611,27 +594,70 @@ package View.components.MediaViewer.PDFViewer
 				var annotationPen:AnnotationPen = new AnnotationPen(
 					-1,
 					Auth.getInstance().getUsername(),
-					annotationCoordinates.getString(pdf.height, pdf.width),
-					pdf.height,
-					pdf.width,
+					annotationCoordinates.getString(pdf.height * pdf.scaleY, pdf.width * pdf.scaleX),
+					pdf.height * pdf.scaleY,
+					pdf.width * pdf.scaleX,
 					annotationTextOverlayBox.getText()
 				);
+				annotationsGroup.addElement(annotationPen);
 				// Send this new annotation to the database (via the controller)
 				annotationPen.save();
 				
-				annotationsGroup.addElement(annotationPen);
+				
 				
 				annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
 				annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
-				var annotationHightlight:AnnotationHighlight = new AnnotationHighlight(
-					Math.min(startAnnotationMouseX, finishAnnotationMouseX),
-					Math.min(startAnnotationMouseY, finishAnnotationMouseY),
+				
+				if(pdf.getStartTextIndex() == pdf.getEndTextIndex()) {
+					Alert.show("No text highlighted");
+					this.leaveNewAnnotationMode();
+					return;
+				} else if (annotationTextOverlayBox.getText() == "") {
+					Alert.show("No text given");
+					this.leaveNewAnnotationMode();
+					return;
+				}
+				
+//				var event:IDEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_HIGHLIGHT, true);
+//				this.dispatchEvent(event);
+				// Work out the X, Y, width and height as percentages
+				// So that this will work, when scaling
+				
+				// Just a reminder, percentX is < 0, e.g. like 0.5 is 50%
+				if(startAnnotationMouseY < finishAnnotationMouseY) {
+					percentX = (startAnnotationMouseX / pdf.scaleX) / pdf.width;
+					percentY = (startAnnotationMouseY / pdf.scaleY) / pdf.height;
+				} else if (startAnnotationMouseY > finishAnnotationMouseY) {
+					percentX = (finishAnnotationMouseX / pdf.scaleX) / pdf.width;
+					percentY = (finishAnnotationMouseY / pdf.scaleY) / pdf.height;
+				} else {
+					// They must be equal
+					if(startAnnotationMouseX < finishAnnotationMouseX) {
+						percentX = (startAnnotationMouseX / pdf.scaleX) / pdf.width;
+						percentY = (startAnnotationMouseY / pdf.scaleY) / pdf.height;
+					} else {
+						percentX = (finishAnnotationMouseX / pdf.scaleX) / pdf.width;
+						percentY = (finishAnnotationMouseY / pdf.scaleY) / pdf.height;
+					}					
+				}
+				
+				
+				var annotationHighlight:AnnotationHighlight = new AnnotationHighlight(
+					-1,
+					Auth.getInstance().getUsername(),
+					annotationTextOverlayBox.getText(),
+					percentX,
+					percentY,
 					pdf.getSelectionPage(),
 					pdf.getStartTextIndex(),
 					pdf.getEndTextIndex(),
 					pdf
 				);
+				annotationsGroup.addElement(annotationHighlight);
+				annotationHighlight.save();
+				
+				pdf.clearHighlight();
 			}
 			
 			this.leaveNewAnnotationMode();
@@ -671,6 +697,7 @@ package View.components.MediaViewer.PDFViewer
 		 */		
 		private function annotationMouseOver(e:MouseEvent):void {
 			// Get out the annotation
+			trace("Mouse overed", e.target);
 			var annotation:AnnotationInterface = (e.target as AnnotationInterface);
 			
 			// Highlight this annotation
@@ -756,7 +783,7 @@ package View.components.MediaViewer.PDFViewer
 				trace("drawing a highlight");
 				trace("Starting to draw annotation at", startAnnotationMouseX, startAnnotationMouseY);
 				
-				pdf.highlight(startAnnotationMouseX, startAnnotationMouseY, startAnnotationMouseX, startAnnotationMouseY);
+				pdf.highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, startAnnotationMouseX, startAnnotationMouseY);
 			} else if (drawingMode == AnnotationToolbar.NOTE) {
 				trace("Placing a note");
 				// For the box, we want to make a new note, everytime 
@@ -828,7 +855,7 @@ package View.components.MediaViewer.PDFViewer
 			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
 				trace("Adding an text highlight stuff");
 				pdf.clearHighlight();
-				pdf.highlight(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
+				pdf.highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
 			} 
 			
 		}
@@ -889,7 +916,11 @@ package View.components.MediaViewer.PDFViewer
 				startAnnotationMouseY = e.target.mouseY;
 			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
 				trace("highlighting some text");
-				pdf.highlight(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
+				pdf.highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
+				
+				// Show the annotation text overlay in text entry mode
+				showAnnotationTextOverlayTextEntryMode();
+				
 			} else if (drawingMode == AnnotationToolbar.NOTE) {
 
 				// Save the stopping coordinates
@@ -914,20 +945,20 @@ package View.components.MediaViewer.PDFViewer
 		 * 
 		 */		
 		private function resizeImage(e:Event):void {
-//			trace("resizing");
-//			trace((e.target as HSlider).value);
-//			var resizeFactor:Number = (e.target as HSlider).value / 100; 
-//			
-////			trace("Actual image size", pdf.contentWidth, pdf.contentHeight);
-//			
-//			// Resize the image by the scaling facotr
-//			pdf.width = actualImageWidth * resizeFactor;
-//			pdf.height = actualImageHeight * resizeFactor;
-//			
+			trace("resizing");
+			trace((e.target as HSlider).value);
+			var resizeFactor:Number = (e.target as HSlider).value / 100; 
+			
+//			trace("Actual image size", pdf.contentWidth, pdf.contentHeight);
+			
+			// Resize the image by the scaling facotr
+			pdf.scaleX = resizeFactor;
+			pdf.scaleY = resizeFactor;
+			
 			// Reposition the annotations based on the new image size
 			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
 				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
-				annotation.readjust(pdf.width, pdf.height);
+				annotation.readjust(pdf.width * pdf.scaleX, pdf.height * pdf.scaleY);
 			}
 		}
 		
@@ -1074,6 +1105,8 @@ package View.components.MediaViewer.PDFViewer
 			
 			trace("image dimensions:", pdf.width, pdf.height);
 			
+			trace("Adding", annotationsArray.length, "annotations");
+			
 			// Go through all the annotations
 			for(var i:Number = 0; i < annotationsArray.length; i++) {
 				
@@ -1091,8 +1124,8 @@ package View.components.MediaViewer.PDFViewer
 						annotationData.annotation_width, 
 						annotationData.annotation_x,
 						annotationData.annotation_y,
-						pdf.width,
-						pdf.height
+						pdf.width * pdf.scaleX,
+						pdf.height * pdf.scaleY
 					);
 					trace("Added at", annotation.x, annotation.y);
 					
@@ -1101,12 +1134,13 @@ package View.components.MediaViewer.PDFViewer
 					annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
 					annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 				} else if (annotationData.annotationType == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
+					trace("Adding pen annotation");
 					var annotationPen:AnnotationPen = new AnnotationPen(
 						annotationData.base_asset_id,
 						annotationData.meta_creator,
 						annotationData.path,
-						pdf.height,
-						pdf.width,
+						pdf.height * pdf.scaleY,
+						pdf.width * pdf.scaleX,
 						annotationData.annotation_text
 					);
 					
@@ -1116,13 +1150,31 @@ package View.components.MediaViewer.PDFViewer
 					// Listen for this annotation being mouse-overed
 					annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
 					annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
+				} else if (annotationData.annotationType == Model_Commentary.ANNOTATION_HIGHLIGHT_TYPE_ID) {
+					trace("Adding an highlight annotation");
+					var annotationHighlight:AnnotationHighlight = new AnnotationHighlight(
+						annotationData.base_asset_id,
+						annotationData.meta_creator,
+						annotationData.annotation_text,
+						annotationData.annotation_x,
+						annotationData.annotation_y,
+						annotationData.annotation_linenum,
+						annotationData.annotation_start,
+						annotationData.annotation_end,
+						pdf
+					);
+
+					trace(annotationHighlight);
+					annotationsGroup.addElement(annotationHighlight);
+					
+					// Listen for this annotation being mouse-overed
+					annotationHighlight.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
+					annotationHighlight.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 				} else {
-					trace("Unknown annotation type found");
+					trace("Unknown annotation");
 				}
-				
-				
-				
 			}
+			trace("*****************");
 		}
 		
 		/* ============= HELPER FUNCTIONS ============= */

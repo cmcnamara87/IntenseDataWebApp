@@ -8,22 +8,48 @@ package View.components.Annotation
 
 	public class AnnotationHighlight extends BorderContainer implements AnnotationInterface
 	{
-		private var startX:Number;
-		private var startY:Number;
+		private var percentX:Number;
+		private var percentY:Number;
 		private var page1:Number;
 		private var startTextIndex:Number;
 		private var endTextIndex:Number;
 		private var pdf:PDF;
+		private var assetID:Number;
+		private var author:String;
+		private var text:String;
 		
-		public function AnnotationHighlight(startX:Number, startY:Number, page1:Number, startTextIndex:Number, endTextIndex:Number, pdf:PDF)
+		public function AnnotationHighlight(assetID:Number, author:String, text:String, percentX:Number, percentY:Number, page1:Number, startTextIndex:Number, endTextIndex:Number, pdf:PDF)
 		{
 			trace("Highlight created");
+			// Save the annotation data
+			this.assetID = assetID;
+			this.author = author
+			this.text = text;
 			this.percentX = percentX;
-			this.percentX = startY;
+			this.percentY = percentY;
 			this.page1 = page1;
 			this.startTextIndex = startTextIndex;
 			this.endTextIndex = endTextIndex;
 			this.pdf = pdf;
+			
+			// Setup size
+			this.height = 10;
+			this.width = 10
+			
+			// Setup position
+			this.x = this.percentX * pdf.width * pdf.scaleX;
+			this.y = this.percentY * pdf.height * pdf.scaleY;
+			
+			// Setup color
+			this.setStyle('backgroundColor',0xFFFF00);
+			this.setStyle('backgroundAlpha', 0.9); 
+			this.setStyle('borderStyle', 'solid');
+			this.setStyle('borderColor', 0x000000);
+			
+			// This is so the mouse events work correctly
+			// otherwise it picks up the 'bordercontainerskin' class instead of
+			// this Annotation class.
+			this.mouseChildren = false;
 		}
 		
 		/* PUBLIC FUNCTIONS */
@@ -32,12 +58,15 @@ package View.components.Annotation
 		 * 
 		 */		
 		public function save():void {
+			trace("Saving annotation highlight");
 			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_HIGHLIGHT, true);
-			myEvent.data.startX = startX;
-			myEvent.data.startY = startY;
+			myEvent.data.percentX = percentX;
+			myEvent.data.percentY = percentY;
 			myEvent.data.page1 = page1;
 			myEvent.data.startTextIndex = startTextIndex;
 			myEvent.data.endTextIndex = endTextIndex;
+			myEvent.data.text = text;
+			trace("Trying to dispatch event");
 			this.dispatchEvent(myEvent);
 		}
 		
@@ -55,16 +84,14 @@ package View.components.Annotation
 		}
 		
 		public function highlight():void {
-			this.setStyle('borderColor', 0xFFFFFF);
-			this.setStyle('backgroundColor',0xFFFFFF);
-			this.setStyle('backgroundAlpha', 0.02); 
+			pdf.highlightFromIndexes(page1, startTextIndex, endTextIndex, true);
+			this.alpha = 0.1;
 		}
 		
 		
 		public function unhighlight():void {
-			this.setStyle('backgroundColor',0xFF0000);
-			this.setStyle('backgroundAlpha', 0.05); 
-			this.setStyle('borderColor', 0xBB0000);
+			pdf.highlightFromIndexes(page1, startTextIndex, endTextIndex, false);
+			this.alpha = 1;
 		}
 		
 		/**

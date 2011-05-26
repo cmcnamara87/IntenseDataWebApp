@@ -35,7 +35,6 @@ package View.components.Annotation
 			// this Annotation class.
 			this.mouseChildren = false;
 
-			trace("dimensions of image", mediasWidth, mediasHeight);
 			// Save the annotation data
 			this.author = author;
 			this.text = text;

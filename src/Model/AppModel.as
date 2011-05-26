@@ -439,6 +439,54 @@ package Model {
 			}
 			
 		}
+		
+		public function saveNewHighlightAnnotation(mediaAssetID:Number, percentX:Number, percentY:Number, page1:Number, startTextIndex:Number, 
+													endTextIndex:Number, text:String, callback:Function) {
+			var args:Object = new Object();
+			args.namespace = "recensio";
+			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
+			
+			// Set the annotations parent media asset
+			baseXML.service.args["related"]["to"] = mediaAssetID;
+			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
+			baseXML.service.args["meta"]["r_base"]["active"] = "true";
+			
+			// Set the creator to be the current user
+			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
+			baseXML.service.args["meta"]["r_base"].@id = 2;
+			
+			// Set it as an annotation
+			baseXML.service.args["meta"]["r_resource"]["title"] = "Annotation";
+			baseXML.service.args["meta"]["r_resource"]["description"] = " ";
+			
+			// Set All of the annotations data
+			baseXML.service.args["meta"]["r_annotation"]["x"] = percentX;
+			baseXML.service.args["meta"]["r_annotation"]["y"] = percentY;
+			baseXML.service.args["meta"]["r_annotation"]["start"] = startTextIndex;
+			baseXML.service.args["meta"]["r_annotation"]["end"] = endTextIndex;
+			baseXML.service.args["meta"]["r_annotation"]["text"] = text;
+			baseXML.service.args["meta"]["r_annotation"]["lineNum"] = page1; // We are storing the page number, in the lin num variable
+			
+			// I have absolutely no idea what this is, so im commenting it out for now
+			//			if(assetData.path != "") {
+			//				baseXML.service.args["meta"]["r_annotation"]["path"] = assetData.path;
+			//			}
+			
+			// This annotation is a 'Annotation' annotation, lol, not a comment
+			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.ANNOTATION_HIGHLIGHT_TYPE_ID + "";
+			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
+			trace(baseXML);
+			
+			// Try and save, then call the callback.
+			if(_connection.sendRequest(baseXML, callback)) {
+				trace("- App Model: Annotation Saved");
+				//All good
+			} else {
+				Alert.show("Could not save annotation");
+			}
+			
+		}
 		/**
 		 * Saves a new Box Annotation. 
 		 * @param mediaAssetID	The ID of the media asset, the annotation is on
@@ -970,7 +1018,8 @@ package Model {
 				asset.setData(assetXML);
 				
 				// Only add it to the return array if its a Annotation
-				if(asset.annotationType == Model_Commentary.ANNOTATION_BOX_TYPE_ID || asset.annotationType == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
+				if(asset.annotationType == Model_Commentary.ANNOTATION_BOX_TYPE_ID || asset.annotationType == Model_Commentary.ANNOTATION_PEN_TYPE_ID
+						|| asset.annotationType == Model_Commentary.ANNOTATION_HIGHLIGHT_TYPE_ID) {
 					assets.push(asset);
 				}
 				

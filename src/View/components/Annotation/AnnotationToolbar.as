@@ -56,15 +56,15 @@ package View.components.Annotation
 		
 		private var imageViewer:MediaViewer;
 		
-		public function AnnotationToolbar(imageViewer:MediaViewer)
+		public function AnnotationToolbar(imageViewer:MediaViewer, includeTextButton:Boolean)
 		{
 			// Save the media viewer we are attached to (most likely the iamge for now)
 			this.imageViewer = imageViewer;
 			
 			this.hide();
-			
-			noteButton = IDGUI.makeToggleButton("Add Note");
-			this.addElement(noteButton);
+//			
+//			noteButton = IDGUI.makeToggleButton("Add Note");
+//			this.addElement(noteButton);
 			
 			// Create the Box Button
 			drawBoxButton = IDGUI.makeToggleButton("Draw Box", true);
@@ -74,11 +74,14 @@ package View.components.Annotation
 			freeDrawButton = IDGUI.makeToggleButton("Free Draw");
 			this.addElement(freeDrawButton);
 			
-			
 			textHighlightButton = IDGUI.makeToggleButton("Highlight Text");
 			this.addElement(textHighlightButton);
+			if(!includeTextButton) {
+				textHighlightButton.visible = false;
+				textHighlightButton.includeInLayout = false;
+			}
 			
-			annotationTypeButtons = [drawBoxButton, freeDrawButton, noteButton, textHighlightButton];
+			annotationTypeButtons = [drawBoxButton, freeDrawButton, textHighlightButton];
 			
 			// Create the veritcal line, that sits after the 'free draw button'
 			var optionsLine:Line = IDGUI.makeLine(0xBBBB00)

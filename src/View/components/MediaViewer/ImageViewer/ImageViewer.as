@@ -122,7 +122,7 @@ package View.components.MediaViewer.ImageViewer
 			
 			// Create the Annotation Tools toolbar
 			// Will show 'Box tool', 'Pen Tool', 'Save' and 'Cancel' Buttons
-			annotationToolbar = new AnnotationToolbar(this);
+			annotationToolbar = new AnnotationToolbar(this, false);
 			this.addElement(annotationToolbar);
 			
 			// Creatoe a group for the Image Scroller and the Annotation Text Overlay
@@ -527,7 +527,7 @@ package View.components.MediaViewer.ImageViewer
 		}
 		
 
-		public function saveAnnotation():void {
+		override public function saveNewAnnotation():void {
 			trace("Save Button Clicked");
 
 			// Check what drawing mode we are in
