@@ -1,5 +1,5 @@
 package View.Element {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
 	import Model.Model_Commentary;
@@ -26,7 +26,7 @@ package View.Element {
 		
 		// Dispatches an event containing the form information
 		private function updateInformation(e:MouseEvent):void {
-			var rec:RecensioEvent = new RecensioEvent(RecensioEvent.ASSET_UPDATE);
+			var rec:IDEvent = new IDEvent(IDEvent.ASSET_UPDATE);
 			rec.data.meta_title = optionsForm.meta_title.text;
 			rec.data.meta_description = optionsForm.meta_description.text;
 			rec.data.meta_datepublished = optionsForm.meta_datepublished.text;

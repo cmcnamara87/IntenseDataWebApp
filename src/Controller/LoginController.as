@@ -36,8 +36,8 @@ package Controller {
 		
 		// Setup specific event listeners
 		private function setupEventListeners():void {
-			(view as Login).loginbox.addEventListener(RecensioEvent.LOGIN_CLICKED,loginClicked);
-			Auth.getInstance().addEventListener(RecensioEvent.LOGIN_RESPONSE, loginResponse);
+			(view as Login).loginbox.addEventListener(IDEvent.LOGIN_CLICKED,loginClicked);
+			Auth.getInstance().addEventListener(IDEvent.LOGIN_RESPONSE, loginResponse);
 		} 
 		
 		// Called when the login button is clicked.  Will automatically login with manager credentials if autologin is set
@@ -51,7 +51,7 @@ package Controller {
 		}
 		
 		// Response whether login was successful
-		private function loginResponse(e:RecensioEvent):void {
+		private function loginResponse(e:IDEvent):void {
 			trace("- Login Response Received", loginAlreadyReceived);
 			// TODO need to fix this. (described by static variable at the top)
 			if(loginAlreadyReceived) {

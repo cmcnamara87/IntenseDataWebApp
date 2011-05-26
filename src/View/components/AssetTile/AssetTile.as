@@ -1,7 +1,7 @@
 package View.components.AssetTile
 {
 	import Controller.BrowserController;
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
 	import Model.Model_Commentary;
@@ -172,7 +172,7 @@ package View.components.AssetTile
 			image.showRegularIcon();
 
 			// Make new asset clicked event
-			var clickEvent:RecensioEvent = new RecensioEvent(eventToThrowWhenClicked, true);
+			var clickEvent:IDEvent = new IDEvent(eventToThrowWhenClicked, true);
 			// Include ALL media data (so we can add to shelf/edit with all the data it needs), or, its just ignored if we are going to the asset
 			clickEvent.data.assetData = assetData;
 			this.dispatchEvent(clickEvent);

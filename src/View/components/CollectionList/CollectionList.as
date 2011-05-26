@@ -1,7 +1,7 @@
 package View.components.CollectionList
 {
 	import Controller.BrowserController;
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Model.Model_Collection;
 	
@@ -106,10 +106,10 @@ package View.components.CollectionList
 			
 			// Add the 'All Assets' and 'Shared Assets' to the fixed collections part of the list.
 			fixedCollectionListItems.addElement(new CollectionListItemFixed(BrowserController.ALLASSETID, 
-				'All Assets', RecensioEvent.ASSET_COLLECTION_ALL_MEDIA));
+				'All Assets', IDEvent.ASSET_COLLECTION_ALL_MEDIA));
 			
 			fixedCollectionListItems.addElement(new CollectionListItemFixed(BrowserController.SHAREDID, 
-				'Shared With Me', RecensioEvent.ASSET_COLLECTION_SHARED_WITH_ME));
+				'Shared With Me', IDEvent.ASSET_COLLECTION_SHARED_WITH_ME));
 			
 			
 			// Add a line to separate the 'smart collections' and the regular collections
@@ -251,7 +251,7 @@ package View.components.CollectionList
 				createCollectionButton.label = "New Collection";
 			}
 			
-			var clickEvent:RecensioEvent = new RecensioEvent(RecensioEvent.SHELF_CLICKED, true);
+			var clickEvent:IDEvent = new IDEvent(IDEvent.SHELF_CLICKED, true);
 			// Pass through the shelfs boolean value (true or false, shown or not shown)
 			clickEvent.data.shelfState = createCollectionButton.selected;
 			this.dispatchEvent(clickEvent);

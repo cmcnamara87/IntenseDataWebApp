@@ -1,6 +1,6 @@
 package Module.Videoviewer {
 	
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -154,7 +154,7 @@ package Module.Videoviewer {
 		 */		
 		private function setStartClicked(e:MouseEvent):void {
 			trace("set Start was clicked");
-			var event:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_START_SET);
+			var event:IDEvent = new IDEvent(IDEvent.ANNOTATION_START_SET);
 			dispatchEvent(event);
 		}
 		
@@ -165,7 +165,7 @@ package Module.Videoviewer {
 		 */		
 		private function setEndClicked(e:MouseEvent):void {
 			trace("set end was clicked");
-			var event:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_END_SET);
+			var event:IDEvent = new IDEvent(IDEvent.ANNOTATION_END_SET);
 			dispatchEvent(event);
 			
 		}

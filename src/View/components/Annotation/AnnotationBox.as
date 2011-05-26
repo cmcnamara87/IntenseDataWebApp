@@ -1,6 +1,6 @@
 package View.components.Annotation
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Model.Model_Commentary;
 	
@@ -75,7 +75,19 @@ package View.components.Annotation
 		}
 		
 		/* PUBLIC FUNCTIONS */
-		
+		/**
+		 * Tells the controller to save this annotation in the database. 
+		 * 
+		 */		
+		public function save():void {
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_BOX, true);
+			myEvent.data.percentX = percentX;
+			myEvent.data.percentY = percentY;
+			myEvent.data.percentWidth = percentWidth;
+			myEvent.data.percentHeight = percentHeight;
+			myEvent.data.annotationText = text;
+			this.dispatchEvent(myEvent);
+		}
 		
 		/**
 		 * Called when the image is resized, so we need to recalculate the X and Y positions

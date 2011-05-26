@@ -1,6 +1,6 @@
 package View.components.MediaViewer.ImageViewer
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
 	import Lib.AnnotationCoordinateCollection;
@@ -561,7 +561,7 @@ package View.components.MediaViewer.ImageViewer
 				var annotationText:String = annotationTextOverlayBox.getText();
 				
 				// Send the event
-				var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_SAVE_BOX, true);
+				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_BOX, true);
 				myEvent.data.percentX = percentX;
 				myEvent.data.percentY = percentY;
 				myEvent.data.percentWidth = percentWidth;
@@ -598,7 +598,7 @@ package View.components.MediaViewer.ImageViewer
 					return;
 				}
 				
-				myEvent = new RecensioEvent(RecensioEvent.ANNOTATION_SAVE_PEN, true);
+				myEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_PEN, true);
 				
 				myEvent.data.path = annotationCoordinates.getString(image.height, image.width);
 				myEvent.data.text = annotationTextOverlayBox.getText();
@@ -689,7 +689,7 @@ package View.components.MediaViewer.ImageViewer
 			var annotation:AnnotationBox = (e.target as AnnotationBox);
 			annotation.visible = false;
 			trace("Annotation Deletion Clicked", assetID);
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_DELETED, true);
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_DELETED, true);
 			myEvent.data.assetID = annotation.getID();
 			this.dispatchEvent(myEvent);
 		}

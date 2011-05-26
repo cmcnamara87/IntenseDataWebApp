@@ -1,6 +1,6 @@
 package View.components.Annotation
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import View.components.IDGUI;
 	import View.components.MediaViewer.ImageViewer.ImageViewer;

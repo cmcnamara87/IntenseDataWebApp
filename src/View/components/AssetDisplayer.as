@@ -1,6 +1,6 @@
 package View.components
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
 	import Lib.LoadingAnimation.LoadAnim;

@@ -1,6 +1,6 @@
 package View.Element {
 	
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;

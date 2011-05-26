@@ -1,6 +1,6 @@
 package View.components.AnnotationList
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
 	import Model.Model_Commentary;

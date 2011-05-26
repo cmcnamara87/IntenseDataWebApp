@@ -42,10 +42,10 @@ package Controller {
 		
 		// Setup specific event listeners
 		private function setupEventListeners():void {
-			(view as NewAsset).uploadForm.addEventListener(RecensioEvent.UPLOAD_CLICKED,uploadClicked);
-			(view as NewAsset).navbar.addEventListener(RecensioEvent.NAV_CLICKED,navBarClicked);
-			(view as NewAsset).uploadForm.addEventListener(RecensioEvent.FORM_CHANGED,validate);
-			(view as NewAsset).metaForm.addEventListener(RecensioEvent.FORM_CHANGED,validate);
+			(view as NewAsset).uploadForm.addEventListener(IDEvent.UPLOAD_CLICKED,uploadClicked);
+			(view as NewAsset).navbar.addEventListener(IDEvent.NAV_CLICKED,navBarClicked);
+			(view as NewAsset).uploadForm.addEventListener(IDEvent.FORM_CHANGED,validate);
+			(view as NewAsset).metaForm.addEventListener(IDEvent.FORM_CHANGED,validate);
 		}
 		
 		// Setup the navigation bar
@@ -57,7 +57,7 @@ package Controller {
 		}
 		
 		// Called when a button on the navigation bar is clicked
-		private function navBarClicked(e:RecensioEvent):void {
+		private function navBarClicked(e:IDEvent):void {
 			switch(e.data.buttonName) {
 				case 'back':
 					Dispatcher.call("browse");
@@ -73,7 +73,7 @@ package Controller {
 		}
 		
 		// Called when the upload area is clicked - creates the browse dialog and sets up file upload events
-		private function uploadClicked(e:RecensioEvent):void {
+		private function uploadClicked(e:IDEvent):void {
 			uploadFile = new FileReference();
 			uploadFile.addEventListener(ProgressEvent.PROGRESS, progressHandler);
 			uploadFile.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
@@ -163,7 +163,7 @@ package Controller {
 		}
 		
 		// Makes sure all required information is completed
-		private function validate(e:RecensioEvent=null):Boolean {
+		private function validate(e:IDEvent=null):Boolean {
 			_validUpload = (view as NewAsset).uploadForm.validate();
 			_validMeta = (view as NewAsset).metaForm.validate();
 			var valid:Boolean = true;

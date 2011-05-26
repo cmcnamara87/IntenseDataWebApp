@@ -4,7 +4,7 @@ package Controller {
 	
 	import mx.messaging.channels.StreamingAMFChannel;
 	
-	public class RecensioEvent extends Event {
+	public class IDEvent extends Event {
 		
 		//Stores data being sent with a RecensioEvent
 		public var data:Object = new Object();
@@ -110,6 +110,7 @@ package Controller {
 			// When the annotation is actually ready to be saved.
 			public static var ANNOTATION_SAVE_BOX:String = "recensio_annotationSaveBox";
 			public static var ANNOTATION_SAVE_PEN:String = "recensio_annotationSavePen";
+			public static var ANNOTATION_SAVE_HIGHLIGHT:String = "recensio_annotationSaveHighlight";
 			
 			public static var ANNOTATION_LIST_ITEM_MOUSEOVER:String = "recensio_annotationListItemMouseOver";
 			public static var ANNOTATION_LIST_ITEM_MOUSEOUT:String = "recensio_annotationListItemMouseOut";
@@ -121,7 +122,7 @@ package Controller {
 			// Called when a user sets the end of an annotation
 			public static var ANNOTATION_END_SET:String = "recensio_annotationEndSet";
 		
-		public function RecensioEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 		}
 	}

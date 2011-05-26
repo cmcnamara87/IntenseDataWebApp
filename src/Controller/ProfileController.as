@@ -57,22 +57,22 @@ package Controller {
 		
 		// Setup specific event listeners
 		private function setupEventListeners():void {
-			profileView.addEventListener(RecensioEvent.USER_CHANGED, userChanged);
-			profileView.addEventListener(RecensioEvent.USER_DETAILS_SAVED, userDetailsSaveButtonClicked);
-			profileView.addEventListener(RecensioEvent.NEW_USER_DETAILS_SAVED, saveNewUserClicked);
+			profileView.addEventListener(IDEvent.USER_CHANGED, userChanged);
+			profileView.addEventListener(IDEvent.USER_DETAILS_SAVED, userDetailsSaveButtonClicked);
+			profileView.addEventListener(IDEvent.NEW_USER_DETAILS_SAVED, saveNewUserClicked);
 			// Listen for the delete user button being clicked
-			profileView.addEventListener(RecensioEvent.DELETE_USER_BUTTON_CLICKED, deleteUserClicked);
+			profileView.addEventListener(IDEvent.DELETE_USER_BUTTON_CLICKED, deleteUserClicked);
 			// Listne for the suspend user button being clicked
-			profileView.addEventListener(RecensioEvent.SUSPEND_USER_BUTTON_CLICKED, suspendUserClicked);
-			profileView.addEventListener(RecensioEvent.UNSUSPEND_USER_BUTTON_CLICKED, unsuspendUserClicked);
+			profileView.addEventListener(IDEvent.SUSPEND_USER_BUTTON_CLICKED, suspendUserClicked);
+			profileView.addEventListener(IDEvent.UNSUSPEND_USER_BUTTON_CLICKED, unsuspendUserClicked);
 			
 			// Listen for users changing their password
-			profileView.addEventListener(RecensioEvent.CHANGE_PASSWORD_CLICKED, changeUserPasswordClicked);
+			profileView.addEventListener(IDEvent.CHANGE_PASSWORD_CLICKED, changeUserPasswordClicked);
 		} 
 		
 		
 		/* ================ CALLS TO THE DATABSE ============== */
-		private function saveNewUserClicked(e:RecensioEvent):void {
+		private function saveNewUserClicked(e:IDEvent):void {
 			trace("- Save Button Event Caught");
 			var data:Object = e.data;
 		
@@ -90,7 +90,7 @@ package Controller {
 		 * @param e
 		 * 
 		 */		
-		private function deleteUserClicked(e:RecensioEvent):void {
+		private function deleteUserClicked(e:IDEvent):void {
 			
 			AppModel.getInstance().deleteUser(selectedusername, "system", userDeleted);
 		}
@@ -100,12 +100,12 @@ package Controller {
 		 * @param e
 		 * 
 		 */		
-		private function suspendUserClicked(e:RecensioEvent):void {
+		private function suspendUserClicked(e:IDEvent):void {
 			trace("Suspend clicked");
 			AppModel.getInstance().suspendUser(selectedusername, "system", userSuspended);
 		}
 		
-		private function unsuspendUserClicked(e:RecensioEvent):void {
+		private function unsuspendUserClicked(e:IDEvent):void {
 			trace("unsuspend clicked");
 			AppModel.getInstance().unsuspendUser(selectedusername, "system", userSuspended);
 		}
@@ -116,7 +116,7 @@ package Controller {
 		 * @param e.newPassword	The users new password for their account
 		 * 
 		 */		
-		private function changeUserPasswordClicked(e:RecensioEvent):void {
+		private function changeUserPasswordClicked(e:IDEvent):void {
 			trace("Change password button clicked");
 			//user.password.set :domain system :user coke :old-password test :password test2
 			var newPassword:String = e.data.newPassword;
@@ -129,7 +129,7 @@ package Controller {
 		* @param e
 		* 
 		*/		
-		private function userDetailsSaveButtonClicked(e:RecensioEvent):void {
+		private function userDetailsSaveButtonClicked(e:IDEvent):void {
 			//			details["meta_firstname"] = (view as Profile).meta_firstname.text;
 			//			details["meta_lastname"] = (view as Profile).meta_lastname.text;
 			//			details["meta_email"] = (view as Profile).meta_email.text;
@@ -202,7 +202,7 @@ package Controller {
 		 * @param e
 		 * 
 		 */		
-		private function userChanged(e:RecensioEvent):void {
+		private function userChanged(e:IDEvent):void {
 			selectedusername = e.data.username;
 			AppModel.getInstance().getUserDetails(selectedusername, "system", userDetailsReceived);
 		}

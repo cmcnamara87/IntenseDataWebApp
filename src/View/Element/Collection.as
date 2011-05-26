@@ -1,5 +1,5 @@
 package View.Element {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Lib.it.transitions.Tweener;
 	
@@ -53,8 +53,8 @@ package View.Element {
 		// Sets up the title bar and event listeners
 		private function setupTitlebar():void {
 			addChild(titlebar);
-			titlebar.addEventListener(RecensioEvent.COLLECTION_CLICKED,toggleAssets);
-			titlebar.addEventListener(RecensioEvent.COLLECTION_NAV_CLICKED,toggleCollectionMode);
+			titlebar.addEventListener(IDEvent.COLLECTION_CLICKED,toggleAssets);
+			titlebar.addEventListener(IDEvent.COLLECTION_NAV_CLICKED,toggleCollectionMode);
 		}
 		
 		// Sets up the asset area
@@ -81,7 +81,7 @@ package View.Element {
 			drawAssets();
 			if(_newCollection) {
 				if(assetArea.height > 101) {
-					this.dispatchEvent(new RecensioEvent(RecensioEvent.COLLECTION_CLICKED));
+					this.dispatchEvent(new IDEvent(IDEvent.COLLECTION_CLICKED));
 				}
 			}
 			assetArea.width = theWidth;
@@ -117,7 +117,7 @@ package View.Element {
 			assetArea.alpha = 0;
 			Tweener.addTween(assetArea,{height:assetArea.height,transition:"easeInOutCubic",time:0.5,alpha:1,onUpdate:draw});
 			draw();
-			this.dispatchEvent(new RecensioEvent(RecensioEvent.COLLECTION_CLICKED));
+			this.dispatchEvent(new IDEvent(IDEvent.COLLECTION_CLICKED));
 		}
 		
 		// Draws each of the asset previews for the collection (or all assets if in editing mode)
@@ -184,7 +184,7 @@ package View.Element {
 				//need to save this to a changed datastructure
 			} else {
 				var assetID:Number = (e.target as AssetPreviewMedia).getID();
-				var clickEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ASSET_MEDIA_CLICKED);
+				var clickEvent:IDEvent = new IDEvent(IDEvent.ASSET_MEDIA_CLICKED);
 				clickEvent.data.assetID = assetID;
 				this.dispatchEvent(clickEvent);
 			}
@@ -214,7 +214,7 @@ package View.Element {
 			drawAssets();
 			assetArea.height = 0;
 			draw();
-			this.dispatchEvent(new RecensioEvent(RecensioEvent.COLLECTION_CLICKED));
+			this.dispatchEvent(new IDEvent(IDEvent.COLLECTION_CLICKED));
 		}
 		
 		// Toggles whether the assets are shown or hidden
@@ -232,7 +232,7 @@ package View.Element {
 		}
 		
 		// Toggles between a new collection, or editing or viewed, or deleted
-		private function toggleCollectionMode(e:RecensioEvent):void {
+		private function toggleCollectionMode(e:IDEvent):void {
 			switch(e.data.buttonName) {
 				case 'Create':
 					editMode = false;
@@ -275,7 +275,7 @@ package View.Element {
 				}
 			}
 			collectionData.meta_description = collectionData.numberOfChildren()+"";
-			var saveEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COLLECTION_SAVE);
+			var saveEvent:IDEvent = new IDEvent(IDEvent.COLLECTION_SAVE);
 			saveEvent.data.assetID = collectionData.base_asset_id;
 			saveEvent.data.meta_title = collectionData.meta_title;
 			saveEvent.data.meta_description = collectionData.meta_description;
@@ -285,7 +285,7 @@ package View.Element {
 		
 		// Called when the collection is to be deleted
 		private function deleteCollection():void {
-			var deleteEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COLLECTION_DELETED);
+			var deleteEvent:IDEvent = new IDEvent(IDEvent.COLLECTION_DELETED);
 			deleteEvent.data.assetID = collectionData.base_asset_id;
 			this.dispatchEvent(deleteEvent);
 		}

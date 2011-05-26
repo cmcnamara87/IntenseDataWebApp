@@ -2,7 +2,7 @@ package View.components.Comments
 {
 //	import Model.Model_Annotation;
 	
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
 	import View.components.PanelElement;
@@ -153,7 +153,7 @@ package View.components.Comments
 		 */		
 		private function replyButtonClicked(e:MouseEvent):void {
 			trace("Reply button clicked");
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COMMENT_REPLY, true);
+			var myEvent:IDEvent = new IDEvent(IDEvent.COMMENT_REPLY, true);
 			// Store this comment in the event, so @see CommentPanel can play the reply comment
 			// after this one.
 			myEvent.data.replyToComment = this;
@@ -163,7 +163,7 @@ package View.components.Comments
 		
 		private function deleteButtonClicked(e:MouseEvent):void {
 			trace("Delete Button Clicked");
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COMMENT_DELETE, true);
+			var myEvent:IDEvent = new IDEvent(IDEvent.COMMENT_DELETE, true);
 			myEvent.data.assetID = this.assetID;
 			this.dispatchEvent(myEvent);
 			this.visible = false;

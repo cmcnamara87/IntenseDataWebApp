@@ -2,7 +2,7 @@ package View.components.AnnotationList
 {
 	//	import Model.Model_Annotation;
 	
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
 	import View.components.PanelElement;
@@ -120,14 +120,14 @@ package View.components.AnnotationList
 		/* ============ EVENT LISTENER FUNCTIONS ===================== */
 		private function annotationMouseOver(e:MouseEvent):void {
 			trace("List Item Mouse Over", assetID);
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, true);
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, true);
 			myEvent.data.assetID = assetID;
 			this.dispatchEvent(myEvent);
 		}
 		
 		private function annotationMouseOut(e:MouseEvent):void {
 			trace("List Item Mouse Out", assetID);
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_LIST_ITEM_MOUSEOUT, true);
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOUT, true);
 			myEvent.data.assetID = assetID;
 			this.dispatchEvent(myEvent);
 			
@@ -137,7 +137,7 @@ package View.components.AnnotationList
 			trace("Annotation Deletion Clicked", assetID);
 			this.height = 0;
 			this.visible = false;
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_DELETED, true);
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_DELETED, true);
 			myEvent.data.assetID = assetID;
 			this.dispatchEvent(myEvent);
 		}

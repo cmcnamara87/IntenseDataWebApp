@@ -1,5 +1,7 @@
 package View.components.Annotation
 {
+	import Controller.IDEvent;
+	
 	import mx.containers.Canvas;
 	
 	public class AnnotationPen extends Canvas implements AnnotationInterface
@@ -51,6 +53,17 @@ package View.components.Annotation
 			redraw(AnnotationToolbar.RED);
 		}
 		
+		/**
+		 * Saves this annotation in the database 
+		 * @return 
+		 * 
+		 */		
+		public function save():void{
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_PEN, true);
+			myEvent.data.path = path;
+			myEvent.data.text = text;
+			this.dispatchEvent(myEvent);
+		}
 		/**
 		 * Redraws the path in this object based on this.mediasHeight and this.mediasWidth 
 		 * 

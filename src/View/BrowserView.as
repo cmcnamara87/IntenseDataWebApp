@@ -1,6 +1,6 @@
 package View
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Model.Model_Commentary;
 	import Model.Model_Media;
@@ -108,10 +108,10 @@ package View
 			// Listen for Comments Button being clicked (done in here, 
 			// instead of the controller, cause it doesnt really need to save stuff like it does
 			// with the shelf).
-			this.addEventListener(RecensioEvent.COMMENT_NAV_CLICKED, commentsButtonClicked);
-			this.addEventListener(RecensioEvent.SHARE_BUTTON_CLICKED, shareButtonClicked);
+			this.addEventListener(IDEvent.COMMENT_NAV_CLICKED, commentsButtonClicked);
+			this.addEventListener(IDEvent.SHARE_BUTTON_CLICKED, shareButtonClicked);
 			// Listen for Search Term Entry
-			this.addEventListener(RecensioEvent.LIVE_SEARCH, searchTermEntered);
+			this.addEventListener(IDEvent.LIVE_SEARCH, searchTermEntered);
 		}
 		
 		/**
@@ -319,7 +319,7 @@ package View
 		
 		
 		/* ============== EVENT LISTENER FUNCTIONS ==================== */
-		private function commentsButtonClicked(e:RecensioEvent):void {
+		private function commentsButtonClicked(e:IDEvent):void {
 //			if(e.data.buttonState) {
 				mySharingPanel.width = 0;
 				
@@ -329,7 +329,7 @@ package View
 //			}
 		}
 		
-		private function shareButtonClicked(e:RecensioEvent):void {
+		private function shareButtonClicked(e:IDEvent):void {
 //			if(e.data.buttonState) {
 				myCommentsPanel.width = 0;
 				
@@ -345,7 +345,7 @@ package View
 		 * @param e
 		 * 
 		 */		
-		private function searchTermEntered(e:RecensioEvent):void {
+		private function searchTermEntered(e:IDEvent):void {
 			trace("Search Event Caught");
 			var searchTerm:String = e.data.searchTerm;
 			myAssetBrowser.searchForAsset(searchTerm);

@@ -33,7 +33,7 @@ package View.components.MediaViewer.PDFViewer {
 		private var pdfScale:Number = 100;
 		private var PDF1:MovieClip;
 		
-		private var PDFPageSpace:Number = 20;
+		private var pdfPageSpace:Number = 20;
 		
 		public var pdfContainer:MovieClip = new MovieClip;
 		public var PDFLoaded:Boolean = false;
@@ -75,7 +75,16 @@ package View.components.MediaViewer.PDFViewer {
 		private var pageTimeoutTimer:Timer = new Timer(2000);
 		private var retries:Number = 0;
 		
+		
+		// CRAIGS VARIABLES
 		private var pageNumberBeingLoaded:Number = 1; // The page of the pdf we are currently loading. Starts at 1
+		private var textSnapshotArray:Array = new Array(); // Stores the text snapshot for each page we have. We need to store the text
+															// snapshots otherwise they get garbage collected and the highlighting
+															// will disappear. This is a bug.
+		private var pdfHeight:Number; // The number of pixels in height for the current pdf page + the spacer
+		private var startTextIndex:Number; // The index of what point in the document we are starting highlighting (e.g. character 112)
+		private var endTextIndex:Number; // The index of what point in the document we are finishing highlighting (e.g. character 120)
+		private var selectionPage:Number; // The page where the selection starts
 		
 		public function PDF(swfURL:String,viewer:PDFViewer,selectColour:uint,selectAccuracy:uint) {
 			
@@ -144,13 +153,19 @@ package View.components.MediaViewer.PDFViewer {
 			fullPDF.gotoAndStop(pageNumberBeingLoaded);
 			
 			// Position the page on the screen
-			fullPDF.y = (pageNumberBeingLoaded - 1) * (fullPDF.height + PDFPageSpace);
+			fullPDF.y = (pageNumberBeingLoaded - 1) * (fullPDF.height + pdfPageSpace);
 			// Add this page
 			pdfContainer.addChild(fullPDF);
+			// Add this page's text snapshot to our storage array
+			// We need to do this, so that the text snapshot isnt garbage collected (its a bug!)
+			textSnapshotArray.push(fullPDF.textSnapshot);
 			
 			// we have added new page, so make sure this (the PDF container) is the right size
-			this.height = (pageNumberBeingLoaded) * (fullPDF.height + PDFPageSpace);
+			this.height = (pageNumberBeingLoaded) * (fullPDF.height + pdfPageSpace);
 			this.width = fullPDF.width;
+			
+			// Save the PDF height
+			pdfHeight = fullPDF.height + pdfPageSpace; 
 			
 			// Have we loaded the last page?
 			if(fullPDF.totalFrames > pageNumberBeingLoaded) {
@@ -201,39 +216,111 @@ package View.components.MediaViewer.PDFViewer {
 		
 		/**
 		 * Highlights text between x,y coordinate pairs.  
-		 * @param startX
-		 * @param startY
-		 * @param finishX
-		 * @param finishY
+		 * @param startX	The X Coordinate of where we started to highlight
+		 * @param startY	The Y Coordinate of where we started to highlight
+		 * @param finishX	The X coordinate of where we finished highlighting
+		 * @param finishY	The Y Coordinate of where we finished highlighting
 		 * 
 		 */		
 		public function highlight(startX:Number, startY:Number, finishX:Number, finishY:Number):void {
 			trace("Highlighting start:", startX, startY, "end:", finishX, finishY);
 			
-			// This needs to work, whether they have dragged forwards or backwards, so we need to match sure the numbers
-			// are arranged correctly
-			var newStartX:Number = Math.min(startX, finishX);
-			var newStartY:Number = Math.min(startY, finishY);
+			// We need to know which page we started highlighting on, and which page we finished on
+			var startPage:Number = Math.floor(startY / pdfHeight);
+			var finishPage:Number = Math.floor(finishY / pdfHeight);
+			trace("highlight on pages", startPage, finishPage);
 			
-			var newFinishX:Number = Math.max(startX, finishX);
-			var newFinishY:Number = Math.max(startY, finishY);
+			if(startPage != finishPage) {
+				Alert.show("Annotations cannot span multiple pages");
+				return;
+			}
 			
-			// At the moment, we are only highlighting the first page, so this needs to be fixed up
-			// TODO
-			var tmpsnap:TextSnapshot = (pdfContainer.getChildAt(0) as MovieClip).textSnapshot;
-			// WTF IS WITH THIS!!! I HATE YOU!!!!
-			mySnapArray.push(tmpsnap);
+			this.selectionPage = startPage;
+			// Get out the snapshot for hte current page we are on
+			var currentSnapshot:TextSnapshot = textSnapshotArray[startPage] as TextSnapshot;
+			trace("current snapshot is", currentSnapshot);
 			
-			trace("First page is", tmpsnap);
-			var startTextIndex:Number = tmpsnap.hitTestTextNearPos(newStartX, newStartY, 10);
-			var endTextIndex:Number = tmpsnap.hitTestTextNearPos(newFinishX, newFinishY, 10);
-			tmpsnap.setSelected(startTextIndex, endTextIndex, true);
+//			if(startPage == finishPage) {
+				// We started and finished highlight on the same page
+				
+				// Convert the x,y to an index number of hte text
+				trace("new x y", startX - (startPage * pdfHeight), startY - (startPage * pdfHeight));
+				var startTextIndex:Number = currentSnapshot.hitTestTextNearPos(startX, startY - (startPage * pdfHeight), 10);
+				var endTextIndex:Number = currentSnapshot.hitTestTextNearPos(finishX, finishY - (startPage * pdfHeight), 10);
+				
+				trace("indexes", startTextIndex, endTextIndex);
+				// Make sure we are highlighting the right way (in case people drag backwards etc)
+				if(startTextIndex < endTextIndex) {
+					currentSnapshot.setSelected(startTextIndex, endTextIndex, true);
+					this.startTextIndex = startTextIndex;
+					this.endTextIndex = endTextIndex;
+				} else {
+					currentSnapshot.setSelected(endTextIndex, startTextIndex, true);
+					this.startTextIndex = endTextIndex;
+					this.endTextIndex = startTextIndex;
+				}	
+			
+//			} else if (startPage < finishPage) {
+//				// We started highlighting on 1 page, and went onto the next
+//				trace("highlighting between two different pages");
+//				var startTextIndex:Number = currentSnapshot.hitTestTextNearPos(startX, startY - (startPage * pdfHeight), 10);
+//				
+//				// Highlight from where we started, to the end of the page
+//				currentSnapshot.setSelected(startTextIndex, currentSnapshot.charCount, 10);
+//				
+//				for(var i:Number = startPage + 1; i < finishPage; i++) {
+//					var currentSnapshot:TextSnapshot = textSnapshotArray[finishPage] as TextSnapshot;
+//					currentSnapshot.setSelected(0, currentSnapshot.charCount, 10);
+//				}
+//				// Get out the snapshot for hte current page we are on
+//				var currentSnapshot:TextSnapshot = textSnapshotArray[finishPage] as TextSnapshot;
+//				
+//				var endTextIndex:Number = currentSnapshot.hitTestTextNearPos(finishX, finishY - (finishPage * pdfHeight), 10);
+//				currentSnapshot.setSelected(0, endTextIndex, 10);
+//				
+//				// Get the finish coordatines
+////				var endTextIndex:Number = currentSnapshot.hitTestTextNearPos(finishX, finishY, 
+//			} else if (startPage > finishPage) {
+//				// We started highlighting on 1 page, and went onto the next
+//				trace("highlighting between two different pages");
+//				var endTextIndex:Number = currentSnapshot.hitTestTextNearPos(startX, startY - (startPage * pdfHeight), 10);
+//				currentSnapshot.setSelected(0, endTextIndex, 10);
+//				
+//				for(var i:Number = startPage - 1; i > finishPage; i--) {
+//					var currentSnapshot:TextSnapshot = textSnapshotArray[finishPage] as TextSnapshot;
+//					currentSnapshot.setSelected(0, currentSnapshot.charCount, 10);
+//				}
+//				// Get out the snapshot for hte current page we are on
+//				var currentSnapshot:TextSnapshot = textSnapshotArray[finishPage] as TextSnapshot;
+//				
+//				var startTextIndex:Number = currentSnapshot.hitTestTextNearPos(finishX, finishY - (finishPage * pdfHeight), 10);
+//				
+//				// Highlight from where we started, to the end of the page
+//				currentSnapshot.setSelected(startTextIndex, currentSnapshot.charCount, 10);
+//				
+//			}
+			
+			
 		}
 		
-		private function finishPDFRender():void {
-			
+		public function clearHighlight():void {
+			for(var i:Number = 0; i < textSnapshotArray.length; i++) {
+				var currentSnapshot:TextSnapshot = textSnapshotArray[i] as TextSnapshot;
+				currentSnapshot.setSelected(0, currentSnapshot.charCount, false);
+			}
 		}
 		
+
+		public function getStartTextIndex():Number {
+			return this.startTextIndex;
+		}
+		public function getEndTextIndex():Number {
+			return this.endTextIndex;
+		}
+		public function getSelectionPage():Number {
+			return this.selectionPage;
+		} 
+			
 		public function zoomWidth(zoomWidth:Number):void {
 			pdfScale = zoomWidth / (pdfContainer.width / pdfContainer.scaleX) * 100;
 			setZoomLevel();

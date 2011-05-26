@@ -1,6 +1,6 @@
 package View.components.Comments
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
 	import flash.events.MouseEvent;
@@ -127,7 +127,7 @@ package View.components.Comments
 		 */		
 		private function saveButtonClicked(e:MouseEvent):void {
 			trace('Save button clicked');
-			var clickEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COMMENT_SAVED, true);
+			var clickEvent:IDEvent = new IDEvent(IDEvent.COMMENT_SAVED, true);
 			clickEvent.data.commentText = newComment.text;
 			
 			// Send the ID of the comment its replying to, 0 if not a reply.
@@ -144,7 +144,7 @@ package View.components.Comments
 		 */		
 		private function cancelButtonClicked(e:MouseEvent):void {
 			trace('Cancel button clicked');
-			var clickEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COMMENT_CANCELLED, true);
+			var clickEvent:IDEvent = new IDEvent(IDEvent.COMMENT_CANCELLED, true);
 			clickEvent.data.newCommentObject = this;
 			this.dispatchEvent(clickEvent);
 		}

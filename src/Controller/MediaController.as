@@ -81,23 +81,23 @@ package Controller {
 		 */		
 		private function setupEventListeners():void {
 			// Listen for "Save Comment" button being clicked.
-			mediaView.addEventListener(RecensioEvent.COMMENT_SAVED, saveComment);
-			mediaView.addEventListener(RecensioEvent.COMMENT_DELETE, deleteComment);
+			mediaView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
+			mediaView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
 			
 			// Listen for 'Save Sharing' autosave
-			mediaView.addEventListener(RecensioEvent.SHARING_CHANGED, sharingInfoChanged);
+			mediaView.addEventListener(IDEvent.SHARING_CHANGED, sharingInfoChanged);
 			
 			// Listen for 'Save Annotation'
-			mediaView.addEventListener(RecensioEvent.ANNOTATION_SAVE_BOX, saveNewBoxAnnotation);
-			mediaView.addEventListener(RecensioEvent.ANNOTATION_SAVE_PEN, saveNewPenAnnotation);
+			mediaView.addEventListener(IDEvent.ANNOTATION_SAVE_BOX, saveNewBoxAnnotation);
+			mediaView.addEventListener(IDEvent.ANNOTATION_SAVE_PEN, saveNewPenAnnotation);
 			// Listen for 'Annotation Deleted'
-			mediaView.addEventListener(RecensioEvent.ANNOTATION_DELETED, deleteAnnotation);
+			mediaView.addEventListener(IDEvent.ANNOTATION_DELETED, deleteAnnotation);
 			
 			// Listen for Details for the Media being updated
-			mediaView.addEventListener(RecensioEvent.ASSET_UPDATE, updateMediaDetails);
+			mediaView.addEventListener(IDEvent.ASSET_UPDATE, updateMediaDetails);
 			
 			// Listen for Asset being deleted
-			mediaView.addEventListener(RecensioEvent.MEDIA_ASSET_DELETE_BUTTON_CLICKED, deleteAssetButtonClicked);
+			mediaView.addEventListener(IDEvent.MEDIA_ASSET_DELETE_BUTTON_CLICKED, deleteAssetButtonClicked);
 
 			
 //			(view as AssetView).navbar.addEventListener(RecensioEvent.NAV_CLICKED,navBarClicked);
@@ -125,7 +125,7 @@ package Controller {
 		 * @param e		The button click event
 		 * 
 		 */	
-		private function deleteAssetButtonClicked(e:RecensioEvent):void {
+		private function deleteAssetButtonClicked(e:IDEvent):void {
 			//(view as AssetView).navbar.deselectButtons();
 			var myAlert:Alert = Alert.show("Are you sure you wish to delete this asset?", "Delete Asset", Alert.OK | Alert.CANCEL, null, deleteAsset, null, Alert.CANCEL);
 			myAlert.height=100;
@@ -149,7 +149,7 @@ package Controller {
 		 * actual comment.
 		 * 
 		 */		
-		private function saveComment(e:RecensioEvent):void {
+		private function saveComment(e:IDEvent):void {
 			trace('Saving comment: ', e.data.commentText, 'in reply to asset:', currentAssetID, 'reply to comment:', e.data.replyingToID);
 			
 			AppModel.getInstance().saveNewComment(	e.data.commentText, currentAssetID, e.data.replyingToID,
@@ -162,7 +162,7 @@ package Controller {
 		 * @param e
 		 * 
 		 */		
-		private function deleteComment(e:RecensioEvent):void {
+		private function deleteComment(e:IDEvent):void {
 			trace("Deleting a comment:", e.data.assetID);
 			AppModel.getInstance().deleteComment(e.data.assetID);
 		}
@@ -177,7 +177,7 @@ package Controller {
 		 * @param e.access		The access ('no-access', 'read' or 'read-write')
 		 * 
 		 */				
-		private function sharingInfoChanged(e:RecensioEvent):void {
+		private function sharingInfoChanged(e:IDEvent):void {
 			var username:String = e.data.username;
 			var access:String = e.data.access;
 			AppModel.getInstance().changeAccess(currentAssetID, username, "system", access, false, sharingInfoUpdated);
@@ -185,7 +185,7 @@ package Controller {
 		
 		
  		//Called when an annotation is saved.  Sets the data correctly and pushes the information to the model
-		private function saveNewBoxAnnotation(e:RecensioEvent):void {
+		private function saveNewBoxAnnotation(e:IDEvent):void {
 			trace("- Media Controller: Saving Annotation...");
 			// Unpack the event data
 			var percentX:Number = e.data.percentX;
@@ -207,7 +207,7 @@ package Controller {
 			);
 		}
 		
-		private function saveNewPenAnnotation(e:RecensioEvent):void {
+		private function saveNewPenAnnotation(e:IDEvent):void {
 			trace("- Media Controller: Saving Annotation...");
 			// Unpack the event data
 			var path:String = e.data.path;
@@ -263,12 +263,12 @@ package Controller {
 			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
 		}
 		
-		private function deleteAnnotation(e:RecensioEvent):void {
+		private function deleteAnnotation(e:IDEvent):void {
 			trace("Deleting Annotation");
 			AppModel.getInstance().deleteAnnotation2(e.data.assetID, annotationDeleted);
 		}
 		
-		private function updateMediaDetails(e:RecensioEvent):void {
+		private function updateMediaDetails(e:IDEvent):void {
 			trace("Updating media details");
 			AppModel.getInstance().updateAsset(e.data, mediaDetailsUpdated);
 		} 

@@ -1,6 +1,6 @@
 package View.components.MediaViewer.PDFViewer
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
 	import Lib.AnnotationCoordinateCollection;
@@ -10,6 +10,7 @@ package View.components.MediaViewer.PDFViewer
 	
 	import View.MediaView;
 	import View.components.Annotation.AnnotationBox;
+	import View.components.Annotation.AnnotationHighlight;
 	import View.components.Annotation.AnnotationInterface;
 	import View.components.Annotation.AnnotationPen;
 	import View.components.Annotation.AnnotationTextOverlayBox;
@@ -576,15 +577,6 @@ package View.components.MediaViewer.PDFViewer
 				var percentHeight:Number = Math.abs(finishAnnotationMouseY - startAnnotationMouseY) / pdf.height * 100;
 				var annotationText:String = annotationTextOverlayBox.getText();
 				
-				// Send the event
-				var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_SAVE_BOX, true);
-				myEvent.data.percentX = percentX;
-				myEvent.data.percentY = percentY;
-				myEvent.data.percentWidth = percentWidth;
-				myEvent.data.percentHeight = percentHeight;
-				myEvent.data.annotationText = annotationText;
-				this.dispatchEvent(myEvent);
-				
 				// Add this as an annotation to the view
 				// This is done temporarily, and will be reloaded once the controller
 				// has finished saving the annotation
@@ -599,6 +591,7 @@ package View.components.MediaViewer.PDFViewer
 					pdf.width,
 					pdf.height
 				);
+				annotation.save();
 				
 				annotationsGroup.addElement(annotation);
 				
@@ -614,27 +607,31 @@ package View.components.MediaViewer.PDFViewer
 					return;
 				}
 				
-				myEvent = new RecensioEvent(RecensioEvent.ANNOTATION_SAVE_PEN, true);
-				
-				myEvent.data.path = annotationCoordinates.getString(pdf.height, pdf.width);
-				myEvent.data.text = annotationTextOverlayBox.getText();
-				
-				trace("XML for drawing path", myEvent.data.path);
-				
-				this.dispatchEvent(myEvent);
-				
+				// Create a new annotation
 				var annotationPen:AnnotationPen = new AnnotationPen(
 					-1,
 					Auth.getInstance().getUsername(),
-					myEvent.data.path,
+					annotationCoordinates.getString(pdf.height, pdf.width),
 					pdf.height,
 					pdf.width,
 					annotationTextOverlayBox.getText()
 				);
+				// Send this new annotation to the database (via the controller)
+				annotationPen.save();
+				
 				annotationsGroup.addElement(annotationPen);
 				
 				annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
 				annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
+			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
+				var annotationHightlight:AnnotationHighlight = new AnnotationHighlight(
+					Math.min(startAnnotationMouseX, finishAnnotationMouseX),
+					Math.min(startAnnotationMouseY, finishAnnotationMouseY),
+					pdf.getSelectionPage(),
+					pdf.getStartTextIndex(),
+					pdf.getEndTextIndex(),
+					pdf
+				);
 			}
 			
 			this.leaveNewAnnotationMode();
@@ -705,7 +702,7 @@ package View.components.MediaViewer.PDFViewer
 			var annotation:AnnotationBox = (e.target as AnnotationBox);
 			annotation.visible = false;
 			trace("Annotation Deletion Clicked", assetID);
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_DELETED, true);
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_DELETED, true);
 			myEvent.data.assetID = annotation.getID();
 			this.dispatchEvent(myEvent);
 		}
@@ -830,12 +827,12 @@ package View.components.MediaViewer.PDFViewer
 				}
 			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
 				trace("Adding an text highlight stuff");
+				pdf.clearHighlight();
 				pdf.highlight(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
 			} 
 			
 		}
 		private function stopDrawingNewAnnotation(e:MouseEvent):void {
-			trace("GOT A MOUSE UP");
 			trace("stop drawing new annotation", e.target.mouseX, e.target.mouseY);
 			
 			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_MOVE, drawingNewAnnotation);

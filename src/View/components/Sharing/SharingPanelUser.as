@@ -1,6 +1,6 @@
 package View.components.Sharing
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import View.components.PanelElement;
 	
@@ -112,7 +112,7 @@ package View.components.Sharing
 			}
 			
 			// Create a new sharing changed event
-			var sharingChangedEvent:RecensioEvent = new RecensioEvent(RecensioEvent.SHARING_CHANGED, true);
+			var sharingChangedEvent:IDEvent = new IDEvent(IDEvent.SHARING_CHANGED, true);
 			// Put in the user
 			sharingChangedEvent.data.username = username;
 			// And their new access level

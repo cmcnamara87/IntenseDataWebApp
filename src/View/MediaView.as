@@ -1,7 +1,7 @@
 package View
 {
 	import Controller.Dispatcher;
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Model.Model_Media;
 	
@@ -186,8 +186,8 @@ package View
 			annotationListButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
 			commentsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
 			// Listen for annotation list item mouseover
-			this.addEventListener(RecensioEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, annotationListItemMouseOver);
-			this.addEventListener(RecensioEvent.ANNOTATION_LIST_ITEM_MOUSEOUT, annotationListItemMouseOut);
+			this.addEventListener(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, annotationListItemMouseOver);
+			this.addEventListener(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOUT, annotationListItemMouseOut);
 			
 			backButton.addEventListener(MouseEvent.CLICK, backButtonClicked);
 			downloadButton.addEventListener(MouseEvent.CLICK, downloadButtonClicked);
@@ -333,7 +333,7 @@ package View
 		 * 
 		 */		
 		private function deleteAssetButtonClicked(e:MouseEvent):void {
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.MEDIA_ASSET_DELETE_BUTTON_CLICKED);
+			var myEvent:IDEvent = new IDEvent(IDEvent.MEDIA_ASSET_DELETE_BUTTON_CLICKED);
 			this.dispatchEvent(myEvent);
 		}
 		
@@ -401,12 +401,12 @@ package View
 
 		}
 		
-		private function annotationListItemMouseOver(e:RecensioEvent):void {
+		private function annotationListItemMouseOver(e:IDEvent):void {
 			trace("Caught List Item Mouseover");
 			mediaViewer.highlightAnnotation(e.data.assetID);
 		}
 		
-		private function annotationListItemMouseOut(e:RecensioEvent):void {
+		private function annotationListItemMouseOut(e:IDEvent):void {
 			trace("Caught List Item Mouseover");
 			mediaViewer.unhighlightAnnotation(e.data.assetID);
 			
