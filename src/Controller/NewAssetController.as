@@ -77,7 +77,7 @@ package Controller {
 			uploadFile = new FileReference();
 			uploadFile.addEventListener(ProgressEvent.PROGRESS, progressHandler);
 			uploadFile.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-			uploadFile.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA,responseHandler);
+			uploadFile.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, responseHandler);
 			uploadFile.addEventListener(Event.SELECT, fileSelected);
 			uploadFile.browse(AssetLookup.getFileTypes());
 		}
@@ -86,6 +86,7 @@ package Controller {
 		private function progressHandler(event:ProgressEvent):void {
 			var file:FileReference = FileReference(event.target);
 			update(""+Math.round(event.bytesLoaded/event.bytesTotal*100));
+			trace(+Math.round(event.bytesLoaded/event.bytesTotal*100));
 		}
 		
 		// Called when the file is selected

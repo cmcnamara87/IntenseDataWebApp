@@ -490,18 +490,18 @@ package Model {
 		/**
 		 * Saves a new Box Annotation. 
 		 * @param mediaAssetID	The ID of the media asset, the annotation is on
-		 * @param percentX		The x (top left) of the annotation box (in relation to the assets size, e.g. 0.5 for 50%)
-		 * @param percentY		The y (top right) of the annotation box (same as above)
-		 * @param percentWidth	The width of the annotation box (50% is now 50 not, 0.5)
-		 * @param percentHeight The height of the annotation box
+		 * @param xCoor 		The x (top left) of the annotation box
+		 * @param yCoor			The y (top right) of the annotation box
+		 * @param width			The width of the annotation box
+		 * @param height		The height of the annotation box
 		 * @param startTime		The time where the box first appears
 		 * @param endTime		The time where the box disappears
 		 * @param annotationText	The text that is part of the annotation
 		 * @param callback			The function to call when the anntoation is saved
 		 * 
 		 */		
-		public function saveNewBoxAnnotation(	mediaAssetID:Number, percentX:Number,percentY:Number,
-											percentWidth:Number, percentHeight:Number,
+		public function saveNewBoxAnnotation(	mediaAssetID:Number, xCoor:Number, yCoor:Number,
+											annotationWidth:Number, annotationHeight:Number,
 											startTime:Number, endTime:Number,
 											annotationText:String, callback:Function):void {
 			
@@ -525,10 +525,10 @@ package Model {
 			baseXML.service.args["meta"]["r_resource"]["description"] = " ";
 			
 			// Set All of the annotations data
-			baseXML.service.args["meta"]["r_annotation"]["x"] = percentX;
-			baseXML.service.args["meta"]["r_annotation"]["y"] = percentY;
-			baseXML.service.args["meta"]["r_annotation"]["width"] = Math.round(percentWidth);
-			baseXML.service.args["meta"]["r_annotation"]["height"] = Math.round(percentHeight);
+			baseXML.service.args["meta"]["r_annotation"]["x"] = xCoor;
+			baseXML.service.args["meta"]["r_annotation"]["y"] = yCoor;
+			baseXML.service.args["meta"]["r_annotation"]["width"] = Math.round(annotationWidth);
+			baseXML.service.args["meta"]["r_annotation"]["height"] = Math.round(annotationHeight);
 			baseXML.service.args["meta"]["r_annotation"]["start"] = startTime;
 			baseXML.service.args["meta"]["r_annotation"]["end"] = endTime;
 			baseXML.service.args["meta"]["r_annotation"]["text"] = annotationText;

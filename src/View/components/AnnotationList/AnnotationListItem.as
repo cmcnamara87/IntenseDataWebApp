@@ -80,7 +80,6 @@ package View.components.AnnotationList
 			buttonHGroup.paddingRight 	= 5;
 			this.addElement(buttonHGroup);
 			
-			trace("Creator of annotation is", creator, "current user is", Auth.getInstance().getUsername());
 			// If the current user is the author of this annotation
 			// Or if the current user is a sys-admin
 			// then add an Edit and a Delete button

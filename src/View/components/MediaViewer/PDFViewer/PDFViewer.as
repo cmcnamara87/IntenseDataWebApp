@@ -15,6 +15,7 @@ package View.components.MediaViewer.PDFViewer
 	import View.components.Annotation.AnnotationPen;
 	import View.components.Annotation.AnnotationTextOverlayBox;
 	import View.components.Annotation.AnnotationToolbar;
+	import View.components.MediaType;
 	import View.components.MediaViewer.MediaViewer;
 	import View.components.MediaViewer.MediaViewerInterface;
 	import View.components.Toolbar;
@@ -112,6 +113,8 @@ package View.components.MediaViewer.PDFViewer
 		
 		private var UITest:UIComponent;
 		
+		private var media:MediaType;
+		
 		public function PDFViewer()
 		{
 			super();
@@ -172,13 +175,9 @@ package View.components.MediaViewer.PDFViewer
 			imageAndAnnotationsGroup = new Group();
 			horizontalAlignGroup.addElement(imageAndAnnotationsGroup);
 			
-			// The image
-//			pdf = new PDF();
-//			pdf.percentWidth = 100;
-//			pdf.percentHeight = 100;
-//			imageAndAnnotationsGroup.addElement(pdf);
+			media = new MediaType(MediaType.MEDIA_PDF);
+			imageAndAnnotationsGroup.addElement(media);
 			
-
 			// Now we are going to add a bordercontainer at the bottom
 			// to have the slider/resizer
 			var sliderResizerContainer:BorderContainer = new BorderContainer();
@@ -257,55 +256,7 @@ package View.components.MediaViewer.PDFViewer
 		 * 
 		 */		
 		override public function load(url:String):void {
-			trace("Loading Image...", url);
-			// Save the URL
-			sourceURL = url;
-			
-			// Listen for loading progress (to display hte loading graphics
-			pdf = new PDF(url, this, 0xFF0000, 100);
-			
-			// Listen for the load to progress
-			pdf.addEventListener(IDEvent.PDF_LOADED, sourceLoaded);
-			pdf.addEventListener(ProgressEvent.PROGRESS, progressUpdate);
-			
-			imageAndAnnotationsGroup.addElement(pdf);
-			
-			// Where we are going to put the annotations
-			annotationsGroup = new Group();
-			annotationsGroup.percentHeight = 100;
-			annotationsGroup.percentWidth = 100;
-			imageAndAnnotationsGroup.addElement(annotationsGroup);
-			
-			loadingLabel = new Label();
-			loadingLabel.text = 'Loading...';
-			loadingLabel.setStyle('color', 'white');
-			loadingLabel.setStyle('fontSize', 16);
-			imageAndAnnotationsGroup.addElement(loadingLabel);
-			
-			// Create New annotations group
-			// This is where the temporary place where we are drawing 
-			// the new annotations (while they are being drawn)
-			// once they are saved, they go to the annotationsGroup
-			newAnnotationsGroup = new Group();
-			newAnnotationsGroup.percentHeight = 100;
-			newAnnotationsGroup.percentWidth = 100;
-			newAnnotationsGroup.mouseChildren = false;
-			imageAndAnnotationsGroup.addElement(newAnnotationsGroup);
-			
-			UITest = new UIComponent();
-			UITest.percentHeight = 100;
-			UITest.percentWidth = 100;
-			imageAndAnnotationsGroup.addElement(UITest);
-			
-			
-				
-			
-			
-			UITest.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-				Alert.show("you clicked a UI Component");
-				
-			});
-			
+			media.load(url);
 		}
 		
 		/**
@@ -322,19 +273,17 @@ package View.components.MediaViewer.PDFViewer
 				addAnnotationMode = true;
 				annotationToolbar.show();
 				
+				
 				// Hide the currently saved annotations
 				// Just to make it easier for people to draw new ones
-				annotationsGroup.visible = false;
+				media.hideAnnotations();
 				
 				// Put the Annotation Text Overlay in edit mode
 				// So the user can write the text for their new annotation
 				annotationTextOverlayBox.setAuthor(Auth.getInstance().getUsername());
 				annotationTextOverlayBox.enterEditMode();
 				
-				// Listen for users to start drawing
-				newAnnotationsGroup.addEventListener(MouseEvent.MOUSE_DOWN, startDrawingNewAnnotation);
-				// Listen for users to stop drawing
-				newAnnotationsGroup.addEventListener(MouseEvent.MOUSE_UP, stopDrawingNewAnnotation);
+				media.listenForAnnotating();
 			} else {
 				trace("Already in add annotation mode");
 			}
@@ -344,7 +293,7 @@ package View.components.MediaViewer.PDFViewer
 		 * Removes all the current annotations 
 		 */		
 		public function clearAnnotations():void {
-			annotationsGroup.removeAllElements();
+			media.removeAllAnnotations();
 		}
 		
 		/**
@@ -353,337 +302,174 @@ package View.components.MediaViewer.PDFViewer
 		 */		
 		override public function clearNonSavedAnnotations():void {
 			trace("Image Viewer: Removing all non-saved annotations");
-			// Remove the visual part
-			newAnnotationsGroup.removeAllElements();
-			// Get rid of any saved paths
-			annotationCoordinates = new AnnotationCoordinateCollection();
+			media.removeAllNonSavedAnnotations();
 			hideAnnotationTextOverlay();
 		}
 		
 		
 		override public function addAnnotations(annotationsArray:Array):void {
 			trace("Adding Annotatio");
-			this.annotationsArray = annotationsArray;
-			
-			// Sorts the array of annotations so that the
-			// bigger annotations are first, so they are added to the screen first
-			// and the smaller annotations sit on top (so you can still get to them)
-			this.annotationsArray.sortOn('annotationArea', Array.DESCENDING | Array.NUMERIC);
-			
-			// Set the annotations to loaded
-			annotationsAreLoaded = true;
-			
-			if(isImageLoaded) {
-				// This image is loaded, add the annotations now
-				this.addAnnotationsToView();
-			}
+			media.addAnnotations(annotationsArray);
 		}
 		
 		override public function showAnnotations():void {
 			// Hide the currently saved annotations
-			annotationsGroup.visible = true;
+			media.showAnnotations();
 		}
 		
 		override public function hideAnnotations():void {
 			// Hide the currently saved annotations
-			annotationsGroup.visible = false;
+			media.hideAnnotations();
 		}
 		
 		
 		override public function highlightAnnotation(assetID:Number):void {
-			trace("Finding annotation to highlight", assetID);
-			
-			
-			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
-				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
-				trace("Looking at", annotation.getID());
-				if(annotation.getID() == assetID) {
-					annotation.highlight();
-					
-					// The next 5 lines are to fix a bug
-					// If you set the bottom, and then set the top on
-					// displaying it for another annotation, it remmebers 
-					// both, and becomes 100% height, so removing it, and making a new one
-					// solves that problem.
-					if(scrollerAndOverlayGroup.contains(annotationTextOverlayBox)) {
-						scrollerAndOverlayGroup.removeElement(annotationTextOverlayBox);
-					}
-					annotationTextOverlayBox = new AnnotationTextOverlayBox();
-					scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
-					
-					annotationTextOverlayBox.visible = true;
-					annotationTextOverlayBox.bottom = 0;
-					annotationTextOverlayBox.setAuthor(annotation.getAuthor());
-					annotationTextOverlayBox.setText(annotation.getText());
-					return;
-				}
-			}
+			media.highlightAnnotation(assetID);
 		}
 		
 		override public function unhighlightAnnotation(assetID:Number):void {
-			trace("Finding annotation to unhighlight");
-			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
-				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
-				if(annotation.getID() == assetID) {
-					annotation.unhighlight();
-					annotationTextOverlayBox.visible = false;
-					return;
-				}
-			}		
+			media.unhighlightAnnotation(assetID);		
 		}
 		
 		/* ===================== EVENT LISTENER FUNCTIONS ====================== */
-		
-		/**
-		 * The image's loading has progressed. Updates the 'loading' display. 
-		 * @param e	The progress updated event.
-		 * 
-		 */		
-		private function progressUpdate(e:ProgressEvent):void {
-			var percentLoaded:Number = Math.round(e.bytesLoaded / e.bytesTotal * 100);
-			loadingLabel.text = 'Loading... ' + percentLoaded + '%';
-			if(e.bytesLoaded == e.bytesTotal) {
-				loadingLabel.text = '';
-			}
-		}
-		/**
-		 * The image to display has been loaded.
-		 * If the image is bigger than the container, make it fit
-		 * Otherwise, let it be its regular size. 
-		 * @param e
-		 * 
-		 */
-		private function sourceLoaded(e:Event):void {
-			
-//			// Hide the loading label
-//			loadingLabel.visible = false;
-//			
-//			// Save the actual size of the image (used when we resize the image)
-//			actualImageHeight = pdf.contentHeight;
-//			actualImageWidth = pdf.contentWidth;
-//			
-//			
-//			// If the image is bigger than the current space (i.e. will need the scrollers to appear)
-//			// we want to initially set the zoom, so it all fits on the page
-//			// We need to work out which side - height or width is the most out of bounds
-//			var widthOutOfBounds:Number = scrollerAndOverlayGroup.width - actualImageWidth;
-//			var heightOutOfBounds:Number = scrollerAndOverlayGroup.height - actualImageHeight;
-//			trace("Out of bounds", widthOutOfBounds, heightOutOfBounds);
-//			
-//			// The more negative, the more out of bounds
-//			if(widthOutOfBounds < 0 || heightOutOfBounds < 0) {
-//				// At least one side is out of the bounds of the box	
-//				trace("At least one side is out of the bounds of the box");
-//				if(widthOutOfBounds < 0 && heightOutOfBounds >= 0) {
-//					trace("Only the width is out of bounds");
-//					// The width is out of bounds, so we scale it so it fits within the bounds
-//					var scalePercent:Number = Math.max(scrollerAndOverlayGroup.width / pdf.contentWidth, 0.1);
-//					pdf.width = pdf.contentWidth * scalePercent;
-//					pdf.height = pdf.contentHeight * scalePercent;
-//					resizeSlider.value = scalePercent * 100;
-//				} else if (widthOutOfBounds >= 0 && heightOutOfBounds < 0) {
-//					// Now make the height fit with the new scaled width
-//					trace("Only the height is out of bounds");
-//					scalePercent = Math.max(scrollerAndOverlayGroup.height / pdf.contentHeight, 0.1);
-//					pdf.width = pdf.contentWidth * scalePercent;
-//					pdf.height = pdf.contentHeight * scalePercent;
-//					resizeSlider.value = scalePercent * 100;
-//				} else if (widthOutOfBounds < 0 && heightOutOfBounds < 0) {
-//					if(widthOutOfBounds < heightOutOfBounds) {
-//						trace("width out of bounds more");
-//						// This means the width is more out of bounds, so we can scale it by the width
-//						// We set it to have a min value of 10, because our resize slider stops at 10 percent
-//						scalePercent = Math.max(scrollerAndOverlayGroup.width / pdf.contentWidth, 0.1);
-//						pdf.width = pdf.contentWidth * scalePercent;
-//						pdf.height = pdf.contentHeight * scalePercent;
-//						
-//						heightOutOfBounds = scrollerAndOverlayGroup.height - pdf.height;
-//						if(heightOutOfBounds < 0) {
-//							trace("Image content height", pdf.contentHeight, "actual hieght", actualImageHeight, pdf.height);
-//							// Now make the height fit with the new scaled width
-//							scalePercent = Math.max(scrollerAndOverlayGroup.height / pdf.contentHeight, 0.1);
-//							pdf.width = pdf.contentWidth * scalePercent;
-//							pdf.height = pdf.contentHeight * scalePercent;
-//						}
-//						resizeSlider.value = scalePercent * 100;
-//					} else {
-//						// The height is more out of bounds
-//						trace("the height is more out of bounds");
-//						// So scale it
-//						scalePercent = Math.max(scrollerAndOverlayGroup.height / pdf.contentHeight, 0.1);
-//						pdf.width = pdf.contentWidth * scalePercent;
-//						pdf.height = pdf.contentHeight * scalePercent;
-//						
-//						widthOutOfBounds = scrollerAndOverlayGroup.width - pdf.width;
-//						if(widthOutOfBounds < 0) {
-//							trace("the width is still out of bounds, scale it to fit");
-//							// Now scale the width so it fits in with the new height
-//							scalePercent = Math.max(scrollerAndOverlayGroup.width / pdf.contentWidth, 0.1);
-//							pdf.width = pdf.contentWidth * scalePercent;
-//							pdf.height = pdf.contentHeight * scalePercent;
-//						}
-//						resizeSlider.value = scalePercent * 100;
-//					}
-//				}
-//			} else {
-//				// Set the dimensions of the image to be the dimensions of its image conent
-//				pdf.width = pdf.contentWidth;
-//				pdf.height = pdf.contentHeight;
-//			}
-//			
-			
-			
-			isImageLoaded = true;
-			
-			// Load/Reload the annotations (because the image's size may have changed if its been reloaded)
-			// or if its the first load, its going to change a lot :P (from 0 to something :P)
-			if(annotationsAreLoaded) {
-				trace("image is loaded, now adding the annotations");
-				this.addAnnotationsToView();
-			}
-			
-//			UITest.graphics.beginFill(0xFF0000);
-//			UITest.graphics.drawRect(0, 0, UITest.width, UITest.height);
-			UITest.setStyle('backgroundColor', 0xFF0000);
-			trace("uit test stuff", UITest.width, UITest.height);
-			
-		}
+
 		
 		
 		override public function saveNewAnnotation():void {
 			trace("Save Button Clicked");
-			
-			// Check what drawing mode we are in
-			var drawingMode:String = annotationToolbar.getAnnotationDrawingMode();
-			
-			if(drawingMode == AnnotationToolbar.BOX || drawingMode == AnnotationToolbar.NOTE)  {
-				// We are drawing a box (not using the pen tool)	
-				// Check they have drawn a box and not just hxit save (its at least 2px x 2px)
-				if(Math.abs(startAnnotationMouseX - finishAnnotationMouseX) < 2 &&
-					Math.abs(startAnnotationMouseY -finishAnnotationMouseY) < 2) {
-					Alert.show("No annotation drawn");
-					this.leaveNewAnnotationMode();
-					return;
-				} else if (annotationTextOverlayBox.getText() == "") {
-					Alert.show("No text given");
-					this.leaveNewAnnotationMode();
-					return;
-				}
-				
-				// Work out the X, Y, width and height as percentages
-				// So that this will work, when scaling
-				
-				// Just a reminder, percentX is < 0, e.g. like 0.5 is 50%
-				// And the widths/heights are like, 50 for 50%
-				// Because the DB stores percentX as a float, and widths/height as an Integer
-				var percentX:Number = Math.min(startAnnotationMouseX, finishAnnotationMouseX) / (pdf.width * pdf.scaleX);
-				var percentY:Number = Math.min(startAnnotationMouseY, finishAnnotationMouseY) / (pdf.height * pdf.scaleY);
-				// Have to x 10,000 as its 100x100, the first 100 is to get it as a percentage, the second 100 is because we cant
-				// store numbers with significant detail in the database since the type of 'width/height' is set to Integer
-				// and when the pdf is really long, the annotations break
-				var percentWidth:Number = Math.abs(finishAnnotationMouseX - startAnnotationMouseX) / (pdf.width * pdf.scaleX) * 100 * 10000000;
-				var percentHeight:Number = Math.abs(finishAnnotationMouseY - startAnnotationMouseY) / (pdf.height * pdf.scaleY) *100 * 10000000;
-				var annotationText:String = annotationTextOverlayBox.getText();
-				
-				trace("percents", percentWidth, percentHeight);
-				// Add this as an annotation to the view
-				// This is done temporarily, and will be reloaded once the controller
-				// has finished saving the annotation
-				var annotation:AnnotationBox = new AnnotationBox(
-					-1,
-					Auth.getInstance().getUsername(), 
-					annotationText,
-					percentHeight, 
-					percentWidth, 
-					percentX,
-					percentY,
-					pdf.width * pdf.scaleX,
-					pdf.height * pdf.scaleY
-				);
-				annotationsGroup.addElement(annotation);
-				annotation.save();
-
-				// Listen for this annotation being mouse-overed
-				annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
-				annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
-			} else if (drawingMode == AnnotationToolbar.PEN) {
-				
-				// Test the user has drawn a path
-				if(annotationCoordinates.getCount() == 0) {
-					Alert.show("No annotation drawn");
-					this.leaveNewAnnotationMode();
-					return;
-				}
-				
-				// Create a new annotation
-				var annotationPen:AnnotationPen = new AnnotationPen(
-					-1,
-					Auth.getInstance().getUsername(),
-					annotationCoordinates.getString(pdf.height * pdf.scaleY, pdf.width * pdf.scaleX),
-					pdf.height * pdf.scaleY,
-					pdf.width * pdf.scaleX,
-					annotationTextOverlayBox.getText()
-				);
-				annotationsGroup.addElement(annotationPen);
-				// Send this new annotation to the database (via the controller)
-				annotationPen.save();
-				
-				
-				
-				annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
-				annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
-			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
-				
-				if(pdf.getStartTextIndex() == pdf.getEndTextIndex()) {
-					Alert.show("No text highlighted");
-					this.leaveNewAnnotationMode();
-					return;
-				} else if (annotationTextOverlayBox.getText() == "") {
-					Alert.show("No text given");
-					this.leaveNewAnnotationMode();
-					return;
-				}
-				
-//				var event:IDEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_HIGHLIGHT, true);
-//				this.dispatchEvent(event);
-				// Work out the X, Y, width and height as percentages
-				// So that this will work, when scaling
-				
-				// Just a reminder, percentX is < 0, e.g. like 0.5 is 50%
-				if(startAnnotationMouseY < finishAnnotationMouseY) {
-					percentX = (startAnnotationMouseX / pdf.scaleX) / pdf.width;
-					percentY = (startAnnotationMouseY / pdf.scaleY) / pdf.height;
-				} else if (startAnnotationMouseY > finishAnnotationMouseY) {
-					percentX = (finishAnnotationMouseX / pdf.scaleX) / pdf.width;
-					percentY = (finishAnnotationMouseY / pdf.scaleY) / pdf.height;
-				} else {
-					// They must be equal
-					if(startAnnotationMouseX < finishAnnotationMouseX) {
-						percentX = (startAnnotationMouseX / pdf.scaleX) / pdf.width;
-						percentY = (startAnnotationMouseY / pdf.scaleY) / pdf.height;
-					} else {
-						percentX = (finishAnnotationMouseX / pdf.scaleX) / pdf.width;
-						percentY = (finishAnnotationMouseY / pdf.scaleY) / pdf.height;
-					}					
-				}
-				
-				
-				var annotationHighlight:AnnotationHighlight = new AnnotationHighlight(
-					-1,
-					Auth.getInstance().getUsername(),
-					annotationTextOverlayBox.getText(),
-					percentX,
-					percentY,
-					pdf.getSelectionPage(),
-					pdf.getStartTextIndex(),
-					pdf.getEndTextIndex(),
-					pdf
-				);
-				annotationsGroup.addElement(annotationHighlight);
-				annotationHighlight.save();
-				
-				pdf.clearHighlight();
-			}
+			media.saveNewAnnotation();
+//			
+//			// Check what drawing mode we are in
+//			var drawingMode:String = annotationToolbar.getAnnotationDrawingMode();
+//			
+//			if(drawingMode == AnnotationToolbar.BOX || drawingMode == AnnotationToolbar.NOTE)  {
+//				// We are drawing a box (not using the pen tool)	
+//				// Check they have drawn a box and not just hxit save (its at least 2px x 2px)
+//				if(Math.abs(startAnnotationMouseX - finishAnnotationMouseX) < 2 &&
+//					Math.abs(startAnnotationMouseY -finishAnnotationMouseY) < 2) {
+//					Alert.show("No annotation drawn");
+//					this.leaveNewAnnotationMode();
+//					return;
+//				} else if (annotationTextOverlayBox.getText() == "") {
+//					Alert.show("No text given");
+//					this.leaveNewAnnotationMode();
+//					return;
+//				}
+//				
+//				// Work out the X, Y, width and height as percentages
+//				// So that this will work, when scaling
+//				
+//				// Just a reminder, percentX is < 0, e.g. like 0.5 is 50%
+//				// And the widths/heights are like, 50 for 50%
+//				// Because the DB stores percentX as a float, and widths/height as an Integer
+//				var percentX:Number = Math.min(startAnnotationMouseX, finishAnnotationMouseX) / (pdf.width * pdf.scaleX);
+//				var percentY:Number = Math.min(startAnnotationMouseY, finishAnnotationMouseY) / (pdf.height * pdf.scaleY);
+//				// Have to x 10,000 as its 100x100, the first 100 is to get it as a percentage, the second 100 is because we cant
+//				// store numbers with significant detail in the database since the type of 'width/height' is set to Integer
+//				// and when the pdf is really long, the annotations break
+//				var percentWidth:Number = Math.abs(finishAnnotationMouseX - startAnnotationMouseX) / (pdf.width * pdf.scaleX) * 100 * 10000000;
+//				var percentHeight:Number = Math.abs(finishAnnotationMouseY - startAnnotationMouseY) / (pdf.height * pdf.scaleY) *100 * 10000000;
+//				var annotationText:String = annotationTextOverlayBox.getText();
+//				
+//				trace("percents", percentWidth, percentHeight);
+//				// Add this as an annotation to the view
+//				// This is done temporarily, and will be reloaded once the controller
+//				// has finished saving the annotation
+//				var annotation:AnnotationBox = new AnnotationBox(
+//					-1,
+//					Auth.getInstance().getUsername(), 
+//					annotationText,
+//					percentHeight, 
+//					percentWidth, 
+//					percentX,
+//					percentY,
+//					pdf.width * pdf.scaleX,
+//					pdf.height * pdf.scaleY
+//				);
+//				annotationsGroup.addElement(annotation);
+//				annotation.save();
+//
+//				// Listen for this annotation being mouse-overed
+//				annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
+//				annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
+//			} else if (drawingMode == AnnotationToolbar.PEN) {
+//				
+//				// Test the user has drawn a path
+//				if(annotationCoordinates.getCount() == 0) {
+//					Alert.show("No annotation drawn");
+//					this.leaveNewAnnotationMode();
+//					return;
+//				}
+//				
+//				// Create a new annotation
+//				var annotationPen:AnnotationPen = new AnnotationPen(
+//					-1,
+//					Auth.getInstance().getUsername(),
+//					annotationCoordinates.getString(pdf.height * pdf.scaleY, pdf.width * pdf.scaleX),
+//					pdf.height * pdf.scaleY,
+//					pdf.width * pdf.scaleX,
+//					annotationTextOverlayBox.getText()
+//				);
+//				annotationsGroup.addElement(annotationPen);
+//				// Send this new annotation to the database (via the controller)
+//				annotationPen.save();
+//				
+//				
+//				
+//				annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
+//				annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
+//			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
+//				
+//				if(pdf.getStartTextIndex() == pdf.getEndTextIndex()) {
+//					Alert.show("No text highlighted");
+//					this.leaveNewAnnotationMode();
+//					return;
+//				} else if (annotationTextOverlayBox.getText() == "") {
+//					Alert.show("No text given");
+//					this.leaveNewAnnotationMode();
+//					return;
+//				}
+//				
+////				var event:IDEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_HIGHLIGHT, true);
+////				this.dispatchEvent(event);
+//				// Work out the X, Y, width and height as percentages
+//				// So that this will work, when scaling
+//				
+//				// Just a reminder, percentX is < 0, e.g. like 0.5 is 50%
+//				if(startAnnotationMouseY < finishAnnotationMouseY) {
+//					percentX = (startAnnotationMouseX / pdf.scaleX) / pdf.width;
+//					percentY = (startAnnotationMouseY / pdf.scaleY) / pdf.height;
+//				} else if (startAnnotationMouseY > finishAnnotationMouseY) {
+//					percentX = (finishAnnotationMouseX / pdf.scaleX) / pdf.width;
+//					percentY = (finishAnnotationMouseY / pdf.scaleY) / pdf.height;
+//				} else {
+//					// They must be equal
+//					if(startAnnotationMouseX < finishAnnotationMouseX) {
+//						percentX = (startAnnotationMouseX / pdf.scaleX) / pdf.width;
+//						percentY = (startAnnotationMouseY / pdf.scaleY) / pdf.height;
+//					} else {
+//						percentX = (finishAnnotationMouseX / pdf.scaleX) / pdf.width;
+//						percentY = (finishAnnotationMouseY / pdf.scaleY) / pdf.height;
+//					}					
+//				}
+//				
+//				
+//				var annotationHighlight:AnnotationHighlight = new AnnotationHighlight(
+//					-1,
+//					Auth.getInstance().getUsername(),
+//					annotationTextOverlayBox.getText(),
+//					percentX,
+//					percentY,
+//					pdf.getSelectionPage(),
+//					pdf.getStartTextIndex(),
+//					pdf.getEndTextIndex(),
+//					pdf
+//				);
+//				annotationsGroup.addElement(annotationHighlight);
+//				annotationHighlight.save();
+//				
+//				pdf.clearHighlight();
+//			}
 			
 			this.leaveNewAnnotationMode();
 		}
@@ -970,21 +756,12 @@ package View.components.MediaViewer.PDFViewer
 		 * 
 		 */		
 		private function resizeImage(e:Event):void {
-			trace("resizing");
-			trace((e.target as HSlider).value);
+			trace("resizing", (e.target as HSlider).value);
 			var resizeFactor:Number = (e.target as HSlider).value / 100; 
 			
-//			trace("Actual image size", pdf.contentWidth, pdf.contentHeight);
-			
 			// Resize the image by the scaling facotr
-			pdf.scaleX = resizeFactor;
-			pdf.scaleY = resizeFactor;
-			
-			// Reposition the annotations based on the new image size
-			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
-				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
-				annotation.readjust(pdf.width * pdf.scaleX, pdf.height * pdf.scaleY);
-			}
+			media.scaleX = resizeFactor;
+			media.scaleY = resizeFactor;
 		}
 		
 		/**
@@ -994,103 +771,13 @@ package View.components.MediaViewer.PDFViewer
 		 * 
 		 */		
 		private function percentButtonClicked(e:MouseEvent):void {
-			pdf.width = actualImageWidth;
-			pdf.height = actualImageHeight;
-			resizeSlider.value = 100;
-			
-			// Reposition the annotations based on the new image size
-			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
-				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
-				annotation.readjust(pdf.width, pdf.height);
-			}
+			media.scaleX = 1;
+			media.scaleY = 1;
 		}
 		
 		private function fitButtonClicked(e:MouseEvent):void {
-			// If the image is bigger than the current space (i.e. will need the scrollers to appear)
-			// we want to initially set the zoom, so it all fits on the page
-			// We need to work out which side - height or width is the most out of bounds
-//			var widthOutOfBounds:Number = scrollerAndOverlayGroup.width - actualImageWidth;
-//			var heightOutOfBounds:Number = scrollerAndOverlayGroup.height - actualImageHeight;
-//			trace("Out of bounds", widthOutOfBounds, heightOutOfBounds);
-//			
-//			if(widthOutOfBounds < 0 || heightOutOfBounds < 0) {
-//				// At least one side is out of the bounds of the box	
-//				trace("At least one side is out of the bounds of the box");
-//				if(widthOutOfBounds < 0 && heightOutOfBounds >= 0) {
-//					trace("Only the width is out of bounds");
-//					// The width is out of bounds, so we scale it so it fits within the bounds
-//					var scalePercent:Number = Math.max(scrollerAndOverlayGroup.width / pdf.contentWidth, 0.1);
-//					pdf.width = pdf.contentWidth * scalePercent;
-//					pdf.height = pdf.contentHeight * scalePercent;
-//					resizeSlider.value = scalePercent * 100;
-//				} else if (widthOutOfBounds >= 0 && heightOutOfBounds < 0) {
-//					// Now make the height fit with the new scaled width
-//					trace("Only the height is out of bounds");
-//					scalePercent = Math.max(scrollerAndOverlayGroup.height / pdf.contentHeight, 0.1);
-//					pdf.width = pdf.contentWidth * scalePercent;
-//					pdf.height = pdf.contentHeight * scalePercent;
-//					resizeSlider.value = scalePercent * 100;
-//				} else if (widthOutOfBounds < 0 && heightOutOfBounds < 0) {
-//					if(widthOutOfBounds < heightOutOfBounds) {
-//						trace("width out of bounds more");
-//						// This means the width is more out of bounds, so we can scale it by the width
-//						// We set it to have a min value of 10, because our resize slider stops at 10 percent
-//						scalePercent = Math.max(scrollerAndOverlayGroup.width / pdf.contentWidth, 0.1);
-//						pdf.width = pdf.contentWidth * scalePercent;
-//						pdf.height = pdf.contentHeight * scalePercent;
-//						
-//						heightOutOfBounds = scrollerAndOverlayGroup.height - pdf.height;
-//						if(heightOutOfBounds < 0) {
-//							trace("Image content height", pdf.contentHeight, "actual hieght", actualImageHeight, pdf.height);
-//							// Now make the height fit with the new scaled width
-//							scalePercent = Math.max(scrollerAndOverlayGroup.height / pdf.contentHeight, 0.1);
-//							pdf.width = pdf.contentWidth * scalePercent;
-//							pdf.height = pdf.contentHeight * scalePercent;
-//						}
-//						resizeSlider.value = scalePercent * 100;
-//					} else {
-//						// The height is more out of bounds
-//						// So scale it
-//						scalePercent = Math.max(scrollerAndOverlayGroup.height / pdf.contentHeight, 0.1);
-//						pdf.width = pdf.contentWidth * scalePercent;
-//						pdf.height = pdf.contentHeight * scalePercent;
-//						
-//						widthOutOfBounds = scrollerAndOverlayGroup.width - pdf.width;
-//						if(widthOutOfBounds < 0) {
-//							// Now scale the width so it fits in with the new height
-//							scalePercent = Math.max(scrollerAndOverlayGroup.width / pdf.contentWidth, 0.1);
-//							pdf.width = pdf.contentWidth * scalePercent;
-//							pdf.height = pdf.contentHeight * scalePercent;
-//						}
-//						resizeSlider.value = scalePercent * 100;
-//					}
-//				}
-//			} else {
-//				// Set the dimensions of the image to be the dimensions of its image conent
-//				pdf.width = scrollerAndOverlayGroup.width;
-//				pdf.height = scrollerAndOverlayGroup.height;
-//				
-//				if(widthOutOfBounds < heightOutOfBounds) {
-//					// The width is closest to the bounds
-//					// so lets scale the width up
-//					scalePercent = Math.max(scrollerAndOverlayGroup.width / pdf.contentWidth, 0.1);
-//					pdf.width = pdf.contentWidth * scalePercent;
-//					pdf.height = pdf.contentHeight * scalePercent;
-//					resizeSlider.value = scalePercent * 100;
-//					
-//				} else {
-//					scalePercent = Math.max(scrollerAndOverlayGroup.height / pdf.contentHeight, 0.1);
-//					pdf.width = pdf.contentWidth * scalePercent;
-//					pdf.height = pdf.contentHeight * scalePercent;
-//					resizeSlider.value = scalePercent * 100;
-//				}
-//			}
-//			
-//			// Reposition the annotations based on the new image size
-//			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
-//				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
-//				annotation.readjust(pdf.width, pdf.height);
-//			}
+			// This needs work lol TODO
+			media.scaleY = scrollerAndOverlayGroup.height / media.height;
 		}
 		
 		/**
@@ -1209,20 +896,20 @@ package View.components.MediaViewer.PDFViewer
 		 * 
 		 */		
 		private function leaveNewAnnotationMode():void {
-			// Stop listening for drawings
-			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_DOWN, startDrawingNewAnnotation);
-			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_MOVE, drawingNewAnnotation);
-			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_UP, stopDrawingNewAnnotation);
-			
-			// Clear any half/finished annotations
-			newAnnotationsGroup.removeAllElements();
-			
-			hideAnnotationTextOverlay();
-			
-			addAnnotationMode = false;
-			
-			// Show the current saved annotations again
-			annotationsGroup.visible = true;
+//			// Stop listening for drawings
+//			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_DOWN, startDrawingNewAnnotation);
+//			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_MOVE, drawingNewAnnotation);
+//			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_UP, stopDrawingNewAnnotation);
+//			
+//			// Clear any half/finished annotations
+//			newAnnotationsGroup.removeAllElements();
+//			
+//			hideAnnotationTextOverlay();
+//			
+//			addAnnotationMode = false;
+//			
+//			// Show the current saved annotations again
+//			annotationsGroup.visible = true;
 		}
 		/**
 		 * Hide the annotayion text overlay box, and set it to read-only mode 

@@ -189,18 +189,18 @@ package Controller {
 		private function saveNewBoxAnnotation(e:IDEvent):void {
 			trace("- Media Controller: Saving Annotation...");
 			// Unpack the event data
-			var percentX:Number = e.data.percentX;
-			var percentY:Number = e.data.percentY;
-			var percentWidth:Number = e.data.percentWidth;
-			var percentHeight:Number = e.data.percentHeight;
+			var xCoor:Number = e.data.xCoor;
+			var yCoor:Number = e.data.yCoor;
+			var width:Number = e.data.width;
+			var height:Number = e.data.height;
 			var annotationText:String = e.data.annotationText;
 			
 			AppModel.getInstance().saveNewBoxAnnotation(
 				currentAssetID,
-				percentX,
-				percentY,
-				percentWidth,
-				percentHeight,
+				xCoor,
+				yCoor,
+				width,
+				height,
 				0,
 				0,
 				annotationText,

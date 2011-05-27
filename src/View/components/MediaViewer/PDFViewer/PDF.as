@@ -28,6 +28,11 @@ package View.components.MediaViewer.PDFViewer {
 	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	
+	/**
+	 * Holds a PDF (read from a swf file created when the pdf was uploaded) 
+	 * @author cmcnamara87
+	 * 
+	 */	
 	public class PDF extends UIComponent {
 		
 		private var swfURL:String = "";
@@ -87,18 +92,23 @@ package View.components.MediaViewer.PDFViewer {
 		private var endTextIndex:Number; // The index of what point in the document we are finishing highlighting (e.g. character 120)
 		private var selectionPage:Number; // The page where the selection starts
 		
-		public function PDF(swfURL:String,viewer:PDFViewer,selectColour:uint,selectAccuracy:uint) {
-			
-			this.swfURL = swfURL;
-			this.viewer = viewer;
-			this.selectColour = selectColour;
-			this.selectAccuracy = selectAccuracy;
-			
-			pdfContainer.tabChildren = false;
+		public function PDF(sourceURL:String) {
+			super();
+			this.swfURL = sourceURL;
 			this.addChild(pdfContainer);
-			
 			loadSWF();
 		}
+//		public function PDF(swfURL:String,viewer:PDFViewer,selectColour:uint,selectAccuracy:uint) {
+//			this.swfURL = swfURL;//"http://recensio.acid.net.au:5080/oflaDemo/streams/837.swf";
+//			//Alert.show("swfURL: "+swfURL );//
+//			//this.swfURL = "http://recensio.acid.net.au:5080/oflaDemo/streams/837.swf";
+//			this.viewer = viewer;
+//			this.selectColour = selectColour;
+//			this.selectAccuracy = selectAccuracy;
+//			this.addChild(pdfContainer);
+//			pdfContainer.tabChildren = false;
+//			loadSWF();
+//		}
 		
 		/**
 		 * Loads the SWF file from the supplied URL. 
@@ -156,6 +166,7 @@ package View.components.MediaViewer.PDFViewer {
 			
 			// Position the page on the screen
 			fullPDF.y = (pageNumberBeingLoaded - 1) * (fullPDF.height + pdfPageSpace);
+			trace("ading page");
 			// Add this page
 			pdfContainer.addChild(fullPDF);
 			// Add this page's text snapshot to our storage array
@@ -188,43 +199,27 @@ package View.components.MediaViewer.PDFViewer {
 				var myEvent:IDEvent = new IDEvent(IDEvent.PDF_LOADED, true);
 				this.dispatchEvent(myEvent);
 				
-				totalPages = pdfContainer.numChildren;
-				
-//				this.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-//					trace("you clicked the pdf");
-//				
-//				});
-//				this.addEventListener(MouseEvent.MOUSE_DOWN,startTextSelect);
-//				this.addEventListener(MouseEvent.MOUSE_UP,stopTextSelect);
-//				this.addEventListener(MouseEvent.MOUSE_OUT,stopTextSelect);
-//				forceRedraw();
-//				loadExistingAnnotations();
-				
-//				for (var i:Number=0; i < 1; i++) {
-//					trace("looking at each current frame", i);
-//					var tmpsnap:TextSnapshot = (pdfContainer.getChildAt(i) as MovieClip).textSnapshot;
-//					trace("Temp snapshot consists of", tmpsnap.getText(0, tmpsnap.charCount));
-//					mySnapArray.push(tmpsnap);
-//					
-//					tmpsnap.setSelected(0, 200, true);
-//				}
-				
-				
-				
-//				tmpsnap = (pdfContainer.getChildAt(0) as MovieClip).textSnapshot;
-//				tmpsnap.setSelected(0, 200, true);
-				
-				
-				
-				
+				totalPages = pdfContainer.numChildren;	
 			}
-			//setZoomLevel();
 		}
 		
+		
+		/* =============== ANNOTATION STUFF ============ */
+		/**
+		 * Highlights or unhighlights text from text indexes 
+		 * @param page1				The page to start highlighting on (the indexes are per page, not for the whole document, e.g.
+		 * 							page 2 + index 10-30, is 10-30 on that page, not 10-30 on the whole document
+		 * @param startTextIndex	The index where to start highlighting from on the page
+		 * @param finishTextIndex	The index where to finish highlighting
+		 * @param highlight			Whether we should highlight or unhighlight
+		 * @param page2				TODO add in a highlight over multiple pages (not used currently)
+		 * 
+		 */		
 		public function highlightFromIndexes(page1:Number, startTextIndex:Number, finishTextIndex:Number, highlight:Boolean, page2:Number=0):void {
 			var currentSnapshot:TextSnapshot = textSnapshotArray[page1] as TextSnapshot;
 			currentSnapshot.setSelected(startTextIndex, finishTextIndex, highlight);
 		}
+		
 		/**
 		 * Highlights text between x,y coordinate pairs.  
 		 * @param startX	The X Coordinate of where we started to highlight
@@ -321,402 +316,40 @@ package View.components.MediaViewer.PDFViewer {
 			}
 		}
 		
-
+		/**
+		 * Gets the start index for the current text highlighted by the user 
+		 * @return The start index
+		 * 
+		 */		
 		public function getStartTextIndex():Number {
 			return this.startTextIndex;
 		}
+		
+		/**
+		 * Gets the end index for the current text highlighted by the user 
+		 * @return The end index
+		 * 
+		 */		
 		public function getEndTextIndex():Number {
 			return this.endTextIndex;
 		}
+		
+		/**
+		 * Gets the page for the current highlighted text by hte user 
+		 * @return The page number
+		 * 
+		 */		
 		public function getSelectionPage():Number {
 			return this.selectionPage;
 		} 
+		
+		/**
+		 * Gets the text that the user selected 
+		 * @return 
+		 * 
+		 */		
 		public function getSelectedText():String {
 			return (textSnapshotArray[selectionPage] as TextSnapshot).getText(startTextIndex, endTextIndex);
-		}
-			
-		public function zoomWidth(zoomWidth:Number):void {
-			pdfScale = zoomWidth / (pdfContainer.width / pdfContainer.scaleX) * 100;
-			setZoomLevel();
-		}
-		
-		public function zoom(zoomValue:Number):void {
-			pdfScale = zoomValue;
-			setZoomLevel();
-		}
-		
-		public function createScrollAnnotation(theannotation:PDFAnnotation):void {
-//			viewer.createScrollAnnotation(theannotation);
-		}
-		
-		public function gotoNext():Number {
-			var newPage:Number = currentPage() + 1;
-			if(newPage > PDF1.totalFrames) {
-				newPage = PDF1.totalFrames;
-			} else {
-			}
-			var moveY:Number = pdfContainer.getChildAt(newPage-1).y*-1*pdfContainer.scaleY;
-			Tweener.addTween(this,{'y':moveY,'time':1,'onUpdate':updateScrollbars});
-			return newPage;
-		}
-		
-		public function gotoPrevious():Number {
-			var newPage:Number = currentPage() - 1;
-			if(newPage < 1) {
-				newPage = 1;
-			}
-			var moveY:Number = pdfContainer.getChildAt(newPage-1).y*-1*pdfContainer.scaleY;
-			Tweener.addTween(this,{'y':moveY,'time':1,'onUpdate':updateScrollbars});
-			return newPage;
-		}
-		
-		public function currentPage():Number {
-			var currentY:Number = this.y*-1;
-			var thepage:Number = 1;
-			for(var i:Number=0; i<PDF1.totalFrames; i++) {
-				if(currentY+10 < pdfContainer.getChildAt(i).y*pdfContainer.scaleY) {
-					break;
-				}
-				thepage = 1 +i;
-			}
-			return thepage;
-		}
-		
-		public function gotoYPos(yPos:Number):void {
-			this.removeDeadAnnotations();
-			var yPosAccurate:Number = yPos*-1+(PDF1.height*pdfScale/200);
-			if(yPosAccurate > 0) { yPosAccurate = 0; }
-			Tweener.addTween(this,{'y':yPosAccurate,'time':1,'onUpdate':updateScrollbars});
-		}
-		
-		public function getYPos():Number {
-			return this.y*-1;
-		}
-		
-		public function setYPos(yPos:Number):void {
-			Tweener.addTween(this,{'y':yPos*-1,'time':1,'onUpdate':updateScrollbars});
-		}
-		
-		public function getTotalPages():Number {
-			return totalPages;
-		}
-		
-		private function updateScrollbars():void {
-//			viewer.updateScrollbars();
-		}
-		
-		public function findText(theText:String):Number {
-			this.removeDeadAnnotations();
-			removeHighlighting();
-			checkSnapLoad();
-			var numberFound:Number = 0;
-			var foundone:Boolean = false;
-			var currentPage:Number = 0;
-			for each(var currentSnap:TextSnapshot in mySnapArray) {
-				currentSnap.setSelectColor(highlightColour);
-				var currentChar:Number = 0;
-				var position:Number = 0;
-				while(currentChar < currentSnap.charCount && position != -1) {
-					position = currentSnap.findText(currentChar,theText,false);
-					if(position > -1) {
-						if(!foundone) {
-							//Move to the first one
-							var info:Array = currentSnap.getTextRunInfo(position,position+1);
-							var moveY:Number = pdfContainer.getChildAt(currentPage).y*-1*pdfContainer.scaleY-info[0].matrix_ty+30*pdfContainer.scaleY;
-							Tweener.addTween(this,{'y':moveY,'time':1,'onUpdate':updateScrollbars});
-							foundone = true;
-						}
-						currentSnap.setSelected(position, position+theText.length, true);
-						numberFound++;
-						currentChar = position + theText.length;
-					}
-				}
-				currentPage++;
-			}
-			return numberFound;
-		}
-		
-		public function disableAnnotation():void {
-			removeHighlighting();
-			removeDeadAnnotations();
-		}
-		
-		public function copyText():void {
-			System.setClipboard(selectedText);
-			removeDeadAnnotations();
-		}
-		
-		
-		
-		private function ioerror(e:IOErrorEvent):void {
-			Alert.show("This PDF is still being transcoded so we can display it. It will become available shortly.");
-			Dispatcher.call('browse');
-		}
-	
-		
-		public function removeDeadAnnotations():void {
-			for each(var annotation:PDFAnnotation in annotationsContainer) {
-				if(!annotation.checkCreation()) {
-					annotationsContainer.splice(annotationsContainer.indexOf(annotation),1);
-					if(pdfContainer.contains(annotation)) {
-						Tweener.addTween(annotation,{'alpha':0,'scaleY':0,'time':0.5,'onComplete':removeAnnotation,'onCompleteParams':[annotation]});
-					}
-				} else {
-					annotation.hide();
-				}
-			}
-		}
-		
-		private function removeAnnotation(annotation:PDFAnnotation):void {
-			if(pdfContainer.contains(annotation)) {
-				pdfContainer.removeChild(annotation);
-			}
-		}
-		
-	
-		
-//		private function loadedPage(e:Event):void {
-//			retries = 0;
-//			pageTimeoutTimer.stop();
-//			e.currentTarget.content.gotoAndStop(1);
-//			var newPage:MovieClip = e.currentTarget.content as MovieClip;
-//			pdfContainer.addChild(newPage);
-//			newPage.gotoAndStop(pdfContainer.numChildren);
-//			newPage.y = (pdfContainer.numChildren-1)*(PDF1.height+PDFPageSpace);
-//			if(pdfContainer.numChildren == PDF1.totalFrames) {
-//				//if(PDFContainer.numChildren > 4 || PDFContainer.numChildren == PDF1.totalFrames) { //debug for large pdfs	
-//				finishPDFRender();
-//			} else {
-//				setTimeout(loadPage,100);
-////				viewer.drawOverlay("Loading "+pdfContainer.numChildren+"/"+PDF1.totalFrames);
-//				forceRedraw();
-//			}
-//		}
-//		
-//		private function timedoutpage(e:TimerEvent):void {
-//			retries++;
-//			loadPage();
-//		}
-		
-		
-		
-		private function forceRedraw():void {
-//			viewer.redrawArea(true);
-		}
-		
-		public function setZoomLevel():void {
-			var originalWidth:Number = Math.round(pdfContainer.width/pdfContainer.scaleX);
-			var originalHeight:Number = Math.round(pdfContainer.height/pdfContainer.scaleY);
-			
-			var viewAreaWidth:Number = 400//viewer.width-40;
-			var viewAreaHeight:Number = 300//viewer.height-30;
-			var ratiodifference:Number = pdfScale/100 - pdfContainer.scaleY;
-			if(originalHeight*pdfScale/100 < viewAreaHeight) {
-				pdfScale = viewAreaHeight/originalHeight*100;
-				if(originalHeight == 0) {
-					pdfScale = 100;
-				}
-			}
-			var centerY:Number = this.y;
-			var newHeight:Number = originalHeight*(pdfScale/100);
-			var newX:Number = (viewAreaWidth-originalWidth*pdfScale/100)/2;
-			if(originalWidth*pdfScale/100 > viewAreaWidth) {
-				if(originalWidth*pdfContainer.scaleX > viewAreaWidth) {
-					newX = pdfContainer.x;	
-				} else {
-					newX = 0;
-				}
-			}
-			var newY:Number = this.y/pdfContainer.scaleY*pdfScale/100;
-//			if((newY*-1)+viewer.height > newHeight) {
-			if((newY*-1)+ 300 > newHeight) {
-				newY = newHeight*-1+ 300//viewer.height;	
-			}
-			if(newY > 0) {
-				newY = 0;
-			} 
-			pdfScale = Math.round(pdfScale);
-			Tweener.addTween(pdfContainer,{
-				'scaleX':pdfScale/100,
-				'scaleY':pdfScale/100,
-				'time':1,
-				'onComplete':forceRedraw,
-				'onUpdate':forceRedraw
-			});
-			Tweener.addTween(this,{
-				'x':newX,
-				'y':newY,
-				'time':1,
-				'onComplete':forceRedraw,
-				'onUpdate':forceRedraw
-			});
-			forceRedraw();
-		}
-		
-		private function checkSnapLoad():void {
-			if(!mySnap) {
-				for (var i:Number=0; i<PDF1.totalFrames; i++) {
-					var tmpsnap:TextSnapshot = (pdfContainer.getChildAt(i) as MovieClip).textSnapshot;
-					mySnapArray.push(tmpsnap);
-				}
-				mySnap = PDF1.textSnapshot;
-			}
-		}
-		
-		private function checkPage(xPos:Number,yPos:Number):Number {
-//			viewer.disableOverlay();
-			try {
-				var mypoint:Point = new Point(xPos,yPos);
-				var objectsarray:Array = this.stage.getObjectsUnderPoint(mypoint);
-				var theobject:* = objectsarray[objectsarray.length - 1];
-				var pagenumber:Number = -1;
-				while(theobject.parent != this.stage) {
-					if(pdfContainer.contains(theobject.parent)) {
-						try {
-							pagenumber = pdfContainer.getChildIndex(theobject.parent);
-						} catch(e:Error) {
-//							viewer.enableOverlay();
-							return -1;
-						}
-						break;
-					} else {
-						theobject = theobject.parent;
-					}
-					
-				}
-//				viewer.enableOverlay();
-				return pagenumber+1;
-			} catch (e:Error) {
-				//trace("Bad object");
-			}
-//			viewer.enableOverlay();
-			return -1;
-		} 
-		
-		private function checkRealPage(yPos:Number = 0):Number {
-			var pageNum:Number = Math.ceil((this.y+30)*-1/PDF1.height);
-			if(pageNum == 1) {
-				pageNum = 2;
-			}
-			return pageNum;
-		}
-		
-		public function removeHighlighting():void {
-			for(var i:Number=0; i<mySnapArray.length; i++) {
-				mySnapArray[i].setSelected(0, mySnapArray[i].charCount, false);
-			}
-		}
-		
-		public function hightlight(annotation:PDFAnnotation,startPos:Number,stopPos:Number):void {
-			removeHighlighting();
-			var page:Number = Math.floor(annotation.y/PDF1.height);
-			checkSnapLoad();
-			currentSnap = mySnapArray[page];
-			try {
-				currentSnap.setSelectColor(annotationColor);
-				currentSnap.setSelected(startPos, stopPos, true);
-			} catch (e:Error) {
-				trace("Error PDF.as line 381, should fix");
-			}
-		}
-		
-		/*---
-		SELECTING TEXT
-		---*/
-		private function startTextSelect(e:MouseEvent):void {
-			if(e.target is MovieClip) {
-				removeDeadAnnotations();
-				//Get the text snapshot for the first time
-				checkSnapLoad();
-				checkPage(e.stageX,e.stageY);
-				var thepage:Number = (checkPage(e.stageX,e.stageY)-1);
-				trace("***"+thepage);
-				if(thepage > -1) {
-					currentSnap = mySnapArray[thepage];
-					currentObject = (pdfContainer.getChildAt(checkPage(e.stageX,e.stageY)-1) as MovieClip);
-					currentSnap.setSelectColor(selectColour);
-					removeHighlighting();
-					var globalpoint:Point = new Point(e.stageX, e.stageY);
-					trace("Global points", e.stageX, e.stageY);
-					startSelectPos = currentSnap.hitTestTextNearPos(currentObject.globalToLocal(globalpoint).x,currentObject.globalToLocal(globalpoint).y,selectAccuracy);
-					trace("Start pos", startSelectPos);
-					this.addEventListener(MouseEvent.MOUSE_MOVE,updateTextSelect);
-					isSelecting = true;
-				}
-			} else {
-				trace("NOT A MOVIE CLIP");
-			}
-		}
-		
-		private function updateTextSelect(e:MouseEvent):void {
-			removeHighlighting();
-			var globalpoint:Point = new Point(e.stageX, e.stageY);
-			stopSelectPos = currentSnap.hitTestTextNearPos(currentObject.globalToLocal(globalpoint).x,currentObject.globalToLocal(globalpoint).y,selectAccuracy);
-			if(stopSelectPos < startSelectPos) {
-				currentSnap.setSelected(stopSelectPos, startSelectPos, true);
-			} else {
-				currentSnap.setSelected(startSelectPos, stopSelectPos, true);
-			}
-		}
-		
-		private function stopTextSelect(e:MouseEvent):void {
-			if(isSelecting) {
-				isSelecting = false;
-				this.removeEventListener(MouseEvent.MOUSE_MOVE,updateTextSelect);
-				//Check if anything is actually selected
-				if(startSelectPos > -1 && currentSnap) {
-					selectedText = (currentSnap.getSelectedText(true));
-					//If some text has been selected, let us annotate it
-					if(selectedText != '') {
-						var localpoint:Point = new Point(e.localX, e.localY);
-						createAnnotation(localpoint,startSelectPos,stopSelectPos);
-					}
-				}
-			}
-		}
-		
-		public function createAnnotation(pointOnDocument:Point,startPos:Number,stopPos:Number):void {
-//			var myAnnotation:PDFAnnotation = new PDFAnnotation(this,pointOnDocument,startPos,stopPos,pointOnDocument.x,pointOnDocument.y);
-//			pdfContainer.addChild(myAnnotation);
-//			annotationsContainer.push(myAnnotation);
-//			myAnnotation.x = pointOnDocument.x;
-//			myAnnotation.y = pointOnDocument.y;
-//			if((pointOnDocument.y)+this.y < 170) {
-//				Tweener.addTween(this,{'y':this.y+170,'time':1,'onUpdate':updateScrollbars});
-//			}
-		}
-		
-		public function insertAnnotation(text:String,pointOnDocument:Point,startPos:Number,stopPos:Number):void {
-			var tmpAnnotation:Object = new Object();
-			tmpAnnotation.text = text;
-			tmpAnnotation.pointOnDocument = pointOnDocument;
-			tmpAnnotation.startPos = startPos;
-			tmpAnnotation.stopPos = stopPos;
-			annotationsInsert.push(tmpAnnotation);
-		}
-		
-		public function loadExistingAnnotations():void {
-//			checkSnapLoad();
-			for(var i:Number=annotationsInsert.length-1; i>-1; i--) {
-				trace(annotationsInsert[i].text);
-				var myAnnotation:PDFAnnotation = new PDFAnnotation(null,annotationsInsert[i].pointOnDocument,annotationsInsert[i].startPos,annotationsInsert[i].stopPos,annotationsInsert[i].pointOnDocument.x,annotationsInsert[i].pointOnDocument.y);
-				myAnnotation.previousComment = true;
-				pdfContainer.addChild(myAnnotation);
-				myAnnotation.x = annotationsInsert[i].pointOnDocument.x;
-				myAnnotation.y = annotationsInsert[i].pointOnDocument.y;
-				myAnnotation.savePreviousAnnotation(annotationsInsert[i].text);
-				annotationsContainer.push(myAnnotation);
-				annotationsContainer.splice(i,1);
-				if((annotationsInsert[i].pointOnDocument.y)+this.y < 170) {
-					Tweener.addTween(this,{'y':this.y+170,'time':1,'onUpdate':updateScrollbars});
-				}
-			}
-			removeDeadAnnotations();
-			trace("LOADING EXISTING ANNOTATIONS");
-			loadedAnnotations = true;
-		}
-		
-		
+		}	
 	}
-	
 }
