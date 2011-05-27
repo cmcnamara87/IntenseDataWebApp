@@ -1,6 +1,7 @@
 package View.components.MediaViewer.PDFViewer {
 	
 	import Controller.Dispatcher;
+	import Controller.IDEvent;
 	
 	import Lib.it.transitions.Tweener;
 	
@@ -182,6 +183,11 @@ package View.components.MediaViewer.PDFViewer {
 				// We've loaded the last page
 				trace("FINISHING RENDER");
 				PDFLoaded = true;
+				
+				// Tell the PDFViewer that the PDF has finished loading
+				var myEvent:IDEvent = new IDEvent(IDEvent.PDF_LOADED, true);
+				this.dispatchEvent(myEvent);
+				
 				totalPages = pdfContainer.numChildren;
 				
 //				this.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {

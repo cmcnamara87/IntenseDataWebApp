@@ -33,7 +33,9 @@ package View.components.MediaViewer.PDFViewer
 	import mx.controls.Alert;
 	import mx.controls.Button;
 	import mx.controls.Image;
+	import mx.core.UIComponent;
 	import mx.effects.Resize;
+	import mx.events.FlexEvent;
 	import mx.graphics.SolidColor;
 	import mx.graphics.SolidColorStroke;
 	import mx.utils.NameUtil;
@@ -107,6 +109,8 @@ package View.components.MediaViewer.PDFViewer
 		private var imageAndAnnotationsGroup:Group; // Holds the PDF and the annotations
 		
 		private var myScroller:Scroller; // The scroller that surrounds the content
+		
+		private var UITest:UIComponent;
 		
 		public function PDFViewer()
 		{
@@ -261,6 +265,7 @@ package View.components.MediaViewer.PDFViewer
 			pdf = new PDF(url, this, 0xFF0000, 100);
 			
 			// Listen for the load to progress
+			pdf.addEventListener(IDEvent.PDF_LOADED, sourceLoaded);
 			pdf.addEventListener(ProgressEvent.PROGRESS, progressUpdate);
 			
 			imageAndAnnotationsGroup.addElement(pdf);
@@ -286,6 +291,20 @@ package View.components.MediaViewer.PDFViewer
 			newAnnotationsGroup.percentWidth = 100;
 			newAnnotationsGroup.mouseChildren = false;
 			imageAndAnnotationsGroup.addElement(newAnnotationsGroup);
+			
+			UITest = new UIComponent();
+			UITest.percentHeight = 100;
+			UITest.percentWidth = 100;
+			imageAndAnnotationsGroup.addElement(UITest);
+			
+			
+				
+			
+			
+			UITest.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+				Alert.show("you clicked a UI Component");
+				
+			});
 			
 		}
 		
@@ -425,10 +444,6 @@ package View.components.MediaViewer.PDFViewer
 			loadingLabel.text = 'Loading... ' + percentLoaded + '%';
 			if(e.bytesLoaded == e.bytesTotal) {
 				loadingLabel.text = '';
-				isImageLoaded = true;
-				if(annotationsAreLoaded) {
-					this.addAnnotationsToView();
-				}
 			}
 		}
 		/**
@@ -526,6 +541,12 @@ package View.components.MediaViewer.PDFViewer
 				trace("image is loaded, now adding the annotations");
 				this.addAnnotationsToView();
 			}
+			
+//			UITest.graphics.beginFill(0xFF0000);
+//			UITest.graphics.drawRect(0, 0, UITest.width, UITest.height);
+			UITest.setStyle('backgroundColor', 0xFF0000);
+			trace("uit test stuff", UITest.width, UITest.height);
+			
 		}
 		
 		
@@ -557,10 +578,14 @@ package View.components.MediaViewer.PDFViewer
 				// Because the DB stores percentX as a float, and widths/height as an Integer
 				var percentX:Number = Math.min(startAnnotationMouseX, finishAnnotationMouseX) / (pdf.width * pdf.scaleX);
 				var percentY:Number = Math.min(startAnnotationMouseY, finishAnnotationMouseY) / (pdf.height * pdf.scaleY);
-				var percentWidth:Number = Math.abs(finishAnnotationMouseX - startAnnotationMouseX) / (pdf.width * pdf.scaleX) * 100;
-				var percentHeight:Number = Math.abs(finishAnnotationMouseY - startAnnotationMouseY) / (pdf.height * pdf.scaleY) * 100;
+				// Have to x 10,000 as its 100x100, the first 100 is to get it as a percentage, the second 100 is because we cant
+				// store numbers with significant detail in the database since the type of 'width/height' is set to Integer
+				// and when the pdf is really long, the annotations break
+				var percentWidth:Number = Math.abs(finishAnnotationMouseX - startAnnotationMouseX) / (pdf.width * pdf.scaleX) * 100 * 10000000;
+				var percentHeight:Number = Math.abs(finishAnnotationMouseY - startAnnotationMouseY) / (pdf.height * pdf.scaleY) *100 * 10000000;
 				var annotationText:String = annotationTextOverlayBox.getText();
 				
+				trace("percents", percentWidth, percentHeight);
 				// Add this as an annotation to the view
 				// This is done temporarily, and will be reloaded once the controller
 				// has finished saving the annotation
@@ -670,6 +695,7 @@ package View.components.MediaViewer.PDFViewer
 		 * 
 		 */		
 		private function cancelAnnotationButtonClicked(e:Event):void {
+			trace("Cancel annotation button clicked");
 			// Stop listening for drawings
 			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_DOWN, startDrawingNewAnnotation);
 			newAnnotationsGroup.removeEventListener(MouseEvent.MOUSE_MOVE, drawingNewAnnotation);
@@ -679,8 +705,7 @@ package View.components.MediaViewer.PDFViewer
 			newAnnotationsGroup.removeAllElements();
 			
 			// Hide the annotationtextoverlay
-			annotationTextOverlayBox.enterReadOnlyMode();
-			annotationTextOverlayBox.visible = false;
+			this.hideAnnotationTextOverlay();
 			
 			// Show the current saved annotations again
 			annotationsGroup.visible = true;

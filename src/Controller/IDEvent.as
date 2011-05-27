@@ -122,6 +122,8 @@ package Controller {
 			// Called when a user sets the end of an annotation
 			public static var ANNOTATION_END_SET:String = "recensio_annotationEndSet";
 		
+			// The PDF has loaded and finished being displayed on screen
+			public static var PDF_LOADED:String = "id_pdfLoaded"; 
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 		}

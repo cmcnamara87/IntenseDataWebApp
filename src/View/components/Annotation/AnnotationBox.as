@@ -25,6 +25,8 @@ package View.components.Annotation
 		private var percentX:Number;
 		private var percentY:Number;
 		
+		private var largePercentWidth:Number;
+		private var largePercentHeight:Number;
 
 		/**
 		 * An individual annotation display 
@@ -55,10 +57,13 @@ package View.components.Annotation
 			this.assetID = assetID;
 			this.percentX = percentX;
 			this.percentY = percentY;
+			this.largePercentHeight = percentHeight;
+			this.largePercentWidth = percentWidth;
 			
 			// Setup size
-			this.percentHeight = percentHeight;
-			this.percentWidth = percentWidth;
+			this.percentHeight = largePercentHeight / 10000000.0;
+			this.percentWidth = largePercentWidth /  10000000.0;
+			trace("annotations percent height", this.largePercentHeight, this.largePercentHeight / 100.0 / 10000.0, this.percentHeight);
 			
 			// Setup position
 			this.x = this.percentX * imageWidth;
@@ -79,13 +84,13 @@ package View.components.Annotation
 		 * Tells the controller to save this annotation in the database. 
 		 * 
 		 */		
-		public function save():void {
+		public function save():void {			
 			trace("Saving an annotation box");
 			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_BOX, true);
 			myEvent.data.percentX = percentX;
 			myEvent.data.percentY = percentY;
-			myEvent.data.percentWidth = percentWidth;
-			myEvent.data.percentHeight = percentHeight;
+			myEvent.data.percentWidth = largePercentWidth;
+			myEvent.data.percentHeight = largePercentHeight;
 			myEvent.data.annotationText = text;
 			this.dispatchEvent(myEvent);
 		}
