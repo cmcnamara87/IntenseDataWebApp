@@ -60,7 +60,7 @@ package View.components.AnnotationList
 			
 			var username:spark.components.Label = new spark.components.Label();
 			// Get the Capitalised first letter of hte username (should be persons name, but whatever)
-			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1) + "(" + annotationType + ")";
+			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1) + " (" + annotationType + ")";
 			username.percentWidth = 100;
 			username.setStyle('color', 0x1F65A2);
 			username.setStyle('fontWeight', 'bold');

@@ -103,6 +103,10 @@ package Controller {
 			
 			
 			// ANNOTATION STUFF
+			public static var SHOW_ANNOTATION_TEXT_ENTRY:String = "id_showAnnotationTextEntry";
+			public static var ANNOTATION_MOUSE_OVER:String = "id_annotationMouseOver";
+			public static var ANNOTATION_MOUSE_OUT:String = "id_annotationMouseOut";
+			
 			// When the save button is clicked
 			public static var ANNOTATION_SAVE_CLICKED:String = "recensio_annotationSaveClicked";
 			// Clear any non-saved annotations from the screen
@@ -123,7 +127,7 @@ package Controller {
 			public static var ANNOTATION_END_SET:String = "recensio_annotationEndSet";
 		
 			// The PDF has loaded and finished being displayed on screen
-			public static var PDF_LOADED:String = "id_pdfLoaded"; 
+			public static var MEDIA_LOADED:String = "id_pdfLoaded"; 
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 		}

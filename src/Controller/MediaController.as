@@ -223,8 +223,8 @@ package Controller {
 		
 		private function saveNewHighlightAnnotation(e:IDEvent):void {
 			trace("- Saving annotation highlight");
-			var percentX:Number = e.data.percentX;
-			var percentY:Number = e.data.percentY;
+			var xCoor:Number = e.data.xCoor;
+			var yCoor:Number = e.data.yCoor;
 			var page1:Number = e.data.page1;
 			var startTextIndex:Number = e.data.startTextIndex;
 			var endTextIndex:Number = e.data.endTextIndex;
@@ -232,8 +232,8 @@ package Controller {
 			
 			AppModel.getInstance().saveNewHighlightAnnotation(
 				currentAssetID,
-				percentX,
-				percentY,
+				xCoor,
+				yCoor,
 				page1,
 				startTextIndex,
 				endTextIndex,

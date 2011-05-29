@@ -4,29 +4,32 @@ package View.components.Annotation
 	
 	import View.components.MediaViewer.PDFViewer.PDF;
 	
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	
 	import spark.components.BorderContainer;
 
 	public class AnnotationHighlight extends BorderContainer implements AnnotationInterface
 	{
-		private var percentX:Number;
-		private var percentY:Number;
+		private var xCoor:Number;
+		private var yCoor:Number;
 		private var page1:Number;
 		private var startTextIndex:Number;
 		private var endTextIndex:Number;
-		private var pdf:PDF;
 		private var assetID:Number;
 		private var author:String;
 		private var text:String;
+		private var pdf:PDF;
 		
-		public function AnnotationHighlight(assetID:Number, author:String, text:String, percentX:Number, percentY:Number, page1:Number, startTextIndex:Number, endTextIndex:Number, pdf:PDF)
+		public function AnnotationHighlight(assetID:Number, author:String, text:String, xCoor:Number, yCoor:Number, page1:Number, startTextIndex:Number, endTextIndex:Number, pdf:PDF)
 		{
-			trace("Highlight created");
+			trace("Highlight created", xCoor, yCoor);
 			// Save the annotation data
 			this.assetID = assetID;
 			this.author = author
 			this.text = text;
-			this.percentX = percentX;
-			this.percentY = percentY;
+			this.xCoor = xCoor;
+			this.yCoor = yCoor;
 			this.page1 = page1;
 			this.startTextIndex = startTextIndex;
 			this.endTextIndex = endTextIndex;
@@ -37,8 +40,8 @@ package View.components.Annotation
 			this.width = 10
 			
 			// Setup position
-			this.x = this.percentX * pdf.width * pdf.scaleX;
-			this.y = this.percentY * pdf.height * pdf.scaleY;
+			this.x = this.xCoor;
+			this.y = this.yCoor;
 			
 			// Setup color
 			this.setStyle('backgroundColor',0xFFFF00);
@@ -50,6 +53,26 @@ package View.components.Annotation
 			// otherwise it picks up the 'bordercontainerskin' class instead of
 			// this Annotation class.
 			this.mouseChildren = false;
+			
+			this.addEventListener(MouseEvent.MOUSE_OVER, function(e:Event):void {
+				var annotation:AnnotationInterface = e.target as AnnotationInterface;
+				annotation.highlight();
+				
+				// tell the viewer to display the overlay to go with this
+				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+				myEvent.data.text = annotation.getText();
+				myEvent.data.author = annotation.getAuthor();
+				dispatchEvent(myEvent);
+			});
+			
+			this.addEventListener(MouseEvent.MOUSE_OUT, function(e:Event):void {
+				trace("Mouse out!!!");
+				var annotation:AnnotationInterface = e.target as AnnotationInterface;
+				annotation.unhighlight();
+				// tell the viewer to hide the annotation text overlay
+				dispatchEvent(new IDEvent(IDEvent.ANNOTATION_MOUSE_OUT, true));
+			});
+			
 		}
 		
 		/* PUBLIC FUNCTIONS */
@@ -58,10 +81,10 @@ package View.components.Annotation
 		 * 
 		 */		
 		public function save():void {
-			trace("Saving annotation highlight");
+			trace("Saving annotation highlight, x,y", this.xCoor, this.yCoor);
 			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_HIGHLIGHT, true);
-			myEvent.data.percentX = percentX;
-			myEvent.data.percentY = percentY;
+			myEvent.data.xCoor = xCoor;
+			myEvent.data.yCoor = yCoor;
 			myEvent.data.page1 = page1;
 			myEvent.data.startTextIndex = startTextIndex;
 			myEvent.data.endTextIndex = endTextIndex;
@@ -79,8 +102,8 @@ package View.components.Annotation
 		 */		
 		public function readjust(imageWidth:Number, imageHeight:Number):void {
 			// Redo position (since we want it to be a percentage of the size of the image
-			this.x = this.percentX * imageWidth;
-			this.y = this.percentY * imageHeight;
+			this.x = this.xCoor * imageWidth;
+			this.y = this.yCoor * imageHeight;
 		}
 		
 		public function highlight():void {
@@ -104,7 +127,7 @@ package View.components.Annotation
 		}
 		
 		public function isInLowerHalf():Boolean {
-			return this.percentY > 0.5	
+			return this.yCoor > 0.5	
 		}
 		
 		/**

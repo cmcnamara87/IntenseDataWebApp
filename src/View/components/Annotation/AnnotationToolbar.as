@@ -4,6 +4,7 @@ package View.components.Annotation
 	
 	import View.components.IDGUI;
 	import View.components.MediaViewer.ImageViewer.ImageViewer;
+	import View.components.MediaViewer.MediaAndAnnotationHolder;
 	import View.components.MediaViewer.MediaViewer;
 	import View.components.MediaViewer.MediaViewerInterface;
 	import View.components.SubToolbar;
@@ -37,7 +38,7 @@ package View.components.Annotation
 		public static const GREEN:uint = 0x00FF00;
 		public static const BLUE:uint = 0x0000FF;
 		
-		private var mode:String = BOX; // The Drawing mode we are in, box, pen etc (default is BOX) 
+		public static var mode:String = BOX; // The Drawing mode we are in, box, pen etc (default is BOX) 
 		private var color:uint = BLUE;
 		
 		// GUI elements
@@ -56,7 +57,7 @@ package View.components.Annotation
 		
 		private var imageViewer:MediaViewer;
 		
-		public function AnnotationToolbar(imageViewer:MediaViewer, includeTextButton:Boolean)
+		public function AnnotationToolbar(imageViewer:MediaViewer, mediaType:String)
 		{
 			// Save the media viewer we are attached to (most likely the iamge for now)
 			this.imageViewer = imageViewer;
@@ -76,7 +77,7 @@ package View.components.Annotation
 			
 			textHighlightButton = IDGUI.makeToggleButton("Highlight Text");
 			this.addElement(textHighlightButton);
-			if(!includeTextButton) {
+			if(mediaType != MediaAndAnnotationHolder.MEDIA_PDF) {
 				textHighlightButton.visible = false;
 				textHighlightButton.includeInLayout = false;
 			}

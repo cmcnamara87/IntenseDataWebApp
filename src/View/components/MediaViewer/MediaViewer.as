@@ -1,5 +1,7 @@
 package View.components.MediaViewer
 {
+	import Controller.IDEvent;
+	
 	import spark.components.BorderContainer;
 	
 	public class MediaViewer extends BorderContainer
@@ -51,7 +53,7 @@ package View.components.MediaViewer
 			trace("Should have run the child of this");	
 		}
 		
-		public function showAnnotationTextOverlayTextEntryMode():void {
+		public function showAnnotationTextOverlayTextEntryMode(e:IDEvent=null):void {
 			
 		}
 	}

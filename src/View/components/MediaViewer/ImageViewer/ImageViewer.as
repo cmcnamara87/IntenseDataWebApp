@@ -569,26 +569,26 @@ package View.components.MediaViewer.ImageViewer
 				myEvent.data.annotationText = annotationText;
 				this.dispatchEvent(myEvent);
 				
-				// Add this as an annotation to the view
-				// This is done temporarily, and will be reloaded once the controller
-				// has finished saving the annotation
-				var annotation:AnnotationBox = new AnnotationBox(
-					-1,
-					Auth.getInstance().getUsername(), 
-					annotationText,
-					percentHeight, 
-					percentWidth, 
-					percentX,
-					percentY,
-					image.width,
-					image.height
-				);
-				
-				annotationsGroup.addElement(annotation);
-				
-				// Listen for this annotation being mouse-overed
-				annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
-				annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
+//				// Add this as an annotation to the view
+//				// This is done temporarily, and will be reloaded once the controller
+//				// has finished saving the annotation
+//				var annotation:AnnotationBox = new AnnotationBox(
+//					-1,
+//					Auth.getInstance().getUsername(), 
+//					annotationText,
+//					percentHeight, 
+//					percentWidth, 
+//					percentX,
+//					percentY,
+//					image.width,
+//					image.height
+//				);
+//				
+//				annotationsGroup.addElement(annotation);
+//				
+//				// Listen for this annotation being mouse-overed
+//				annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
+//				annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 			} else if (drawingMode == AnnotationToolbar.PEN) {
 				
 				// Test the user has drawn a path
@@ -598,27 +598,27 @@ package View.components.MediaViewer.ImageViewer
 					return;
 				}
 				
-				myEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_PEN, true);
-				
-				myEvent.data.path = annotationCoordinates.getString(image.height, image.width);
-				myEvent.data.text = annotationTextOverlayBox.getText();
-				
-				trace("XML for drawing path", myEvent.data.path);
-				
-				this.dispatchEvent(myEvent);
-				
-				var annotationPen:AnnotationPen = new AnnotationPen(
-					-1,
-					Auth.getInstance().getUsername(),
-					myEvent.data.path,
-					image.height,
-					image.width,
-					annotationTextOverlayBox.getText()
-				);
-				annotationsGroup.addElement(annotationPen);
-				
-				annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
-				annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
+//				myEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_PEN, true);
+//				
+//				myEvent.data.path = annotationCoordinates.getString(image.height, image.width);
+//				myEvent.data.text = annotationTextOverlayBox.getText();
+//				
+//				trace("XML for drawing path", myEvent.data.path);
+//				
+//				this.dispatchEvent(myEvent);
+//				
+//				var annotationPen:AnnotationPen = new AnnotationPen(
+//					-1,
+//					Auth.getInstance().getUsername(),
+//					myEvent.data.path,
+//					image.height,
+//					image.width,
+//					annotationTextOverlayBox.getText()
+//				);
+//				annotationsGroup.addElement(annotationPen);
+//				
+//				annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
+//				annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 			}
 			
 			this.leaveNewAnnotationMode();
@@ -870,7 +870,7 @@ package View.components.MediaViewer.ImageViewer
 			// Reposition the annotations based on the new image size
 			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
 				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
-				annotation.readjust(image.width, image.height);
+//				annotation.readjust(image.width, image.height);
 			}
 		}
 		
@@ -888,7 +888,7 @@ package View.components.MediaViewer.ImageViewer
 			// Reposition the annotations based on the new image size
 			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
 				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
-				annotation.readjust(image.width, image.height);
+//				annotation.readjust(image.width, image.height);
 			}
 		}
 		
@@ -976,7 +976,7 @@ package View.components.MediaViewer.ImageViewer
 			// Reposition the annotations based on the new image size
 			for(var i:Number = 0; i < annotationsGroup.numElements; i++) {
 				var annotation:AnnotationInterface = annotationsGroup.getElementAt(i) as AnnotationInterface;
-				annotation.readjust(image.width, image.height);
+//				annotation.readjust(image.width, image.height);
 			}
 		}
 		
@@ -1026,39 +1026,39 @@ package View.components.MediaViewer.ImageViewer
 					// Its a annotation box
 					
 					// Make a new annotation box
-					var annotation:AnnotationBox = new AnnotationBox(
-						annotationData.base_asset_id,
-						annotationData.meta_creator, 
-						annotationData.annotation_text,
-						annotationData.annotation_height, 
-						annotationData.annotation_width, 
-						annotationData.annotation_x,
-						annotationData.annotation_y,
-						image.width,
-						image.height
-					);
-
-					annotationsGroup.addElement(annotation);
+//					var annotation:AnnotationBox = new AnnotationBox(
+//						annotationData.base_asset_id,
+//						annotationData.meta_creator, 
+//						annotationData.annotation_text,
+//						annotationData.annotation_height, 
+//						annotationData.annotation_width, 
+//						annotationData.annotation_x,
+//						annotationData.annotation_y,
+//						image.width,
+//						image.height
+//					);
+//
+//					annotationsGroup.addElement(annotation);
+//					
+//					// Listen for this annotation being mouse-overed
+//					annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
+//					annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
+//				} else if (annotationData.annotationType == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
+//					var annotationPen:AnnotationPen = new AnnotationPen(
+//						annotationData.base_asset_id,
+//						annotationData.meta_creator,
+//						annotationData.path,
+//						image.height,
+//						image.width,
+//						annotationData.annotation_text
+//					);
 					
-					// Listen for this annotation being mouse-overed
-					annotation.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
-					annotation.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
-				} else if (annotationData.annotationType == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
-					var annotationPen:AnnotationPen = new AnnotationPen(
-						annotationData.base_asset_id,
-						annotationData.meta_creator,
-						annotationData.path,
-						image.height,
-						image.width,
-						annotationData.annotation_text
-					);
-					
-					trace(annotationPen);
-					annotationsGroup.addElement(annotationPen);
-					
-					// Listen for this annotation being mouse-overed
-					annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
-					annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
+//					trace(annotationPen);
+//					annotationsGroup.addElement(annotationPen);
+//					
+//					// Listen for this annotation being mouse-overed
+//					annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
+//					annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
 				}
 				
 				
@@ -1131,7 +1131,7 @@ package View.components.MediaViewer.ImageViewer
 		 * Show the annotation text overlay box, and set it to text entry mode 
 		 * 
 		 */		
-		override public function showAnnotationTextOverlayTextEntryMode():void {
+		override public function showAnnotationTextOverlayTextEntryMode(e:IDEvent=null):void {
 			// Setup the text input 
 			// The text input box for the annotation
 			// The next 5 lines are to fix a bug

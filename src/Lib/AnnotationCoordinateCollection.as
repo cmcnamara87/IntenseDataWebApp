@@ -64,15 +64,15 @@ package Lib
 		 * @return 
 		 * 
 		 */		
-		public function getString(height:Number, width:Number):String {
+		public function getString():String {
 			// Scale all the coordinates
 			trace("xml", objectToXML(coordinateArray).toXMLString());
 			for(var i:Number = 0; i < coordinateArray.length; i++) {
 				var item:Object = coordinateArray[i] as Object;
-				item.x1 = item.x1 / width;
-				item.x2 = item.x2 / width;
-				item.y1 = item.y1 / height;
-				item.y2 = item.y2 / height;
+				item.x1 = item.x1;
+				item.x2 = item.x2;
+				item.y1 = item.y1;
+				item.y2 = item.y2;
 			}
 			return objectToXML(coordinateArray).toXMLString();	
 		}

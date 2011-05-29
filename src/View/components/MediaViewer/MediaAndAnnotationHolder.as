@@ -1,4 +1,4 @@
-package View.components
+package View.components.MediaViewer
 {
 	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
@@ -12,6 +12,7 @@ package View.components
 	import View.components.Annotation.AnnotationInterface;
 	import View.components.Annotation.AnnotationPen;
 	import View.components.Annotation.AnnotationToolbar;
+	import View.components.MediaViewer.ImageViewer.ImageMedia;
 	import View.components.MediaViewer.PDFViewer.PDF;
 	
 	import flash.display.Sprite;
@@ -24,9 +25,10 @@ package View.components
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
 	
-	public class MediaType extends UIComponent
+	public class MediaAndAnnotationHolder extends UIComponent
 	{
 		public static const MEDIA_PDF:String = "pdf";
+		public static const MEDIA_IMAGE:String = "image";
 		
 		private var mediaType:String; // The type of media we are using
 		private var sourceURL:String; // The URL of the media we are using
@@ -47,7 +49,7 @@ package View.components
 		private var finishAnnotationMouseY:Number = -1; // The Y position when they stop
 		
 		
-		public function MediaType(mediaType:String)
+		public function MediaAndAnnotationHolder(mediaType:String)
 		{
 			super();
 			
@@ -62,15 +64,18 @@ package View.components
 			annotations = new Array();
 			newAnnotationSpace = new Sprite();
 			annotationCoordinates = new AnnotationCoordinateCollection();
-			
-			
+
 			if(mediaType == MEDIA_PDF) {
 				media = new PDF(sourceURL);
+			} else if (mediaType == MEDIA_IMAGE) {
+				media = new ImageMedia(sourceURL);
 			}
+			media.visible = false;
+			this.addChild(media);
 			
 			trace("media issss", media);
 			// Listen for the media to have finished loaded, and then to have added to the display
-			media.addEventListener(IDEvent.PDF_LOADED, sourceLoaded);
+			media.addEventListener(IDEvent.MEDIA_LOADED, sourceLoaded);
 			
 			
 			media.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
@@ -79,10 +84,11 @@ package View.components
 			});
 		}
 		
-		private function sourceLoaded(e:IDEvent):void {
+		private function sourceLoaded(e:IDEvent=null):void {
+			trace("Finished loading media");
 			// We have finished loading hte media
-			// Add it to the display (now that its loaded)
-			this.addChild(media);
+			// Now show it
+			media.visible = true;
 			this.addChild(newAnnotationSpace);
 			// Set this width, to match the media (so the viewer can center this media)
 			this.width = media.width;
@@ -119,29 +125,6 @@ package View.components
 			}
 		}
 		
-		/**
-		 * Shows the annotations currently on the media 
-		 * 
-		 */		
-		public function showAnnotations():void {
-			for(var i:Number = 0; i < annotations.length; i++) {
-				var annotation:UIComponent = annotations[i] as UIComponent;
-				annotation.includeInLayout = true;
-				annotation.visible = true;
-			}
-		}
-		
-		/**
-		 * Hides the annotations currently on the media 
-		 * 
-		 */		
-		public function hideAnnotations():void {
-			for(var i:Number = 0; i < annotations.length; i++) {
-				var annotation:UIComponent = annotations[i] as UIComponent;
-				annotation.includeInLayout = false;
-				annotation.visible = false;
-			}
-		}
 		
 		/**
 		 * Removes/deletes all the annotations from the current media. 
@@ -159,14 +142,42 @@ package View.components
 		 * 
 		 */		
 		public function removeAllNonSavedAnnotations():void {
-//			while(newAnnotations.length) {
-//				var annotation:UIComponent = newAnnotations.pop();
-//				this.removeChild(annotation);
-//			}
+			//			while(newAnnotations.length) {
+			//				var annotation:UIComponent = newAnnotations.pop();
+			//				this.removeChild(annotation);
+			//			}
 			newAnnotationSpace.graphics.clear();
 			annotationCoordinates = new AnnotationCoordinateCollection();
 		}
 		
+		
+		
+		
+		/**
+		 * Hides the annotations currently on the media 
+		 * 
+		 */		
+		public function hideAnnotations():void {
+			for(var i:Number = 0; i < annotations.length; i++) {
+				var annotation:UIComponent = annotations[i] as UIComponent;
+				annotation.includeInLayout = false;
+				annotation.visible = false;
+			}
+		}
+		
+		/**
+		 * Shows the annotations currently on the media 
+		 * 
+		 */		
+		public function showAnnotations():void {
+			for(var i:Number = 0; i < annotations.length; i++) {
+				var annotation:UIComponent = annotations[i] as UIComponent;
+				annotation.includeInLayout = true;
+				annotation.visible = true;
+			}
+		}
+
+
 		/**
 		 * Highlight an annotation 
 		 * @param assetID
@@ -180,6 +191,13 @@ package View.components
 				trace("Looking at", annotation.getID());
 				if(annotation.getID() == assetID) {
 					annotation.highlight();
+					
+					// tell the viewer to display the overlay to go with this
+					var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+					myEvent.data.text = annotation.getText();
+					myEvent.data.author = annotation.getAuthor();
+					dispatchEvent(myEvent);
+					
 					break;
 				}
 			}
@@ -201,7 +219,7 @@ package View.components
 				}
 			}
 		}
-		
+
 		/**
 		 * Adds the annotations boxes to the image.
 		 *  
@@ -214,7 +232,7 @@ package View.components
 			
 			this.removeAllAnnotations();
 			
-			trace("image dimensions:", media.width, media.height);
+			trace("media dimensions:", media.width, media.height);
 			
 			trace("Adding", annotationsData.length, "annotations");
 			
@@ -234,9 +252,7 @@ package View.components
 						annotationData.annotation_height, 
 						annotationData.annotation_width, 
 						annotationData.annotation_x,
-						annotationData.annotation_y,
-						this.scaleX,
-						this.scaleY
+						annotationData.annotation_y
 					);
 					trace("Added at", annotation.x, annotation.y);
 					
@@ -248,17 +264,11 @@ package View.components
 						annotationData.base_asset_id,
 						annotationData.meta_creator,
 						annotationData.path,
-						media.height * this.scaleY,
-						media.width * this.scaleX,
 						annotationData.annotation_text
 					);
 					
 					this.addChild(annotationPen);
 					annotations.push(annotationPen);
-					
-					// Listen for this annotation being mouse-overed
-					annotationPen.addEventListener(MouseEvent.MOUSE_OVER, function(e:MouseEvent):void { trace("# mosue overed"); });
-					annotationPen.addEventListener(MouseEvent.MOUSE_OUT, function(e:MouseEvent):void { trace("# mosue outted"); });
 				} else if (annotationData.annotationType == Model_Commentary.ANNOTATION_HIGHLIGHT_TYPE_ID) {
 					trace("Adding an highlight annotation");
 					var annotationHighlight:AnnotationHighlight = new AnnotationHighlight(
@@ -276,11 +286,6 @@ package View.components
 					
 					this.addChild(annotationHighlight);
 					annotations.push(annotationHighlight);
-					
-					// Listen for this annotation being mouse-overed
-					annotationHighlight.addEventListener(MouseEvent.MOUSE_OVER, function(e:MouseEvent):void { trace("# mosue overed"); });
-					annotationHighlight.addEventListener(MouseEvent.MOUSE_OUT, function(e:MouseEvent):void { trace("# mosue outted"); });
-					
 				} else {
 					trace("Unknown annotation");
 				}
@@ -302,9 +307,13 @@ package View.components
 			trace("stopping listening for annotations");
 			trace("*****************************");
 			// Listen for users to start drawing
-			this.removeEventListener(MouseEvent.MOUSE_DOWN, null);
+			this.removeEventListener(MouseEvent.MOUSE_DOWN, startDrawingNewAnnotation);
 			// Listen for users to stop drawing
-			this.removeEventListener(MouseEvent.MOUSE_UP,  null);
+			this.removeEventListener(MouseEvent.MOUSE_UP,  stopDrawingNewAnnotation);
+			
+			if(this.hasEventListener(MouseEvent.MOUSE_MOVE)) {
+				this.removeEventListener(MouseEvent.MOUSE_MOVE, drawingNewAnnotation);
+			}
 		}
 		
 		
@@ -314,12 +323,9 @@ package View.components
 		 * 
 		 */		
 		private function startDrawingNewAnnotation(e:MouseEvent):void {
+			trace("******************************");
 			trace("started drawing", e.target.mouseX, e.target.mouseY);
-			
-			// Check what drawing mode we are in
-			var drawingMode:String = AnnotationToolbar.BOX//annotationToolbar.getAnnotationDrawingMode();
-			
-			trace("Starting to draw in Mode", drawingMode);
+
 			// Clear the annotations values from previous draw
 			startAnnotationMouseX = e.target.mouseX;
 			startAnnotationMouseY = e.target.mouseY;
@@ -329,41 +335,17 @@ package View.components
 			// Make the editable text overlay box disappear
 //			hideAnnotationTextOverlay();
 			
-			if(drawingMode == AnnotationToolbar.PEN) {
+			if(AnnotationToolbar.mode == AnnotationToolbar.BOX) {
 				// For the box, we want to make a new box, everytime 
 				// you click (erases old boxes)
 				// Clear any of the previous annotations
 				this.removeAllNonSavedAnnotations();
 				
-//			} else if (drawingMode == AnnotationToolbar.PEN) {
-////				if(!canvas || !newAnnotationsGroup.contains(canvas)) {
-////					// If we havent already got a canvas
-////					// Create one, and put it in the new annotations group
-////					canvas = new Group();
-////					canvas.percentWidth = 100;
-////					canvas.percentHeight = 100;
-////					newAnnotationsGroup.addElement(canvas);
-////				}
-//			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
-//				// We are highlighting some text
-//				trace("drawing a highlight");
-//				trace("Starting to draw annotation at", startAnnotationMouseX, startAnnotationMouseY);
-//				
-//				pdf.highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, startAnnotationMouseX, startAnnotationMouseY);
-//			} else if (drawingMode == AnnotationToolbar.NOTE) {
-//				trace("Placing a note");
-//				// For the box, we want to make a new note, everytime 
-//				// you click (erases old boxes)
-//				// Clear any of the previous annotations
-//				newAnnotationsGroup.removeAllElements();
-//				
-//				startAnnotationMouseX = e.target.mouseX - 2;
-//				startAnnotationMouseY = e.target.mouseY - 2;
-//				canvas = new Group();
-//				canvas.percentWidth = 100;
-//				canvas.percentHeight = 100;
-//				newAnnotationsGroup.addElement(canvas);
-			}
+			} else if (AnnotationToolbar.mode == AnnotationToolbar.PEN) {
+				
+			} else if (AnnotationToolbar.mode == AnnotationToolbar.HIGHLIGHT) {
+				this.removeAllNonSavedAnnotations();
+			} 
 			
 			// Listen for the cursor being moved
 			this.addEventListener(MouseEvent.MOUSE_MOVE, drawingNewAnnotation);
@@ -375,29 +357,21 @@ package View.components
 		 * 
 		 */		
 		private function drawingNewAnnotation(e:MouseEvent):void {
-			// We are drawing
-			// Check what drawing mode we are in
-			var drawingMode:String = AnnotationToolbar.PEN;//annotationToolbar.getAnnotationDrawingMode();
-			
 			trace("drawing annotation", e.target.mouseX, e.target.mouseY);
-			if(drawingMode == AnnotationToolbar.BOX) {
+			if(AnnotationToolbar.mode == AnnotationToolbar.BOX) {
 				// We are drawing a box
-				
+				// Get out the width and height of the box				
 				var width:Number = e.target.mouseX - startAnnotationMouseX;
 				var height:Number = e.target.mouseY - startAnnotationMouseY;
-				
-				
-				
+
 				newAnnotationSpace.graphics.clear();
-				//this.graphics.lineStyle(1, annotationToolbar.getSelectedColor(), 1);
 				newAnnotationSpace.graphics.lineStyle(1, 0xFFFF00, 1);
-				//this.graphics.beginFill(annotationToolbar.getSelectedColor(), 0.5);
 				newAnnotationSpace.graphics.beginFill(0xFFFF00, 0.5);
 				
 				newAnnotationSpace.graphics.drawRect(startAnnotationMouseX, startAnnotationMouseY, width, height);
 				trace("Drawing", startAnnotationMouseX, startAnnotationMouseY, width, height);
 				
-			} else if (drawingMode == AnnotationToolbar.PEN) {
+			} else if (AnnotationToolbar.mode == AnnotationToolbar.PEN) {
 				// We are using the PEN TOOL
 				// The Straight line tool in flash, draws a line from the current pos
 				// to a finish pos
@@ -418,19 +392,22 @@ package View.components
 					
 					trace("drawing", startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
 					
-					trace("saving point");
-					annotationCoordinates.addCoordinates(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
 					
+					annotationCoordinates.addCoordinates(startAnnotationMouseX, startAnnotationMouseY,
+															e.target.mouseX, e.target.mouseY);
+					
+					trace("Point count", annotationCoordinates.getCount());
 					startAnnotationMouseX = e.target.mouseX;
 					startAnnotationMouseY = e.target.mouseY;
 					
 				} else {
-					trace("not saving point");
+					//trace("not saving point");
 				}
-//			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
-//				trace("Adding an text highlight stuff");
-//				pdf.clearHighlight();
-//				pdf.highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
+			} else if (AnnotationToolbar.mode == AnnotationToolbar.HIGHLIGHT) {
+				trace("Adding an text highlight stuff");
+				(media as PDF).clearHighlight();
+				(media as PDF).highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, 
+														e.target.mouseX, e.target.mouseY);
 			} 
 			
 		}
@@ -441,7 +418,7 @@ package View.components
 			this.removeEventListener(MouseEvent.MOUSE_MOVE, drawingNewAnnotation);
 			
 			// Check what drawing mode we are in
-			var drawingMode:String = AnnotationToolbar.PEN;//annotationToolbar.getAnnotationDrawingMode();
+			var drawingMode:String = AnnotationToolbar.mode;//annotationToolbar.getAnnotationDrawingMode();
 			
 			// Save the stopping coordinates
 			finishAnnotationMouseX = e.target.mouseX;
@@ -472,31 +449,38 @@ package View.components
 				newAnnotationSpace.graphics.beginFill(0x00FF00, 0.5);
 				newAnnotationSpace.graphics.drawRect(startAnnotationMouseX, startAnnotationMouseY, width, height);
 				
-				// Show the annotation text overlay in text entry mode
-//				showAnnotationTextOverlayTextEntryMode();
-//				
+				// tell the viewer to show the text input box
+				trace("Throwing Show Annotation Text Entry Event");
+				this.dispatchEvent(new IDEvent(IDEvent.SHOW_ANNOTATION_TEXT_ENTRY, true));
+
 			} else if (drawingMode == AnnotationToolbar.PEN) {
 				// We are using the PEN TOOL
 				// The Straight line tool in flash, draws a line from the current pos
 				// to a finish pos
-				newAnnotationSpace.graphics.lineStyle(3, 0x00FF00, 1);
-				newAnnotationSpace.graphics.beginFill(0x00FF00, 0.5);
+				newAnnotationSpace.graphics.lineStyle(3, 0xFFFF00, 1);
+				newAnnotationSpace.graphics.beginFill(0xFFFF00, 0.5);
 				
 				newAnnotationSpace.graphics.moveTo(startAnnotationMouseX, startAnnotationMouseY); 
 				newAnnotationSpace.graphics.lineTo(e.target.mouseX, e.target.mouseY);
 				
 				// Push values into array here
-				annotationCoordinates.addCoordinates(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
+				annotationCoordinates.addCoordinates(startAnnotationMouseX, startAnnotationMouseY, 
+													e.target.mouseX, e.target.mouseY);
 				
 				startAnnotationMouseX = e.target.mouseX;
 				startAnnotationMouseY = e.target.mouseY;
-//			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
-//				trace("highlighting some text");
-//				pdf.highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, e.target.mouseX, e.target.mouseY);
-//				
-//				// Show the annotation text overlay in text entry mode
-//				showAnnotationTextOverlayTextEntryMode();
-//				
+				
+				trace("Point count", annotationCoordinates.getCount());
+				
+			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
+				trace("highlighting some text");
+				(media as PDF).highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, 
+														e.target.mouseX, e.target.mouseY);
+				
+				// tell the viewer to show the text input box
+				trace("Throwing Show Annotation Text Entry Event");
+				this.dispatchEvent(new IDEvent(IDEvent.SHOW_ANNOTATION_TEXT_ENTRY, true));
+			}
 //			} else if (drawingMode == AnnotationToolbar.NOTE) {
 //				
 //				// Save the stopping coordinates
@@ -512,80 +496,33 @@ package View.components
 //				
 //				// Show the annotation text overlay in text entry mode
 //				showAnnotationTextOverlayTextEntryMode();
-			}
+//			}
+			trace("***************************");
 		}
+
 		
-		public function saveNewAnnotation():void {
+		public function saveNewAnnotation(annotationText:String):void {
 			trace("Save Button Clicked");
 			
+			trace("Point count", annotationCoordinates.getCount());
+			
 			// Check what drawing mode we are in
-			var drawingMode:String = AnnotationToolbar.BOX;//annotationToolbar.getAnnotationDrawingMode();
+			var drawingMode:String = AnnotationToolbar.mode;//annotationToolbar.getAnnotationDrawingMode();
 			
 			
 			if(drawingMode == AnnotationToolbar.BOX || drawingMode == AnnotationToolbar.NOTE)  {
-				// We are drawing a box (not using the pen tool)	
-				// Check they have drawn a box and not just hxit save (its at least 2px x 2px)
-				if(Math.abs(startAnnotationMouseX - finishAnnotationMouseX) < 2 &&
-					Math.abs(startAnnotationMouseY -finishAnnotationMouseY) < 2) {
-					Alert.show("No annotation drawn");
-					this.removeAllNonSavedAnnotations();
-					this.stopListeningForAnnotating();
-					return;
-				}
-//				} else if (annotationTextOverlayBox.getText() == "") {
-//					Alert.show("No text given");
-//					this.stopListeningForAnnotating();
-//					return;
-//				}
-				
-				// Remove any of the temporary drawn annotations
-				this.removeAllNonSavedAnnotations();
-				
-				// Add this as an annotation to the view
-				// This is annotation object temporarily, and will be reloaded once the controller
-				// has finished saving the annotation
-				var annotation:AnnotationBox = new AnnotationBox(
-					-1,
-					Auth.getInstance().getUsername(), 
-					"yipeee",
-					Math.abs(finishAnnotationMouseY - startAnnotationMouseY),// / this.scaleY, 
-					Math.abs(finishAnnotationMouseX - startAnnotationMouseX),// / this.scaleX, 
-					Math.min(startAnnotationMouseX, finishAnnotationMouseX),// / this.scaleX,
-					Math.min(startAnnotationMouseY, finishAnnotationMouseY),// / this.scaleY,
-					this.scaleX,
-					this.scaleY
-				);
-				
-				this.addChild(annotation);
-				annotations.push(annotation); // Keep it in our list of annotations on the page
-				annotation.save();
-				
-//			} else if (drawingMode == AnnotationToolbar.PEN) {
-//				
-//				// Test the user has drawn a path
-//				if(annotationCoordinates.getCount() == 0) {
-//					Alert.show("No annotation drawn");
-//					this.leaveNewAnnotationMode();
-//					return;
-//				}
-//				
-//				// Create a new annotation
-//				var annotationPen:AnnotationPen = new AnnotationPen(
-//					-1,
-//					Auth.getInstance().getUsername(),
-//					annotationCoordinates.getString(pdf.height * pdf.scaleY, pdf.width * pdf.scaleX),
-//					pdf.height * pdf.scaleY,
-//					pdf.width * pdf.scaleX,
-//					annotationTextOverlayBox.getText()
-//				);
-//				annotationsGroup.addElement(annotationPen);
-//				// Send this new annotation to the database (via the controller)
-//				annotationPen.save();
-//				
-//				
-//				
-//				annotationPen.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
-//				annotationPen.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
+				this.saveBoxAnnotation(annotationText);
+			} else if (drawingMode == AnnotationToolbar.PEN) {
+				this.savePenAnnotation(annotationText);
+			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
+				this.saveHighlightAnnotation(annotationText);
+			}
+			
+			// Remove any of the temporary drawn annotations
+			this.removeAllNonSavedAnnotations();
+			
+			
+			trace("*************************");
 //			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
 //				
 //				if(pdf.getStartTextIndex() == pdf.getEndTextIndex()) {
@@ -637,7 +574,123 @@ package View.components
 //				annotationHighlight.save();
 //				
 //				pdf.clearHighlight();
-			}
+//			}
 		}
+		
+		/**
+		 * Saves a new box annotation 
+		 * @param annotationText	The text for the box annotation. Not allowed to be ""
+		 * 
+		 */		
+		private function saveBoxAnnotation(annotationText:String):void {
+			trace("Saving box annotation");
+			// We are drawing a box (not using the pen tool)	
+			// Check they have drawn a box and not just hxit save (its at least 2px x 2px)
+			if(Math.abs(startAnnotationMouseX - finishAnnotationMouseX) < 2 &&
+				Math.abs(startAnnotationMouseY -finishAnnotationMouseY) < 2) {
+				Alert.show("No annotation drawn");
+				this.removeAllNonSavedAnnotations();
+				this.stopListeningForAnnotating();
+				return;
+			} else if (annotationText == "") {
+				Alert.show("No text given");
+				this.removeAllNonSavedAnnotations();
+				this.stopListeningForAnnotating();
+				return;
+			}
+			
+			// Add this as an annotation to the view
+			// This is annotation object temporarily, and will be reloaded once the controller
+			// has finished saving the annotation
+			var annotation:AnnotationBox = new AnnotationBox(
+				-1, // we dont have an assetID# for hte annotation get
+				Auth.getInstance().getUsername(), 
+				annotationText,
+				Math.abs(finishAnnotationMouseY - startAnnotationMouseY),// / this.scaleY, 
+				Math.abs(finishAnnotationMouseX - startAnnotationMouseX),// / this.scaleX, 
+				Math.min(startAnnotationMouseX, finishAnnotationMouseX),// / this.scaleX,
+				Math.min(startAnnotationMouseY, finishAnnotationMouseY)// / this.scaleY,
+			);
+			
+			this.addChild(annotation);
+			annotations.push(annotation); // Save the annotation in an array
+			// so we can keep track of it (i.e. remove it easily)
+			annotation.save();			  // Save the annotation in the database
+		}
+		
+		private function savePenAnnotation(annotationText:String):void {
+			trace("Saving a pen annotation");
+			trace("coordinate count is", annotationCoordinates.getCount());
+			// Test the user has drawn a path
+			if(annotationCoordinates.getCount() == 0) {
+				
+				Alert.show("No annotation drawn");
+				this.removeAllNonSavedAnnotations();
+				this.stopListeningForAnnotating();
+				return;
+			}
+			
+			// Create a new annotation
+			var annotationPen:AnnotationPen = new AnnotationPen(
+				-1,
+				Auth.getInstance().getUsername(),
+				annotationCoordinates.getString(),
+				annotationText
+			);
+			this.addChild(annotationPen);
+			annotations.push(annotationPen);
+			annotationPen.save();
+		}
+		
+		private function saveHighlightAnnotation(annotationText:String):void {
+			if((media as PDF).getStartTextIndex() == (media as PDF).getEndTextIndex()) {
+				Alert.show("No text highlighted");
+				this.removeAllNonSavedAnnotations();
+				this.stopListeningForAnnotating();
+				return;
+			} else if (annotationText == "") {
+				Alert.show("No text given");
+				this.removeAllNonSavedAnnotations();
+				this.stopListeningForAnnotating();
+				return;
+			}
+
+			// Just a reminder, percentX is < 0, e.g. like 0.5 is 50%
+			if(startAnnotationMouseY < finishAnnotationMouseY) {
+				var xCoor:Number = startAnnotationMouseX;
+				var yCoor:Number = startAnnotationMouseY;
+			} else if (startAnnotationMouseY > finishAnnotationMouseY) {
+				xCoor = finishAnnotationMouseX;
+				yCoor = finishAnnotationMouseY;
+			} else {
+				// They must be equal
+				if(startAnnotationMouseX < finishAnnotationMouseX) {
+					xCoor = startAnnotationMouseX;
+					yCoor = startAnnotationMouseY;
+				} else {
+					xCoor = finishAnnotationMouseX;
+					yCoor = finishAnnotationMouseY;
+				}					
+			}
+			
+			
+			var annotationHighlight:AnnotationHighlight = new AnnotationHighlight(
+				-1,
+				Auth.getInstance().getUsername(),
+				annotationText,
+				xCoor,
+				yCoor,
+				(media as PDF).getSelectionPage(),
+				(media as PDF).getStartTextIndex(),
+				(media as PDF).getEndTextIndex(),
+				(media as PDF)
+			);
+			this.addChild(annotationHighlight);
+			annotations.push(annotationHighlight);
+			annotationHighlight.save();
+			
+			(media as PDF).clearHighlight();
+		}
+		
 	}
 }

@@ -2,6 +2,9 @@ package View.components.Annotation
 {
 	import Controller.IDEvent;
 	
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	
 	import mx.containers.Canvas;
 	
 	public class AnnotationPen extends Canvas implements AnnotationInterface
@@ -9,9 +12,6 @@ package View.components.Annotation
 		private var author:String; // The author of this annotation
 		private var text:String; // The text of the annotation
 		private var assetID:Number; // The ID of the annotation
-		
-		private var mediasWidth:Number; // The widht of hte media asset we are in
-		private var mediasHeight:Number; // The height of the media asset we are in
 		
 		private var path:String; // The path for the pen drawing
 		
@@ -27,7 +27,7 @@ package View.components.Annotation
 		 * @param text(opt)	The text for the annotation 
 		 * 
 		 */		
-		public function AnnotationPen(assetID:Number, author:String, path:String, mediasHeight:Number, mediasWidth:Number, text:String="") {
+		public function AnnotationPen(assetID:Number, author:String, path:String, text:String="") {
 			super();
 			
 			// This is so the mouse events work correctly
@@ -41,15 +41,27 @@ package View.components.Annotation
 			this.assetID = assetID;
 			this.path = path;
 			
-			// Save the media assets size (we will need to draw it in relation to this
-			this.mediasWidth = mediasWidth;
-			this.mediasHeight = mediasHeight;
-			
-			// Setup the size
-			this.percentHeight = 100;
-			this.percentWidth = 100;
-			
 			redraw(AnnotationToolbar.RED);
+			
+			this.addEventListener(MouseEvent.MOUSE_OVER, function(e:Event):void {
+				var annotation:AnnotationInterface = e.target as AnnotationInterface;
+				annotation.highlight();
+				
+				// tell the viewer to display the overlay to go with this
+				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+				myEvent.data.text = annotation.getText();
+				myEvent.data.author = annotation.getAuthor();
+				dispatchEvent(myEvent);
+			});
+			
+			this.addEventListener(MouseEvent.MOUSE_OUT, function(e:Event):void {
+				trace("Mouse out!!!");
+				var annotation:AnnotationInterface = e.target as AnnotationInterface;
+				annotation.unhighlight();
+				// tell the viewer to hide the annotation text overlay
+				dispatchEvent(new IDEvent(IDEvent.ANNOTATION_MOUSE_OUT, true));
+			});
+			
 		}
 		
 		/**
@@ -80,40 +92,23 @@ package View.components.Annotation
 					// The line goes into the lower half, so we can display the text overlay at the top
 					inLowerHalf = true;	
 				}
-				
-				//trace("drawing annotation (", line.x1 * mediasWidth, line.y1 * mediasHeight, ") (", line.x2 * mediasWidth, line.y2 * mediasHeight, ")");
-				
 				// Draw an invisible (well basically) big fat line, that goes underneath the thin actual annotation we see
 				// This is so this fat line will trigger the mouse over, so we dont have to get exactly on top of the tiny line
 				this.graphics.lineStyle(20, 0x00FF00, 0.001);
 				this.graphics.beginFill(color, 0.01);
 
-				this.graphics.moveTo(line.x1 * mediasWidth, line.y1 * mediasHeight);
-				this.graphics.lineTo(line.x2 * mediasWidth, line.y2 * mediasHeight);
+				this.graphics.moveTo(line.x1, line.y1);
+				this.graphics.lineTo(line.x2, line.y2);
 				
 				this.graphics.lineStyle(2, color, 1);
 				this.graphics.beginFill(color, 0.5);
 				
-				this.graphics.moveTo(line.x1 * mediasWidth, line.y1 * mediasHeight);
-				this.graphics.lineTo(line.x2 * mediasWidth, line.y2 * mediasHeight);
+				this.graphics.moveTo(line.x1, line.y1);
+				this.graphics.lineTo(line.x2, line.y2);
 			}
 		}
 		
 		/* PUBLIC FUNCTIONS */
-		
-		
-		/**
-		 * Called when the image is resized, so we need to recalculate the X and Y positions
-		 * of the annotation, so it scales up, as the image does (or down lol) 
-		 * @param imageWidth
-		 * @param imageHeight
-		 * 
-		 */		
-		public function readjust(imageWidth:Number, imageHeight:Number):void {
-			this.mediasWidth = imageWidth;
-			this.mediasHeight = imageHeight;
-			redraw(AnnotationToolbar.RED);
-		}
 		
 		public function highlight():void {
 			redraw(0xFFFFFF);

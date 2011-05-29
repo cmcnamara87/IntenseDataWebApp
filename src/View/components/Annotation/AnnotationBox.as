@@ -44,7 +44,7 @@ package View.components.Annotation
 		 * 
 		 */		
 		public function AnnotationBox(assetID:Number, author:String, text:String, height:Number, width:Number,
-									xCoor:Number, yCoor:Number, scaleX:Number, scaleY:Number)
+									xCoor:Number, yCoor:Number)
 		{
 			super();
 			
@@ -63,12 +63,12 @@ package View.components.Annotation
 			this.actualWidth = width;
 			
 			// Setup size
-			this.height = height;// * scaleY;
-			this.width = width;// * scaleX
+			this.height = height;
+			this.width = width;
 			
 			// Setup position
-			this.x = this.xCoor; // * scaleX;
-			this.y = this.yCoor;// * scaleY;
+			this.x = this.xCoor;
+			this.y = this.yCoor;
 			
 			// Setup color
 			this.setStyle('backgroundColor',0xFF0000);
@@ -77,13 +77,22 @@ package View.components.Annotation
 			this.setStyle('borderColor', 0xBB0000);
 			
 			this.addEventListener(MouseEvent.MOUSE_OVER, function(e:Event):void {
-				(e.target as AnnotationInterface).highlight();
-				Alert.show((e.target as AnnotationInterface).getText());
-				// Throw event here, to tell pdfviewer, to show the text
+				var annotation:AnnotationInterface = e.target as AnnotationInterface;
+				annotation.highlight();
+				
+				// tell the viewer to display the overlay to go with this
+				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+				myEvent.data.text = annotation.getText();
+				myEvent.data.author = annotation.getAuthor();
+				dispatchEvent(myEvent);
 			});
+			
 			this.addEventListener(MouseEvent.MOUSE_OUT, function(e:Event):void {
-				(e.target as AnnotationInterface).unhighlight();
-				// throw event here, to tell pdf viewer, to hide the text
+				trace("Mouse out!!!");
+				var annotation:AnnotationInterface = e.target as AnnotationInterface;
+				annotation.unhighlight();
+				// tell the viewer to hide the annotation text overlay
+				dispatchEvent(new IDEvent(IDEvent.ANNOTATION_MOUSE_OUT, true));
 			});
 		}
 		
@@ -103,22 +112,7 @@ package View.components.Annotation
 			this.dispatchEvent(myEvent);
 			
 			
-		}
-		
-		/**
-		 * Called when the image is resized, so we need to recalculate the X and Y positions
-		 * of the annotation, so it scales up, as the image does (or down lol) 
-		 * @param imageWidth
-		 * @param imageHeight
-		 * 
-		 */		
-		public function readjust(imageWidth:Number, imageHeight:Number):void {
-			// Redo position (since we want it to be a percentage of the size of the image
-			this.x = this.xCoor * imageWidth;
-			this.y = this.yCoor * imageHeight;
-		}
-		
-		
+		}		
 		
 		public function highlight():void {
 			this.setStyle('borderColor', 0xFFFFFF);

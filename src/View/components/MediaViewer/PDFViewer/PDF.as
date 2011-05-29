@@ -27,6 +27,7 @@ package View.components.MediaViewer.PDFViewer {
 	
 	import mx.controls.Alert;
 	import mx.core.UIComponent;
+	import View.components.MediaViewer.Viewer;
 	
 	/**
 	 * Holds a PDF (read from a swf file created when the pdf was uploaded) 
@@ -71,7 +72,7 @@ package View.components.MediaViewer.PDFViewer {
 		
 		
 		private var SWFLoader:Loader;
-		private var viewer:PDFViewer;
+		private var viewer:Viewer;
 		
 		private var annotationsInsert:Array = new Array();
 		public var loadedAnnotations:Boolean = false;
@@ -188,17 +189,14 @@ package View.components.MediaViewer.PDFViewer {
 				var tmpLoader:Loader = new Loader();
 				tmpLoader.loadBytes(SWFData.data);
 				tmpLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, addPageToStage);
-//				pageTimeoutTimer.start();
-//				pageTimeoutTimer.addEventListener(TimerEvent.TIMER,timedoutpage);
 			} else {
 				// We've loaded the last page
 				trace("FINISHING RENDER");
 				PDFLoaded = true;
 				
 				// Tell the PDFViewer that the PDF has finished loading
-				var myEvent:IDEvent = new IDEvent(IDEvent.PDF_LOADED, true);
+				var myEvent:IDEvent = new IDEvent(IDEvent.MEDIA_LOADED, true);
 				this.dispatchEvent(myEvent);
-				
 				totalPages = pdfContainer.numChildren;	
 			}
 		}
@@ -232,8 +230,8 @@ package View.components.MediaViewer.PDFViewer {
 			trace("Highlighting start:", startX, startY, "end:", finishX, finishY);
 			
 			// We need to know which page we started highlighting on, and which page we finished on
-			var startPage:Number = Math.floor(startY / (pdfHeight * this.scaleY));
-			var finishPage:Number = Math.floor(finishY / (pdfHeight * this.scaleY));
+			var startPage:Number = Math.floor(startY / pdfHeight);
+			var finishPage:Number = Math.floor(finishY / pdfHeight);
 			trace("highlight on pages", startPage, finishPage);
 			
 			if(startPage != finishPage) {
@@ -251,8 +249,8 @@ package View.components.MediaViewer.PDFViewer {
 				
 				// Convert the x,y to an index number of hte text
 				trace("new x y", startX, startY - (startPage * pdfHeight));
-				var startTextIndex:Number = currentSnapshot.hitTestTextNearPos(startX / this.scaleX, (startY / this.scaleY)  - (startPage * pdfHeight), 10);
-				var endTextIndex:Number = currentSnapshot.hitTestTextNearPos(finishX / this.scaleX, (finishY / this.scaleY) - (startPage * pdfHeight), 10);
+				var startTextIndex:Number = currentSnapshot.hitTestTextNearPos(startX, startY  - (startPage * pdfHeight), 10);
+				var endTextIndex:Number = currentSnapshot.hitTestTextNearPos(finishX, finishY - (startPage * pdfHeight), 10);
 				
 				trace("indexes", startTextIndex, endTextIndex);
 				// Make sure we are highlighting the right way (in case people drag backwards etc)
@@ -310,6 +308,7 @@ package View.components.MediaViewer.PDFViewer {
 		}
 		
 		public function clearHighlight():void {
+			trace("clearing highlighting");
 			for(var i:Number = 0; i < textSnapshotArray.length; i++) {
 				var currentSnapshot:TextSnapshot = textSnapshotArray[i] as TextSnapshot;
 				currentSnapshot.setSelected(0, currentSnapshot.charCount, false);

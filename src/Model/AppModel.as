@@ -440,8 +440,8 @@ package Model {
 			
 		}
 		
-		public function saveNewHighlightAnnotation(mediaAssetID:Number, percentX:Number, percentY:Number, page1:Number, startTextIndex:Number, 
-													endTextIndex:Number, text:String, callback:Function) {
+		public function saveNewHighlightAnnotation(mediaAssetID:Number, xCoor:Number, yCoor:Number, page1:Number, startTextIndex:Number, 
+													endTextIndex:Number, text:String, callback:Function):void {
 			var args:Object = new Object();
 			args.namespace = "recensio";
 			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
@@ -461,8 +461,8 @@ package Model {
 			baseXML.service.args["meta"]["r_resource"]["description"] = " ";
 			
 			// Set All of the annotations data
-			baseXML.service.args["meta"]["r_annotation"]["x"] = percentX;
-			baseXML.service.args["meta"]["r_annotation"]["y"] = percentY;
+			baseXML.service.args["meta"]["r_annotation"]["x"] = xCoor;
+			baseXML.service.args["meta"]["r_annotation"]["y"] = yCoor;
 			baseXML.service.args["meta"]["r_annotation"]["start"] = startTextIndex;
 			baseXML.service.args["meta"]["r_annotation"]["end"] = endTextIndex;
 			baseXML.service.args["meta"]["r_annotation"]["text"] = text;
