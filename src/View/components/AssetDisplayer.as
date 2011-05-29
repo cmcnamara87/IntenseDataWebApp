@@ -52,21 +52,24 @@ package View.components
 		
 		private var loadingLabel:spark.components.Label;
 		
-		
-		
-		public function AssetDisplayer(eventToThrowWhenAssetClicked:String)
+
+		public function AssetDisplayer(eventToThrowWhenAssetClicked:String, darkBackground:Boolean = false)
 		{
 			super();
 			this.eventToThrowWhenAssetClicked = eventToThrowWhenAssetClicked;
 			
 			// Setup background
-			var hello:BitmapFill = new BitmapFill();
-			hello.source = background_data;
-			hello.fillMode = BitmapFillMode.REPEAT;
-			this.backgroundFill = hello;
-
+			if(!darkBackground) {
+				var hello:BitmapFill = new BitmapFill();
+				hello.source = background_data;
+				hello.fillMode = BitmapFillMode.REPEAT;
+				this.backgroundFill = hello;
+			} else {
+				this.backgroundFill = new SolidColor(0xCCCCCC, 1);
+			}
 			// Setup the border
-			this.borderStroke = new SolidColorStroke(0x000000,1,0);
+			//this.borderStroke = new SolidColorStroke(0x000000,1,0);
+			this.setStyle("borderVisible", false);
 			
 			// Setup the Loading label
 			var loadingGroup:HGroup = new HGroup();

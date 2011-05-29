@@ -37,6 +37,9 @@ package View.components
 			myLayout.gap = 0;
 			this.layout = myLayout;
 			
+			//this.borderStroke = new SolidColorStroke(0x999999, 1);
+			this.setStyle("borderVisible", false);
+			
 			// Add the Collection Name Entry Box
 			var collectionTitleBox:BorderContainer = new BorderContainer();
 			// Setup its size			
@@ -75,7 +78,7 @@ package View.components
 			collectionTitleBox.addElement(saveButton);
 			
 			// Add the Asset Displayer
-			myAssetDisplayer = new AssetDisplayer(IDEvent.SHELF_MEDIA_CLICKED);
+			myAssetDisplayer = new AssetDisplayer(IDEvent.SHELF_MEDIA_CLICKED, true);
 			// Setup the size
 			myAssetDisplayer.percentHeight = 100;
 			myAssetDisplayer.percentWidth = 100;

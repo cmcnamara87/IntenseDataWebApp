@@ -81,19 +81,22 @@ package View
 			myVGroup.gap = 0;
 			myAssetBrowserAndPanels.addElement(myVGroup);
 			
-			// And add the Asset Browser (includes the asset tiles, search box etc)
-			myAssetBrowser = new AssetBrowser();
-			myAssetBrowser.percentWidth = 100; // set externally as it changes (with shelf/comments shown etc)
-			myAssetBrowser.percentHeight = 100;
-			myAssetBrowser.setStyle("resizeEffect", new mx.effects.Resize());
-			myVGroup.addElement(myAssetBrowser);
-			
 			// Add the Shelf
 			myShelf = new Shelf();
 			myShelf.height = 0; // set at 0 at first, cause its not displayed
 			myShelf.percentWidth = 100;
 			myShelf.visible = true;
+			myShelf.setStyle("resizeEffect", new mx.effects.Resize());
 			myVGroup.addElement(myShelf);
+			
+			// And add the Asset Browser (includes the asset tiles, search box etc)
+			myAssetBrowser = new AssetBrowser();
+			myAssetBrowser.percentWidth = 100; // set externally as it changes (with shelf/comments shown etc)
+			myAssetBrowser.percentHeight = 100;
+			//myAssetBrowser.setStyle("resizeEffect", new mx.effects.Resize());
+			myVGroup.addElement(myAssetBrowser);
+			
+			
 			
 			// Lets add the Comments Panel
 			myCommentsPanel = new CommentsPanel();
@@ -192,6 +195,7 @@ package View
 		
 		public function hideShelf():void {
 			// Make browser fullsize, and shelf 0
+			myShelf.height = 0;
 			myAssetBrowser.percentHeight = 100;
 			
 			// Pop both the buttons that could be down, up.
@@ -199,8 +203,8 @@ package View
 			this.unsetEditButton();
 			
 			myAssetBrowser.refreshMediaAssetsDisplay();
-			myShelf.height = 0;
-			this.myShelf.visible = false;
+			
+			//this.myShelf.visible = false;
 		}
 		
 		public function unsetCreateCollectionButton():void {

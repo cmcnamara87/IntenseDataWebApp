@@ -123,6 +123,10 @@ package View.components.MediaViewer
 				// This image is loaded, add the annotations now
 				this.addAnnotationsToDisplay();
 			}
+			
+			if(mediaType == MEDIA_PDF) {
+				(media as PDF).clearHighlight();
+			}
 		}
 		
 		

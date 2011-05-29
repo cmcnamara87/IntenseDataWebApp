@@ -63,6 +63,8 @@ package View.components.Annotation
 			this.imageViewer = imageViewer;
 			
 			this.hide();
+			
+			mode = BOX;
 //			
 //			noteButton = IDGUI.makeToggleButton("Add Note");
 //			this.addElement(noteButton);

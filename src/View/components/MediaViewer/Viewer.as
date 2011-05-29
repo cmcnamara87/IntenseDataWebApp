@@ -28,6 +28,8 @@ package View.components.MediaViewer
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.setTimeout;
 	
+	import flashx.textLayout.formats.BackgroundColor;
+	
 	import mx.containers.Canvas;
 	import mx.controls.Alert;
 	import mx.controls.Button;
@@ -116,13 +118,9 @@ package View.components.MediaViewer
 			this.layout = myLayout;
 			
 			// Setup background
-			this.backgroundFill = new SolidColor(0x000000);
+			this.backgroundFill = new SolidColor(0xEEEEEE);
+			this.setStyle('borderVisible', false);
 			
-			
-			// Create the Annotation Tools toolbar
-			// Will show 'Box tool', 'Pen Tool', 'Save' and 'Cancel' Buttons
-			annotationToolbar = new AnnotationToolbar(this, mediaType);
-			this.addElement(annotationToolbar);
 			
 			// Creatoe a group for the Image Scroller and the Annotation Text Overlay
 			scrollerAndOverlayGroup = new Group();
@@ -164,6 +162,12 @@ package View.components.MediaViewer
 			
 			media = new MediaAndAnnotationHolder(mediaType);
 			mediaGroup.addElement(media);
+			
+			
+			// Create the Annotation Tools toolbar
+			// Will show 'Box tool', 'Pen Tool', 'Save' and 'Cancel' Buttons
+			annotationToolbar = new AnnotationToolbar(this, mediaType);
+			this.addElement(annotationToolbar);
 			
 			// Now we are going to add a bordercontainer at the bottom
 			// to have the slider/resizer
@@ -288,6 +292,7 @@ package View.components.MediaViewer
 		override public function addAnnotations(annotationsArray:Array):void {
 			trace("Adding Annotatio");
 			media.addAnnotations(annotationsArray);
+			this.hideAnnotationTextOverlay();
 		}
 		
 		override public function showAnnotations():void {
@@ -403,7 +408,7 @@ package View.components.MediaViewer
 		 * 
 		 */		
 		private function fitButtonClicked(e:MouseEvent):void {
-			// This needs work lol TODO
+			// work out which side (height or width) is further out of the frame
 			media.scaleX = scrollerAndOverlayGroup.width / media.width;
 			media.scaleY = scrollerAndOverlayGroup.width / media.width;
 		}

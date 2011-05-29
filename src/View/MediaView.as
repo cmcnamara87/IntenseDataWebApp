@@ -87,6 +87,7 @@ package View
 			// Setup size
 			this.percentHeight = 100;
 			this.percentWidth = 100;
+			this.setStyle('borderVisible', false);
 			
 			// Setup layout
 			var myLayout:VerticalLayout = new VerticalLayout();
@@ -291,7 +292,7 @@ package View
 			trace("Adding Annotations...", annotationsArray.length);
 			// Add annotations to annotations list
 			myAnnotationListPanel.addAnnotations(annotationsArray);
-			
+			annotationListButton.label = "Annotation List (" + annotationsArray.length + ")";
 			// Add annotation to viewer
 			if(mediaViewer) {
 				mediaViewer.addAnnotations(annotationsArray);

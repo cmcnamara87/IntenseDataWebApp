@@ -23,8 +23,6 @@ package View.components.AssetBrowser
 	{
 		
 		private var myAssetDisplayer:AssetDisplayer; // Displays the assets as tiles
-//		private var myAssetBrowserToolbar:AssetBrowserToolbar;
-		
 		
 		public function AssetBrowser()
 		{
@@ -35,7 +33,7 @@ package View.components.AssetBrowser
 			
 			// Set the backgrond colour & border collect
 			this.backgroundFill = new SolidColor(0xFFFFFF);
-			this.borderStroke = new SolidColorStroke(0xDDDDDD,1,1);
+			this.setStyle("borderVisible", false);
 			
 			// Setup the layout
 			var myLayout:VerticalLayout = new VerticalLayout();

@@ -40,7 +40,8 @@ package View.components.MediaViewer.PDFViewer {
 		private var pdfScale:Number = 100;
 		private var PDF1:MovieClip;
 		
-		private var pdfPageSpace:Number = 20;
+		private var pdfPageSpaceBottom:Number = 10;
+		private var pdfPageSpaceTop:Number = 10;
 		
 		public var pdfContainer:MovieClip = new MovieClip;
 		public var PDFLoaded:Boolean = false;
@@ -166,20 +167,23 @@ package View.components.MediaViewer.PDFViewer {
 			fullPDF.gotoAndStop(pageNumberBeingLoaded);
 			
 			// Position the page on the screen
-			fullPDF.y = (pageNumberBeingLoaded - 1) * (fullPDF.height + pdfPageSpace);
+			fullPDF.y = pdfPageSpaceTop + ((pageNumberBeingLoaded - 1) * (fullPDF.height + pdfPageSpaceBottom));
 			trace("ading page");
+			
 			// Add this page
 			pdfContainer.addChild(fullPDF);
+			pdfContainer.graphics.lineStyle(1, 0x999999);
+			pdfContainer.graphics.drawRect(-1, pdfPageSpaceTop + ((pageNumberBeingLoaded - 1) * (fullPDF.height + pdfPageSpaceBottom) - 1), fullPDF.width + 2, fullPDF.height + 2)
 			// Add this page's text snapshot to our storage array
 			// We need to do this, so that the text snapshot isnt garbage collected (its a bug!)
 			textSnapshotArray.push(fullPDF.textSnapshot);
 			
 			// we have added new page, so make sure this (the PDF container) is the right size
-			this.height = (pageNumberBeingLoaded) * (fullPDF.height + pdfPageSpace);
+			this.height = (pageNumberBeingLoaded) * (fullPDF.height + pdfPageSpaceBottom);
 			this.width = fullPDF.width;
 			
 			// Save the PDF height
-			pdfHeight = fullPDF.height + pdfPageSpace; 
+			pdfHeight = fullPDF.height + pdfPageSpaceBottom; 
 			
 			// Have we loaded the last page?
 			if(fullPDF.totalFrames > pageNumberBeingLoaded) {
