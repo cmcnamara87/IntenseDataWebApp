@@ -15,5 +15,9 @@ package View.components.Annotation
 		function getAuthor():String;
 		
 		function getText():String;
+		
+		function getX():Number;
+		
+		function getY():Number;
 	}
 }

@@ -226,8 +226,14 @@ package View.components.MediaViewer
 				if(annotation.getID() == assetID) {
 					annotation.highlight();
 					
+					var scrollToAnnotationEvent:IDEvent = new IDEvent(IDEvent.SCROLL_TO_ANNOTATION, true);
+					scrollToAnnotationEvent.data.xCoor = annotation.getX();
+					scrollToAnnotationEvent.data.yCoor = annotation.getY();
+					dispatchEvent(scrollToAnnotationEvent);
+					
 					// tell the viewer to display the overlay to go with this
 					var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+					myEvent.data.bottom = true; // this means we want to show the text overlay at the bottom
 					myEvent.data.text = annotation.getText();
 					myEvent.data.author = annotation.getAuthor();
 					dispatchEvent(myEvent);
@@ -406,8 +412,8 @@ package View.components.MediaViewer
 				var height:Number = e.target.mouseY - startAnnotationMouseY;
 
 				newAnnotationSpace.graphics.clear();
-				newAnnotationSpace.graphics.lineStyle(1, 0xFFFF00, 1);
-				newAnnotationSpace.graphics.beginFill(0xFFFF00, 0.5);
+				newAnnotationSpace.graphics.lineStyle(1, 0x00FF00, 1);
+				newAnnotationSpace.graphics.beginFill(0x00FF00, 0.5);
 				
 				newAnnotationSpace.graphics.drawRect(startAnnotationMouseX, startAnnotationMouseY, width, height);
 				trace("Drawing", startAnnotationMouseX, startAnnotationMouseY, width, height);
@@ -425,8 +431,8 @@ package View.components.MediaViewer
 					Math.abs(startAnnotationMouseY - e.target.mouseY) > distanceThreshold) {
 					
 					// We have moved enough distance, lets draw a line
-					newAnnotationSpace.graphics.lineStyle(3, 0xFFFF00, 1);
-					newAnnotationSpace.graphics.beginFill(0xFFFF00, 0.5);
+					newAnnotationSpace.graphics.lineStyle(3, 0x00FF00, 1);
+					newAnnotationSpace.graphics.beginFill(0x00FF00, 0.5);
 					
 					newAnnotationSpace.graphics.moveTo(startAnnotationMouseX, startAnnotationMouseY); 
 					newAnnotationSpace.graphics.lineTo(e.target.mouseX, e.target.mouseY);
@@ -498,8 +504,8 @@ package View.components.MediaViewer
 				// We are using the PEN TOOL
 				// The Straight line tool in flash, draws a line from the current pos
 				// to a finish pos
-				newAnnotationSpace.graphics.lineStyle(3, 0xFFFF00, 1);
-				newAnnotationSpace.graphics.beginFill(0xFFFF00, 0.5);
+				newAnnotationSpace.graphics.lineStyle(3, 0x00FF00, 1);
+				newAnnotationSpace.graphics.beginFill(0x00FF00, 0.5);
 				
 				newAnnotationSpace.graphics.moveTo(startAnnotationMouseX, startAnnotationMouseY); 
 				newAnnotationSpace.graphics.lineTo(e.target.mouseX, e.target.mouseY);

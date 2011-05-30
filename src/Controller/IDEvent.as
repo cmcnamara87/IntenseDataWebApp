@@ -108,6 +108,10 @@ package Controller {
 			public static var ANNOTATION_MOUSE_OVER:String = "id_annotationMouseOver";
 			public static var ANNOTATION_MOUSE_OUT:String = "id_annotationMouseOut";
 			
+			// Called when we find the annotation that was moused over, and we 
+			// want to send back its y position to the viewer so it can scroll to it
+			public static var SCROLL_TO_ANNOTATION:String = "id_scrollToAnnotation";
+			
 			// When the save button is clicked
 			public static var ANNOTATION_SAVE_CLICKED:String = "recensio_annotationSaveClicked";
 			// Clear any non-saved annotations from the screen

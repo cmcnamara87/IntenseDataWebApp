@@ -170,6 +170,12 @@ package View.components.MediaViewer
 			
 			loadingLabel = new Label();
 			loadingLabel.text = "Loading...";
+			loadingLabel.setStyle('fontSize', 20);
+			loadingLabel.setStyle('color', 0x888888);
+			loadingLabel.setStyle('fontWeight', 'bold');
+			loadingLabel.setStyle('textAlign', 'center');
+			loadingLabel.visible = true;
+			
 			mediaGroup.addElement(loadingLabel);
 			
 			
@@ -212,7 +218,7 @@ package View.components.MediaViewer
 			
 			media.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
 				trace("got a progress event");
-				loadingLabel.text = "Loading..." + Math.round((e.bytesLoaded / e.bytesTotal * 100)) + "%";
+				loadingLabel.text = "Loading " + Math.round((e.bytesLoaded / e.bytesTotal * 100)) + "%";
 				if(e.bytesLoaded == e.bytesTotal) {
 					loadingLabel.visible = false;
 					loadingLabel.includeInLayout = false;
@@ -221,10 +227,26 @@ package View.components.MediaViewer
 			media.addEventListener(IDEvent.PAGE_LOADED, function(e:IDEvent):void {
 				loadingLabel.visible = true;
 				loadingLabel.includeInLayout = true;
-				loadingLabel.text = "Loading Page..." + e.data.page + " of " + e.data.totalPages;
+				loadingLabel.text = "Loading Page " + e.data.page + " of " + e.data.totalPages;
 				if(e.data.page == e.data.totalPages) {
 					loadingLabel.visible = false;
 					loadingLabel.includeInLayout = false;
+				}
+			});
+			
+			this.addEventListener(IDEvent.SCROLL_TO_ANNOTATION, function(e:IDEvent):void {
+				trace("Showing annotation from annotation list");
+				try {
+					Tweener.addTween(myScroller.verticalScrollBar,{'value': e.data.yCoor * media.scaleY - 10, 'time': 1});
+					//myScroller.verticalScrollBar.value = e.data.yCoor * media.scaleY;
+				} catch (e:Error) {
+					
+				}
+				try {
+					Tweener.addTween(myScroller.horizontalScrollBar,{'value': e.data.xCoor * media.scaleX - 10, 'time': 1});
+//					myScroller.horizontalScrollBar.value = e.data.xCoor * media.scaleX;
+				} catch (e:Error) {
+					
 				}
 			});
 		}
@@ -380,7 +402,14 @@ package View.components.MediaViewer
 		private function annotationMouseOver(e:IDEvent):void {
 			trace("Caught annotation mouse over");
 			trace("author is", e.data.author);
-			this.showAnnotationTextOverlayViewMode();
+			if(e.data.bottom && e.data.bottom == true) {
+				// Only show the annotaton overlay at the bottom
+				// this is when the request comes from the annotaiton list panel
+				// and not from an actual annotation being mouse overed
+				this.showAnnotationTextOverlayViewMode(true);
+			} else {
+				this.showAnnotationTextOverlayViewMode();
+			}
 			annotationTextOverlayBox.setAuthor(e.data.author);
 			annotationTextOverlayBox.setText(e.data.text);
 			trace("**********************");
@@ -429,7 +458,7 @@ package View.components.MediaViewer
 		 * Shows hte text overlay in view mode. 
 		 * 
 		 */		
-		private function showAnnotationTextOverlayViewMode():void {
+		private function showAnnotationTextOverlayViewMode(bottom:Boolean=false):void {
 			trace("Showing annotation text overlay");
 			// The next 5 lines are to fix a bug
 			// If you set the bottom, and then set the top on
@@ -443,13 +472,20 @@ package View.components.MediaViewer
 			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
 			
 			
-			// Position the overlay at the top
-			// if the mouse is in hte bottom half of the image
-			// and in the bottom, if the mouse is in the top half
-			if(scrollerAndOverlayGroup.mouseY > (scrollerAndOverlayGroup.height / 2)) {
-				annotationTextOverlayBox.top = 0;
-			} else {
+			if(bottom) {
+				// We always want to show the overlay at hte bottom
+				// this is for when we highlight annotations in the annotaiton list panel
 				annotationTextOverlayBox.bottom = 0;
+			} else {
+				// Position the overlay at the top
+				// if the mouse is in hte bottom half of the image
+				// and in the bottom, if the mouse is in the top half
+				
+				if(scrollerAndOverlayGroup.mouseY > (scrollerAndOverlayGroup.height / 2)) {
+					annotationTextOverlayBox.top = 0;
+				} else {
+					annotationTextOverlayBox.bottom = 0;
+				}
 			}
 			annotationTextOverlayBox.visible = true;
 		}

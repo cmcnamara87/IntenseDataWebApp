@@ -44,10 +44,10 @@ package View.components.Annotation
 			this.y = this.yCoor;
 			
 			// Setup color
-			this.setStyle('backgroundColor',0xFFFF00);
-			this.setStyle('backgroundAlpha', 0.9); 
+			this.setStyle('backgroundColor',0x00AA00);
+			this.setStyle('backgroundAlpha', 0.3); 
 			this.setStyle('borderStyle', 'solid');
-			this.setStyle('borderColor', 0x000000);
+			this.setStyle('borderColor', 0x00AA00);
 			
 			// This is so the mouse events work correctly
 			// otherwise it picks up the 'bordercontainerskin' class instead of
@@ -146,6 +146,13 @@ package View.components.Annotation
 		 */		
 		public function getText():String {
 			return text;
+		}
+		
+		public function getX():Number {
+			return this.x;
+		}
+		public function getY():Number {
+			return this.y;
 		}
 	}
 }

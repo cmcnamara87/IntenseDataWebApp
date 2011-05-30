@@ -19,6 +19,9 @@ package View.components.Annotation
 										// This is used when we dispayed the text overlay and its wokred out
 										// by finding the point closest to the top, and if that is < 0.5
 		
+		private var topXCoor:Number = 999999999;
+		private var topYCoor:Number = 999999999; // THe smallest y coor for the pen drawing (this is, the top of it)
+		
 		/**
 		 * Creates an Annotation Pen 
 		 * @param assetID	The ID for the annotation
@@ -41,7 +44,7 @@ package View.components.Annotation
 			this.assetID = assetID;
 			this.path = path;
 			
-			redraw(0x000000);
+			redraw(0x00AA00);
 			
 			this.addEventListener(MouseEvent.MOUSE_OVER, function(e:Event):void {
 				var annotation:AnnotationInterface = e.target as AnnotationInterface;
@@ -84,14 +87,27 @@ package View.components.Annotation
 			var pathCoordinates:XMLList = XML(path).item;
 			this.graphics.clear();
 			// Draw the path
+//			for each(var line:XML in pathCoordinates) {
+//				this.graphics.lineStyle(5, 0x888888, 1);
+//				this.graphics.moveTo(line.x1, line.y1);
+//				this.graphics.lineTo(line.x2, line.y2);	
+//			}
 			for each(var line:XML in pathCoordinates) {
-				this.graphics.lineStyle(5, 0x888888, 1);
-				this.graphics.moveTo(line.x1, line.y1);
-				this.graphics.lineTo(line.x2, line.y2);	
-			}
-			for each(line in pathCoordinates) {
 				// The path is broken into line segements
 				//trace("line", line.x1, line.x2, line.y1, line.y2, this.mediasHeight, this.mediasWidth);
+				
+				if(line.y1 < topYCoor) {
+					topYCoor = line.y1;
+				} 
+				if(line.y2 < topYCoor) {
+					topYCoor = line.y2;
+				}
+				if(line.x1 < topXCoor) {
+					topXCoor = line.x1;
+				}
+				if(line.x2 < topXCoor) {
+					topXCoor = line.x2;
+				}
 				
 				if(line.y1 > 0.5 || line.y2 > 0.5) {
 					// The line goes into the lower half, so we can display the text overlay at the top
@@ -111,7 +127,7 @@ package View.components.Annotation
 //				this.graphics.moveTo(line.x1, line.y1);
 //				this.graphics.lineTo(line.x2, line.y2)
 				
-				this.graphics.lineStyle(4, color, 1);
+				this.graphics.lineStyle(3, color, 1);
 				this.graphics.beginFill(color, 0.5);
 				this.graphics.moveTo(line.x1, line.y1);
 				this.graphics.lineTo(line.x2, line.y2);
@@ -123,12 +139,12 @@ package View.components.Annotation
 		/* PUBLIC FUNCTIONS */
 		
 		public function highlight():void {
-			redraw(AnnotationToolbar.RED);
+			redraw(0x00FF00);
 		}
 		
 		
 		public function unhighlight():void {
-			redraw(0x000000);
+			redraw(0x00AA00);
 		}
 		
 		/**
@@ -160,6 +176,13 @@ package View.components.Annotation
 		 */		
 		public function getText():String {
 			return text;
+		}
+		
+		public function getX():Number {
+			return this.topXCoor;
+		}
+		public function getY():Number {
+			return this.topYCoor;
 		}
 	}
 }

@@ -71,10 +71,11 @@ package View.components.Annotation
 			this.y = this.yCoor;
 			
 			// Setup color
-			this.setStyle('backgroundColor',0xFF0000);
+			this.setStyle('backgroundColor',0x00FF00);
 			this.setStyle('backgroundAlpha', 0.05); 
 			this.setStyle('borderStyle', 'solid');
-			this.setStyle('borderColor', 0xBB0000);
+			this.setStyle('borderWeight', 3);
+			this.setStyle('borderColor', 0x00AA00);
 			
 			this.addEventListener(MouseEvent.MOUSE_OVER, function(e:Event):void {
 				var annotation:AnnotationInterface = e.target as AnnotationInterface;
@@ -115,16 +116,16 @@ package View.components.Annotation
 		}		
 		
 		public function highlight():void {
-			this.setStyle('borderColor', 0xFFFFFF);
+			this.setStyle('borderColor', 0x00FF00);
 			this.setStyle('backgroundColor',0xFFFFFF);
 			this.setStyle('backgroundAlpha', 0.02); 
 		}
 		
 		
 		public function unhighlight():void {
-			this.setStyle('backgroundColor',0xFF0000);
+			this.setStyle('backgroundColor',0x00FF00);
 			this.setStyle('backgroundAlpha', 0.05); 
-			this.setStyle('borderColor', 0xBB0000);
+			this.setStyle('borderColor', 0x00AA00);
 		}
 		
 		/**
@@ -156,6 +157,13 @@ package View.components.Annotation
 		 */		
 		public function getText():String {
 			return text;
+		}
+		
+		public function getX():Number {
+			return this.x;
+		}
+		public function getY():Number {
+			return this.y;
 		}
 	}
 }
