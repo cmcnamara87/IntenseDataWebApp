@@ -236,18 +236,7 @@ package View.components.MediaViewer
 			
 			this.addEventListener(IDEvent.SCROLL_TO_ANNOTATION, function(e:IDEvent):void {
 				trace("Showing annotation from annotation list");
-				try {
-					Tweener.addTween(myScroller.verticalScrollBar,{'value': e.data.yCoor * media.scaleY - 10, 'time': 1});
-					//myScroller.verticalScrollBar.value = e.data.yCoor * media.scaleY;
-				} catch (e:Error) {
-					
-				}
-				try {
-					Tweener.addTween(myScroller.horizontalScrollBar,{'value': e.data.xCoor * media.scaleX - 10, 'time': 1});
-//					myScroller.horizontalScrollBar.value = e.data.xCoor * media.scaleX;
-				} catch (e:Error) {
-					
-				}
+				scrollToPoint(e.data.xCoor, e.data.yCoor);
 			});
 		}
 		
@@ -273,8 +262,24 @@ package View.components.MediaViewer
 			return null;
 		}
 		
+		/**
+		 * Constructs the toolbar at the bottom of the viewer. Often has a HSlider and
+		 * other zoom buttons.
+		 * 
+		 */		
 		protected function makeBottomToolbar():void {
 			trace("Viewer:makeBottomToolbar Should be overwritten");
+		}
+		
+		protected function scrollToPoint(xCoor:Number, yCoor:Number):void {
+			// Try and scroll the vertical scroll bar (try/catch incase it doesnt exist)
+			try {
+				Tweener.addTween(myScroller.verticalScrollBar,{'value': e.data.yCoor * media.scaleY - 10, 'time': 1});
+			} catch (e:Error) {}
+			// Try and scroll the horizontal scroll bar (try/catch in case the scrollbar doesnt exist)
+			try {
+				Tweener.addTween(myScroller.horizontalScrollBar,{'value': e.data.xCoor * media.scaleX - 10, 'time': 1});
+			} catch (e:Error) {}
 		}
 		/* ================ FUNCTIONS CALLED BY MEDIAVIEW ======================== */
 		
