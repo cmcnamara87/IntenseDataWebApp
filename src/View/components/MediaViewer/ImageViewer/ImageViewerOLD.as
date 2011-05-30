@@ -51,7 +51,7 @@ package View.components.MediaViewer.ImageViewer
 	import spark.layouts.VerticalAlign;
 	import spark.layouts.VerticalLayout;
 	
-	public class ImageViewer extends MediaViewer implements MediaViewerInterface
+	public class ImageViewerOLD extends MediaViewer implements MediaViewerInterface
 	{
 		private var image:Image; // The Image object to display
 		private var sourceURL:String; // The URL to the image's source
@@ -103,7 +103,7 @@ package View.components.MediaViewer.ImageViewer
 		private var closeButton:Image;
 		private var annotationMouseOverID:Number;
 		
-		public function ImageViewer()
+		public function ImageViewerOLD()
 		{
 			super();
 			

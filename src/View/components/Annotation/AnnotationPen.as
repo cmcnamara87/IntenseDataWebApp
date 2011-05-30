@@ -41,7 +41,7 @@ package View.components.Annotation
 			this.assetID = assetID;
 			this.path = path;
 			
-			redraw(AnnotationToolbar.RED);
+			redraw(0x000000);
 			
 			this.addEventListener(MouseEvent.MOUSE_OVER, function(e:Event):void {
 				var annotation:AnnotationInterface = e.target as AnnotationInterface;
@@ -85,6 +85,11 @@ package View.components.Annotation
 			this.graphics.clear();
 			// Draw the path
 			for each(var line:XML in pathCoordinates) {
+				this.graphics.lineStyle(5, 0x888888, 1);
+				this.graphics.moveTo(line.x1, line.y1);
+				this.graphics.lineTo(line.x2, line.y2);	
+			}
+			for each(line in pathCoordinates) {
 				// The path is broken into line segements
 				//trace("line", line.x1, line.x2, line.y1, line.y2, this.mediasHeight, this.mediasWidth);
 				
@@ -92,31 +97,38 @@ package View.components.Annotation
 					// The line goes into the lower half, so we can display the text overlay at the top
 					inLowerHalf = true;	
 				}
+				
 				// Draw an invisible (well basically) big fat line, that goes underneath the thin actual annotation we see
 				// This is so this fat line will trigger the mouse over, so we dont have to get exactly on top of the tiny line
 				this.graphics.lineStyle(20, 0x00FF00, 0.001);
 				this.graphics.beginFill(color, 0.01);
-
 				this.graphics.moveTo(line.x1, line.y1);
 				this.graphics.lineTo(line.x2, line.y2);
 				
-				this.graphics.lineStyle(2, color, 1);
+				// Draw coloured line
+//				this.graphics.lineStyle(2, color, 1);
+//				this.graphics.beginFill(color, 0.5);
+//				this.graphics.moveTo(line.x1, line.y1);
+//				this.graphics.lineTo(line.x2, line.y2)
+				
+				this.graphics.lineStyle(4, color, 1);
 				this.graphics.beginFill(color, 0.5);
-				
 				this.graphics.moveTo(line.x1, line.y1);
 				this.graphics.lineTo(line.x2, line.y2);
+				
+				
 			}
 		}
 		
 		/* PUBLIC FUNCTIONS */
 		
 		public function highlight():void {
-			redraw(0xFFFFFF);
+			redraw(AnnotationToolbar.RED);
 		}
 		
 		
 		public function unhighlight():void {
-			redraw(AnnotationToolbar.RED);
+			redraw(0x000000);
 		}
 		
 		/**

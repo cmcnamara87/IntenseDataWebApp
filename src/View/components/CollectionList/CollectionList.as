@@ -63,6 +63,7 @@ package View.components.CollectionList
 			this.backgroundFill = new SolidColor(0xFFFFFF);
 			this.borderStroke = new SolidColorStroke(0xCCCCCC,1,1);
 			
+			
 			// Add a toolbar, work out what to put in it later
 			var myToolbar:Toolbar = new Toolbar();
 			this.addElement(myToolbar);
@@ -87,6 +88,7 @@ package View.components.CollectionList
 			// Add in the search collections box
 			var searchToolbar:SubToolbar = new SubToolbar();
 			searchToolbar.setStyle("resizeEffect", null);
+			searchToolbar.setStyle("borderVisible", false);
 			searchToolbar.setColor(SubToolbar.GREY);
 			this.addElement(searchToolbar);
 			// Add the search input;

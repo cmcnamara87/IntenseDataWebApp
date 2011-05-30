@@ -3,7 +3,7 @@ package View.components.Annotation
 	import Controller.IDEvent;
 	
 	import View.components.IDGUI;
-	import View.components.MediaViewer.ImageViewer.ImageViewer;
+	import View.components.MediaViewer.ImageViewer.ImageViewerOLD;
 	import View.components.MediaViewer.MediaAndAnnotationHolder;
 	import View.components.MediaViewer.MediaViewer;
 	import View.components.MediaViewer.MediaViewerInterface;
@@ -66,6 +66,7 @@ package View.components.Annotation
 			
 			mode = BOX;
 //			
+			this.setStyle("borderVisible", false);
 //			noteButton = IDGUI.makeToggleButton("Add Note");
 //			this.addElement(noteButton);
 			
@@ -87,7 +88,7 @@ package View.components.Annotation
 			annotationTypeButtons = [drawBoxButton, freeDrawButton, textHighlightButton];
 			
 			// Create the veritcal line, that sits after the 'free draw button'
-			var optionsLine:Line = IDGUI.makeLine(0xBBBB00)
+			var optionsLine:Line = IDGUI.makeLine(0x000000)
 			this.addElement(optionsLine);
 			
 			// Create the clear non-saved annotations Button
@@ -96,7 +97,7 @@ package View.components.Annotation
 			this.addElement(addTextButton = IDGUI.makeButton("Add Text"));
 
 			// Add a new Free draw end line
-			this.addElement(freeDrawToolsEndLine = IDGUI.makeLine(0xBBBB00));
+			this.addElement(freeDrawToolsEndLine = IDGUI.makeLine(0x000000));
 			
 			// Since we are in Box mode by default, hide the extra tools
 			// That only come with free draw mode

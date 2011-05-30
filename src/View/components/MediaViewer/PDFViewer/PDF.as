@@ -7,6 +7,8 @@ package View.components.MediaViewer.PDFViewer {
 	
 	import Module.PDFViewer.PDFAnnotation;
 	
+	import View.components.MediaViewer.Viewer;
+	
 	import flash.display.Loader;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
@@ -27,7 +29,6 @@ package View.components.MediaViewer.PDFViewer {
 	
 	import mx.controls.Alert;
 	import mx.core.UIComponent;
-	import View.components.MediaViewer.Viewer;
 	
 	/**
 	 * Holds a PDF (read from a swf file created when the pdf was uploaded) 
@@ -100,17 +101,6 @@ package View.components.MediaViewer.PDFViewer {
 			this.addChild(pdfContainer);
 			loadSWF();
 		}
-//		public function PDF(swfURL:String,viewer:PDFViewer,selectColour:uint,selectAccuracy:uint) {
-//			this.swfURL = swfURL;//"http://recensio.acid.net.au:5080/oflaDemo/streams/837.swf";
-//			//Alert.show("swfURL: "+swfURL );//
-//			//this.swfURL = "http://recensio.acid.net.au:5080/oflaDemo/streams/837.swf";
-//			this.viewer = viewer;
-//			this.selectColour = selectColour;
-//			this.selectAccuracy = selectAccuracy;
-//			this.addChild(pdfContainer);
-//			pdfContainer.tabChildren = false;
-//			loadSWF();
-//		}
 		
 		/**
 		 * Loads the SWF file from the supplied URL. 
@@ -160,26 +150,36 @@ package View.components.MediaViewer.PDFViewer {
 		 * 
 		 */		
 		private function addPageToStage(e:Event):void {
-			
 			var fullPDF:MovieClip = e.currentTarget.content as MovieClip;
+			
+			// Throw an event that shows we are loading pages.
+			var pageLoadEvent:IDEvent = new IDEvent(IDEvent.PAGE_LOADED, true);
+			pageLoadEvent.data.page = pageNumberBeingLoaded;
+			pageLoadEvent.data.totalPages = fullPDF.totalFrames;
+			this.dispatchEvent(pageLoadEvent);
 			
 			// Go to page we should be looking at
 			fullPDF.gotoAndStop(pageNumberBeingLoaded);
 			
 			// Position the page on the screen
-			fullPDF.y = pdfPageSpaceTop + ((pageNumberBeingLoaded - 1) * (fullPDF.height + pdfPageSpaceBottom));
-			trace("ading page");
+			//fullPDF.y = pdfPageSpaceTop + ((pageNumberBeingLoaded - 1) * (fullPDF.height + pdfPageSpaceBottom));
+			fullPDF.y = (pageNumberBeingLoaded - 1) * (fullPDF.height + pdfPageSpaceBottom);
+//			fullPDF.y = (pdfPageSpaceTop * pageNumberBeingLoaded) + ((pageNumberBeingLoaded - 1) * (fullPDF.height + pdfPageSpaceBottom));
+			trace("ading page" + pageNumberBeingLoaded);
 			
 			// Add this page
 			pdfContainer.addChild(fullPDF);
 			pdfContainer.graphics.lineStyle(1, 0x999999);
-			pdfContainer.graphics.drawRect(-1, pdfPageSpaceTop + ((pageNumberBeingLoaded - 1) * (fullPDF.height + pdfPageSpaceBottom) - 1), fullPDF.width + 2, fullPDF.height + 2)
+//			pdfContainer.graphics.drawRect(-1, pdfPageSpaceTop + ((pageNumberBeingLoaded - 1) * (fullPDF.height + pdfPageSpaceBottom) - 1), fullPDF.width + 2, fullPDF.height + 2)
+			pdfContainer.graphics.drawRect(-1, ((pageNumberBeingLoaded - 1) * (fullPDF.height + pdfPageSpaceBottom) - 1), fullPDF.width + 2, fullPDF.height + 2)
 			// Add this page's text snapshot to our storage array
 			// We need to do this, so that the text snapshot isnt garbage collected (its a bug!)
 			textSnapshotArray.push(fullPDF.textSnapshot);
 			
 			// we have added new page, so make sure this (the PDF container) is the right size
-			this.height = (pageNumberBeingLoaded) * (fullPDF.height + pdfPageSpaceBottom);
+//			this.height = (pageNumberBeingLoaded) * (fullPDF.height + pdfPageSpaceBottom);
+			this.height = pageNumberBeingLoaded * (fullPDF.height + pdfPageSpaceBottom);
+//			this.height = ((pdfPageSpaceTop + 1) * pageNumberBeingLoaded) + ((pageNumberBeingLoaded) * (fullPDF.height + pdfPageSpaceBottom));
 			this.width = fullPDF.width;
 			
 			// Save the PDF height
@@ -196,6 +196,7 @@ package View.components.MediaViewer.PDFViewer {
 			} else {
 				// We've loaded the last page
 				trace("FINISHING RENDER");
+				
 				PDFLoaded = true;
 				
 				// Tell the PDFViewer that the PDF has finished loading
@@ -317,8 +318,59 @@ package View.components.MediaViewer.PDFViewer {
 				var currentSnapshot:TextSnapshot = textSnapshotArray[i] as TextSnapshot;
 				currentSnapshot.setSelected(0, currentSnapshot.charCount, false);
 			}
+			
+			this.startTextIndex = -1;
+			this.endTextIndex = -1;
 		}
 		
+		/**
+		 * Searches for text in the PDF document and highlights all occurences of the text. 
+		 * @param text The text to search for
+		 * @return The y position in the PDF document of the first match, or, if there are no matches, -1
+		 * 
+		 */		
+		public function searchForText(text:String):Number {
+			trace("Searching for text", text);
+			clearHighlight();
+			
+			var firstMatchY:Number = -1;
+			
+			for(var page:Number = 0; page < textSnapshotArray.length; page++) {
+				var currentSnapshot:TextSnapshot = textSnapshotArray[page] as TextSnapshot;
+				//trace("looking at page", i);
+				// Start looking from index 0
+				var index:Number = 0;
+				//trace("index is", index, "charcount is", currentSnapshot.charCount);
+				// If we havent reached the end of this page, keep looking
+				while(index <= currentSnapshot.charCount) {
+					var foundIndex:Number = currentSnapshot.findText(index, text, false);
+					if(foundIndex != -1) {
+						// We found some text
+						currentSnapshot.setSelected(foundIndex, foundIndex + text.length, true);
+						index += foundIndex + text.length;
+						
+						if(firstMatchY == -1) {
+							var matchInfoForFirstLetter:Object = currentSnapshot.getTextRunInfo(foundIndex, foundIndex + text.length)[0];
+							var firstLetterYPosInPage:Number = matchInfoForFirstLetter.matrix_ty;
+							// Now work out the y position in the entire document
+							firstMatchY = firstLetterYPosInPage + (page * pdfHeight);
+						}
+					} else {
+//						trace("No match found, going to next page");
+						break;
+					}
+				}
+			}
+			return firstMatchY;
+		}
+		/**
+		 * Gets the height of the pages in the document 
+		 * @return 
+		 * 
+		 */		
+		public function getPageHeight():Number {
+			return pdfHeight;
+		}
 		/**
 		 * Gets the start index for the current text highlighted by the user 
 		 * @return The start index

@@ -80,6 +80,7 @@ package View.components.MediaViewer
 			
 			media.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
 				var percentLoaded:Number = Math.round(e.bytesLoaded / e.bytesTotal * 100);
+				dispatchEvent(e);
 				trace("Loaded", percentLoaded);
 			});
 		}
@@ -97,6 +98,32 @@ package View.components.MediaViewer
 			mediaLoaded = true;
 			if(annotationsLoaded) {
 				this.addAnnotationsToDisplay();
+			}
+		}
+		
+		/**
+		 * Searches for text in the media. Should only be used ofr PDFs 
+		 * @param text	The string to search for.
+		 * @return The y-pos of the first match
+		 * 
+		 */		
+		public function searchForText(text:String):Number {
+			// This should only be used for the pdfs whatever!!!!
+			// this should alll be extended into another class, ill do it later, on a deadline atm TODO!!!
+			if(mediaType == MEDIA_PDF) {
+				return (media as PDF).searchForText(text);
+			} else {
+				throw new Error("Only to be run on PDFs");
+			}
+		}
+		
+		public function getFitHeightSize():Number {
+			if(mediaType == MEDIA_PDF) {
+				return (media as PDF).getPageHeight();
+			} else if (mediaType == MEDIA_IMAGE) {
+				return media.height;
+			} else {
+				return -1;
 			}
 		}
 		
@@ -151,6 +178,9 @@ package View.components.MediaViewer
 			//				this.removeChild(annotation);
 			//			}
 			newAnnotationSpace.graphics.clear();
+			try{
+				(media as PDF).clearHighlight();
+			} catch(error:Error) {}
 			annotationCoordinates = new AnnotationCoordinateCollection();
 		}
 		
@@ -362,6 +392,13 @@ package View.components.MediaViewer
 		 */		
 		private function drawingNewAnnotation(e:MouseEvent):void {
 			trace("drawing annotation", e.target.mouseX, e.target.mouseY);
+			
+			try {
+				(media as PDF).clearHighlight();
+			} catch (error:Error) {
+				trace("couldnt claer the annotation cause its not a pdf");
+			}
+			
 			if(AnnotationToolbar.mode == AnnotationToolbar.BOX) {
 				// We are drawing a box
 				// Get out the width and height of the box				
@@ -478,6 +515,17 @@ package View.components.MediaViewer
 				
 			} else if (drawingMode == AnnotationToolbar.HIGHLIGHT) {
 				trace("highlighting some text");
+				if(startAnnotationMouseX == finishAnnotationMouseX && startAnnotationMouseY == finishAnnotationMouseY) {
+					// Clear the annotations values
+					startAnnotationMouseX = -1;
+					startAnnotationMouseY = -1;
+					finishAnnotationMouseX = -1;
+					finishAnnotationMouseY  = -1;
+					(media as PDF).clearHighlight();	
+					
+					return;
+				}	
+				
 				(media as PDF).highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, 
 														e.target.mouseX, e.target.mouseY);
 				

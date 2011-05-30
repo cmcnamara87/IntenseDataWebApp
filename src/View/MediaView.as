@@ -16,7 +16,7 @@ package View
 	import View.components.EditDetails.EditDetailsPanel;
 	import View.components.IDGUI;
 	import View.components.MediaViewer.AudioViewer;
-	import View.components.MediaViewer.ImageViewer.ImageViewer;
+	import View.components.MediaViewer.ImageViewer.ImageViewerOLD;
 	import View.components.MediaViewer.MediaAndAnnotationHolder;
 	import View.components.MediaViewer.MediaViewer;
 	import View.components.MediaViewer.VideoViewer.VideoViewer;
@@ -213,7 +213,7 @@ package View
 			switch(mediaData.type) {
 				case "image":
 //					mediaViewer = new ImageViewer();
-					mediaViewer = new Viewer(MediaAndAnnotationHolder.MEDIA_IMAGE);
+					mediaViewer = Viewer.getViewer(MediaAndAnnotationHolder.MEDIA_IMAGE);
 					addAnnotationButton.visible = true;
 					hideShowAnnotationButton.visible = true;
 					break;
@@ -225,7 +225,7 @@ package View
 					break;
 				case "document":
 //					mediaViewer = new Module.PDFViewer.PDFViewer();
-					mediaViewer = new Viewer(MediaAndAnnotationHolder.MEDIA_PDF);
+					mediaViewer = Viewer.getViewer(MediaAndAnnotationHolder.MEDIA_PDF);
 					addAnnotationButton.visible = true;
 					hideShowAnnotationButton.visible = true;
 //					mediaViewer = new Module.PDFViewer.PDFViewer();

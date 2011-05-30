@@ -101,6 +101,7 @@ package Controller {
 			//When a module fails
 			public static var MODULE_FAIL:String = "recensio_module_fail";
 			
+			public static var PAGE_LOADED:String = "id_pageLoaded";
 			
 			// ANNOTATION STUFF
 			public static var SHOW_ANNOTATION_TEXT_ENTRY:String = "id_showAnnotationTextEntry";

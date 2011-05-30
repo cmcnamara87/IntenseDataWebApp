@@ -57,6 +57,8 @@ package View.components.MediaViewer
 	
 	public class Viewer extends MediaViewer implements MediaViewerInterface
 	{
+		protected var mediaType:String;
+		
 		private var annotationToolbar:AnnotationToolbar; // The box containing the annotation tools
 		
 		private var assetID:Number;
@@ -66,7 +68,7 @@ package View.components.MediaViewer
 			
 		private var annotationTextOverlayBox:AnnotationTextOverlayBox; // The box that houses the annotation text content
 		
-		private var scrollerAndOverlayGroup:Group;
+		protected var scrollerAndOverlayGroup:Group;
 		
 		private var loadingLabel:Label; // Holds the 'Loading 25%' when loading
 		
@@ -87,7 +89,7 @@ package View.components.MediaViewer
 		private var actualImageWidth:Number = -1;
 		private var actualImageHeight:Number = -1;
 		
-		private var resizeSlider:HSlider;
+		protected var resizeSlider:HSlider;
 		
 		[Embed(source="Assets/Template/closebutton.png")] 
 		private var closeButtonImage:Class;
@@ -98,15 +100,18 @@ package View.components.MediaViewer
 		
 		private var mediaGroup:Group; // Holds the PDF and the annotations
 		
-		private var myScroller:Scroller; // The scroller that surrounds the content
+		protected var myScroller:Scroller; // The scroller that surrounds the media
 		
 		private var UITest:UIComponent;
 		
-		private var media:MediaAndAnnotationHolder;
+		protected var media:MediaAndAnnotationHolder;
+		
+		protected var sliderResizerContainer:BorderContainer;
 		
 		public function Viewer(mediaType:String)
 		{
 			super();
+			this.mediaType = mediaType;
 			
 			// Setup the size
 			this.percentHeight = 100;
@@ -163,15 +168,20 @@ package View.components.MediaViewer
 			media = new MediaAndAnnotationHolder(mediaType);
 			mediaGroup.addElement(media);
 			
+			loadingLabel = new Label();
+			loadingLabel.text = "Loading...";
+			mediaGroup.addElement(loadingLabel);
+			
 			
 			// Create the Annotation Tools toolbar
 			// Will show 'Box tool', 'Pen Tool', 'Save' and 'Cancel' Buttons
 			annotationToolbar = new AnnotationToolbar(this, mediaType);
+			annotationToolbar.setColor(0x222222);
 			this.addElement(annotationToolbar);
 			
 			// Now we are going to add a bordercontainer at the bottom
 			// to have the slider/resizer
-			var sliderResizerContainer:BorderContainer = new BorderContainer();
+			sliderResizerContainer = new BorderContainer();
 			sliderResizerContainer.percentWidth = 100;
 			sliderResizerContainer.height = 40;
 			
@@ -186,38 +196,9 @@ package View.components.MediaViewer
 			bottomLayout.verticalAlign = "middle";
 			bottomLayout.horizontalAlign = "right";
 			sliderResizerContainer.layout = bottomLayout;
-			
-			var zoomOutLabel:Label = new Label();
-			zoomOutLabel.text = "Zoom Out";
-			sliderResizerContainer.addElement(zoomOutLabel);
-			
-			// Create the slider/resizer
-			resizeSlider = new HSlider();
-			resizeSlider.maximum = 200;
-			resizeSlider.minimum = 10;
-			resizeSlider.value = 100;
-			//resizeSlider.liveDragging = true;
-			//			slider.snapInterval = 1;
-			sliderResizerContainer.addElement(resizeSlider);
-			this.addElement(sliderResizerContainer);
-			
-			var zoomInLabel:Label = new Label();
-			zoomInLabel.text = 'Zoom In';
-			sliderResizerContainer.addElement(zoomInLabel);
-			
-			
-			// Add 'Fit' button for the zoom
-			var fitButton:spark.components.Button = new spark.components.Button();
-			fitButton.percentHeight = 100;
-			fitButton.label = "Fit";
-			sliderResizerContainer.addElement(fitButton);
-			
-			// Add '100%' button for the zoom
-			var percentButton:spark.components.Button = new spark.components.Button();
-			percentButton.percentHeight = 100;
-			percentButton.label = '100%';
-			sliderResizerContainer.addElement(percentButton);
 		
+			makeBottomToolbar();
+			
 			annotationTextOverlayBox = new AnnotationTextOverlayBox();
 			annotationTextOverlayBox.visible = false;
 			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
@@ -228,13 +209,51 @@ package View.components.MediaViewer
 			this.addEventListener(IDEvent.SHOW_ANNOTATION_TEXT_ENTRY, showAnnotationTextOverlayTextEntryMode);
 			this.addEventListener(IDEvent.ANNOTATION_MOUSE_OVER, annotationMouseOver);
 			this.addEventListener(IDEvent.ANNOTATION_MOUSE_OUT, annotationMouseOut);
-
-			resizeSlider.addEventListener(Event.CHANGE, resizeImage);
 			
-			percentButton.addEventListener(MouseEvent.CLICK, percentButtonClicked);
-			fitButton.addEventListener(MouseEvent.CLICK, fitButtonClicked);
+			media.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
+				trace("got a progress event");
+				loadingLabel.text = "Loading..." + Math.round((e.bytesLoaded / e.bytesTotal * 100)) + "%";
+				if(e.bytesLoaded == e.bytesTotal) {
+					loadingLabel.visible = false;
+					loadingLabel.includeInLayout = false;
+				}
+			});
+			media.addEventListener(IDEvent.PAGE_LOADED, function(e:IDEvent):void {
+				loadingLabel.visible = true;
+				loadingLabel.includeInLayout = true;
+				loadingLabel.text = "Loading Page..." + e.data.page + " of " + e.data.totalPages;
+				if(e.data.page == e.data.totalPages) {
+					loadingLabel.visible = false;
+					loadingLabel.includeInLayout = false;
+				}
+			});
 		}
 		
+		/**
+		 * Creates a new Viewer based on hte media type 
+		 * @param mediaType	The type of the media e.g. PDF image etc
+		 * @return A viewer
+		 * 
+		 */		
+		public static function getViewer(mediaType:String):Viewer {
+			switch(mediaType) {
+				case MediaAndAnnotationHolder.MEDIA_PDF:
+					trace("Creating PDF viewr");
+					return new PDFViewer(mediaType);
+					break;
+				case MediaAndAnnotationHolder.MEDIA_IMAGE:
+					trace("Creating image viewer");
+					return new ImageViewer(mediaType);
+					break;
+				default:
+					trace("Unknown Viewer type");
+			}
+			return null;
+		}
+		
+		protected function makeBottomToolbar():void {
+			trace("Viewer:makeBottomToolbar Should be overwritten");
+		}
 		/* ================ FUNCTIONS CALLED BY MEDIAVIEW ======================== */
 		
 		/**
@@ -377,41 +396,9 @@ package View.components.MediaViewer
 			trace("**********************");
 		}
 		
-		/**
-		 * Resizes the image when the slider is moved 
-		 * @param e	The slider change event
-		 * 
-		 */		
-		private function resizeImage(e:Event):void {
-			trace("resizing", (e.target as HSlider).value);
-			var resizeFactor:Number = (e.target as HSlider).value / 100; 
-			
-			// Resize the image by the scaling facotr
-			media.scaleX = resizeFactor;
-			media.scaleY = resizeFactor;
-		}
 		
-		/**
-		 * The resize to 100% button was clicked. Resize the image to
-		 * its actual size. 
-		 * @param e
-		 * 
-		 */		
-		private function percentButtonClicked(e:MouseEvent):void {
-			media.scaleX = 1;
-			media.scaleY = 1;
-		}
-	
-		/**
-		 * The resize to fit the width of the screen button was clicked 
-		 * @param e
-		 * 
-		 */		
-		private function fitButtonClicked(e:MouseEvent):void {
-			// work out which side (height or width) is further out of the frame
-			media.scaleX = scrollerAndOverlayGroup.width / media.width;
-			media.scaleY = scrollerAndOverlayGroup.width / media.width;
-		}
+		
+		
 			
 		/* ============= HELPER FUNCTIONS ============= */
 		
