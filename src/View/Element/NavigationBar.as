@@ -1,5 +1,5 @@
 package View.Element {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -42,8 +42,8 @@ package View.Element {
 			addChild(searchBox);
 			searchBox.toolTip = "Filter media based on search terms";
 			searchBox.addEventListener(Event.ADDED_TO_STAGE,searchboxadded);
-			searchBox.addEventListener(RecensioEvent.SEARCH,searchboxclicked);
-			searchBox.addEventListener(RecensioEvent.LIVE_SEARCH,searchboxchanged);
+			searchBox.addEventListener(IDEvent.SEARCH,searchboxclicked);
+			searchBox.addEventListener(IDEvent.LIVE_SEARCH,searchboxchanged);
 		}
 		
 		// Adds the asset preview resize scroller to the navigation bar
@@ -52,7 +52,7 @@ package View.Element {
 			assetResizer.toolTip = "Change the size of the media previews";
 			assetResizer.setSize(defaultAssetPreviewWidth);
 			AssetPreview.assetWidth = defaultAssetPreviewWidth;
-			assetResizer.addEventListener(RecensioEvent.ASSET_RESIZER,assetPreviewResize);
+			assetResizer.addEventListener(IDEvent.ASSET_RESIZER,assetPreviewResize);
 		}
 		
 		// Adds the heading to the navigation bar
@@ -108,24 +108,24 @@ package View.Element {
 		}
 		
 		// Called when the search box button is clicked
-		private function searchboxclicked(e:RecensioEvent):void {
-			var searchEvent:RecensioEvent = new RecensioEvent(RecensioEvent.SEARCH);
+		private function searchboxclicked(e:IDEvent):void {
+			var searchEvent:IDEvent = new IDEvent(IDEvent.SEARCH);
 			searchEvent.data.searchType = e.data.searchType;
 			searchEvent.data.query = e.data.query;
 			this.dispatchEvent(searchEvent);
 		}
 		
 		// Called when the search box input changes
-		private function searchboxchanged(e:RecensioEvent):void {
-			var searchEvent:RecensioEvent = new RecensioEvent(RecensioEvent.LIVE_SEARCH);
+		private function searchboxchanged(e:IDEvent):void {
+			var searchEvent:IDEvent = new IDEvent(IDEvent.LIVE_SEARCH);
 			searchEvent.data.searchType = e.data.searchType;
 			searchEvent.data.query = e.data.query;
 			this.dispatchEvent(searchEvent);
 		}
 		
 		// Called when the asset resize slider is interacted with
-		private function assetPreviewResize(e:RecensioEvent):void {
-			var sliderChangedEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ASSET_RESIZER);
+		private function assetPreviewResize(e:IDEvent):void {
+			var sliderChangedEvent:IDEvent = new IDEvent(IDEvent.ASSET_RESIZER);
 			sliderChangedEvent.data.value = e.data.value;
 			this.dispatchEvent(sliderChangedEvent);
 		}
@@ -203,7 +203,7 @@ package View.Element {
 				selectButton(selectedButton);
 			}
 			var buttonText:String = selectedButton.getText();
-			var navButtonClick:RecensioEvent = new RecensioEvent(RecensioEvent.NAV_CLICKED);
+			var navButtonClick:IDEvent = new IDEvent(IDEvent.NAV_CLICKED);
 			navButtonClick.data.buttonName = buttonText;
 			this.dispatchEvent(navButtonClick);
 		}

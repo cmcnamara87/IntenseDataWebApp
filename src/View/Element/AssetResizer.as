@@ -1,6 +1,6 @@
 package View.Element {
 	
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import flash.events.Event;
 	
@@ -34,7 +34,7 @@ package View.Element {
 		
 		// Called when the slider position has changed
 		private function valueChanged(e:Event):void {
-			var sliderChangedEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ASSET_RESIZER);
+			var sliderChangedEvent:IDEvent = new IDEvent(IDEvent.ASSET_RESIZER);
 			sliderChangedEvent.data.value = slider.value;
 			this.dispatchEvent(sliderChangedEvent);
 		}

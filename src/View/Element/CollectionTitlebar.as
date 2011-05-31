@@ -1,5 +1,5 @@
 package View.Element {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -229,13 +229,13 @@ package View.Element {
 		override protected function mouseUp(e:MouseEvent):void {
 			alpha = 1;
 			if(!_editmode && !_newCollection) {
-				this.dispatchEvent(new RecensioEvent(RecensioEvent.COLLECTION_CLICKED));
+				this.dispatchEvent(new IDEvent(IDEvent.COLLECTION_CLICKED));
 			}
 		}
 		
 		// When the title button for the collection is clicked
 		private function titleButtonClicked(e:MouseEvent):void {
-			var rec:RecensioEvent = new RecensioEvent(RecensioEvent.COLLECTION_NAV_CLICKED);
+			var rec:IDEvent = new IDEvent(IDEvent.COLLECTION_NAV_CLICKED);
 			rec.data.buttonName = (e.target as SmallButton).getText();
 			if(rec.data.buttonName == "Save" || rec.data.buttonName == "Create") {
 				rec.data.updatedTitle = collectionEditTitle.text;

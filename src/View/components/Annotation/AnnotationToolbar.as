@@ -1,9 +1,11 @@
 package View.components.Annotation
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import View.components.IDGUI;
-	import View.components.MediaViewer.ImageViewer.ImageViewer;
+	import View.components.MediaViewer.ImageViewer.ImageViewerOLD;
+	import View.components.MediaViewer.MediaAndAnnotationHolder;
+	import View.components.MediaViewer.MediaViewer;
 	import View.components.MediaViewer.MediaViewerInterface;
 	import View.components.SubToolbar;
 	
@@ -25,20 +27,27 @@ package View.components.Annotation
 	public class AnnotationToolbar extends SubToolbar
 	{
 		// Annotation Drawing Modes
+		public static const NOTE:String = "note"; // The annotation toolbar is set to note placing mode
+												// A note is identical to a box, but with a fixed width/height
 		public static const BOX:String = "box"; // The annotation toolbar is set to box mode 
 		public static const PEN:String = "pen"; // The annotation toolbar is set to PEN mode
+		public static const HIGHLIGHT:String = "highlight"; // The annotation toolbar is set to highlight text mode
 		
 		// Annotation colors
 		public static const RED:uint = 0xFF0000;
 		public static const GREEN:uint = 0x00FF00;
 		public static const BLUE:uint = 0x0000FF;
 		
-		private var mode:String = BOX; // The Drawing mode we are in, box, pen etc (default is BOX) 
+		public static var mode:String = BOX; // The Drawing mode we are in, box, pen etc (default is BOX) 
 		private var color:uint = BLUE;
 		
 		// GUI elements
 		private var freeDrawButton:ToggleButton;
 		private var drawBoxButton:ToggleButton;
+		private var textHighlightButton:ToggleButton;
+		private var noteButton:ToggleButton;
+		private var annotationTypeButtons:Array;
+		
 		// The elements for the free drawing tools
 		private var clearButton:Button; // Clears any non-saved annotations from the screen (only for the free-draw tools)
 		private var addTextButton:Button; // Makes the text overlay show, so the user can enter text for a free drawing
@@ -46,14 +55,20 @@ package View.components.Annotation
 		// Add all the elements of the free draw tools to an array, so we can show/hide them easily
 		private var freeDrawTools:Array = [clearButton, addTextButton, freeDrawToolsEndLine];
 		
-		private var imageViewer:ImageViewer;
+		private var imageViewer:MediaViewer;
 		
-		public function AnnotationToolbar(imageViewer:ImageViewer)
+		public function AnnotationToolbar(imageViewer:MediaViewer, mediaType:String)
 		{
 			// Save the media viewer we are attached to (most likely the iamge for now)
 			this.imageViewer = imageViewer;
 			
 			this.hide();
+			
+			mode = BOX;
+//			
+			this.setStyle("borderVisible", false);
+//			noteButton = IDGUI.makeToggleButton("Add Note");
+//			this.addElement(noteButton);
 			
 			// Create the Box Button
 			drawBoxButton = IDGUI.makeToggleButton("Draw Box", true);
@@ -63,8 +78,17 @@ package View.components.Annotation
 			freeDrawButton = IDGUI.makeToggleButton("Free Draw");
 			this.addElement(freeDrawButton);
 			
+			textHighlightButton = IDGUI.makeToggleButton("Highlight Text");
+			this.addElement(textHighlightButton);
+			if(mediaType != MediaAndAnnotationHolder.MEDIA_PDF) {
+				textHighlightButton.visible = false;
+				textHighlightButton.includeInLayout = false;
+			}
+			
+			annotationTypeButtons = [drawBoxButton, freeDrawButton, textHighlightButton];
+			
 			// Create the veritcal line, that sits after the 'free draw button'
-			var optionsLine:Line = IDGUI.makeLine(0xBBBB00)
+			var optionsLine:Line = IDGUI.makeLine(0x000000)
 			this.addElement(optionsLine);
 			
 			// Create the clear non-saved annotations Button
@@ -73,7 +97,7 @@ package View.components.Annotation
 			this.addElement(addTextButton = IDGUI.makeButton("Add Text"));
 
 			// Add a new Free draw end line
-			this.addElement(freeDrawToolsEndLine = IDGUI.makeLine(0xBBBB00));
+			this.addElement(freeDrawToolsEndLine = IDGUI.makeLine(0x000000));
 			
 			// Since we are in Box mode by default, hide the extra tools
 			// That only come with free draw mode
@@ -99,10 +123,10 @@ package View.components.Annotation
 			cancelButton.addEventListener(MouseEvent.CLICK, cancelButtonClicked);
 			saveButton.addEventListener(MouseEvent.CLICK, saveButtonClicked);
 			
-			// Listen for draw box button click
-			drawBoxButton.addEventListener(MouseEvent.CLICK, drawBoxButtonClicked);
-			// Listen for free draw (pen tool) button click
-			freeDrawButton.addEventListener(MouseEvent.CLICK, freeDrawButtonClicked);
+			// Listen for button clicks for anntotating mode
+			for(var i:Number = 0; i < annotationTypeButtons.length; i++) {
+				(annotationTypeButtons[i] as ToggleButton).addEventListener(MouseEvent.CLICK, annotationTypeButtonClicked);
+			}
 			
 			// THE FREE DRAW TOOLS
 			// Listen for clear button clicked
@@ -133,7 +157,7 @@ package View.components.Annotation
 		private function saveButtonClicked(e:MouseEvent):void {
 			trace("Annotation Toolbar: Save Annotation Clicked");
 			this.hide();
-			imageViewer.saveAnnotation();
+			imageViewer.saveNewAnnotation();
 		}
 		
 		/**
@@ -146,38 +170,52 @@ package View.components.Annotation
 			imageViewer.clearNonSavedAnnotations();
 		}
 		
-		private function drawBoxButtonClicked(e:MouseEvent):void {
-			trace("Draw button clicked");
-			// Unclick the free draw button
-			freeDrawButton.selected = false;
-			// Hide the extra controls that come with the free draw button
-			this.hideFreeDrawControls();
-			mode = BOX;
+		/**
+		 * A button to change the annotation type was clicked. 
+		 * @param e
+		 * 
+		 */		
+		private function annotationTypeButtonClicked(e:MouseEvent):void {
+			trace("Annotation button clicked");
+			
+			for(var i:Number = 0; i < annotationTypeButtons.length; i++) {
+				var button:ToggleButton = annotationTypeButtons[i] as ToggleButton;
+				// Unselect all buttons except the current button
+				if(button != e.target) {
+					button.selected = false;
+				}
+			}
 			
 			// Since this is a toggle button, we cant let them click and tunr it off
 			if((e.target as ToggleButton).selected == false) {
 				(e.target as ToggleButton).selected = true;
 			}
+			
+			// If the current button isnt the free draw button, hide the free draw tools
+			if(e.target != freeDrawButton) {
+				this.hideFreeDrawControls();
+			} else {
+				// Its the free draw button, show the extra free draw tools
+				this.showFreeDrawControls();
+			}
+			
+			if(e.target == drawBoxButton) {
+				trace("Box draw mode");
+				mode = BOX;
+			} else if (e.target == freeDrawButton) {
+				trace("pen draw mode");
+				mode = PEN;
+			} else if (e.target == textHighlightButton) {
+				trace("text highlight mode");
+				mode = HIGHLIGHT;
+			} else if (e.target == noteButton) {
+				trace("note button mode");
+				mode = NOTE;
+			}
+
 			// Clear any non-saved annotations on the image viewer
 			imageViewer.clearNonSavedAnnotations();
 		}
-		
-		private function freeDrawButtonClicked(e:MouseEvent):void {
-			// Unclick the draw box button
-			drawBoxButton.selected = false;
-			mode = PEN;
-			
-			// Show the special free draw buttons
-			this.showFreeDrawControls();
-			
-			// Since this is a toggle button, we cant let them click and tunr it off
-			if((e.target as ToggleButton).selected == false) {
-				(e.target as ToggleButton).selected = true;
-			}
-			
-			// Clear any non-saved annotations on the image viewer
-			imageViewer.clearNonSavedAnnotations();
-		} 
 		
 		/**
 		 * The Add text button was clicked. Make the Image Viewer show the text entry box. 

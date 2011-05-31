@@ -1,6 +1,6 @@
 package View.components.EditDetails
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
 	import Model.Model_Media;
@@ -125,7 +125,7 @@ package View.components.EditDetails
 		
 		private function saveDetails(e:MouseEvent):void {
 			trace("Trying to save details");
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ASSET_UPDATE, true);
+			var myEvent:IDEvent = new IDEvent(IDEvent.ASSET_UPDATE, true);
 			var data:Object = myEvent.data;
 			data.assetID = assetID;
 			data.meta_title = metaTitle.getValue(); 

@@ -1,6 +1,6 @@
 package View.Element
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -37,7 +37,7 @@ package View.Element
 		// Packages up the updated shared information and dispatches it
 		private function saveAccess(e:MouseEvent):void {
 			var access:Array = getNewAccessLevels();
-			var saveEvent:RecensioEvent = new RecensioEvent(RecensioEvent.SHARED_SAVED);
+			var saveEvent:IDEvent = new IDEvent(IDEvent.SHARED_SAVED);
 			saveEvent.data.access = access;
 			this.dispatchEvent(saveEvent);
 		}

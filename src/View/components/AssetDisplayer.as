@@ -1,6 +1,6 @@
 package View.components
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
 	import Lib.LoadingAnimation.LoadAnim;
@@ -52,21 +52,24 @@ package View.components
 		
 		private var loadingLabel:spark.components.Label;
 		
-		
-		
-		public function AssetDisplayer(eventToThrowWhenAssetClicked:String)
+
+		public function AssetDisplayer(eventToThrowWhenAssetClicked:String, darkBackground:Boolean = false)
 		{
 			super();
 			this.eventToThrowWhenAssetClicked = eventToThrowWhenAssetClicked;
 			
 			// Setup background
-			var hello:BitmapFill = new BitmapFill();
-			hello.source = background_data;
-			hello.fillMode = BitmapFillMode.REPEAT;
-			this.backgroundFill = hello;
-
+			if(!darkBackground) {
+				var hello:BitmapFill = new BitmapFill();
+				hello.source = background_data;
+				hello.fillMode = BitmapFillMode.REPEAT;
+				this.backgroundFill = hello;
+			} else {
+				this.backgroundFill = new SolidColor(0xCCCCCC, 1);
+			}
 			// Setup the border
-			this.borderStroke = new SolidColorStroke(0x000000,1,0);
+			//this.borderStroke = new SolidColorStroke(0x000000,1,0);
+			this.setStyle("borderVisible", false);
 			
 			// Setup the Loading label
 			var loadingGroup:HGroup = new HGroup();
@@ -240,10 +243,11 @@ package View.components
 				// No search, add back in all the assets
 				trace("making all visible");
 				for(var i:Number = 0; i < content.numElements; i++) {
-					content.getElementAt(i).visible = true;
-					content.getElementAt(i).includeInLayout = true;
+					var tile1:AssetTile = (content.getElementAt(i) as AssetTile); 
+					tile1.visible = true;
+					tile1.includeInLayout = true;
 					// Remove the 'annotation in' if its there
-					(content.getElementAt(i) as AssetTile).resetTitle();
+					tile1.resetTitle();
 				}
 				//addMediaAssets(assetsInCollection);
 				return;
@@ -267,10 +271,8 @@ package View.components
 				if(searchableData.indexOf(searchTerm) != -1) {
 					trace("Match found", title, description);
 					
-					tile.visible = true;
-					tile.includeInLayout = true;
+					tile.show();
 
-					
 					if(commentString.indexOf(searchTerm) != -1 && title.indexOf(searchTerm) == -1 && description.indexOf(searchTerm) == -1) {
 						// Set it to show its only a match in annotation
 						// Puts the words 'Annotation in' in front of the title
@@ -281,8 +283,9 @@ package View.components
 					}
 				} else {
 					trace("No Match", title, description);
-					tile.visible = false;
-					tile.includeInLayout = false;
+					//tile.visible = false;
+					//tile.includeInLayout = false;
+					tile.hide();
 				}	
 			}
 			

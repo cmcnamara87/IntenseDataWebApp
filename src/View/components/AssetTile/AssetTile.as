@@ -1,8 +1,10 @@
 package View.components.AssetTile
 {
 	import Controller.BrowserController;
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
+	
+	import Lib.it.transitions.Tweener;
 	
 	import Model.Model_Commentary;
 	import Model.Model_Media;
@@ -78,6 +80,15 @@ package View.components.AssetTile
 			this.addEventListener(MouseEvent.MOUSE_OVER, mouseOvered);
 			this.addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
 			
+		}
+		
+		public function hide():void {
+			this.visible = false;
+			this.includeInLayout = false;
+		}
+		public function show():void {
+			this.visible = true;
+			this.includeInLayout = true;
 		}
 		
 		/**
@@ -172,7 +183,7 @@ package View.components.AssetTile
 			image.showRegularIcon();
 
 			// Make new asset clicked event
-			var clickEvent:RecensioEvent = new RecensioEvent(eventToThrowWhenClicked, true);
+			var clickEvent:IDEvent = new IDEvent(eventToThrowWhenClicked, true);
 			// Include ALL media data (so we can add to shelf/edit with all the data it needs), or, its just ignored if we are going to the asset
 			clickEvent.data.assetData = assetData;
 			this.dispatchEvent(clickEvent);

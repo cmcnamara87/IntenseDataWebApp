@@ -1,7 +1,7 @@
 package View.components.AssetBrowser
 {
 	import Controller.Dispatcher;
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import View.BrowserView;
 	import View.components.IDGUI;
@@ -272,7 +272,7 @@ package View.components.AssetBrowser
 		
 		private function shareButtonClicked(e:MouseEvent):void {
 			trace("Share button clicked.");
-			var shareClicked:RecensioEvent = new RecensioEvent(RecensioEvent.SHARE_BUTTON_CLICKED, true);
+			var shareClicked:IDEvent = new IDEvent(IDEvent.SHARE_BUTTON_CLICKED, true);
 //			// Pass through the shelfs boolean value (true or false, shown or not shown)
 //			shareClicked.data.buttonState = shareButton.selected;
 			this.dispatchEvent(shareClicked);
@@ -286,7 +286,7 @@ package View.components.AssetBrowser
 		 */		
 		private function commentsButtonClicked(e:MouseEvent):void {
 			trace("Comments Button Clicked.");
-			var commentsButtonClicked:RecensioEvent = new RecensioEvent(RecensioEvent.COMMENT_NAV_CLICKED, true);
+			var commentsButtonClicked:IDEvent = new IDEvent(IDEvent.COMMENT_NAV_CLICKED, true);
 //			// Pass through the shelfs boolean value (true or false, shown or not shown)
 //			commentsButtonClicked.data.buttonState = commentsButton.selected;
 			
@@ -307,7 +307,7 @@ package View.components.AssetBrowser
 			// As you cant delete any collection while in 'edit mode'
 			deleteButton.enabled = false;
 			
-			var editClicked:RecensioEvent = new RecensioEvent(RecensioEvent.COLLECTION_EDIT_BUTTON_CLICKED, true);
+			var editClicked:IDEvent = new IDEvent(IDEvent.COLLECTION_EDIT_BUTTON_CLICKED, true);
 			// Pass through the shelfs boolean value (true or false, shown or not shown)
 			editClicked.data.editState = editButton.selected;
 			
@@ -317,7 +317,7 @@ package View.components.AssetBrowser
 		private function deleteButtonClicked(e:MouseEvent):void {
 			trace("Delete Button Clicked");
 			
-			var deleteClicked:RecensioEvent = new RecensioEvent(RecensioEvent.COLLECTION_DELETE_BUTTON_CLICKED, true);
+			var deleteClicked:IDEvent = new IDEvent(IDEvent.COLLECTION_DELETE_BUTTON_CLICKED, true);
 			// Pass through the shelfs boolean value (true or false, shown or not shown)
 			
 			this.dispatchEvent(deleteClicked);
@@ -330,7 +330,7 @@ package View.components.AssetBrowser
 		 */		
 		private function searchTermEntered(e:Event):void {
 			trace('Searching for: ', (e.target as TextInput).text);
-			var searchEvent:RecensioEvent = new RecensioEvent(RecensioEvent.LIVE_SEARCH, true);
+			var searchEvent:IDEvent = new IDEvent(IDEvent.LIVE_SEARCH, true);
 			searchEvent.data.searchTerm =  (e.target as TextInput).text;
 			this.dispatchEvent(searchEvent);
 		}

@@ -3,7 +3,7 @@ package Controller.Utilities {
 	import Controller.AppController;
 	import Controller.BrowserController;
 	import Controller.LoginController;
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Model.AppModel;
 	
@@ -63,7 +63,7 @@ package Controller.Utilities {
 				AppModel.getInstance().getUserRoles(userRolesRetrieved);
 				
 			} else {			
-				var response:RecensioEvent = new RecensioEvent(RecensioEvent.LOGIN_RESPONSE);
+				var response:IDEvent = new IDEvent(IDEvent.LOGIN_RESPONSE);
 				response.data.success = false;
 				response.data.message = dataXML.reply.message;
 				this.dispatchEvent(response);
@@ -99,7 +99,7 @@ package Controller.Utilities {
 			
 			if(!isUser) {
 				// The user does not have the user role
-				response = new RecensioEvent(RecensioEvent.LOGIN_RESPONSE);
+				response = new IDEvent(IDEvent.LOGIN_RESPONSE);
 				response.data.success = false;
 				response.data.message = "Account suspended.";
 				this.dispatchEvent(response);
@@ -107,7 +107,7 @@ package Controller.Utilities {
 			} else {
 				// The user does have the user role
 				// Tell the login controller all is good
-				var response:RecensioEvent = new RecensioEvent(RecensioEvent.LOGIN_RESPONSE);
+				var response:IDEvent = new IDEvent(IDEvent.LOGIN_RESPONSE);
 				response.data.success = true;
 				response.data.message = "Successfully Logged In";
 				this.dispatchEvent(response);

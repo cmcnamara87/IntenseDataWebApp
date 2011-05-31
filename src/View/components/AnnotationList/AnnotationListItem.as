@@ -2,7 +2,7 @@ package View.components.AnnotationList
 {
 	//	import Model.Model_Annotation;
 	
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
 	import View.components.PanelElement;
@@ -60,7 +60,7 @@ package View.components.AnnotationList
 			
 			var username:spark.components.Label = new spark.components.Label();
 			// Get the Capitalised first letter of hte username (should be persons name, but whatever)
-			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1) + "(" + annotationType + ")";
+			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1) + " (" + annotationType + ")";
 			username.percentWidth = 100;
 			username.setStyle('color', 0x1F65A2);
 			username.setStyle('fontWeight', 'bold');
@@ -80,7 +80,6 @@ package View.components.AnnotationList
 			buttonHGroup.paddingRight 	= 5;
 			this.addElement(buttonHGroup);
 			
-			trace("Creator of annotation is", creator, "current user is", Auth.getInstance().getUsername());
 			// If the current user is the author of this annotation
 			// Or if the current user is a sys-admin
 			// then add an Edit and a Delete button
@@ -120,14 +119,14 @@ package View.components.AnnotationList
 		/* ============ EVENT LISTENER FUNCTIONS ===================== */
 		private function annotationMouseOver(e:MouseEvent):void {
 			trace("List Item Mouse Over", assetID);
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, true);
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, true);
 			myEvent.data.assetID = assetID;
 			this.dispatchEvent(myEvent);
 		}
 		
 		private function annotationMouseOut(e:MouseEvent):void {
 			trace("List Item Mouse Out", assetID);
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_LIST_ITEM_MOUSEOUT, true);
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOUT, true);
 			myEvent.data.assetID = assetID;
 			this.dispatchEvent(myEvent);
 			
@@ -137,7 +136,7 @@ package View.components.AnnotationList
 			trace("Annotation Deletion Clicked", assetID);
 			this.height = 0;
 			this.visible = false;
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ANNOTATION_DELETED, true);
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_DELETED, true);
 			myEvent.data.assetID = assetID;
 			this.dispatchEvent(myEvent);
 		}

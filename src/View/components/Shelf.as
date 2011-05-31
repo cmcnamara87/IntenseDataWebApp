@@ -1,6 +1,6 @@
 package View.components
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Model.Model_Collection;
 	import Model.Model_Media;
@@ -36,6 +36,9 @@ package View.components
 			var myLayout:VerticalLayout = new VerticalLayout();
 			myLayout.gap = 0;
 			this.layout = myLayout;
+			
+			//this.borderStroke = new SolidColorStroke(0x999999, 1);
+			this.setStyle("borderVisible", false);
 			
 			// Add the Collection Name Entry Box
 			var collectionTitleBox:BorderContainer = new BorderContainer();
@@ -75,7 +78,7 @@ package View.components
 			collectionTitleBox.addElement(saveButton);
 			
 			// Add the Asset Displayer
-			myAssetDisplayer = new AssetDisplayer(RecensioEvent.SHELF_MEDIA_CLICKED);
+			myAssetDisplayer = new AssetDisplayer(IDEvent.SHELF_MEDIA_CLICKED, true);
 			// Setup the size
 			myAssetDisplayer.percentHeight = 100;
 			myAssetDisplayer.percentWidth = 100;
@@ -129,7 +132,7 @@ package View.components
 			// Only if a name has been given, save the collection
 			if(collectionTextInput.text != "") {
 				trace("with name", collectionTextInput.text);
-				var clickEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COLLECTION_SAVE, true);
+				var clickEvent:IDEvent = new IDEvent(IDEvent.COLLECTION_SAVE, true);
 				clickEvent.data.collectionTitle = collectionTextInput.text
 					
 				// Clear the 'collection name' entered (so its clear for next time :)

@@ -1,6 +1,6 @@
 package View
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Model.Model_Commentary;
 	import Model.Model_Media;
@@ -81,19 +81,22 @@ package View
 			myVGroup.gap = 0;
 			myAssetBrowserAndPanels.addElement(myVGroup);
 			
-			// And add the Asset Browser (includes the asset tiles, search box etc)
-			myAssetBrowser = new AssetBrowser();
-			myAssetBrowser.percentWidth = 100; // set externally as it changes (with shelf/comments shown etc)
-			myAssetBrowser.percentHeight = 100;
-			myAssetBrowser.setStyle("resizeEffect", new mx.effects.Resize());
-			myVGroup.addElement(myAssetBrowser);
-			
 			// Add the Shelf
 			myShelf = new Shelf();
 			myShelf.height = 0; // set at 0 at first, cause its not displayed
 			myShelf.percentWidth = 100;
 			myShelf.visible = true;
+			myShelf.setStyle("resizeEffect", new mx.effects.Resize());
 			myVGroup.addElement(myShelf);
+			
+			// And add the Asset Browser (includes the asset tiles, search box etc)
+			myAssetBrowser = new AssetBrowser();
+			myAssetBrowser.percentWidth = 100; // set externally as it changes (with shelf/comments shown etc)
+			myAssetBrowser.percentHeight = 100;
+			//myAssetBrowser.setStyle("resizeEffect", new mx.effects.Resize());
+			myVGroup.addElement(myAssetBrowser);
+			
+			
 			
 			// Lets add the Comments Panel
 			myCommentsPanel = new CommentsPanel();
@@ -108,10 +111,10 @@ package View
 			// Listen for Comments Button being clicked (done in here, 
 			// instead of the controller, cause it doesnt really need to save stuff like it does
 			// with the shelf).
-			this.addEventListener(RecensioEvent.COMMENT_NAV_CLICKED, commentsButtonClicked);
-			this.addEventListener(RecensioEvent.SHARE_BUTTON_CLICKED, shareButtonClicked);
+			this.addEventListener(IDEvent.COMMENT_NAV_CLICKED, commentsButtonClicked);
+			this.addEventListener(IDEvent.SHARE_BUTTON_CLICKED, shareButtonClicked);
 			// Listen for Search Term Entry
-			this.addEventListener(RecensioEvent.LIVE_SEARCH, searchTermEntered);
+			this.addEventListener(IDEvent.LIVE_SEARCH, searchTermEntered);
 		}
 		
 		/**
@@ -192,6 +195,7 @@ package View
 		
 		public function hideShelf():void {
 			// Make browser fullsize, and shelf 0
+			myShelf.height = 0;
 			myAssetBrowser.percentHeight = 100;
 			
 			// Pop both the buttons that could be down, up.
@@ -199,8 +203,8 @@ package View
 			this.unsetEditButton();
 			
 			myAssetBrowser.refreshMediaAssetsDisplay();
-			myShelf.height = 0;
-			this.myShelf.visible = false;
+			
+			//this.myShelf.visible = false;
 		}
 		
 		public function unsetCreateCollectionButton():void {
@@ -319,7 +323,7 @@ package View
 		
 		
 		/* ============== EVENT LISTENER FUNCTIONS ==================== */
-		private function commentsButtonClicked(e:RecensioEvent):void {
+		private function commentsButtonClicked(e:IDEvent):void {
 //			if(e.data.buttonState) {
 				mySharingPanel.width = 0;
 				
@@ -329,7 +333,7 @@ package View
 //			}
 		}
 		
-		private function shareButtonClicked(e:RecensioEvent):void {
+		private function shareButtonClicked(e:IDEvent):void {
 //			if(e.data.buttonState) {
 				myCommentsPanel.width = 0;
 				
@@ -345,7 +349,7 @@ package View
 		 * @param e
 		 * 
 		 */		
-		private function searchTermEntered(e:RecensioEvent):void {
+		private function searchTermEntered(e:IDEvent):void {
 			trace("Search Event Caught");
 			var searchTerm:String = e.data.searchTerm;
 			myAssetBrowser.searchForAsset(searchTerm);

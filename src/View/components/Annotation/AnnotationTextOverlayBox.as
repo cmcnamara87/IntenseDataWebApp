@@ -75,17 +75,17 @@ package View.components.Annotation
 		}
 		
 		public function enterReadOnlyMode():void {
-			trace("Entering Read Only Mode");
+			//trace("Entering Read Only Mode");
 			if(this.contains(annotationText)) {
-				trace("Removing annotation text");
+				//trace("Removing annotation text");
 				this.removeElement(annotationText);
 			}
 			if(this.contains(annotationTextInput)) {
-				trace("Removing annotation input");
+				//trace("Removing annotation input");
 				annotationTextInput.text = "";
 				this.removeElement(annotationTextInput);
 			}
-			trace("Adding Text");
+			//trace("Adding Text");
 			this.addElement(annotationText);
 		}
 		

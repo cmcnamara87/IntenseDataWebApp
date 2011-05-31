@@ -32,7 +32,7 @@ package Module.PDFViewer {
 		
 		private var PDFPageSpace:Number = 20;
 		
-		public var PDFContainer:MovieClip = new MovieClip;
+		public var pdfContainer:MovieClip = new MovieClip;
 		public var PDFLoaded:Boolean = false;
 		
 		//Selection Variables
@@ -79,13 +79,13 @@ package Module.PDFViewer {
 			this.viewer = viewer;
 			this.selectColour = selectColour;
 			this.selectAccuracy = selectAccuracy;
-			this.addChild(PDFContainer);
-			PDFContainer.tabChildren = false;
+			this.addChild(pdfContainer);
+			pdfContainer.tabChildren = false;
 			loadSWF();
 		}
 		
 		public function zoomWidth(zoomWidth:Number):void {
-			pdfScale = zoomWidth / (PDFContainer.width / PDFContainer.scaleX) * 100;
+			pdfScale = zoomWidth / (pdfContainer.width / pdfContainer.scaleX) * 100;
 			setZoomLevel();
 		}
 		
@@ -104,7 +104,7 @@ package Module.PDFViewer {
 				newPage = PDF1.totalFrames;
 			} else {
 			}
-			var moveY:Number = PDFContainer.getChildAt(newPage-1).y*-1*PDFContainer.scaleY;
+			var moveY:Number = pdfContainer.getChildAt(newPage-1).y*-1*pdfContainer.scaleY;
 			Tweener.addTween(this,{'y':moveY,'time':1,'onUpdate':updateScrollbars});
 			return newPage;
 		}
@@ -114,7 +114,7 @@ package Module.PDFViewer {
 			if(newPage < 1) {
 				newPage = 1;
 			}
-			var moveY:Number = PDFContainer.getChildAt(newPage-1).y*-1*PDFContainer.scaleY;
+			var moveY:Number = pdfContainer.getChildAt(newPage-1).y*-1*pdfContainer.scaleY;
 			Tweener.addTween(this,{'y':moveY,'time':1,'onUpdate':updateScrollbars});
 			return newPage;
 		}
@@ -123,7 +123,7 @@ package Module.PDFViewer {
 			var currentY:Number = this.y*-1;
 			var thepage:Number = 1;
 			for(var i:Number=0; i<PDF1.totalFrames; i++) {
-				if(currentY+10 < PDFContainer.getChildAt(i).y*PDFContainer.scaleY) {
+				if(currentY+10 < pdfContainer.getChildAt(i).y*pdfContainer.scaleY) {
 					break;
 				}
 				thepage = 1 +i;
@@ -155,27 +155,32 @@ package Module.PDFViewer {
 		}
 		
 		public function findText(theText:String):Number {
+			trace("Finding text");
 			this.removeDeadAnnotations();
 			removeHighlighting();
 			checkSnapLoad();
 			var numberFound:Number = 0;
 			var foundone:Boolean = false;
 			var currentPage:Number = 0;
+			trace("looking at each snapshot in snapshot array");
 			for each(var currentSnap:TextSnapshot in mySnapArray) {
 				currentSnap.setSelectColor(highlightColour);
 				var currentChar:Number = 0;
+				trace("Current character", currentChar);
 				var position:Number = 0;
 				while(currentChar < currentSnap.charCount && position != -1) {
 					position = currentSnap.findText(currentChar,theText,false);
 					if(position > -1) {
+						trace("Found some text at", position);
 						if(!foundone) {
 							//Move to the first one
 							var info:Array = currentSnap.getTextRunInfo(position,position+1);
-							var moveY:Number = PDFContainer.getChildAt(currentPage).y*-1*PDFContainer.scaleY-info[0].matrix_ty+30*PDFContainer.scaleY;
+							var moveY:Number = pdfContainer.getChildAt(currentPage).y*-1*pdfContainer.scaleY-info[0].matrix_ty+30*pdfContainer.scaleY;
 							Tweener.addTween(this,{'y':moveY,'time':1,'onUpdate':updateScrollbars});
 							foundone = true;
 						}
 						currentSnap.setSelected(position, position+theText.length, true);
+						trace("highlighting text betwee",position, position+theText.length);
 						numberFound++;
 						currentChar = position + theText.length;
 					}
@@ -218,7 +223,7 @@ package Module.PDFViewer {
 		private function finishInitialLoad(e:Event):void {
         	e.currentTarget.content.gotoAndStop(1);
 			PDF1 = e.currentTarget.content as MovieClip;
-			PDFContainer.addChild(PDF1);
+			pdfContainer.addChild(PDF1);
 			if(PDF1.totalFrames > 1) {
 				loadPage();
 				pageTimeoutTimer.addEventListener(TimerEvent.TIMER,timedoutpage);
@@ -228,18 +233,11 @@ package Module.PDFViewer {
 			setZoomLevel();
 		}
 		
-		private function clone(source:Object):* {
-			var myBA:ByteArray = new ByteArray();
-			myBA.writeObject(source);
-			myBA.position = 0;
-			return(myBA.readObject());
-		}
-		
 		public function removeDeadAnnotations():void {
 			for each(var annotation:PDFAnnotation in annotationsContainer) {
 				if(!annotation.checkCreation()) {
 					annotationsContainer.splice(annotationsContainer.indexOf(annotation),1);
-					if(PDFContainer.contains(annotation)) {
+					if(pdfContainer.contains(annotation)) {
 						Tweener.addTween(annotation,{'alpha':0,'scaleY':0,'time':0.5,'onComplete':removeAnnotation,'onCompleteParams':[annotation]});
 					}
 				} else {
@@ -249,8 +247,8 @@ package Module.PDFViewer {
 		}
 		
 		private function removeAnnotation(annotation:PDFAnnotation):void {
-			if(PDFContainer.contains(annotation)) {
-				PDFContainer.removeChild(annotation);
+			if(pdfContainer.contains(annotation)) {
+				pdfContainer.removeChild(annotation);
 			}
 		}
 		
@@ -271,15 +269,15 @@ package Module.PDFViewer {
 			pageTimeoutTimer.stop();
 			e.currentTarget.content.gotoAndStop(1);
 			var newPage:MovieClip = e.currentTarget.content as MovieClip;
-			PDFContainer.addChild(newPage);
-			newPage.gotoAndStop(PDFContainer.numChildren);
-			newPage.y = (PDFContainer.numChildren-1)*(PDF1.height+PDFPageSpace);
-			if(PDFContainer.numChildren == PDF1.totalFrames) {
+			pdfContainer.addChild(newPage);
+			newPage.gotoAndStop(pdfContainer.numChildren);
+			newPage.y = (pdfContainer.numChildren-1)*(PDF1.height+PDFPageSpace);
+			if(pdfContainer.numChildren == PDF1.totalFrames) {
 			//if(PDFContainer.numChildren > 4 || PDFContainer.numChildren == PDF1.totalFrames) { //debug for large pdfs	
 				finishPDFRender();
 			} else {
 				setTimeout(loadPage,100);
-				viewer.drawOverlay("Loading "+PDFContainer.numChildren+"/"+PDF1.totalFrames);
+				viewer.drawOverlay("Loading "+pdfContainer.numChildren+"/"+PDF1.totalFrames);
 				forceRedraw();
 			}
 		}
@@ -292,7 +290,7 @@ package Module.PDFViewer {
 		private function finishPDFRender():void {
 			trace("FINISHING RENDER");
 			PDFLoaded = true;
-			totalPages = PDFContainer.numChildren;
+			totalPages = pdfContainer.numChildren;
 			this.addEventListener(MouseEvent.MOUSE_DOWN,startTextSelect);
 			this.addEventListener(MouseEvent.MOUSE_UP,stopTextSelect);
 			this.addEventListener(MouseEvent.MOUSE_OUT,stopTextSelect);
@@ -305,11 +303,11 @@ package Module.PDFViewer {
 		}
 		
 		public function setZoomLevel():void {
-			var originalWidth:Number = Math.round(PDFContainer.width/PDFContainer.scaleX);
-			var originalHeight:Number = Math.round(PDFContainer.height/PDFContainer.scaleY);
+			var originalWidth:Number = Math.round(pdfContainer.width/pdfContainer.scaleX);
+			var originalHeight:Number = Math.round(pdfContainer.height/pdfContainer.scaleY);
 			var viewAreaWidth:Number = viewer.width-40;
 			var viewAreaHeight:Number = viewer.height-30;
-			var ratiodifference:Number = pdfScale/100 - PDFContainer.scaleY;
+			var ratiodifference:Number = pdfScale/100 - pdfContainer.scaleY;
 			if(originalHeight*pdfScale/100 < viewAreaHeight) {
 				pdfScale = viewAreaHeight/originalHeight*100;
 				if(originalHeight == 0) {
@@ -320,13 +318,13 @@ package Module.PDFViewer {
 			var newHeight:Number = originalHeight*(pdfScale/100);
 			var newX:Number = (viewAreaWidth-originalWidth*pdfScale/100)/2;
 			if(originalWidth*pdfScale/100 > viewAreaWidth) {
-				if(originalWidth*PDFContainer.scaleX > viewAreaWidth) {
-					newX = PDFContainer.x;	
+				if(originalWidth*pdfContainer.scaleX > viewAreaWidth) {
+					newX = pdfContainer.x;	
 				} else {
 					newX = 0;
 				}
 			}
-			var newY:Number = this.y/PDFContainer.scaleY*pdfScale/100;
+			var newY:Number = this.y/pdfContainer.scaleY*pdfScale/100;
 			if((newY*-1)+viewer.height > newHeight) {
 				newY = newHeight*-1+viewer.height;	
 			}
@@ -334,7 +332,7 @@ package Module.PDFViewer {
 				newY = 0;
 			} 
 			pdfScale = Math.round(pdfScale);
-			Tweener.addTween(PDFContainer,{
+			Tweener.addTween(pdfContainer,{
 				'scaleX':pdfScale/100,
 				'scaleY':pdfScale/100,
 				'time':1,
@@ -352,12 +350,18 @@ package Module.PDFViewer {
 		}
 		
 		private function checkSnapLoad():void {
+			trace("Checking snap load");
 			if(!mySnap) {
+				trace("No current snap");
 				for (var i:Number=0; i<PDF1.totalFrames; i++) {
-					var tmpsnap:TextSnapshot = (PDFContainer.getChildAt(i) as MovieClip).textSnapshot;
+					trace("looking at each current frame");
+					var tmpsnap:TextSnapshot = (pdfContainer.getChildAt(i) as MovieClip).textSnapshot;
+					trace("Temp snapshot consists of", tmpsnap.getText(0, tmpsnap.charCount));
 					mySnapArray.push(tmpsnap);
 				}
 				mySnap = PDF1.textSnapshot;
+				mySnap.setSelected(0, 100, true);
+				trace("mySnap is now set to", mySnap);
 			}
 		}
 		
@@ -369,9 +373,9 @@ package Module.PDFViewer {
 				var theobject:* = objectsarray[objectsarray.length - 1];
 				var pagenumber:Number = -1;
 				while(theobject.parent != this.stage) {
-					if(PDFContainer.contains(theobject.parent)) {
+					if(pdfContainer.contains(theobject.parent)) {
 						try {
-							pagenumber = PDFContainer.getChildIndex(theobject.parent);
+							pagenumber = pdfContainer.getChildIndex(theobject.parent);
 						} catch(e:Error) {
 							viewer.enableOverlay();
 							return -1;
@@ -431,7 +435,7 @@ package Module.PDFViewer {
 				trace("***"+thepage);
 				if(thepage > -1) {
 					currentSnap = mySnapArray[thepage];
-					currentObject = (PDFContainer.getChildAt(checkPage(e.stageX,e.stageY)-1) as MovieClip);
+					currentObject = (pdfContainer.getChildAt(checkPage(e.stageX,e.stageY)-1) as MovieClip);
 					currentSnap.setSelectColor(selectColour);
 					removeHighlighting();
 					var globalpoint:Point = new Point(e.stageX, e.stageY);
@@ -473,7 +477,7 @@ package Module.PDFViewer {
 		
 		public function createAnnotation(pointOnDocument:Point,startPos:Number,stopPos:Number):void {
         	var myAnnotation:PDFAnnotation = new PDFAnnotation(this,pointOnDocument,startPos,stopPos,pointOnDocument.x,pointOnDocument.y);
-        	PDFContainer.addChild(myAnnotation);
+        	pdfContainer.addChild(myAnnotation);
 			annotationsContainer.push(myAnnotation);
         	myAnnotation.x = pointOnDocument.x;
         	myAnnotation.y = pointOnDocument.y;
@@ -497,7 +501,7 @@ package Module.PDFViewer {
         		trace(annotationsInsert[i].text);
         		var myAnnotation:PDFAnnotation = new PDFAnnotation(this,annotationsInsert[i].pointOnDocument,annotationsInsert[i].startPos,annotationsInsert[i].stopPos,annotationsInsert[i].pointOnDocument.x,annotationsInsert[i].pointOnDocument.y);
         		myAnnotation.previousComment = true;
-   		     	PDFContainer.addChild(myAnnotation);
+   		     	pdfContainer.addChild(myAnnotation);
    		     	myAnnotation.x = annotationsInsert[i].pointOnDocument.x;
         		myAnnotation.y = annotationsInsert[i].pointOnDocument.y;
    		     	myAnnotation.savePreviousAnnotation(annotationsInsert[i].text);

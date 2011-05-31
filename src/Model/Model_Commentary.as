@@ -4,6 +4,7 @@ package Model {
 		
 		public static const ANNOTATION_BOX_TYPE_ID:Number = 2;
 		public static const ANNOTATION_PEN_TYPE_ID:Number = 5;
+		public static const ANNOTATION_HIGHLIGHT_TYPE_ID:Number = 6;
 		public static const COMMENT_TYPE_ID:Number = 3;
 		
 		public var type:String = "";
@@ -20,6 +21,7 @@ package Model {
 		public var annotation_end:Number;
 		public var annotation_text:String = "";
 		public var annotation_path:String = "";
+		public var annotation_linenum:Number;
 		public var annotation_type:Number; // Either ANNOTATION_TYPE_ID or COMMENT_TYPE_ID
 		
 		public var reply_id:Number; // ONLY USE THESE WITH DEKKERS CODE
@@ -141,6 +143,7 @@ package Model {
 			annotation_text = rawData.meta.r_annotation.text;
 			annotation_path = rawData.meta.r_annotation.path;
 			annotation_type = rawData.meta.r_annotation.annotationType;
+			annotation_linenum = rawData.meta.r_annotation.lineNum;
 			//Figure out whether an annotation or a comment
 			switch(annotation_type) {
 				case ANNOTATION_BOX_TYPE_ID:
@@ -151,6 +154,9 @@ package Model {
 					break;
 				case ANNOTATION_PEN_TYPE_ID:
 					type = 'Pen Annotation';
+					break;
+				case ANNOTATION_HIGHLIGHT_TYPE_ID:
+					type = 'Highlight Annotation';
 					break;
 				default:
 					throw new Error(this.base_asset_id+" IS NOT A COMMENT OR AN ANNOTATION");

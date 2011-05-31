@@ -40,7 +40,7 @@ package Controller {
 		public static function start(stage:Recensio_Flex_Beta):void {
 			connectToServer();
 			Dispatcher.stage = stage;
-			Router.getInstance().addEventListener(RecensioEvent.URL_CHANGED,URLChanged);
+			Router.getInstance().addEventListener(IDEvent.URL_CHANGED,URLChanged);
 			Router.getInstance().start();
 			setupLayout();
 			addMonitor();
@@ -85,7 +85,7 @@ package Controller {
 		
 		// Called on first load
 		private static function init(e:Event):void {
-			URLChanged(new RecensioEvent(RecensioEvent.URL_CHANGED));
+			URLChanged(new IDEvent(IDEvent.URL_CHANGED));
 		}
 		
 		// Called on logout
@@ -100,7 +100,7 @@ package Controller {
 		}
 		
 		// Called when the user manually switches URLs
-		private static function URLChanged(e:RecensioEvent):void {
+		private static function URLChanged(e:IDEvent):void {
 			Dispatcher.call(Router.getInstance().getURL());
 		}
 		

@@ -1,6 +1,6 @@
 package View.components.AnnotationList
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
 	import Model.Model_Commentary;
@@ -87,8 +87,10 @@ package View.components.AnnotationList
 				if(annotationData.annotation_type == Model_Commentary.ANNOTATION_BOX_TYPE_ID) {
 					// Lets make an annotation
 					content.addElement(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator,"box", annotationData.text));
-				} else {
+				} else if (annotationData.annotation_type == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
 					content.addElement(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, "free draw", annotationData.text));
+				} else {
+					content.addElement(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, "highlight", annotationData.text));
 				}
 			}
 		}

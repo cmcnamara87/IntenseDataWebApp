@@ -2,8 +2,8 @@ package View.components.Annotation
 {
 	public interface AnnotationInterface
 	{
-		function readjust(imageWidth:Number, imageHeight:Number):void;
-		
+		function save():void;
+
 		function highlight():void;
 		
 		function unhighlight():void;
@@ -15,5 +15,9 @@ package View.components.Annotation
 		function getAuthor():String;
 		
 		function getText():String;
+		
+		function getX():Number;
+		
+		function getY():Number;
 	}
 }

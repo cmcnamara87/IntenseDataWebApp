@@ -1,5 +1,5 @@
 package View.Element {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	import Controller.Utilities.UserPreferences;
 	
@@ -104,15 +104,15 @@ package View.Element {
 		// Adds a comment, then refreshes the view
 		public function addComment(commentData:Model_Commentary):void {
 			var tmpComment:Comment = new Comment(commentData);
-			tmpComment.addEventListener(RecensioEvent.COMMENT_NAV_CLICKED,commentNavClicked);
+			tmpComment.addEventListener(IDEvent.COMMENT_NAV_CLICKED,commentNavClicked);
 			commentsArray.push(tmpComment);
 			refreshView();
 		}
 		
 		// Removes a comment
 		private function removeComment(theComment:Comment):void {
-			if(theComment.hasEventListener(RecensioEvent.COMMENT_NAV_CLICKED)) {
-				theComment.removeEventListener(RecensioEvent.COMMENT_NAV_CLICKED,commentNavClicked);
+			if(theComment.hasEventListener(IDEvent.COMMENT_NAV_CLICKED)) {
+				theComment.removeEventListener(IDEvent.COMMENT_NAV_CLICKED,commentNavClicked);
 			}
 			commentsArray.splice(commentsArray.indexOf(theComment),1);
 		}
@@ -194,7 +194,7 @@ package View.Element {
 			data.meta_creator = Auth.getInstance().getUsername();
 			data.base_ctime = (new Date()).getTime()+"";
 			var tmpComment:Comment = new Comment(data);
-			tmpComment.addEventListener(RecensioEvent.COMMENT_NAV_CLICKED,commentNavClicked);
+			tmpComment.addEventListener(IDEvent.COMMENT_NAV_CLICKED,commentNavClicked);
 			commentsArray.reverse();
 			commentsArray.push(tmpComment);
 			tmpComment.newComment = true;
@@ -211,7 +211,7 @@ package View.Element {
 		}
 		
 		// Called when something in the comment menu is clicked
-		private function commentNavClicked(e:RecensioEvent):void {
+		private function commentNavClicked(e:IDEvent):void {
 			if(e.data.action == "Cancel") {
 				if((e.target as Comment).newComment) {
 					removeComment((e.target as Comment));
@@ -222,7 +222,7 @@ package View.Element {
 			} else if(e.data.action == "comment_id_set") {
 				this.refreshView();
 			} else {
-				var recEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COMMENT_NAV_CLICKED);
+				var recEvent:IDEvent = new IDEvent(IDEvent.COMMENT_NAV_CLICKED);
 				recEvent.data = e.data;
 				this.dispatchEvent(recEvent);
 			}

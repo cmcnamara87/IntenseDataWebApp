@@ -102,44 +102,44 @@ package Controller {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			// Listen for Create Collection Button being clicked.
-			currentView.addEventListener(RecensioEvent.SHELF_CLICKED, newCollectionButtonClicked);
+			currentView.addEventListener(IDEvent.SHELF_CLICKED, newCollectionButtonClicked);
 			
 			// Listen for Edit Collection button being clicked
-			currentView.addEventListener(RecensioEvent.COLLECTION_EDIT_BUTTON_CLICKED, editButtonClicked);
+			currentView.addEventListener(IDEvent.COLLECTION_EDIT_BUTTON_CLICKED, editButtonClicked);
 			
 			// Listen for Delete Collection button being clicked
-			currentView.addEventListener(RecensioEvent.COLLECTION_DELETE_BUTTON_CLICKED, deleteButtonClicked);
+			currentView.addEventListener(IDEvent.COLLECTION_DELETE_BUTTON_CLICKED, deleteButtonClicked);
 			
 			// Listen for Media Asset being clicked inside the Asset Browser
-			currentView.addEventListener(RecensioEvent.ASSET_BROWSER_MEDIA_CLICKED, assetBrowserMediaClicked);
+			currentView.addEventListener(IDEvent.ASSET_BROWSER_MEDIA_CLICKED, assetBrowserMediaClicked);
 			
 			// Listen for Media Asset being clicked inside the Shelf
-			currentView.addEventListener(RecensioEvent.SHELF_MEDIA_CLICKED, shelfMediaClicked);
+			currentView.addEventListener(IDEvent.SHELF_MEDIA_CLICKED, shelfMediaClicked);
 			
 			// Listen for Collection Asset being clicked
-			currentView.addEventListener(RecensioEvent.ASSET_COLLECTION_CLICKED, assetCollectionClicked);
+			currentView.addEventListener(IDEvent.ASSET_COLLECTION_CLICKED, assetCollectionClicked);
 			
 			// Listen for All Assets being clicked
-			currentView.addEventListener(RecensioEvent.ASSET_COLLECTION_ALL_MEDIA, showAllAssetsClicked);
+			currentView.addEventListener(IDEvent.ASSET_COLLECTION_ALL_MEDIA, showAllAssetsClicked);
 			
 			// Listen for Shared With Me (collecion tab) being clicked
-			currentView.addEventListener(RecensioEvent.ASSET_COLLECTION_SHARED_WITH_ME, showSharedWithMeClicked);
+			currentView.addEventListener(IDEvent.ASSET_COLLECTION_SHARED_WITH_ME, showSharedWithMeClicked);
 			
 			// Listen for Shelf (collection tab) being clicked
 //			currentView.addEventListener(RecensioEvent.ASSET_COLLECTION_SHELF, showShelfCollectionClicked);
 			
 			// Listen for Shelf Being Saved to a COllection
-			currentView.addEventListener(RecensioEvent.COLLECTION_SAVE, saveCollection);
+			currentView.addEventListener(IDEvent.COLLECTION_SAVE, saveCollection);
 			
 			// Listen for "Save Comment" button being clicked.
-			currentView.addEventListener(RecensioEvent.COMMENT_SAVED, saveComment);
+			currentView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
 			
-			currentView.addEventListener(RecensioEvent.COMMENT_DELETE, deleteComment);
+			currentView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
 			
 			
 			
 			// Listne for 'Sharing Changed' update to be pushed through from the view (in the sharing panel)
-			currentView.addEventListener(RecensioEvent.SHARING_CHANGED, sharingInfoChanged);
+			currentView.addEventListener(IDEvent.SHARING_CHANGED, sharingInfoChanged);
 			
 			// Collection Browser
 			//(view as Browser).collectionbrowser.addEventListener(RecensioEvent.ASSET_MEDIA_CLICKED,assetCollectionClicked);
@@ -459,7 +459,7 @@ package Controller {
 		 * Changes the stored shelf value, and makes the shelf visible
 		 * @param e event data
 		 */		
-		private function newCollectionButtonClicked(e:RecensioEvent):void {
+		private function newCollectionButtonClicked(e:IDEvent):void {
 			
 			// Change the stored shelf value to be (im guessing true)
 			// means the shelf is up basically
@@ -488,7 +488,7 @@ package Controller {
 			}
 		}
 		
-		private function editButtonClicked(e:RecensioEvent):void {
+		private function editButtonClicked(e:IDEvent):void {
 			trace("Caught Edit Button Clicked");
 			
 			// Change the stored edit value to be whatever the buttons value is
@@ -539,7 +539,7 @@ package Controller {
 		 * Asks if the user is sure 
 		 * 
 		 */		
-		private function deleteButtonClicked(e:RecensioEvent):void {
+		private function deleteButtonClicked(e:IDEvent):void {
 			var myAlert:Alert = Alert.show("Are you sure you wish to delete this collection?", "Delete Collection", Alert.OK | Alert.CANCEL, null, deleteCollection, null, Alert.CANCEL);
 			myAlert.height = 100;
 			myAlert.width = 300;
@@ -580,7 +580,7 @@ package Controller {
 		 * Called when asset tile is clicked. 
 		 * Goes to Asset Display View
 		 */		
-		private function assetBrowserMediaClicked(e:RecensioEvent):void {
+		private function assetBrowserMediaClicked(e:IDEvent):void {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			// Get out the clicked assets data
@@ -632,7 +632,7 @@ package Controller {
 			Dispatcher.call(viewURL);
 		}
 		
-		private function shelfMediaClicked(e:RecensioEvent):void {
+		private function shelfMediaClicked(e:IDEvent):void {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			// Get out the clicked assets data
@@ -665,7 +665,7 @@ package Controller {
 		 * @param e
 		 * 
 		 */		
-		private function showAllAssetsClicked(e:RecensioEvent):void {
+		private function showAllAssetsClicked(e:IDEvent):void {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			// Save the Collections ID (-1)
@@ -682,7 +682,7 @@ package Controller {
 		 * Loads the shared items 
 		 * @param e
 		 */		
-		private function showSharedWithMeClicked(e:RecensioEvent):void {
+		private function showSharedWithMeClicked(e:IDEvent):void {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			// Save the Collections ID (-2)
@@ -718,7 +718,7 @@ package Controller {
 		 * @param e
 		 * 
 		 */		
-		private function assetCollectionClicked(e:RecensioEvent):void {
+		private function assetCollectionClicked(e:IDEvent):void {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			// Save the Collections ID
@@ -742,7 +742,7 @@ package Controller {
 		 * @param e
 		 * 
 		 */		
-		private function saveCollection(e:RecensioEvent):void {
+		private function saveCollection(e:IDEvent):void {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			currentView.showMediaLoading();
@@ -788,7 +788,7 @@ package Controller {
 		 * actual comment.
 		 * 
 		 */		
-		private function saveComment(e:RecensioEvent):void {
+		private function saveComment(e:IDEvent):void {
 			trace('Saving comment: ', e.data.commentText, 'in reply to asset:', currentCollectionID, 'reply to comment:', e.data.replyingToID);
 			
 			AppModel.getInstance().saveNewComment(	e.data.commentText, currentCollectionID, e.data.replyingToID,
@@ -800,7 +800,7 @@ package Controller {
 		 * @param e
 		 * 
 		 */		
-		private function deleteComment(e:RecensioEvent):void {
+		private function deleteComment(e:IDEvent):void {
 			trace("Deleting a comment:", e.data.assetID);
 			AppModel.getInstance().deleteComment(e.data.assetID);
 		}
@@ -814,7 +814,7 @@ package Controller {
 		 * @param e.access		The access ('no-access', 'read' or 'read-write')
 		 * 
 		 */				
-		private function sharingInfoChanged(e:RecensioEvent):void {
+		private function sharingInfoChanged(e:IDEvent):void {
 			var username:String = e.data.username;
 			var access:String = e.data.access;
 			AppModel.getInstance().changeAccess(currentCollectionID, username, "system", access, true, sharingInfoUpdated);
@@ -939,19 +939,19 @@ package Controller {
 
 		
 		// Called when the search button is clicked (not visible in this version - see liveSearchChanged)
-		private function searchClicked(e:RecensioEvent):void {
+		private function searchClicked(e:IDEvent):void {
 //			(view as Browser).browser.filter(e.data.query);
 //			(view as Browser).collectionbrowser.filter(e.data.query);
 		}
 		
 		// Called when the search text input is changed
-		private function liveSearchChanged(e:RecensioEvent):void {
+		private function liveSearchChanged(e:IDEvent):void {
 //			(view as Browser).browser.filter(e.data.query);
 //			(view as Browser).collectionbrowser.filter(e.data.query);
 		}
 		
 		// Called when the scroller for asset preview size is changed
-		private function assetPreviewResize(e:RecensioEvent):void {
+		private function assetPreviewResize(e:IDEvent):void {
 //			(view as Browser).browser.setAssetPreviewSize(e.data.value);
 //			(view as Browser).collectionbrowser.setAssetPreviewSize(e.data.value);
 		}
