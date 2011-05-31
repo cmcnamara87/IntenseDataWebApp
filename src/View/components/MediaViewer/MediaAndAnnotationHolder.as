@@ -107,7 +107,7 @@ package View.components.MediaViewer
 		 * @return The y-pos of the first match
 		 * 
 		 */		
-		public function searchForText(text:String):Number {
+		public function searchForText(text:String):Array {
 			// This should only be used for the pdfs whatever!!!!
 			// this should alll be extended into another class, ill do it later, on a deadline atm TODO!!!
 			if(mediaType == MEDIA_PDF) {

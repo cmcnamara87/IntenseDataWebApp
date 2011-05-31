@@ -2,6 +2,7 @@ package View.components.MediaViewer
 {
 	import Lib.it.transitions.Tweener;
 	
+	import View.components.IDButton;
 	import View.components.IDGUI;
 	
 	import flash.events.Event;
@@ -18,7 +19,16 @@ package View.components.MediaViewer
 
 	public class PDFViewer extends Viewer
 	{
+		// GUI
 		private var searchInput:TextInput; // The search box
+		private var prevSearchResultButton:IDButton; // Button to go to previous search result
+		private var nextSearchResultButton:IDButton; // Button to go to next search result
+		
+		// Variables
+		private var searchResultYCoors:Array; // Stores the Y value for all of the 
+		private var selectedSearchResult:Number; // The current number of the search result we are looking at
+												// 0 <= selectedSearchResult < searchResultYCoors.length
+		private var searchResultLabel:Label; 
 		
 		public function PDFViewer(mediaType:String)
 		{
@@ -35,8 +45,6 @@ package View.components.MediaViewer
 			resizeSlider.maximum = 200;
 			resizeSlider.minimum = 10;
 			resizeSlider.value = 100;
-			//resizeSlider.liveDragging = true;
-			//			slider.snapInterval = 1;
 			sliderResizerContainer.addElement(resizeSlider);
 			this.addElement(sliderResizerContainer);
 			
@@ -62,18 +70,34 @@ package View.components.MediaViewer
 			var nextPageButton:Button = IDGUI.makeButton("Next Page");
 			sliderResizerContainer.addElement(nextPageButton);
 			
+			var searchLine:Line = IDGUI.makeLine(0xBBBBBB);
+			sliderResizerContainer.addElement(searchLine);
+			
 			searchInput = new TextInput();
 			searchInput.text = "Search";
-			searchInput.width = 100;
+			searchInput.width = 150;
 			searchInput.percentHeight = 100;
 			sliderResizerContainer.addElement(searchInput);
 			
+			prevSearchResultButton = IDGUI.makeButton("«", false, false);
+			prevSearchResultButton.width = 30;
+			sliderResizerContainer.addElement(prevSearchResultButton);
+			
+			nextSearchResultButton = IDGUI.makeButton("»", false, false);
+			nextSearchResultButton.width = 30;
+			sliderResizerContainer.addElement(nextSearchResultButton);
+			
+			searchResultLabel = new Label();
+			sliderResizerContainer.addElement(searchResultLabel);
 			
 			resizeSlider.addEventListener(Event.CHANGE, resizeImage);
 			fitWidthButton.addEventListener(MouseEvent.CLICK, fitWidthButtonClicked);
 			fitPageButton.addEventListener(MouseEvent.CLICK, fitPageButtonClicked);
 			nextPageButton.addEventListener(MouseEvent.CLICK, nextPageButtonClicked);
 			prevPageButton.addEventListener(MouseEvent.CLICK, prevPageButtonClicked);
+			prevSearchResultButton.addEventListener(MouseEvent.CLICK, prevSearchResultButtonClicked);
+			nextSearchResultButton.addEventListener(MouseEvent.CLICK, nextSearchResultButtonClicked);
+			
 			
 			// Listen for search input focus/lost focus
 			searchInput.addEventListener(FocusEvent.FOCUS_IN, searchInputHasFocus);
@@ -84,6 +108,8 @@ package View.components.MediaViewer
 			
 		}
 		
+		
+		/* ================== SEARCH FUNCTIONALITY ================================= */
 		private function searchInputHasFocus(e:FocusEvent):void {
 			if(searchInput.text == "Search") {
 				searchInput.text = "";
@@ -102,16 +128,75 @@ package View.components.MediaViewer
 		 * 
 		 */		
 		private function searchTermEntered(e:Event):void {
+			var searchBox:TextInput = e.target as TextInput;
+			var searchString:String = (e.target as TextInput).text;
+			
+			if(searchString == "") {
+				// No text entered, set the background/border back to normal
+				searchBox.setStyle('borderColor', 0x888888);
+				searchBox.setStyle('contentBackgroundColor', 0xFFFFFF);
+				// Clear all text highlighting
+				media.searchForText("");
+				
+				searchResultLabel.text = "";
+				
+				nextSearchResultButton.hide();
+				prevSearchResultButton.hide();
+				return;	
+			}
+			
 			trace('Searching for: ', (e.target as TextInput).text);
-			var yPosOfFirstMatch:Number = media.searchForText((e.target as TextInput).text);
-			if(yPosOfFirstMatch != -1) {
+			this.searchResultYCoors = media.searchForText(searchString);
+			
+			if(searchResultYCoors.length) {
 				trace("Match found");
-				myScroller.verticalScrollBar.value = (yPosOfFirstMatch - 30) * media.scaleY;
+				
+				selectedSearchResult = 0;
+				
+				searchResultLabel.text = "(" + (selectedSearchResult+1) + "/" + searchResultYCoors.length + ")";
+				
+				// Show the next buttons if there is more than 1 result (no prev, since we are at the first result)
+				if(searchResultYCoors.length > 1) {
+					nextSearchResultButton.show();
+					prevSearchResultButton.show();
+				} else {
+					nextSearchResultButton.hide();
+					prevSearchResultButton.hide();
+				}
+				
+				scrollToSearchResult(selectedSearchResult);
+				
+				// Make the search boxes background white (in case it was red from not matching)
+				searchBox.setStyle('borderColor', 0x888888);
+				searchBox.setStyle('contentBackgroundColor', 0xFFFFFF);
+				
 			} else {
 				trace("No match found");
+				// Make the search boxes background red (since there was no match)
+				searchBox.setStyle('borderColor', 0xFF0000);
+				searchBox.setStyle('contentBackgroundColor', 0xFFBBBB);
+				searchResultLabel.text = "";
+				nextSearchResultButton.hide();
+				prevSearchResultButton.hide();
 			}
 		}
 		
+		private function scrollToSearchResult(number:Number):void {
+			// Work out where to scroll to
+			var spacer:Number = 30; // the distance above the text to top (so there is a space above it when the scrolling stops)
+			var xCoor:Number = myScroller.horizontalScrollBar.value;
+			var yCoor:Number = searchResultYCoors[number] - spacer; // THe scale is facotred in by scrolToPoint
+			scrollToPoint(xCoor, yCoor);
+			
+			searchResultLabel.text = "(" + (number+1) + "/" + searchResultYCoors.length + ")";
+		}
+		
+		private function nextSearchResultButtonClicked(e:MouseEvent):void {
+			scrollToSearchResult(++selectedSearchResult % searchResultYCoors.length);
+		}	
+		private function prevSearchResultButtonClicked(e:MouseEvent):void {
+			scrollToSearchResult(--selectedSearchResult % searchResultYCoors.length);
+		}
 		
 		/**
 		 * Resizes the image when the slider is moved 
@@ -124,8 +209,7 @@ package View.components.MediaViewer
 			var resizeFactor:Number = (e.target as HSlider).value / 100; 
 			
 			// Resize the image by the scaling facotr
-			media.scaleX = resizeFactor;
-			media.scaleY = resizeFactor; 
+			scaleMedia(resizeFactor, resizeFactor);
 		}
 		
 		/**
@@ -141,12 +225,13 @@ package View.components.MediaViewer
 			var currentPageBeforeResize:Number = this.getCurrentPage();
 			
 			var scrollbarWidth:Number = 30; // Im just guessing how big the scrollbars are
-			media.scaleX = (scrollerAndOverlayGroup.width - scrollbarWidth) / media.width;
-			media.scaleY = (scrollerAndOverlayGroup.width - scrollbarWidth) / media.width;
-			resizeSlider.value = (scrollerAndOverlayGroup.width - 30) / media.width * 100;
+			var scaleX:Number = (scrollerAndOverlayGroup.width - scrollbarWidth) / media.width;
+			var scaleY:Number = (scrollerAndOverlayGroup.width - scrollbarWidth) / media.width;
 			
-			// Go back to the page we were on
-			this.gotoPage(currentPageBeforeResize);
+			// Resizes the media (using a nice tween animation)
+			scaleMedia(scaleX, scaleY);
+			
+			resizeSlider.value = (scrollerAndOverlayGroup.width - 30) / media.width * 100;
 		}
 		
 		/**
@@ -162,12 +247,11 @@ package View.components.MediaViewer
 			
 			// for PDF resizing,
 			// Fit button - fits 1 page
-			media.scaleX = scrollerAndOverlayGroup.height / media.getFitHeightSize();
-			media.scaleY = scrollerAndOverlayGroup.height / media.getFitHeightSize();
+			var scaleX:Number = scrollerAndOverlayGroup.height / media.getFitHeightSize();
+			var scaleY:Number = scrollerAndOverlayGroup.height / media.getFitHeightSize();
+			scaleMedia(scaleX, scaleY);
+			
 			resizeSlider.value = scrollerAndOverlayGroup.height / media.getFitHeightSize() * 100;
-
-			// Go back to the page we were on
-			this.gotoPage(currentPageBeforeResize);
 		}
 		
 		private function getCurrentPage():Number {
@@ -196,7 +280,14 @@ package View.components.MediaViewer
 		private function gotoPage(page:Number):void {
 			// The thickness of the grey border around the pdf pages
 			var borderThickness:Number = 1;
-			myScroller.verticalScrollBar.value = page * media.getFitHeightSize() * media.scaleY - (borderThickness * media.scaleY);
+			//myScroller.verticalScrollBar.value = page * media.getFitHeightSize() * media.scaleY - (borderThickness * media.scaleY);
+			
+			var xCoor:Number = myScroller.horizontalScrollBar.value;
+			var yCoor:Number = page * media.getFitHeightSize() - borderThickness; // THe scale is facotred in by scrolToPoint 
+			
+//			myScroller.verticalScrollBar.value = page * media.getFitHeightSize() * media.scaleY - (borderThickness * media.scaleY);
+//			myScroller.verticalScrollBar.value = (page * media.getFitHeightSize() - borderThickness) * media.scaleY;
+			scrollToPoint(xCoor, yCoor);
 		}
 		
 		private function prevPageButtonClicked(e:MouseEvent):void {

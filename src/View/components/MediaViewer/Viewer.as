@@ -236,7 +236,7 @@ package View.components.MediaViewer
 			
 			this.addEventListener(IDEvent.SCROLL_TO_ANNOTATION, function(e:IDEvent):void {
 				trace("Showing annotation from annotation list");
-				scrollToPoint(e.data.xCoor, e.data.yCoor);
+				scrollToPoint(e.data.xCoor - 10, e.data.yCoor - 10);
 			});
 		}
 		
@@ -271,16 +271,41 @@ package View.components.MediaViewer
 			trace("Viewer:makeBottomToolbar Should be overwritten");
 		}
 		
+		/**
+		 * Scrolls the media to a certain X and Y coordinate (used when we rollover annotations
+		 * in the annotation list, or when we click Next/Prev page for the pdf etc) 
+		 * @param xCoor	The X Coordinate to scroll to
+		 * @param yCoor	The Y Coordinate to scroll to
+		 * 
+		 */		
 		protected function scrollToPoint(xCoor:Number, yCoor:Number):void {
 			// Try and scroll the vertical scroll bar (try/catch incase it doesnt exist)
 			try {
-				Tweener.addTween(myScroller.verticalScrollBar,{'value': e.data.yCoor * media.scaleY - 10, 'time': 1});
+				Tweener.addTween(myScroller.verticalScrollBar,{'value': yCoor * media.scaleY, 'time': 1});
 			} catch (e:Error) {}
 			// Try and scroll the horizontal scroll bar (try/catch in case the scrollbar doesnt exist)
 			try {
-				Tweener.addTween(myScroller.horizontalScrollBar,{'value': e.data.xCoor * media.scaleX - 10, 'time': 1});
+				Tweener.addTween(myScroller.horizontalScrollBar,{'value': xCoor * media.scaleX, 'time': 1});
 			} catch (e:Error) {}
 		}
+		
+		/**
+		 * Scales the media (and annotation container) 
+		 * @param scaleX
+		 * @param scaleY
+		 * 
+		 */		
+		protected function scaleMedia(scaleX:Number, scaleY:Number):void {
+			// save the scrollbars current value
+			var scrollX:Number = myScroller.horizontalScrollBar.value  / media.scaleX;
+			var scrollY:Number = myScroller.verticalScrollBar.value / media.scaleY;
+			Tweener.addTween(media, {'scaleX': scaleX, 'scaleY': scaleY, 'time': 1, 'onUpdate': function():void {
+				trace("scaling is currently", scaleX, scaleY);
+				myScroller.horizontalScrollBar.value = scrollX * media.scaleX;
+				myScroller.verticalScrollBar.value = scrollY * media.scaleY;
+			}});
+		}
+		
 		/* ================ FUNCTIONS CALLED BY MEDIAVIEW ======================== */
 		
 		/**

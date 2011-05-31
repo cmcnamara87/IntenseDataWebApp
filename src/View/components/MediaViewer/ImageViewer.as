@@ -1,5 +1,7 @@
 package View.components.MediaViewer
 {
+	import Lib.it.transitions.Tweener;
+	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
@@ -61,8 +63,7 @@ package View.components.MediaViewer
 			var resizeFactor:Number = (e.target as HSlider).value / 100; 
 			
 			// Resize the image by the scaling facotr
-			media.scaleX = resizeFactor;
-			media.scaleY = resizeFactor;
+			scaleMedia(resizeFactor, resizeFactor);
 		}
 		
 		/**
@@ -73,15 +74,8 @@ package View.components.MediaViewer
 		 */		
 		private function percentButtonClicked(e:MouseEvent):void {
 			trace("100% button clicked");
-			if(mediaType == MediaAndAnnotationHolder.MEDIA_IMAGE) {
-				media.scaleX = 1;
-				media.scaleY = 1;
-				resizeSlider.value = 100;
-			} else if (mediaType == MediaAndAnnotationHolder.MEDIA_PDF) {
-				media.scaleX = scrollerAndOverlayGroup.width / media.width;
-				media.scaleY = scrollerAndOverlayGroup.width / media.width;
-				resizeSlider.value = scrollerAndOverlayGroup.width / media.width * 100;
-			}
+			scaleMedia(1, 1);
+			resizeSlider.value = 100;
 		}
 		
 		/**
@@ -91,25 +85,16 @@ package View.components.MediaViewer
 		 */		
 		private function fitButtonClicked(e:MouseEvent):void {
 			trace("Fit button clicked");
-			// work out which side (height or width) is further out of the frame
-			if(mediaType == MediaAndAnnotationHolder.MEDIA_PDF) {
-				// for PDF resizing,
-				// Fit button - fits 1 page
-				media.scaleX = scrollerAndOverlayGroup.height / media.getFitHeightSize();
-				media.scaleY = scrollerAndOverlayGroup.height / media.getFitHeightSize();
-				resizeSlider.value = scrollerAndOverlayGroup.height / media.getFitHeightSize() * 100;
-				
-			} else if (mediaType == MediaAndAnnotationHolder.MEDIA_IMAGE) {
-				// For image resizing,
-				// Fit button - fits the entire image to display in the pane
-				var scaleWidth:Number = scrollerAndOverlayGroup.width / media.width;
-				var scaleHeight:Number = scrollerAndOverlayGroup.height / media.height;
-				media.scaleX = Math.max(Math.min(scaleWidth, scaleHeight), 0.1);
-				media.scaleY = Math.max(Math.min(scaleWidth, scaleHeight), 0.1);
-				
-				resizeSlider.value = Math.max(Math.min(scaleWidth, scaleHeight) * 100, 10);	
-			}
+			// For image resizing,
+			// Fit button - fits the entire image to display in the pane
+			var scaleWidth:Number = scrollerAndOverlayGroup.width / media.width;
+			var scaleHeight:Number = scrollerAndOverlayGroup.height / media.height;
+			var scaleX:Number = Math.max(Math.min(scaleWidth, scaleHeight), 0.1);
+			var scaleY:Number = Math.max(Math.min(scaleWidth, scaleHeight), 0.1);
 			
+			scaleMedia(scaleX, scaleY);
+			
+			resizeSlider.value = Math.max(scaleX * 100, 10);				
 		}
 	}
 }

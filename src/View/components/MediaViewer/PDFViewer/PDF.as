@@ -326,14 +326,14 @@ package View.components.MediaViewer.PDFViewer {
 		/**
 		 * Searches for text in the PDF document and highlights all occurences of the text. 
 		 * @param text The text to search for
-		 * @return The y position in the PDF document of the first match, or, if there are no matches, -1
+		 * @return An array of y positions in the PDF document for the beginning of each matched string
 		 * 
 		 */		
-		public function searchForText(text:String):Number {
+		public function searchForText(text:String):Array {
 			trace("Searching for text", text);
 			clearHighlight();
 			
-			var firstMatchY:Number = -1;
+			var yPositionsForMatches:Array = new Array();
 			
 			for(var page:Number = 0; page < textSnapshotArray.length; page++) {
 				var currentSnapshot:TextSnapshot = textSnapshotArray[page] as TextSnapshot;
@@ -349,19 +349,19 @@ package View.components.MediaViewer.PDFViewer {
 						currentSnapshot.setSelected(foundIndex, foundIndex + text.length, true);
 						index += foundIndex + text.length;
 						
-						if(firstMatchY == -1) {
-							var matchInfoForFirstLetter:Object = currentSnapshot.getTextRunInfo(foundIndex, foundIndex + text.length)[0];
-							var firstLetterYPosInPage:Number = matchInfoForFirstLetter.matrix_ty;
-							// Now work out the y position in the entire document
-							firstMatchY = firstLetterYPosInPage + (page * pdfHeight);
-						}
+						var matchInfoForFirstLetter:Object = currentSnapshot.getTextRunInfo(foundIndex, foundIndex + text.length)[0];
+						var firstLetterYPosInPage:Number = matchInfoForFirstLetter.matrix_ty;
+						var firstLetterXPosInPage:Number = matchInfoForFirstLetter.matrix_tx;
+						// Now work out the y position in the entire document (and save that)
+						yPositionsForMatches.push(firstLetterYPosInPage + (page * pdfHeight));
+						
 					} else {
 //						trace("No match found, going to next page");
 						break;
 					}
 				}
 			}
-			return firstMatchY;
+			return yPositionsForMatches;
 		}
 		/**
 		 * Gets the height of the pages in the document 
