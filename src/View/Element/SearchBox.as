@@ -1,5 +1,5 @@
 package View.Element {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -81,7 +81,7 @@ package View.Element {
 		
 		// Called when "search me is clicked" (currently disabled)
 		private function searchMeClicked(e:MouseEvent):void {
-			var searchEvent:RecensioEvent = new RecensioEvent(RecensioEvent.SEARCH);
+			var searchEvent:IDEvent = new IDEvent(IDEvent.SEARCH);
 			searchEvent.data.searchType = "me";
 			searchEvent.data.query = getSearchTerm();
 			this.dispatchEvent(searchEvent);
@@ -89,7 +89,7 @@ package View.Element {
 		
 		// Called anytime the search box changes (live search)
 		private function searchBoxChanged(e:Event):void {
-			var searchEvent:RecensioEvent = new RecensioEvent(RecensioEvent.LIVE_SEARCH);
+			var searchEvent:IDEvent = new IDEvent(IDEvent.LIVE_SEARCH);
 			searchEvent.data.searchType = "me";
 			searchEvent.data.query = getSearchTerm();
 			this.dispatchEvent(searchEvent);
@@ -97,7 +97,7 @@ package View.Element {
 		
 		// Called when "search all is clicked" (currently disabled)
 		private function searchAllClicked(e:MouseEvent):void {
-			var searchEvent:RecensioEvent = new RecensioEvent(RecensioEvent.SEARCH);
+			var searchEvent:IDEvent = new IDEvent(IDEvent.SEARCH);
 			searchEvent.data.searchType = "all";
 			searchEvent.data.query = getSearchTerm();
 			this.dispatchEvent(searchEvent);

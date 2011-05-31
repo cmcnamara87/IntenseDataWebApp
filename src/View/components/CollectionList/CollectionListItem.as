@@ -1,6 +1,6 @@
 package View.components.CollectionList
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
 	import Model.Model_Collection;

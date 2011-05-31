@@ -1,5 +1,5 @@
 package View.Element {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
@@ -121,7 +121,7 @@ package View.Element {
 		
 		// Dispatches login notification
 		private function loginClick():void {
-			var e:RecensioEvent = new RecensioEvent(RecensioEvent.LOGIN_CLICKED);
+			var e:IDEvent = new IDEvent(IDEvent.LOGIN_CLICKED);
 			dispatchEvent(e);
 		}
 	}

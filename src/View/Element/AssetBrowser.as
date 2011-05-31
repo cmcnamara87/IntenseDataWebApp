@@ -1,5 +1,5 @@
 package View.Element {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Model.Model_Collection;
 	import Model.Model_Media;
@@ -147,7 +147,7 @@ package View.Element {
 		private function assetMediaClicked(e:MouseEvent):void {
 			trace("MEDIA CLICKED");
 			var assetID:Number = (e.target as AssetPreviewMedia).getID();
-			var clickEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ASSET_MEDIA_CLICKED);
+			var clickEvent:IDEvent = new IDEvent(IDEvent.ASSET_MEDIA_CLICKED);
 			clickEvent.data.assetID = assetID;
 			this.dispatchEvent(clickEvent);
 		}
@@ -162,7 +162,7 @@ package View.Element {
 		private function assetCollectionClicked(e:MouseEvent):void {
 			trace("COLLECTION CLICKED");
 			var assetID:Number = (e.target as AssetPreviewCollection).getID();
-			var clickEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ASSET_COLLECTION_CLICKED);
+			var clickEvent:IDEvent = new IDEvent(IDEvent.ASSET_COLLECTION_CLICKED);
 			clickEvent.data.assetID = assetID;
 			
 			this.dispatchEvent(clickEvent);

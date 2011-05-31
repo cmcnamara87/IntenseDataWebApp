@@ -1,6 +1,6 @@
 package View.components.Comments
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
 	import Model.Model_Commentary;
@@ -80,10 +80,10 @@ package View.components.Comments
 			addCommentButton.addEventListener(MouseEvent.CLICK, addCommentButtonClicked);
 			
 			// Dispatched by new comment when cancel button is clicked
-			this.addEventListener(RecensioEvent.COMMENT_CANCELLED, commentCancelled);
+			this.addEventListener(IDEvent.COMMENT_CANCELLED, commentCancelled);
 			
 			// Dispatched by comment when reply button is clicked
-			this.addEventListener(RecensioEvent.COMMENT_REPLY, commentReplyButtonClicked);
+			this.addEventListener(IDEvent.COMMENT_REPLY, commentReplyButtonClicked);
 			
 			// Testing this out TODO remove this
 			maxMinButton.addEventListener(MouseEvent.CLICK, maxMinButtonClicked);
@@ -205,7 +205,7 @@ package View.components.Comments
 		}
 
 		
-		private function commentReplyButtonClicked(e:RecensioEvent):void {
+		private function commentReplyButtonClicked(e:IDEvent):void {
 //			trace("Caught Reply Button Clicked");
 			// If there is a current new comment, already being displayed, remove it
 			// and add anotehr one (so we dont have like, 3 new comments in a row being displayed)
@@ -224,7 +224,7 @@ package View.components.Comments
 		}
 		
 		
-		private function commentCancelled(e:RecensioEvent):void {
+		private function commentCancelled(e:IDEvent):void {
 //			trace("Removing comment");
 			content.removeElement(e.data.newCommentObject);
 		}

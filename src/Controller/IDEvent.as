@@ -4,7 +4,7 @@ package Controller {
 	
 	import mx.messaging.channels.StreamingAMFChannel;
 	
-	public class RecensioEvent extends Event {
+	public class IDEvent extends Event {
 		
 		//Stores data being sent with a RecensioEvent
 		public var data:Object = new Object();
@@ -101,8 +101,17 @@ package Controller {
 			//When a module fails
 			public static var MODULE_FAIL:String = "recensio_module_fail";
 			
+			public static var PAGE_LOADED:String = "id_pageLoaded";
 			
 			// ANNOTATION STUFF
+			public static var SHOW_ANNOTATION_TEXT_ENTRY:String = "id_showAnnotationTextEntry";
+			public static var ANNOTATION_MOUSE_OVER:String = "id_annotationMouseOver";
+			public static var ANNOTATION_MOUSE_OUT:String = "id_annotationMouseOut";
+			
+			// Called when we find the annotation that was moused over, and we 
+			// want to send back its y position to the viewer so it can scroll to it
+			public static var SCROLL_TO_ANNOTATION:String = "id_scrollToAnnotation";
+			
 			// When the save button is clicked
 			public static var ANNOTATION_SAVE_CLICKED:String = "recensio_annotationSaveClicked";
 			// Clear any non-saved annotations from the screen
@@ -110,6 +119,7 @@ package Controller {
 			// When the annotation is actually ready to be saved.
 			public static var ANNOTATION_SAVE_BOX:String = "recensio_annotationSaveBox";
 			public static var ANNOTATION_SAVE_PEN:String = "recensio_annotationSavePen";
+			public static var ANNOTATION_SAVE_HIGHLIGHT:String = "recensio_annotationSaveHighlight";
 			
 			public static var ANNOTATION_LIST_ITEM_MOUSEOVER:String = "recensio_annotationListItemMouseOver";
 			public static var ANNOTATION_LIST_ITEM_MOUSEOUT:String = "recensio_annotationListItemMouseOut";
@@ -121,7 +131,9 @@ package Controller {
 			// Called when a user sets the end of an annotation
 			public static var ANNOTATION_END_SET:String = "recensio_annotationEndSet";
 		
-		public function RecensioEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
+			// The PDF has loaded and finished being displayed on screen
+			public static var MEDIA_LOADED:String = "id_pdfLoaded"; 
+		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 		}
 	}

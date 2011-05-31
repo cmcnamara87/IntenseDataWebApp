@@ -111,7 +111,7 @@ package Controller.Utilities {
 		
 		// Called when the URL is manually changed by the user
 		private function urlChanged(e:BrowserChangeEvent):void {
-			this.dispatchEvent(new RecensioEvent(RecensioEvent.URL_CHANGED));
+			this.dispatchEvent(new IDEvent(IDEvent.URL_CHANGED));
 		}
 	}
 }

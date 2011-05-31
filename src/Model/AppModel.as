@@ -452,21 +452,69 @@ package Model {
 			}
 			
 		}
+		
+		public function saveNewHighlightAnnotation(mediaAssetID:Number, xCoor:Number, yCoor:Number, page1:Number, startTextIndex:Number, 
+													endTextIndex:Number, text:String, callback:Function):void {
+			var args:Object = new Object();
+			args.namespace = "recensio";
+			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
+			
+			// Set the annotations parent media asset
+			baseXML.service.args["related"]["to"] = mediaAssetID;
+			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
+			baseXML.service.args["meta"]["r_base"]["active"] = "true";
+			
+			// Set the creator to be the current user
+			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
+			baseXML.service.args["meta"]["r_base"].@id = 2;
+			
+			// Set it as an annotation
+			baseXML.service.args["meta"]["r_resource"]["title"] = "Annotation";
+			baseXML.service.args["meta"]["r_resource"]["description"] = " ";
+			
+			// Set All of the annotations data
+			baseXML.service.args["meta"]["r_annotation"]["x"] = xCoor;
+			baseXML.service.args["meta"]["r_annotation"]["y"] = yCoor;
+			baseXML.service.args["meta"]["r_annotation"]["start"] = startTextIndex;
+			baseXML.service.args["meta"]["r_annotation"]["end"] = endTextIndex;
+			baseXML.service.args["meta"]["r_annotation"]["text"] = text;
+			baseXML.service.args["meta"]["r_annotation"]["lineNum"] = page1; // We are storing the page number, in the lin num variable
+			
+			// I have absolutely no idea what this is, so im commenting it out for now
+			//			if(assetData.path != "") {
+			//				baseXML.service.args["meta"]["r_annotation"]["path"] = assetData.path;
+			//			}
+			
+			// This annotation is a 'Annotation' annotation, lol, not a comment
+			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.ANNOTATION_HIGHLIGHT_TYPE_ID + "";
+			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
+			trace(baseXML);
+			
+			// Try and save, then call the callback.
+			if(_connection.sendRequest(baseXML, callback)) {
+				trace("- App Model: Annotation Saved");
+				//All good
+			} else {
+				Alert.show("Could not save annotation");
+			}
+			
+		}
 		/**
 		 * Saves a new Box Annotation. 
 		 * @param mediaAssetID	The ID of the media asset, the annotation is on
-		 * @param percentX		The x (top left) of the annotation box (in relation to the assets size, e.g. 0.5 for 50%)
-		 * @param percentY		The y (top right) of the annotation box (same as above)
-		 * @param percentWidth	The width of the annotation box (50% is now 50 not, 0.5)
-		 * @param percentHeight The height of the annotation box
+		 * @param xCoor 		The x (top left) of the annotation box
+		 * @param yCoor			The y (top right) of the annotation box
+		 * @param width			The width of the annotation box
+		 * @param height		The height of the annotation box
 		 * @param startTime		The time where the box first appears
 		 * @param endTime		The time where the box disappears
 		 * @param annotationText	The text that is part of the annotation
 		 * @param callback			The function to call when the anntoation is saved
 		 * 
 		 */		
-		public function saveNewBoxAnnotation(	mediaAssetID:Number, percentX:Number,percentY:Number,
-											percentWidth:Number, percentHeight:Number,
+		public function saveNewBoxAnnotation(	mediaAssetID:Number, xCoor:Number, yCoor:Number,
+											annotationWidth:Number, annotationHeight:Number,
 											startTime:Number, endTime:Number,
 											annotationText:String, callback:Function):void {
 			
@@ -490,10 +538,10 @@ package Model {
 			baseXML.service.args["meta"]["r_resource"]["description"] = " ";
 			
 			// Set All of the annotations data
-			baseXML.service.args["meta"]["r_annotation"]["x"] = percentX;
-			baseXML.service.args["meta"]["r_annotation"]["y"] = percentY;
-			baseXML.service.args["meta"]["r_annotation"]["width"] = Math.round(percentWidth);
-			baseXML.service.args["meta"]["r_annotation"]["height"] = Math.round(percentHeight);
+			baseXML.service.args["meta"]["r_annotation"]["x"] = xCoor;
+			baseXML.service.args["meta"]["r_annotation"]["y"] = yCoor;
+			baseXML.service.args["meta"]["r_annotation"]["width"] = Math.round(annotationWidth);
+			baseXML.service.args["meta"]["r_annotation"]["height"] = Math.round(annotationHeight);
 			baseXML.service.args["meta"]["r_annotation"]["start"] = startTime;
 			baseXML.service.args["meta"]["r_annotation"]["end"] = endTime;
 			baseXML.service.args["meta"]["r_annotation"]["text"] = annotationText;
@@ -687,16 +735,45 @@ package Model {
 			
 			
 			trace("saving", assetData.assetID, assetData.meta_title, assetData.meta_description);
+			
+			// The title is compulsory, so if its not there, it should error.
 			baseXMLUpdate.service.args["meta"]["r_resource"]["title"] = assetData.meta_title;
-			baseXMLUpdate.service.args["meta"]["r_resource"]["description"] = assetData.meta_description;
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"] = "";
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Subject">'+assetData.meta_subject+'</property>'));
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+assetData.meta_keywords+'</property>'));
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+assetData.meta_datepublished+'</property>'));
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+assetData.meta_othercontrib+'</property>'));
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+assetData.meta_sponsorfunder+'</property>'));
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+assetData.meta_creativeworksubtype+'</property>'));
-			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+assetData.meta_creativeworktype+'</property>'));
+			
+			
+			if(assetData.meta_description != "") {
+				baseXMLUpdate.service.args.meta.r_resource.description = assetData.meta_description;	
+			}
+			
+			baseXMLUpdate.service.args.meta.r_base.properties = "";
+			
+			if(assetData.meta_subject != "") {
+				baseXMLUpdate.service.args.meta.r_base.properties.appendChild(XML('<property name="Subject">'+assetData.meta_subject+'</property>'));
+			}
+			
+			if(assetData.meta_keywords != "") {
+				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+assetData.meta_keywords+'</property>'));
+			}
+			
+			if(assetData.meta_datepublished != "") {
+				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+assetData.meta_datepublished+'</property>'));
+			}
+			
+			if(assetData.meta_othercontrib != "") {
+				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+assetData.meta_othercontrib+'</property>'));
+			}
+			
+			if(assetData.meta_sponsorfunder != "") {
+				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+assetData.meta_sponsorfunder+'</property>'));
+			}
+			
+			if(assetData.meta_creativeworksubtype != "") {
+				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+assetData.meta_creativeworksubtype+'</property>'));
+			}
+			
+			if(assetData.meta_creativeworktype != "") {
+				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+assetData.meta_creativeworktype+'</property>'));
+			}
+			
 			if(_connection.sendRequest(baseXMLUpdate, callback)) {
 				//All good
 			} else {
@@ -954,7 +1031,8 @@ package Model {
 				asset.setData(assetXML);
 				
 				// Only add it to the return array if its a Annotation
-				if(asset.annotationType == Model_Commentary.ANNOTATION_BOX_TYPE_ID || asset.annotationType == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
+				if(asset.annotationType == Model_Commentary.ANNOTATION_BOX_TYPE_ID || asset.annotationType == Model_Commentary.ANNOTATION_PEN_TYPE_ID
+						|| asset.annotationType == Model_Commentary.ANNOTATION_HIGHLIGHT_TYPE_ID) {
 					assets.push(asset);
 				}
 				

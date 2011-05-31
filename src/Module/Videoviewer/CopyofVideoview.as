@@ -1,6 +1,6 @@
 package Module.Videoviewer {
 	
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -46,7 +46,7 @@ package Module.Videoviewer {
 		}
 		
 		public function playFailed(code:String):void {
-			var e:RecensioEvent = new RecensioEvent(RecensioEvent.MODULE_FAIL);
+			var e:IDEvent = new IDEvent(IDEvent.MODULE_FAIL);
 			e.data.code = code;
 			this.dispatchEvent(e);
 		}

@@ -1,6 +1,6 @@
 package View.components.CollectionList
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
 	import Model.Model_Collection;
@@ -64,7 +64,7 @@ package View.components.CollectionList
 		 */		
 		public function collectionListItemClicked(e:MouseEvent):void {
 			trace('collection clicked id: ', collectionData.base_asset_id);
-			var clickEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ASSET_COLLECTION_CLICKED,true);
+			var clickEvent:IDEvent = new IDEvent(IDEvent.ASSET_COLLECTION_CLICKED,true);
 			clickEvent.data.assetID = collectionData.base_asset_id;
 			clickEvent.data.access = collectionData.access_modify;
 			clickEvent.data.collectionName = collectionData.meta_title;

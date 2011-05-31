@@ -1,6 +1,6 @@
 package View.components.Sharing
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Model.Model_Commentary;
 	
@@ -96,7 +96,7 @@ package View.components.Sharing
 		 */		
 		private function checkBoxClicked(e:Event):void {
 			trace("Saving sharing information");
-			var sharingSavedEvent:RecensioEvent = new RecensioEvent(RecensioEvent.SHARED_SAVED, true);
+			var sharingSavedEvent:IDEvent = new IDEvent(IDEvent.SHARED_SAVED, true);
 			
 			var sharingInformationArray:Array =  
 				

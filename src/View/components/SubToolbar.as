@@ -41,7 +41,8 @@ package View.components
 			
 			// Setup Background color
 			this.backgroundFill = new SolidColor(0xFFFF00, 1);
-			this.borderStroke = new SolidColorStroke(0xFFFFFF, 1);
+			//this.borderStroke = new SolidColorStroke(0xFFFFFF, 1);
+			this.setStyle("borderVisible", false);
 		}
 		
 		public function setColor(color:uint):void {

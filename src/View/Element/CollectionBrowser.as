@@ -1,5 +1,5 @@
 package View.Element {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Model.Model_Collection;
 	
@@ -35,10 +35,10 @@ package View.Element {
 				newcollection.setNewCollection(isNew);
 				newcollection.setCollectionData(_collectionData);
 				newcollection.setAssetsData(assetsData);
-				newcollection.addEventListener(RecensioEvent.COLLECTION_CLICKED,collectionClicked);
-				newcollection.addEventListener(RecensioEvent.ASSET_MEDIA_CLICKED,assetClicked);
-				newcollection.addEventListener(RecensioEvent.COLLECTION_DELETED,collectionDeleted);
-				newcollection.addEventListener(RecensioEvent.COLLECTION_SAVE,collectionSave);
+				newcollection.addEventListener(IDEvent.COLLECTION_CLICKED,collectionClicked);
+				newcollection.addEventListener(IDEvent.ASSET_MEDIA_CLICKED,assetClicked);
+				newcollection.addEventListener(IDEvent.COLLECTION_DELETED,collectionDeleted);
+				newcollection.addEventListener(IDEvent.COLLECTION_SAVE,collectionSave);
 				if(isNew) {
 					collections = collections.reverse();
 					collections.push(newcollection);
@@ -51,7 +51,7 @@ package View.Element {
 		}
 		
 		// Redraw when expanding or hiding a collection (from titlebar)
-		private function collectionClicked(e:RecensioEvent):void {
+		private function collectionClicked(e:IDEvent):void {
 			refreshView(false);
 		}
 		
@@ -120,32 +120,32 @@ package View.Element {
 		
 		// Remove a collection
 		private function removeCollection(collection:Collection):void {
-			if(collection.hasEventListener(RecensioEvent.COLLECTION_CLICKED)) {
-				collection.removeEventListener(RecensioEvent.COLLECTION_CLICKED,collectionClicked);
+			if(collection.hasEventListener(IDEvent.COLLECTION_CLICKED)) {
+				collection.removeEventListener(IDEvent.COLLECTION_CLICKED,collectionClicked);
 			}
-			if(collection.hasEventListener(RecensioEvent.ASSET_MEDIA_CLICKED)) {
-				collection.removeEventListener(RecensioEvent.ASSET_MEDIA_CLICKED,assetClicked);
+			if(collection.hasEventListener(IDEvent.ASSET_MEDIA_CLICKED)) {
+				collection.removeEventListener(IDEvent.ASSET_MEDIA_CLICKED,assetClicked);
 			}
-			if(collection.hasEventListener(RecensioEvent.COLLECTION_DELETED)) {
-				collection.removeEventListener(RecensioEvent.COLLECTION_DELETED,collectionDeleted);
+			if(collection.hasEventListener(IDEvent.COLLECTION_DELETED)) {
+				collection.removeEventListener(IDEvent.COLLECTION_DELETED,collectionDeleted);
 			}
 			collections.splice(collections.indexOf(collection),1);
 		}
 		
 		// Called when an asset preview within a collection is clicked
-		private function assetClicked(e:RecensioEvent):void {
-			var clickEvent:RecensioEvent = new RecensioEvent(RecensioEvent.ASSET_MEDIA_CLICKED);
+		private function assetClicked(e:IDEvent):void {
+			var clickEvent:IDEvent = new IDEvent(IDEvent.ASSET_MEDIA_CLICKED);
 			clickEvent.data.assetID = e.data.assetID;
 			this.dispatchEvent(clickEvent);
 		}
 		
 		// Called when a collection is deleted
-		private function collectionDeleted(e:RecensioEvent):void {
+		private function collectionDeleted(e:IDEvent):void {
 			if(e.data.assetID == -1) {
 				removeCollectionById(-1);
 				refreshView();
 			} else {
-				var deleteEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COLLECTION_DELETED);
+				var deleteEvent:IDEvent = new IDEvent(IDEvent.COLLECTION_DELETED);
 				deleteEvent.data.assetID = e.data.assetID;
 				this.dispatchEvent(deleteEvent);
 				refreshView();
@@ -153,8 +153,8 @@ package View.Element {
 		}
 		
 		// Called when a collection is updated
-		private function collectionSave(e:RecensioEvent):void {
-			var saveEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COLLECTION_SAVE);
+		private function collectionSave(e:IDEvent):void {
+			var saveEvent:IDEvent = new IDEvent(IDEvent.COLLECTION_SAVE);
 			saveEvent.data = e.data;
 			this.dispatchEvent(saveEvent);
 		}

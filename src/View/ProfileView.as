@@ -1,7 +1,7 @@
 package View
 {
 	import Controller.Dispatcher;
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
@@ -312,7 +312,7 @@ package View
 			if(userListComboBox.selectedIndex >= 0) {
 				
 				var newUser:String = userListComboBox.selectedItem;
-				var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.USER_CHANGED);
+				var myEvent:IDEvent = new IDEvent(IDEvent.USER_CHANGED);
 				myEvent.data.username = newUser;
 				this.dispatchEvent(myEvent);
 				
@@ -342,7 +342,7 @@ package View
 		 */		
 		private function deleteUserButtonClicked(e:MouseEvent):void {
 			trace("Delete User Button Clicked");
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.DELETE_USER_BUTTON_CLICKED);
+			var myEvent:IDEvent = new IDEvent(IDEvent.DELETE_USER_BUTTON_CLICKED);
 			this.dispatchEvent(myEvent);
 			
 			// Disable user details while we load knew details
@@ -359,12 +359,12 @@ package View
 			trace("Suspend User Button Clicked");
 			if(isCurrentUserSuspended) {
 				// current user is suspended, unsuspend them
-				myEvent = new RecensioEvent(RecensioEvent.UNSUSPEND_USER_BUTTON_CLICKED);
+				myEvent = new IDEvent(IDEvent.UNSUSPEND_USER_BUTTON_CLICKED);
 				this.dispatchEvent(myEvent);
 				
 			} else {
 				// current user is unsuspended, suspend them
-				var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.SUSPEND_USER_BUTTON_CLICKED);
+				var myEvent:IDEvent = new IDEvent(IDEvent.SUSPEND_USER_BUTTON_CLICKED);
 				this.dispatchEvent(myEvent);
 			}
 			
@@ -392,7 +392,7 @@ package View
 					newUserView.confirm_password.text != "" &&
 					newUserView.password.text == newUserView.confirm_password.text) {
 					
-					var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.NEW_USER_DETAILS_SAVED);
+					var myEvent:IDEvent = new IDEvent(IDEvent.NEW_USER_DETAILS_SAVED);
 					myEvent.data.username = newUserView.username.text;
 					myEvent.data.password = newUserView.password.text;
 					myEvent.data.email = newUserView.email.text;
@@ -436,7 +436,7 @@ package View
 					userDetailsView.meta_email.text != "") {
 					
 					trace("Updating User Profile");
-					myEvent = new RecensioEvent(RecensioEvent.USER_DETAILS_SAVED);
+					myEvent = new IDEvent(IDEvent.USER_DETAILS_SAVED);
 					
 					if(admin) {
 						myEvent.data.username = userListComboBox.selectedItem;
@@ -491,7 +491,7 @@ package View
 			this.showSubToolbar(0xFFFF00, 'Saving...', false);
 			
 			// Set the password and the old-password off to hte controller
-			var changePasswordEvent:RecensioEvent = new RecensioEvent(RecensioEvent.CHANGE_PASSWORD_CLICKED);
+			var changePasswordEvent:IDEvent = new IDEvent(IDEvent.CHANGE_PASSWORD_CLICKED);
 			changePasswordEvent.data.newPassword = userDetailsView.password.text;
 			this.dispatchEvent(changePasswordEvent);
 		}

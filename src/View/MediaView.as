@@ -1,7 +1,7 @@
 package View
 {
 	import Controller.Dispatcher;
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Model.Model_Media;
 	
@@ -16,9 +16,11 @@ package View
 	import View.components.EditDetails.EditDetailsPanel;
 	import View.components.IDGUI;
 	import View.components.MediaViewer.AudioViewer;
-	import View.components.MediaViewer.ImageViewer.ImageViewer;
+	import View.components.MediaViewer.ImageViewer.ImageViewerOLD;
+	import View.components.MediaViewer.MediaAndAnnotationHolder;
 	import View.components.MediaViewer.MediaViewer;
 	import View.components.MediaViewer.VideoViewer.VideoViewer;
+	import View.components.MediaViewer.Viewer;
 	import View.components.Panel;
 	import View.components.Sharing.SharingPanel;
 	import View.components.Toolbar;
@@ -85,6 +87,7 @@ package View
 			// Setup size
 			this.percentHeight = 100;
 			this.percentWidth = 100;
+			this.setStyle('borderVisible', false);
 			
 			// Setup layout
 			var myLayout:VerticalLayout = new VerticalLayout();
@@ -184,8 +187,8 @@ package View
 			annotationListButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
 			commentsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
 			// Listen for annotation list item mouseover
-			this.addEventListener(RecensioEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, annotationListItemMouseOver);
-			this.addEventListener(RecensioEvent.ANNOTATION_LIST_ITEM_MOUSEOUT, annotationListItemMouseOut);
+			this.addEventListener(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, annotationListItemMouseOver);
+			this.addEventListener(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOUT, annotationListItemMouseOut);
 			
 			backButton.addEventListener(MouseEvent.CLICK, backButtonClicked);
 			downloadButton.addEventListener(MouseEvent.CLICK, downloadButtonClicked);
@@ -208,7 +211,8 @@ package View
 			
 			switch(mediaData.type) {
 				case "image":
-					mediaViewer = new ImageViewer();
+//					mediaViewer = new ImageViewer();
+					mediaViewer = Viewer.getViewer(MediaAndAnnotationHolder.MEDIA_IMAGE);
 					addAnnotationButton.visible = true;
 					hideShowAnnotationButton.visible = true;
 					break;
@@ -219,7 +223,11 @@ package View
 					mediaViewer = new Videoview();
 					break;
 				case "document":
-					mediaViewer = new Module.PDFViewer.PDFViewer();
+//					mediaViewer = new Module.PDFViewer.PDFViewer();
+					mediaViewer = Viewer.getViewer(MediaAndAnnotationHolder.MEDIA_PDF);
+					addAnnotationButton.visible = true;
+					hideShowAnnotationButton.visible = true;
+//					mediaViewer = new Module.PDFViewer.PDFViewer();
 					break;
 				default:
 					mediaViewer = new MediaViewer();
@@ -283,7 +291,7 @@ package View
 			trace("Adding Annotations...", annotationsArray.length);
 			// Add annotations to annotations list
 			myAnnotationListPanel.addAnnotations(annotationsArray);
-			
+			annotationListButton.label = "Annotation List (" + annotationsArray.length + ")";
 			// Add annotation to viewer
 			if(mediaViewer) {
 				mediaViewer.addAnnotations(annotationsArray);
@@ -327,7 +335,7 @@ package View
 		 * 
 		 */		
 		private function deleteAssetButtonClicked(e:MouseEvent):void {
-			var myEvent:RecensioEvent = new RecensioEvent(RecensioEvent.MEDIA_ASSET_DELETE_BUTTON_CLICKED);
+			var myEvent:IDEvent = new IDEvent(IDEvent.MEDIA_ASSET_DELETE_BUTTON_CLICKED);
 			this.dispatchEvent(myEvent);
 		}
 		
@@ -395,12 +403,12 @@ package View
 
 		}
 		
-		private function annotationListItemMouseOver(e:RecensioEvent):void {
+		private function annotationListItemMouseOver(e:IDEvent):void {
 			trace("Caught List Item Mouseover");
 			mediaViewer.highlightAnnotation(e.data.assetID);
 		}
 		
-		private function annotationListItemMouseOut(e:RecensioEvent):void {
+		private function annotationListItemMouseOut(e:IDEvent):void {
 			trace("Caught List Item Mouseover");
 			mediaViewer.unhighlightAnnotation(e.data.assetID);
 			

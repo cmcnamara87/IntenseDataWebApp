@@ -1,6 +1,6 @@
 package View.Element {
 	
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
@@ -62,7 +62,7 @@ package View.Element {
 		// INIT
 		override protected function init(e:Event):void {
 			setTimeout(resize,200);
-			menu.addEventListener(RecensioEvent.COMMENT_NAV_CLICKED,navClicked);
+			menu.addEventListener(IDEvent.COMMENT_NAV_CLICKED,navClicked);
 			addChild(menu);
 		}
 		
@@ -221,7 +221,7 @@ package View.Element {
 		}
 		
 		// When the comment navigation is clicked (edit, save etc)
-		private function navClicked(e:RecensioEvent):void {
+		private function navClicked(e:IDEvent):void {
 			if(e.data.action == "Edit") {
 				setEditMode(true);
 			} else if (e.data.action == "Cancel") {
@@ -236,7 +236,7 @@ package View.Element {
 				setEditMode(false);
 				draw();
 			}
-			var recEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COMMENT_NAV_CLICKED);
+			var recEvent:IDEvent = new IDEvent(IDEvent.COMMENT_NAV_CLICKED);
 			recEvent.data.action = e.data.action;
 			recEvent.data.assetID = rawData.base_asset_id;
 			recEvent.data.tmpID = newCommentID;
@@ -251,7 +251,7 @@ package View.Element {
 		public function commentSaved(e:Event):void {
 			rawData.base_asset_id = XML(e.target.data).reply.result.id;
 			AppModel.getInstance().setAnnotationClass(e);
-			var recEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COMMENT_NAV_CLICKED);
+			var recEvent:IDEvent = new IDEvent(IDEvent.COMMENT_NAV_CLICKED);
 			recEvent.data.action = "comment_id_set";
 			this.dispatchEvent(recEvent);
 		}

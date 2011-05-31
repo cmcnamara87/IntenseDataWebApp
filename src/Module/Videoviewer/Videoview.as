@@ -1,7 +1,7 @@
 package Module.Videoviewer {
 	
 	import Controller.MediaController;
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import View.MediaView;
 	import View.components.MediaViewer.MediaViewer;
@@ -60,7 +60,7 @@ package Module.Videoviewer {
 		}
 		
 		public function playFailed(code:String):void {
-			var e:RecensioEvent = new RecensioEvent(RecensioEvent.MODULE_FAIL);
+			var e:IDEvent = new IDEvent(IDEvent.MODULE_FAIL);
 			e.data.code = code;
 			this.dispatchEvent(e);
 		}
@@ -181,8 +181,8 @@ package Module.Videoviewer {
 			
 			// Save the annotation in the controller, do this later.
 			newAnnotation.addEventListener(Event.COMPLETE,annotationSaved);
-			newAnnotation.addEventListener(RecensioEvent.ANNOTATION_START_SET, setAnnotationStart);
-			newAnnotation.addEventListener(RecensioEvent.ANNOTATION_END_SET, setAnnotationEnd);
+			newAnnotation.addEventListener(IDEvent.ANNOTATION_START_SET, setAnnotationStart);
+			newAnnotation.addEventListener(IDEvent.ANNOTATION_END_SET, setAnnotationEnd);
 			
 			//_screen.addChild(newAnnotation);
 			_screen.addChild(newAnnotation);
@@ -198,7 +198,7 @@ package Module.Videoviewer {
 		 * @return 
 		 * 
 		 */		
-		private function setAnnotationStart(e:RecensioEvent):void {
+		private function setAnnotationStart(e:IDEvent):void {
 			newAnnotationStartTime = _time;
 			trace("Start Time set as", newAnnotationStartTime);
 			trace("------------------------------------");
@@ -212,7 +212,7 @@ package Module.Videoviewer {
 		 * @return 
 		 * 
 		 */		
-		private function setAnnotationEnd(e:RecensioEvent):void {
+		private function setAnnotationEnd(e:IDEvent):void {
 			newAnnotationEndTime = _time;
 			// Check that the end time, is not < the start time
 			// if it is, we can invalidate the start time

@@ -1,5 +1,5 @@
 package View.Element {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
 	import flash.events.MouseEvent;
@@ -63,7 +63,7 @@ package View.Element {
 				newText = _currentText;
 			}
 			uploadProgress.setProgress(newText,percentage);
-			dispatchEvent(new RecensioEvent(RecensioEvent.FORM_CHANGED));
+			dispatchEvent(new IDEvent(IDEvent.FORM_CHANGED));
 			draw();
 		}
 		
@@ -106,7 +106,7 @@ package View.Element {
 		// Mouse Event (upload button clicked)
 		override protected function mouseUp(e:MouseEvent):void {
 			this.alpha = 1;
-			this.dispatchEvent(new RecensioEvent(RecensioEvent.UPLOAD_CLICKED));
+			this.dispatchEvent(new IDEvent(IDEvent.UPLOAD_CLICKED));
 		}
 	}
 }

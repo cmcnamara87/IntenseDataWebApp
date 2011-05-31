@@ -1,6 +1,6 @@
 package View.Element {
 	
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
 	import flash.events.Event;
@@ -46,7 +46,7 @@ package View.Element {
 		
 		// Tells the listener that the form has changed
 		private function check(e:Event):void {
-			dispatchEvent(new RecensioEvent(RecensioEvent.FORM_CHANGED));
+			dispatchEvent(new IDEvent(IDEvent.FORM_CHANGED));
 		}
 		
 		// Initial resize of stage once the form has loaded

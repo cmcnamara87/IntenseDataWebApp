@@ -1,6 +1,6 @@
 package View.Element {
 	
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -94,7 +94,7 @@ package View.Element {
 		
 		// Called when a menu button is clicked
 		private function buttonClicked(e:MouseEvent):void {
-			var buttonClickEvent:RecensioEvent = new RecensioEvent(RecensioEvent.COMMENT_NAV_CLICKED);
+			var buttonClickEvent:IDEvent = new IDEvent(IDEvent.COMMENT_NAV_CLICKED);
 			buttonClickEvent.data.action = e.target.getText();
 			this.dispatchEvent(buttonClickEvent);
 		}

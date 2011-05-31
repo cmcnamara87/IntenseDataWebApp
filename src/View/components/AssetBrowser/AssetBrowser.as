@@ -1,6 +1,6 @@
 package View.components.AssetBrowser
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import View.BrowserView;
 	import View.Element.AssetBrowser;
@@ -23,8 +23,6 @@ package View.components.AssetBrowser
 	{
 		
 		private var myAssetDisplayer:AssetDisplayer; // Displays the assets as tiles
-//		private var myAssetBrowserToolbar:AssetBrowserToolbar;
-		
 		
 		public function AssetBrowser()
 		{
@@ -35,7 +33,7 @@ package View.components.AssetBrowser
 			
 			// Set the backgrond colour & border collect
 			this.backgroundFill = new SolidColor(0xFFFFFF);
-			this.borderStroke = new SolidColorStroke(0xDDDDDD,1,1);
+			this.setStyle("borderVisible", false);
 			
 			// Setup the layout
 			var myLayout:VerticalLayout = new VerticalLayout();
@@ -48,7 +46,7 @@ package View.components.AssetBrowser
 			
 			// Add the AssetBrowser
 			// Pass in the Event to run when an item in teh browser is clicked
-			myAssetDisplayer = new AssetDisplayer(RecensioEvent.ASSET_BROWSER_MEDIA_CLICKED);
+			myAssetDisplayer = new AssetDisplayer(IDEvent.ASSET_BROWSER_MEDIA_CLICKED);
 			// Setup the size
 			myAssetDisplayer.percentHeight = 100;
 			myAssetDisplayer.percentWidth = 100;

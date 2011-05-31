@@ -1,14 +1,16 @@
 package View.components.Annotation
 {
-	import Controller.RecensioEvent;
+	import Controller.IDEvent;
 	
 	import Model.Model_Commentary;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
 	import mx.containers.Canvas;
+	import mx.controls.Alert;
 	import mx.controls.Image;
 	import mx.graphics.SolidColor;
 	import mx.graphics.SolidColorStroke;
@@ -22,9 +24,11 @@ package View.components.Annotation
 		private var text:String; // The text of the annotation
 		private var assetID:Number; // The ID of the annotation
 		
-		private var percentX:Number;
-		private var percentY:Number;
+		private var xCoor:Number;
+		private var yCoor:Number;
 		
+		private var actualWidth:Number;
+		private var actualHeight:Number;
 
 		/**
 		 * An individual annotation display 
@@ -39,8 +43,8 @@ package View.components.Annotation
 		 * @param imageHeight		The height of the image
 		 * 
 		 */		
-		public function AnnotationBox(assetID:Number, author:String, text:String, percentHeight:Number, percentWidth:Number,
-									percentX:Number, percentY:Number, imageWidth:Number, imageHeight:Number)
+		public function AnnotationBox(assetID:Number, author:String, text:String, height:Number, width:Number,
+									xCoor:Number, yCoor:Number)
 		{
 			super();
 			
@@ -53,54 +57,75 @@ package View.components.Annotation
 			this.author = author;
 			this.text = text;
 			this.assetID = assetID;
-			this.percentX = percentX;
-			this.percentY = percentY;
+			this.xCoor = xCoor;
+			this.yCoor = yCoor;
+			this.actualHeight = height;
+			this.actualWidth = width;
 			
 			// Setup size
-			this.percentHeight = percentHeight;
-			this.percentWidth = percentWidth;
+			this.height = height;
+			this.width = width;
 			
 			// Setup position
-			this.x = this.percentX * imageWidth;
-			this.y = this.percentY * imageHeight;
+			this.x = this.xCoor;
+			this.y = this.yCoor;
 			
 			// Setup color
-			this.setStyle('backgroundColor',0xFF0000);
+			this.setStyle('backgroundColor',0x00FF00);
 			this.setStyle('backgroundAlpha', 0.05); 
 			this.setStyle('borderStyle', 'solid');
-			this.setStyle('borderColor', 0xBB0000);
-//			this.setStyle('borderAlpha', 0.5);
-			//this.backgroundFill = new SolidColor(0xFF0000, 0.5);
-			//this.borderStroke = new SolidColorStroke(0xBB0000, 0.5);
+			this.setStyle('borderWeight', 3);
+			this.setStyle('borderColor', 0x00AA00);
+			
+			this.addEventListener(MouseEvent.MOUSE_OVER, function(e:Event):void {
+				var annotation:AnnotationInterface = e.target as AnnotationInterface;
+				annotation.highlight();
+				
+				// tell the viewer to display the overlay to go with this
+				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+				myEvent.data.text = annotation.getText();
+				myEvent.data.author = annotation.getAuthor();
+				dispatchEvent(myEvent);
+			});
+			
+			this.addEventListener(MouseEvent.MOUSE_OUT, function(e:Event):void {
+				trace("Mouse out!!!");
+				var annotation:AnnotationInterface = e.target as AnnotationInterface;
+				annotation.unhighlight();
+				// tell the viewer to hide the annotation text overlay
+				dispatchEvent(new IDEvent(IDEvent.ANNOTATION_MOUSE_OUT, true));
+			});
 		}
 		
 		/* PUBLIC FUNCTIONS */
-		
-		
 		/**
-		 * Called when the image is resized, so we need to recalculate the X and Y positions
-		 * of the annotation, so it scales up, as the image does (or down lol) 
-		 * @param imageWidth
-		 * @param imageHeight
+		 * Tells the controller to save this annotation in the database. 
 		 * 
 		 */		
-		public function readjust(imageWidth:Number, imageHeight:Number):void {
-			// Redo position (since we want it to be a percentage of the size of the image
-			this.x = this.percentX * imageWidth;
-			this.y = this.percentY * imageHeight;
-		}
+		public function save():void {			
+			trace("Saving an annotation box");
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_SAVE_BOX, true);
+			myEvent.data.xCoor = xCoor;
+			myEvent.data.yCoor = yCoor;
+			myEvent.data.width = actualWidth;
+			myEvent.data.height = actualHeight;
+			myEvent.data.annotationText = text;
+			this.dispatchEvent(myEvent);
+			
+			
+		}		
 		
 		public function highlight():void {
-			this.setStyle('borderColor', 0xFFFFFF);
+			this.setStyle('borderColor', 0x00FF00);
 			this.setStyle('backgroundColor',0xFFFFFF);
 			this.setStyle('backgroundAlpha', 0.02); 
 		}
 		
 		
 		public function unhighlight():void {
-			this.setStyle('backgroundColor',0xFF0000);
+			this.setStyle('backgroundColor',0x00FF00);
 			this.setStyle('backgroundAlpha', 0.05); 
-			this.setStyle('borderColor', 0xBB0000);
+			this.setStyle('borderColor', 0x00AA00);
 		}
 		
 		/**
@@ -113,7 +138,7 @@ package View.components.Annotation
 		}
 		
 		public function isInLowerHalf():Boolean {
-			return this.percentY > 0.5	
+			return this.yCoor > 0.5	
 		}
 		
 		/**
@@ -132,6 +157,13 @@ package View.components.Annotation
 		 */		
 		public function getText():String {
 			return text;
+		}
+		
+		public function getX():Number {
+			return this.x;
+		}
+		public function getY():Number {
+			return this.y;
 		}
 	}
 }
