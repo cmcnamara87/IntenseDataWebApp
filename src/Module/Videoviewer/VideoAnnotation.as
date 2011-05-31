@@ -178,7 +178,8 @@ package Module.Videoviewer {
 			_videoGraphicTextField.selectable = false;
 			_videoGraphicTextField.autoSize = TextFieldAutoSize.LEFT;
 			_videoGraphicTextField.height = _videoGraphicTextField.textHeight;
-			_videoGraphicTextField.width = _videoGraphicTextField.textWidth;
+			_videoGraphicTextField.width = _videoGraphicTextField.textWidth + 20;
+			_videoGraphicTextField.wordWrap = true;
 		}
 		
 		private function graphicMouseOver(e:MouseEvent):void {
@@ -218,7 +219,8 @@ package Module.Videoviewer {
 			if(_videoGraphic.y > videoDimensions.height-20) {
 				yOffset = -20;
 			}
-			_videoGraphicTextContainer.x = 0-_videoGraphicTextContainer.width/2+xOffset+_videoGraphicOverlay.width/2+textfieldPadding;
+			_videoGraphicTextField.width = Math.min(videoDimensions.width - _videoGraphicTextField.x, _videoGraphicTextField.width); 
+			_videoGraphicTextContainer.x = Math.max(0-_videoGraphicTextContainer.width/2+xOffset+_videoGraphicOverlay.width/2+textfieldPadding, 0 - _videoGraphic.x);
 			_videoGraphicTextContainer.y = 0-_videoGraphicTextContainer.height/2+yOffset+_videoGraphicOverlay.height/2+(textfieldPadding*2);
 			_videoGraphicTextContainer.graphics.lineStyle(2,annotationColor,1);
 			_videoGraphicTextContainer.graphics.beginFill(0xFFFFFF,0.8);

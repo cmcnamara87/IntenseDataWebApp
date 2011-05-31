@@ -195,7 +195,12 @@ package View.components.MediaViewer
 			scrollToSearchResult(++selectedSearchResult % searchResultYCoors.length);
 		}	
 		private function prevSearchResultButtonClicked(e:MouseEvent):void {
-			scrollToSearchResult(--selectedSearchResult % searchResultYCoors.length);
+			if(--selectedSearchResult < 0) {
+				// Its below zero, wrap it to the max (mod was causing problems)
+				selectedSearchResult = searchResultYCoors.length - 1;
+			}
+			scrollToSearchResult(selectedSearchResult);
+			
 		}
 		
 		/**
