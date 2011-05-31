@@ -113,6 +113,8 @@ package Model.Transactions
 			baseXML.service.args["id"] = commentID;
 			_connection.sendRequest(baseXML,null);
 			
+			// Sending Notification
+			AppModel.getInstance().sendNotification(this.commentParentID, "add a comment.", commentID);
 			
 			trace("Comment Saved");
 			callback(commentID, commentText, newCommentObject);

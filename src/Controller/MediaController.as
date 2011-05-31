@@ -366,7 +366,7 @@ package Controller {
 		 * 
 		 */		
 		public function commentSaved(commentID:Number, commentText:String, newCommentObject:NewComment):void {
-			AppModel.getInstance().sendNotification(currentAssetID,  "added a comment.", commentID);
+			//AppModel.getInstance().sendNotification(currentAssetID,  "added a comment.", commentID);
 			mediaView.commentSaved(commentID, commentText, newCommentObject);
 		}
 

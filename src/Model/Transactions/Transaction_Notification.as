@@ -41,6 +41,10 @@ package Model.Transactions
 			createNotification();
 		}
 		
+		/**
+		 * Creates the Notification object in the database. 
+		 * 
+		 */		
 		private function createNotification():void {
 			var args:Object = new Object();
 			
@@ -64,9 +68,11 @@ package Model.Transactions
 			}
 			
 			baseXML.service.args.meta.id_notification.username = Auth.getInstance().getUsername();
+			
 			if(msg != "") {
 				baseXML.service.args.meta.id_notification.message = msg;
 			}
+			// TODO do this for things besides comments
 			baseXML.service.args.meta.id_notification.controller = "view";
 			var now:Date = new Date();
 			
@@ -79,6 +85,12 @@ package Model.Transactions
 			}
 		}
 		
+		/**
+		 * The notification object was created. Now set ACLs on it (that is, who we want to notify)
+		 * And set its classification to be a notification.
+		 * @param e
+		 * 
+		 */		
 		private function notificationCreated(e:Event):void {
 			var dataXML:XML = XML(e.target.data);
 			// Check that the notification was created successfully

@@ -357,8 +357,10 @@ package Model {
 		public function saveNewComment(commentText:String, commentParentID:Number, 
 									   replyingToID:Number,
 									   newCommentObject:NewComment, callback:Function):void {
-			var saveCommentTransaction:Transaction_SaveNewComment = new Transaction_SaveNewComment(_connection, commentText, commentParentID, replyingToID,
-																									newCommentObject, callback);
+			
+			var saveCommentTransaction:Transaction_SaveNewComment = 
+				new Transaction_SaveNewComment(_connection, commentText, commentParentID, replyingToID,
+												newCommentObject, callback);
 		}
 		
 		// DEKKERS COMMENT FUNCTION, saveNewComment is my comment function
