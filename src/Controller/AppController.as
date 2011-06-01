@@ -27,7 +27,7 @@ package Controller {
 		//The specific view
 		protected var view:UIComponent;
 		//Whether the logout button is shown or not
-		protected var showLogoutButton:Boolean = true;
+		protected static var showLogoutButton:Boolean = true;
 		
 		private var notifications:XML;
 		
@@ -75,6 +75,11 @@ package Controller {
 		
 		//Calls the logout method
 		private function logoutClicked(e:MouseEvent):void {
+			trace("log out button clicked");
+			layout.header.notificationButton.visible = false;
+			layout.header.profileButton.visible = false;
+			layout.header.logoutButton.visible = false;
+			
 			Dispatcher.logout();
 		}
 		
@@ -157,15 +162,17 @@ package Controller {
 				layout.notificationPanel.visible = false;
 			}
 			
-			var notificationArray:Array = AppModel.getInstance().extractAssetsFromXML(notifications, Model_Notification);
-			notificationArray = notificationArray.reverse();
-			layout.header.notificationButton.label = "Notifications (" + notificationArray.length + ")";
-			
-			layout.notificationPanel.addNotifications(notificationArray);
-//			for each(var notification:Model_Notification in notificationArray) {
-//				Alert.show(notification.username + " " + notification.message + " on " + 
-//					notification.notification_on_title + " " + notification.notification_of_content);
-//			}
+			if(notifications) {
+				trace("We have some notifications");
+				var notificationArray:Array = AppModel.getInstance().extractAssetsFromXML(notifications, Model_Notification);
+				notificationArray = notificationArray.reverse();
+				layout.header.notificationButton.label = "Notifications (" + notificationArray.length + ")";
+				
+				layout.notificationPanel.addNotifications(notificationArray);
+			} else {
+				trace("Something went wrong, and we dont have any notifications stored");
+			}
+		
 		}
 	}
 }

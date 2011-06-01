@@ -32,6 +32,9 @@ package Model.Transactions
 			this.connection = connection;
 			this.callback = callback;
 			
+			// we need to find out who created this asset
+			
+			
 			if(Auth.getInstance().isSysAdmin() || creatorUsername == Auth.getInstance().getUsername()) {
 				trace("Either the sys admin, or, the current user is the creator of the file, so delete it");
 				AppModel.getInstance().assetDestroy(assetID, deleteComplete);

@@ -384,10 +384,9 @@ package Controller {
 			// The annotation was saved
 			var annotationID:Number = dataXML.reply.result.id;
 			
-			// Set the class for this annotation to be Annotation
-			
 			// So lets just get out all the annotations/comments again
 			// so we can update the display with the new annotation
+			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
 		}
 		
 		public function annotationDeleted(e:Event):void {

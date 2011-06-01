@@ -43,6 +43,16 @@ package View.components
 			line.includeInLayout = includeInLayout;
 			return line;
 		}
+		
+		public static function makeHorizontalLine(color:uint = 0xBBBBBB, visible:Boolean = true, includeInLayout:Boolean = true):Line {
+			var line:Line = new Line();
+			line.percentWidth = 100;
+			line.stroke = new SolidColorStroke(color, 1, 1);
+			line.visible = visible;
+			line.includeInLayout = includeInLayout;
+			return line;
+		}
+			
 
 	}
 }

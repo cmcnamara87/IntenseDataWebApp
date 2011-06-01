@@ -559,13 +559,26 @@ package Model {
 			trace(baseXML);
 			
 			// Try and save, then call the callback.
-			if(_connection.sendRequest(baseXML, callback)) {
+			if(_connection.sendRequest(baseXML, function(e:Event):void {
+				setClassAndCreateNotification(mediaAssetID, e, callback);
+			})) {
 				trace("- App Model: Annotation Saved");
 				//All good
 			} else {
 				Alert.show("Could not save annotation");
 			}
-			
+		}
+		
+		private function setClassAndCreateNotification(mediaAssetID:Number, e:Event, callback:Function):void {
+			var dataXML:XML = XML(e.target.data);
+			if(dataXML.reply.@type != "result") {
+				callback(e);
+			} else {
+				AppModel.getInstance().sendNotification(mediaAssetID, "added a annotation", dataXML.reply.result.id);
+				AppModel.getInstance().setAnnotationClassForID(dataXML.reply.result.id, function(event:Event):void {
+					callback(e);	
+				});
+			}
 		}
 		
 		public function copyAccess(copyFromID:Number, copyToID:Number):void {

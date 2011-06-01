@@ -114,7 +114,7 @@ package Model.Transactions
 			_connection.sendRequest(baseXML,null);
 			
 			// Sending Notification
-			AppModel.getInstance().sendNotification(this.commentParentID, "add a comment.", commentID);
+			AppModel.getInstance().sendNotification(this.commentParentID, "add a comment", commentID);
 			
 			trace("Comment Saved");
 			callback(commentID, commentText, newCommentObject);

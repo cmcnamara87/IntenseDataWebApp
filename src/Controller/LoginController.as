@@ -48,8 +48,10 @@ package Controller {
 		private function loginClicked(e:*):void {
 			(view as Login).loginbox.setNotification("Logging in...");
 			if(!_authOverride) {
+				showLogoutButton = true;
 				Auth.getInstance().login((view as Login).loginbox.usernameBox.getText(),(view as Login).loginbox.passwordBox.getText());
 			} else {
+				showLogoutButton = true;
 				Auth.getInstance().login("manager","change_me");
 			}
 		}
