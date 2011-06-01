@@ -38,9 +38,10 @@ package Controller {
 		
 		// Setup the URL controller listener
 		public static function start(stage:Recensio_Flex_Beta):void {
+			trace("- Dispatcher Start Called");
 			connectToServer();
 			Dispatcher.stage = stage;
-			Router.getInstance().addEventListener(IDEvent.URL_CHANGED,URLChanged);
+			Router.getInstance().addEventListener(IDEvent.URL_CHANGED, URLChanged);
 			Router.getInstance().start();
 			setupLayout();
 			addMonitor();
@@ -77,6 +78,7 @@ package Controller {
 		
 		// Sets up the layout of the view
 		private static function setupLayout():void {
+			trace("Setting up Layout");
 			layout = new Layout();
 			AppController.layout = layout; 
 			layout.addEventListener(Event.ADDED_TO_STAGE,init);
@@ -106,6 +108,7 @@ package Controller {
 		
 		// Loads a new controller
 		public static function call(url:String):void {
+			// If the user doesnt have a current session, direct them to login
 			if(!Auth.getInstance().hasSession()) {
 				Auth.getInstance().setRedirectURL(url);
 				url = "login";

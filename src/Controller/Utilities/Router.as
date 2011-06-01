@@ -64,6 +64,7 @@ package Controller.Utilities {
 		
 		// Starts the URL Manager
 		public function start():void {
+			trace("- Creating Browser Manager");
 			_bm = BrowserManager.getInstance();
 			_bm.addEventListener(BrowserChangeEvent.BROWSER_URL_CHANGE, urlChanged);
 			_bm.init();

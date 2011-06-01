@@ -1176,7 +1176,7 @@ package Model {
 			}
 		}
 		
-		/* ====================== USER FUNCTIONS =========================== */
+		/* ============================================== USER FUNCTIONS ====================================================== */
 		
 		/**
 		 * Creates a new User for a given domain. 
@@ -1308,6 +1308,8 @@ package Model {
 			var transaction:Transaction_ChangePassword = new Transaction_ChangePassword(domain, newPassword, callback, _connection);
 		}
 		
+		
+		/* =============================================== NOTIFICATIONS =============================================== */
 		/**
 		 * Sends a notification to users who have access to this media asset
 		 * @param mediaID 	The ID of the media that was affected. e.g. If someone comments on an image, this is the image's ID
@@ -1325,6 +1327,7 @@ package Model {
 			args.action = "get-meta";
 			args['get-related-meta'] = true;
 			var baseXML:XML = _connection.packageRequest('asset.query', args, true);
+			trace("notification query", baseXML);
 			_connection.sendRequest(baseXML, callback);
 		}
 	}

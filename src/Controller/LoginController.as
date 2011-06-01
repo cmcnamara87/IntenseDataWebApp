@@ -24,9 +24,10 @@ package Controller {
 		public function LoginController() {
 			_authOverride = Dispatcher.getAuthOverride();
 			view = new Login();
-			super();
 			showLogoutButton = false;
-			super.setLogoutButton();
+			super();
+			// DAMN YOU 1 LINE OF CODE
+//			super.setLogoutButton();
 		}
 		
 		//INIT

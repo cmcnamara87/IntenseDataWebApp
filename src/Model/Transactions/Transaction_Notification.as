@@ -24,10 +24,10 @@ package Model.Transactions
 		private var notificationID:Number; //
 		/**
 		 *  
-		 * @param mediaID 	The ID of the media that was affected. e.g. If someone comments on an image, this is the image's ID
-		 * @param msg		A msg that describes the change (e.g. Added a comment)
-		 * @param connection The connection to use when making the notificoatn
-		 * @param assetID	(opt) The ID of the asset that as added/changed (e.g. the ID of the comment)
+		 * @param mediaID 		The ID of the media that was affected. e.g. If someone comments on an image, this is the image's ID
+		 * @param msg			A msg that describes the change (e.g. Added a comment)
+		 * @param connection 	The connection to use when making the notificoatn
+		 * @param assetID		(opt) The ID of the asset that as added/changed (e.g. the ID of the comment)
 		 * 
 		 */		
 		public function Transaction_Notification(mediaID:Number, msg:String, connection:Connection, assetID:Number = 0)
@@ -67,6 +67,7 @@ package Model.Transactions
 				baseXML.service.args.related.appendChild(XML("<to relationship='NOTIFICATION_OF'>"+assetID+"</to>"));
 			}
 			
+			// The creator of the notification
 			baseXML.service.args.meta.id_notification.username = Auth.getInstance().getUsername();
 			
 			if(msg != "") {
@@ -74,8 +75,7 @@ package Model.Transactions
 			}
 			// TODO do this for things besides comments
 			baseXML.service.args.meta.id_notification.controller = "view";
-			var now:Date = new Date();
-			
+
 			baseXML.service.args.meta.id_notification.date = "now";
 			
 			if(connection.sendRequest(baseXML, notificationCreated)) {
@@ -123,6 +123,10 @@ package Model.Transactions
 				connection.sendRequest(baseXML, null);
 		}
 
+		/**
+		 * Gets the users to notify of this change. 
+		 * 
+		 */		
 		private function getUsersToNotify():void {
 			var args:Object = new Object();
 			args.id = mediaID;
@@ -132,6 +136,11 @@ package Model.Transactions
 			);
 		}
 		
+		/**
+		 * Adds those users to notify to the Notifiaction object 
+		 * @param e
+		 * 
+		 */		
 		private function setUsersToNotify(e:Event):void {
 			trace("users to notify", e.target.data);
 
