@@ -27,7 +27,7 @@ package View
 	import spark.layouts.HorizontalLayout;
 	import spark.layouts.VerticalLayout;
 	
-	public class BrowserView extends BorderContainer
+	public class BrowserView extends BorderContainer implements CollabViewInterface
 	{		
 		public static const TOOLBARHEIGHT:Number = 50; // the height of all toolbars in the browser view
 		private var myCollectionList:CollectionList; // Displays the list of collections

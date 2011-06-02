@@ -29,7 +29,8 @@ package View.components.Notification
 			super();
 			
 			this.width = 300;
-			
+			this.maxHeight = 400; 
+				
 			this.borderStroke = new SolidColorStroke(0x999999);
 			this.backgroundFill = new SolidColor(0xEEEEEE);
 			

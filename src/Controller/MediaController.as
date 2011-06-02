@@ -45,23 +45,26 @@ package Controller {
 		
 		// My variables
 		private var mediaView:MediaView;	// The current view we are looking at - The Media View
-		private static var currentAssetID:Number = 0;		// The ID of the media asset we are viewing.
+//		private static var currentAssetID:Number = 0;		// The ID of the media asset we are viewing.
 		
 		private var currentMediaData:Model_Media;
 		
 		//Calls the superclass, sets the AssetID
 		public function MediaController() {
 			
+			
+			trace("asdfadadfsdfasafdsadfsfadsdafs");
 			// Get out the assets ID
-			currentAssetID = Dispatcher.getArgs()[0];
-			trace("Media Asset ID:", currentAssetID);
+//			currentAssetID = Dispatcher.getArgs()[0];
+//			trace("Media Asset ID:", currentAssetID);
 			
 			// Setup the View
 			mediaView =  new MediaView(saveAnnotation);
 			
 			// Pass this view to the parent
 			view = mediaView;
-			super();
+			
+			super(Dispatcher.getArgs()[0]);
 		}
 		
 		//INIT
@@ -82,8 +85,8 @@ package Controller {
 		 */		
 		private function setupEventListeners():void {
 			// Listen for "Save Comment" button being clicked.
-			mediaView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
-			mediaView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
+//			mediaView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
+//			mediaView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
 			
 			// Listen for 'Save Sharing' autosave
 			mediaView.addEventListener(IDEvent.SHARING_CHANGED, sharingInfoChanged);
@@ -115,6 +118,7 @@ package Controller {
 			
 			// Load the Media Asset Data
 			// Gets out the Media Meta-data
+			trace("loading current asset id", currentAssetID);
 			AppModel.getInstance().getThisMediasData(currentAssetID, mediasDataLoaded);
 			
 			// Don't get out the comments etc here, we need to know the medias type,
@@ -145,19 +149,19 @@ package Controller {
 			}
 		}
 		
-		/**
-		 * Saves a comment 
-		 * @param e	e.data.commentText - Contains the comment text, e.data.newCommentObject=the
-		 * actual comment.
-		 * 
-		 */		
-		private function saveComment(e:IDEvent):void {
-			trace('Saving comment: ', e.data.commentText, 'in reply to asset:', currentAssetID, 'reply to comment:', e.data.replyingToID);
-			
-			AppModel.getInstance().saveNewComment(	e.data.commentText, currentAssetID, e.data.replyingToID,
-				e.data.newCommentObject, commentSaved);
-			
-		}
+//		/**
+//		 * Saves a comment 
+//		 * @param e	e.data.commentText - Contains the comment text, e.data.newCommentObject=the
+//		 * actual comment.
+//		 * 
+//		 */		
+//		private function saveComment(e:IDEvent):void {
+//			trace('Saving comment: ', e.data.commentText, 'in reply to asset:', currentAssetID, 'reply to comment:', e.data.replyingToID);
+//			
+//			AppModel.getInstance().saveNewComment(	e.data.commentText, currentAssetID, e.data.replyingToID,
+//				e.data.newCommentObject, commentSaved);
+//			
+//		}
 		
 		/**
 		 * Deletes a comment 
@@ -327,6 +331,7 @@ package Controller {
 		}
 		
 		private function mediasDataLoaded(e:Event):void {
+			trace("Media data loaded", e.target.data);
 			// Get out the returned data
 			var data:XML = XML(e.target.data);
 			
@@ -357,18 +362,19 @@ package Controller {
 //			// Change to the Fixed toolbar
 //			currentView.setToolbarToRegularCollectionMode();
 		}
-		
-		/**
-		 * The comment has been saved. 
-		 * @param commentID			The ID for the saved comment
-		 * @param commentText		The text for the saved comment
-		 * @param newCommentObject	The NewCommentObject that is to be replaced by a regular comment.
-		 * 
-		 */		
-		public function commentSaved(commentID:Number, commentText:String, newCommentObject:NewComment):void {
-			//AppModel.getInstance().sendNotification(currentAssetID,  "added a comment.", commentID);
-			mediaView.commentSaved(commentID, commentText, newCommentObject);
-		}
+//		
+//		/**
+//		 * The comment has been saved. 
+//		 * @param commentID			The ID for the saved comment
+//		 * @param commentText		The text for the saved comment
+//		 * @param newCommentObject	The NewCommentObject that is to be replaced by a regular comment.
+//		 * 
+//		 */		
+//		override public function commentSaved(commentID:Number, commentText:String, newCommentObject:NewComment):void {
+//			//AppModel.getInstance().sendNotification(currentAssetID,  "added a comment.", commentID);
+//			
+//			mediaView.commentSaved(commentID, commentText, newCommentObject);
+//		}
 
 		
 		public function newAnnotationSaved(e:Event):void {

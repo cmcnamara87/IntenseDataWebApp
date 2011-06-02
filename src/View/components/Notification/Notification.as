@@ -18,8 +18,10 @@ package View.components.Notification
 									 notificationOf:Number, notificationOfTitle:String) {
 			super();
 			this.notificationOn = notificationOn;
+			this.maxHeight = 400;
 			
 			var details:HGroup = new HGroup();
+			details.width = 200;
 			this.addElement(details);
 			
 			var usernameLabel:Label = new Label();

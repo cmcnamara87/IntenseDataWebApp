@@ -135,6 +135,8 @@ package View.components.Comments
 			
 			clickEvent.data.newCommentObject = this;
 			this.dispatchEvent(clickEvent);
+			
+			trace("THIS COMMENT IS", this);
 		}
 		
 		/**

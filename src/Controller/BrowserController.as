@@ -22,7 +22,7 @@ package Controller {
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
 	
-	public class BrowserController extends AppController {
+	public class BrowserController extends CollaborationController {
 		
 		private var collectionToDelete:Number = 0;
 		//private var addButton:SmallButton;
@@ -40,7 +40,7 @@ package Controller {
 		private static var collectionBeingEditedID:Number; 	// The ID of the collection being edited.
 		
 		private var modifyAccess:Boolean = true;
-		public static var currentCollectionID:Number = ALLASSETID; //1576; //ALLASSETID; //1492; //ALLASSETID;	// Stores the ID for the current collection we are viewing
+//		public static var currentAssetID:Number = ALLASSETID; //1576; //ALLASSETID; //1492; //ALLASSETID;	// Stores the ID for the current collection we are viewing
 		public static var currentCollectionTitle:String = ""; // The title of the current collection we are looking at
 		public static var editCollectionName:String = ""; // The title of the current collection we are editing
 		
@@ -52,8 +52,8 @@ package Controller {
 		//Calls the superclass
 		public function BrowserController() {
 			trace("--- Creating Browser Controller ---");
-			view = new Browser();
-			super();
+			view = new BrowserView();
+			super(ALLASSETID);
 		}
 		
 		/**
@@ -66,7 +66,7 @@ package Controller {
 			shelfAssets = new Array();
 			editAssets = new Array();
 			collectionBeingEditedID = -1;
-			currentCollectionID = ALLASSETID;
+			currentAssetID = ALLASSETID;
 		}
 		
 		//INIT
@@ -85,7 +85,7 @@ package Controller {
 			// collection we have selected when this runs (not just All Assets
 			// because we could be coming back from an asset and we
 			// want to return the collection we were previously in)
-			switch(currentCollectionID) {
+			switch(currentAssetID) {
 				case BrowserController.ALLASSETID:
 					loadAllMyMedia();
 					break;
@@ -93,7 +93,7 @@ package Controller {
 					loadShared();
 					break;
 				default:
-					loadAssetsInCollection(currentCollectionID);
+					loadAssetsInCollection(currentAssetID);
 			}
 			
 		}
@@ -101,7 +101,7 @@ package Controller {
 		// Sets up all the event listeners
 		private function setupEventListeners():void {
 			// Asset Browser
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Listen for Create Collection Button being clicked.
 			currentView.addEventListener(IDEvent.SHELF_CLICKED, newCollectionButtonClicked);
@@ -134,9 +134,9 @@ package Controller {
 			currentView.addEventListener(IDEvent.COLLECTION_SAVE, saveCollection);
 			
 			// Listen for "Save Comment" button being clicked.
-			currentView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
-			
-			currentView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
+//			currentView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
+//			
+//			currentView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
 			
 			
 			
@@ -165,7 +165,7 @@ package Controller {
 		 */		
 		private function loadAllMyMedia():void {
 			
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			currentView.showMediaLoading();
 			//LoadAnim.show((view as Browser), 0, 0, 0x999999,2);
@@ -185,7 +185,7 @@ package Controller {
 		 * Loads all collection assets owned by the user. TODO look at this owned by? sharing with? what?
 		 */		
 		private function loadAllMyCollections():void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			//LoadAnim.show(currentView, 0, 0, 0x999999,2);
 			Model.AppModel.getInstance().getCollections(collectionAssetsLoaded);
 		}
@@ -195,7 +195,7 @@ package Controller {
 		 * @param collectionID	the assetID of the collection
 		 */		
 		private function loadAssetsInCollection(collectionID:Number):void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Tell the browser to highlight the collection list item we clicked
 			currentView.highlightCollectionListItem(collectionID);
@@ -216,7 +216,7 @@ package Controller {
 		 * Loads the media NOT owned by the user but that the user has access to 
 		 */		
 		private function loadShared():void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			currentView.showMediaLoading();
 			//LoadAnim.show(currentView, currentView.width / 2, currentView.height/2, 0x999999,2);
 			Model.AppModel.getInstance().getSharedAssets(fixedCollectionAssetsLoaded);
@@ -234,15 +234,15 @@ package Controller {
 		public function fixedCollectionAssetsLoaded(e:Event):void {
 			// TODO need to add in another transaction for this similar to the regular collections
 			
-			if(currentCollectionID != ALLASSETID && currentCollectionID != SHAREDID) {
+			if(currentAssetID != ALLASSETID && currentAssetID != SHAREDID) {
 				trace("returned a fixed collection, but we arent looking at one currently," +
-					"FIX ME UP lol", currentCollectionID);
+					"FIX ME UP lol", currentAssetID);
 				return;
 			}
 			
 			var data:String = e.target.data;
 			
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Remove current tiles
 			currentView.clearMediaAssets();
@@ -266,7 +266,7 @@ package Controller {
 		 * 
 		 */		
 		public function collectionAssetsLoaded(e:Event):void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Remove current collections
 			currentView.clearCollections();
@@ -280,7 +280,7 @@ package Controller {
 				//}
 			}
 			currentView.addCollections(collections);
-			currentView.highlightCollectionListItem(currentCollectionID);
+			currentView.highlightCollectionListItem(currentAssetID);
 			//LoadAnim.hide();
 		}
 		
@@ -292,11 +292,11 @@ package Controller {
 		public function collectionMediaLoaded(collectionID:Number, e:Event):void {
 			// If we have just got data back from a collection we are no longer looking at
 			// ignore it.
-			trace("got data for", collectionID, "we are looking at", currentCollectionID);
-			if(collectionID != currentCollectionID) {
+			trace("got data for", collectionID, "we are looking at", currentAssetID);
+			if(collectionID != currentAssetID) {
 				return;
 			}
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Remove current tiles
 			currentView.clearMediaAssets();
@@ -334,7 +334,7 @@ package Controller {
 		 */		
 		public function collectionCommentsLoaded(e:Event):void {
 			trace("Comments loaded from Database");
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Get out the returned data
 			var data:XML = XML(e.target.data);
@@ -354,7 +354,7 @@ package Controller {
 			var dataXML:XML = XML(e.target.data);
 			var newCollectionID:Number = dataXML.reply.result.id;
 			// Set the current collection being view, to the net collection
-			BrowserController.currentCollectionID = newCollectionID;
+			currentAssetID = newCollectionID;
 			
 			
 			trace("- Collection Created:", e);
@@ -368,7 +368,7 @@ package Controller {
 			// Set the shelf to off
 			this.setCollectionCreationMode(false);
 			
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Clear the on screen shelf
 			currentView.hideShelf();
@@ -388,14 +388,14 @@ package Controller {
 			// Set the shelf to off
 			this.setEdit(false);
 			
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Clear the on screen shelf
 			currentView.hideShelf();
 			currentView.clearShelf();
 
 			// Set the current collection being view, to the net collection
-			BrowserController.currentCollectionID = collectionID;
+			currentAssetID = collectionID;
 			
 			// Lets reload the collections and diplay them.
 			trace("- Collection Saved.")
@@ -406,19 +406,7 @@ package Controller {
 			loadAssetsInCollection(collectionID);
 		}
 		
-		/**
-		 * The comment has been saved. 
-		 * @param commentID			The ID for the saved comment
-		 * @param commentText		The text for the saved comment
-		 * @param newCommentObject	The NewCommentObject that is to be replaced by a regular comment.
-		 * 
-		 */		
-		public function commentSaved(commentID:Number, commentText:String, newCommentObject:NewComment):void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
-			
-			currentView.commentSaved(commentID, commentText, newCommentObject);
-			
-		}
+		
 		
 		
 		/**
@@ -428,7 +416,7 @@ package Controller {
 		 * 
 		 */		
 		private function sharingDataLoaded(userData:Array):void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Send the data to view
 			currentView.setupAssetsSharingInformation(userData);
@@ -470,7 +458,7 @@ package Controller {
 			// Turn Edit collection off
 			this.setEdit(false);
 			
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 
 			if(BrowserController.getShelfOn()) {
 				
@@ -497,7 +485,7 @@ package Controller {
 			// true or false
 			this.setEdit(e.data.editState);
 			
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			if(BrowserController.getEditOn()) {
 				// Edit mode is turned on.
@@ -506,7 +494,7 @@ package Controller {
 				this.setCollectionCreationMode(false);
 				
 				// Save the current collections being edited ID
-				collectionBeingEditedID = currentCollectionID;
+				collectionBeingEditedID = currentAssetID;
 				
 				// Copy the media assets for the current collection, so they can be edited.
 				BrowserController.editAssets = new Array();
@@ -554,9 +542,9 @@ package Controller {
 		 */		
 		private function deleteCollection(e:CloseEvent):void {
 			if (e.detail==Alert.OK) {
-				AppModel.getInstance().deleteCollection(currentCollectionID, collectionDeleted);
+				AppModel.getInstance().deleteCollection(currentAssetID, collectionDeleted);
 				
-				var currentView:BrowserView = (view as Browser).craigsbrowser;
+				var currentView:BrowserView = view as BrowserView;
 				
 				// The collection was deleted, so lets re-load the 
 				// all assets collection
@@ -583,7 +571,7 @@ package Controller {
 		 * Goes to Asset Display View
 		 */		
 		private function assetBrowserMediaClicked(e:IDEvent):void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Get out the clicked assets data
 			var assetData:Model_Media = e.data.assetData;
@@ -635,7 +623,7 @@ package Controller {
 		}
 		
 		private function shelfMediaClicked(e:IDEvent):void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Get out the clicked assets data
 			var assetData:Model_Media = e.data.assetData;
@@ -668,12 +656,12 @@ package Controller {
 		 * 
 		 */		
 		private function showAllAssetsClicked(e:IDEvent):void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Save the Collections ID (-1)
 			this.saveCurrentCollectionID(e.data.assetID);
 				
-			currentView.highlightCollectionListItem(currentCollectionID);
+			currentView.highlightCollectionListItem(currentAssetID);
 			
 			//currentView.setToolbarToFixedCollectionMode();
 			loadAllMyMedia();
@@ -685,19 +673,19 @@ package Controller {
 		 * @param e
 		 */		
 		private function showSharedWithMeClicked(e:IDEvent):void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Save the Collections ID (-2)
 			this.saveCurrentCollectionID(e.data.assetID);
 			// Highlight this collection (to show we clicked it);
-			currentView.highlightCollectionListItem(currentCollectionID);
+			currentView.highlightCollectionListItem(currentAssetID);
 				
 			//currentView.setToolbarToFixedCollectionMode();
 			loadShared();
 		}
 
 //		private function showShelfCollectionClicked(e:RecensioEvent):void {
-//			var currentView:BrowserView = (view as Browser).craigsbrowser;
+//			var currentView:BrowserView = view as BrowserView;
 //			
 //			// Save the Collections ID
 //			this.saveCurrentCollectionID(e.data.assetID);
@@ -721,7 +709,7 @@ package Controller {
 		 * 
 		 */		
 		private function assetCollectionClicked(e:IDEvent):void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			// Save the Collections ID
 			this.saveCurrentCollectionID(e.data.assetID);
@@ -730,7 +718,7 @@ package Controller {
 			this.saveCurrentCollectionName(e.data.collectionName);
 			
 			// Highlight the collection we clicked (in the sidebar)
-			currentView.highlightCollectionListItem(currentCollectionID);
+			currentView.highlightCollectionListItem(currentAssetID);
 			
 			//currentView.setToolbarToRegularCollectionMode();
 			loadAssetsInCollection(e.data.assetID);
@@ -745,7 +733,7 @@ package Controller {
 		 * 
 		 */		
 		private function saveCollection(e:IDEvent):void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			currentView.showMediaLoading();
 			
@@ -784,28 +772,7 @@ package Controller {
 			}*/
 		}
 		
-		/**
-		 * Saves a comment 
-		 * @param e	e.data.commentText - Contains the comment text, e.data.newCommentObject=the
-		 * actual comment.
-		 * 
-		 */		
-		private function saveComment(e:IDEvent):void {
-			trace('Saving comment: ', e.data.commentText, 'in reply to asset:', currentCollectionID, 'reply to comment:', e.data.replyingToID);
-			
-			AppModel.getInstance().saveNewComment(	e.data.commentText, currentCollectionID, e.data.replyingToID,
-													e.data.newCommentObject, commentSaved);
-		}
 		
-		/**
-		 * Deletes a comment 
-		 * @param e
-		 * 
-		 */		
-		private function deleteComment(e:IDEvent):void {
-			trace("Deleting a comment:", e.data.assetID);
-			AppModel.getInstance().deleteComment(e.data.assetID);
-		}
 
 		/**
 		 * Changes the Sharing information for a collection.
@@ -819,7 +786,7 @@ package Controller {
 		private function sharingInfoChanged(e:IDEvent):void {
 			var username:String = e.data.username;
 			var access:String = e.data.access;
-			AppModel.getInstance().changeAccess(currentCollectionID, username, "system", access, true, sharingInfoUpdated);
+			AppModel.getInstance().changeAccess(currentAssetID, username, "system", access, true, sharingInfoUpdated);
 		}
 		
 		
@@ -896,7 +863,7 @@ package Controller {
 		 * in the shelf before we left to view an asset etc
 		 */
 		private function reAddAssetsToShelf():void {
-			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			var currentView:BrowserView = view as BrowserView;
 			
 			for(var i:Number = 0; i < shelfAssets.length; i++) {
 				currentView.addAssetToShelf(shelfAssets[i]);
@@ -1055,7 +1022,7 @@ package Controller {
 		 * 
 		 */		
 		private function saveCurrentCollectionID(id:Number):void {
-			currentCollectionID = id;
+			currentAssetID = id;
 		}
 		
 		private function saveCurrentCollectionName(name:String):void {

@@ -42,10 +42,10 @@ package Controller {
 		
 		// Setup specific event listeners
 		private function setupEventListeners():void {
-			(view as NewAsset).uploadForm.addEventListener(IDEvent.UPLOAD_CLICKED,uploadClicked);
-			(view as NewAsset).navbar.addEventListener(IDEvent.NAV_CLICKED,navBarClicked);
-			(view as NewAsset).uploadForm.addEventListener(IDEvent.FORM_CHANGED,validate);
-			(view as NewAsset).metaForm.addEventListener(IDEvent.FORM_CHANGED,validate);
+			(view as NewAsset).uploadForm.addEventListener(IDEvent.UPLOAD_CLICKED, uploadClicked);
+			(view as NewAsset).navbar.addEventListener(IDEvent.NAV_CLICKED, navBarClicked);
+			(view as NewAsset).uploadForm.addEventListener(IDEvent.FORM_CHANGED, validate);
+			(view as NewAsset).metaForm.addEventListener(IDEvent.FORM_CHANGED, validate);
 		}
 		
 		// Setup the navigation bar
@@ -123,18 +123,18 @@ package Controller {
 				// Add this new asset, to whatever the current collection is
 				// Provided its not All Assets or Shared Assets, since they are smart collections
 				// And assets appear in them authomatically.
-				if(BrowserController.currentCollectionID != BrowserController.ALLASSETID &&
-					BrowserController.currentCollectionID != BrowserController.SHAREDID) {
+				if(CollaborationController.currentAssetID != BrowserController.ALLASSETID &&
+					CollaborationController.currentAssetID != BrowserController.SHAREDID) {
 					
 					// Create a shell for the new asset
 					var newAsset:Model_Media = new Model_Media();
 					newAsset.base_asset_id = assetID;
 					// Add it to the current collections assets
 					BrowserController.currentCollectionAssets.push(newAsset);
-					trace("Adding new asset", assetID  ,"to collection", BrowserController.currentCollectionID,
+					trace("Adding new asset", assetID  ,"to collection", CollaborationController.currentAssetID,
 						BrowserController.currentCollectionTitle, "and saving"); 
 					AppModel.getInstance().saveCollection(
-						BrowserController.currentCollectionID, 
+						CollaborationController.currentAssetID, 
 						BrowserController.currentCollectionTitle, 
 						BrowserController.currentCollectionAssets, 
 						function(collectionID:Number):void {

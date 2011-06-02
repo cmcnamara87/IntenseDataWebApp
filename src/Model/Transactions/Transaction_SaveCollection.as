@@ -1,4 +1,5 @@
 package Model.Transactions {
+	import Model.AppModel;
 	import Model.Model_Media;
 	import Model.Utilities.Connection;
 	
@@ -6,6 +7,11 @@ package Model.Transactions {
 	
 	import mx.controls.Alert;
 	
+	/**
+	 * Saves an existing collection with new assets 
+	 * @author cmcnamara87
+	 * 
+	 */	
 	public class Transaction_SaveCollection {
 		
 		private var collectionID:Number;
@@ -16,7 +22,7 @@ package Model.Transactions {
 		private var _connection:Connection;
 		private var existingAssets:Number = 0;
 		
-		// Constructor (calls getCurrentAssets())
+		
 		public function Transaction_SaveCollection(connection:Connection, collectionID:Number, collectionTitle:String, mediaAssets:Array, callback:Function) {
 			_connection = connection;
 			this.collectionID = collectionID;
@@ -126,6 +132,11 @@ package Model.Transactions {
 		// Returns the information back to the controller which called it
 		private function relationshipsAdded(e:Event):void {
 			trace("- Relationships Added", e.target.data);
+			
+			trace("- Copying ACLS");
+			for(var i:Number = 0; i < mediaAssets.length; i++) {
+				AppModel.getInstance().copyAccess(collectionID, mediaAssets[i].base_asset_id);
+			}
 			_callback(collectionID);
 		}
 		

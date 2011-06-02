@@ -50,7 +50,7 @@ package View
 	import spark.layouts.VerticalLayout;
 	import spark.primitives.Line;
 
-	public class MediaView extends BorderContainer
+	public class MediaView extends BorderContainer implements CollabViewInterface
 	{
 		private var myCommentsPanel:CommentsPanel;	// The Comments panel
 		private var mySharingPanel:SharingPanel;	// The sharing panel

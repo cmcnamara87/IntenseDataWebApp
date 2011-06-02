@@ -806,7 +806,6 @@ package Model {
 		public function deleteAsset(assetID:Number, creatorUsername:String):void {
 			var transaction:Transaction_DeleteMediaFromUser = new Transaction_DeleteMediaFromUser(
 				assetID,
-				creatorUsername,
 				_connection,
 				assetDeleted
 			);

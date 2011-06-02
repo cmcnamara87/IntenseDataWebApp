@@ -20,22 +20,30 @@ package Model.Transactions
 	public class Transaction_DeleteMediaFromUser
 	{
 		private var assetID:Number;
-		private var creatorUsername:String;
 		private var connection:Connection;
 		private var callback:Function;
 		
-		public function Transaction_DeleteMediaFromUser(assetID:Number, creatorUsername:String, connection:Connection, callback:Function)
+		public function Transaction_DeleteMediaFromUser(assetID:Number, connection:Connection, callback:Function)
 		{
 			trace("Deleting a file", assetID);
 			this.assetID = assetID;
-			this.creatorUsername = creatorUsername;
 			this.connection = connection;
 			this.callback = callback;
 			
 			// we need to find out who created this asset
+			var args:Object = new Object();
+			args.id = assetID;
+			connection.sendRequest(
+				connection.packageRequest('asset.get', args, true), getAssetCreator
+			);
+		}
+		
+		private function getAssetCreator(e:Event):void {
+			var creator:String = XML(e.target.data).reply.result.asset.creator.user;
+			var domain:String = XML(e.target.data).reply.result.asset.creator.domain;
+			trace("the creator was", creator, domain);
 			
-			
-			if(Auth.getInstance().isSysAdmin() || creatorUsername == Auth.getInstance().getUsername()) {
+			if(Auth.getInstance().isSysAdmin() || creator == Auth.getInstance().getUsername()) {
 				trace("Either the sys admin, or, the current user is the creator of the file, so delete it");
 				AppModel.getInstance().assetDestroy(assetID, deleteComplete);
 			} else {
