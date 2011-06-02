@@ -3,6 +3,7 @@ package Model {
 	import Controller.Dispatcher;
 	import Controller.Utilities.Auth;
 	
+	import Model.Objects.Annotations;
 	import Model.Transactions.Transaction_ChangePassword;
 	import Model.Transactions.Transaction_CopyAccess;
 	import Model.Transactions.Transaction_CreateUser;
@@ -407,16 +408,7 @@ package Model {
 			}
 		}
 		
-		/**
-		 * Saves a new pen annotation. 
-		 * @param mediaAssetID	The ID of the media asset which the annotation is on
-		 * @param path			The string that contains the path of the pen annotations (in XML)
-		 * @param text			The text to be associated with the annotation
-		 * @param callback		The function to call when the saving is complete.
-		 * 
-		 */
-		public function saveNewPenAnnotation(mediaAssetID:Number, path:String, text:String, callback:Function):void {
-			trace("- App Model: Saving Pen annotation...");	
+		private function setupAnnotation(mediaAssetID:Number):XML {
 			var args:Object = new Object();
 			args.namespace = "recensio";
 			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
@@ -434,6 +426,23 @@ package Model {
 			// Set it as an annotation
 			baseXML.service.args["meta"]["r_resource"]["title"] = "Annotation";
 			baseXML.service.args["meta"]["r_resource"]["description"] = " ";
+			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
+			
+			return baseXML;
+		}
+		
+		/**
+		 * Saves a new pen annotation. 
+		 * @param mediaAssetID	The ID of the media asset which the annotation is on
+		 * @param path			The string that contains the path of the pen annotations (in XML)
+		 * @param text			The text to be associated with the annotation
+		 * @param callback		The function to call when the saving is complete.
+		 * 
+		 */
+		public function saveNewPenAnnotation(mediaAssetID:Number, path:String, text:String, callback:Function):void {
+			trace("- App Model: Saving Pen annotation...");	
+			
+			var baseXML:XML = setupAnnotation(mediaAssetID);
 			
 			// Set All of the annotations data
 			baseXML.service.args["meta"]["r_annotation"]["path"] = path;
@@ -443,7 +452,7 @@ package Model {
 
 			// This annotation is a 'Annotation' annotation, lol, not a comment
 			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.ANNOTATION_PEN_TYPE_ID;
-			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
+			
 
 			// Try and save, then call the callback.
 			if(_connection.sendRequest(baseXML, callback)) {
@@ -457,23 +466,8 @@ package Model {
 		
 		public function saveNewHighlightAnnotation(mediaAssetID:Number, xCoor:Number, yCoor:Number, page1:Number, startTextIndex:Number, 
 													endTextIndex:Number, text:String, callback:Function):void {
-			var args:Object = new Object();
-			args.namespace = "recensio";
-			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
 			
-			// Set the annotations parent media asset
-			baseXML.service.args["related"]["to"] = mediaAssetID;
-			baseXML.service.args["related"]["to"].@relationship = "is_child";
-			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
-			baseXML.service.args["meta"]["r_base"]["active"] = "true";
-			
-			// Set the creator to be the current user
-			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
-			baseXML.service.args["meta"]["r_base"].@id = 2;
-			
-			// Set it as an annotation
-			baseXML.service.args["meta"]["r_resource"]["title"] = "Annotation";
-			baseXML.service.args["meta"]["r_resource"]["description"] = " ";
+			var baseXML:XML = setupAnnotation(mediaAssetID);
 			
 			// Set All of the annotations data
 			baseXML.service.args["meta"]["r_annotation"]["x"] = xCoor;
@@ -482,16 +476,9 @@ package Model {
 			baseXML.service.args["meta"]["r_annotation"]["end"] = endTextIndex;
 			baseXML.service.args["meta"]["r_annotation"]["text"] = text;
 			baseXML.service.args["meta"]["r_annotation"]["lineNum"] = page1; // We are storing the page number, in the lin num variable
-			
-			// I have absolutely no idea what this is, so im commenting it out for now
-			//			if(assetData.path != "") {
-			//				baseXML.service.args["meta"]["r_annotation"]["path"] = assetData.path;
-			//			}
-			
+
 			// This annotation is a 'Annotation' annotation, lol, not a comment
 			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.ANNOTATION_HIGHLIGHT_TYPE_ID + "";
-			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
-			trace(baseXML);
 			
 			// Try and save, then call the callback.
 			if(_connection.sendRequest(baseXML, callback)) {
@@ -521,23 +508,8 @@ package Model {
 											annotationText:String, callback:Function):void {
 			
 			trace("- App Model: Saving box annotation...");
-			var args:Object = new Object();
-			args.namespace = "recensio";
-			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
 			
-			// Set the annotations parent media asset
-			baseXML.service.args["related"]["to"] = mediaAssetID;
-			baseXML.service.args["related"]["to"].@relationship = "is_child";
-			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
-			baseXML.service.args["meta"]["r_base"]["active"] = "true";
-			
-			// Set the creator to be the current user
-			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
-			baseXML.service.args["meta"]["r_base"].@id = 2;
-			
-			// Set it as an annotation
-			baseXML.service.args["meta"]["r_resource"]["title"] = "Annotation";
-			baseXML.service.args["meta"]["r_resource"]["description"] = " ";
+			var baseXML:XML = setupAnnotation(mediaAssetID);
 			
 			// Set All of the annotations data
 			baseXML.service.args["meta"]["r_annotation"]["x"] = xCoor;
@@ -547,16 +519,9 @@ package Model {
 			baseXML.service.args["meta"]["r_annotation"]["start"] = startTime;
 			baseXML.service.args["meta"]["r_annotation"]["end"] = endTime;
 			baseXML.service.args["meta"]["r_annotation"]["text"] = annotationText;
-			
-			// I have absolutely no idea what this is, so im commenting it out for now
-//			if(assetData.path != "") {
-//				baseXML.service.args["meta"]["r_annotation"]["path"] = assetData.path;
-//			}
-		
+
 			// This annotation is a 'Annotation' annotation, lol, not a comment
 			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.ANNOTATION_BOX_TYPE_ID + "";
-			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
-			trace(baseXML);
 			
 			// Try and save, then call the callback.
 			if(_connection.sendRequest(baseXML, function(e:Event):void {
@@ -574,15 +539,15 @@ package Model {
 			if(dataXML.reply.@type != "result") {
 				callback(e);
 			} else {
-				AppModel.getInstance().sendNotification(mediaAssetID, "added a annotation", dataXML.reply.result.id);
+				AppModel.getInstance().sendNotification(mediaAssetID, Model_Notification.ANNOTATION_ON_MEDIA, dataXML.reply.result.id);
 				AppModel.getInstance().setAnnotationClassForID(dataXML.reply.result.id, function(event:Event):void {
 					callback(e);	
 				});
 			}
 		}
 		
-		public function copyAccess(copyFromID:Number, copyToID:Number):void {
-			var transaction:Transaction_CopyAccess = new Transaction_CopyAccess(copyFromID, copyToID, _connection);
+		public function copyAccess(copyFromID:Number, copyToID:Number, dontIncludeCurrentUser:Boolean = false):void {
+			var transaction:Transaction_CopyAccess = new Transaction_CopyAccess(copyFromID, copyToID, dontIncludeCurrentUser, _connection);
 		}
 		
 		// Saves an annotation
@@ -1329,8 +1294,8 @@ package Model {
 		 * @param assetID	(opt) The ID of the asset that as added/changed (e.g. the ID of the comment)
 		 * 
 		 */		
-		public function sendNotification(mediaID:Number, msg:String, assetID:Number = 0):void {
-			var transaction:Transaction_Notification = new Transaction_Notification(mediaID, msg, _connection, assetID);
+		public function sendNotification(mediaID:Number, type:String, assetID:Number = 0):void {
+			var transaction:Transaction_Notification = new Transaction_Notification(mediaID, type, _connection, assetID);
 		}
 		
 		public function getNotifications(callback:Function):void {

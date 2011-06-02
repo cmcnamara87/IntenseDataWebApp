@@ -29,7 +29,8 @@ package View.components.Notification
 			super();
 			
 			this.width = 300;
-			this.maxHeight = 400; 
+			this.minHeight = 200;
+			this.maxHeight = 600;
 				
 			this.borderStroke = new SolidColorStroke(0x999999);
 			this.backgroundFill = new SolidColor(0xEEEEEE);
@@ -47,7 +48,6 @@ package View.components.Notification
 			content.paddingLeft = 10;
 			content.gap = 10;
 			
-			
 			var myScroller:Scroller = new Scroller();
 			myScroller.percentHeight = 100;
 			myScroller.percentWidth = 100;
@@ -58,24 +58,31 @@ package View.components.Notification
 		public function addNotifications(notificationArray:Array):void {
 			content.removeAllElements();
 			if(notificationArray.length > 0) {
+				// We have some notifications, add them to the display
 				for(var i:Number = 0; i < notificationArray.length; i++) {
 					var notificationData:Model_Notification = notificationArray[i];
-					var notification:Notification = new Notification(
-						notificationData.username,
-						notificationData.message,
-						notificationData.notification_on,
-						notificationData.notification_on_title,
-						notificationData.notification_of,
-						notificationData.notification_of_content
-					);
-					content.addElement(notification);
-					
+					if(notificationData.type == Model_Notification.COMMENT_ON_MEDIA ||
+						notificationData.type == Model_Notification.ANNOTATION_ON_MEDIA ||
+						notificationData.type == Model_Notification.COMMENT_ON_COLLECTION) {
+						var commentaryNotification:CommentaryNotification = new CommentaryNotification(
+							notificationData.username,
+							notificationData.type,
+							notificationData.notificationOnTitle,
+							notificationData.notificationOn,
+							notificationData.notificationOfContent
+						);
+						content.addElement(commentaryNotification);
+					} else {
+						trace("got a weird notification type", notificationData.type);
+					} 
+
 					if(i + 1 != notificationArray.length) {
 						var line:Line = IDGUI.makeHorizontalLine();
 						content.addElement(line);
 					}
 				}
 			} else {
+				// There are no notifications
 				var label:Label = new Label();
 				label.text = "You have no notifications";
 				content.addElement(label);

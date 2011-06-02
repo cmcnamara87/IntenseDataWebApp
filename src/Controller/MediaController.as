@@ -64,7 +64,10 @@ package Controller {
 			// Pass this view to the parent
 			view = mediaView;
 			
-			super(Dispatcher.getArgs()[0]);
+			
+			super();
+			CollaborationController.setCurrentMediaAssetID(Dispatcher.getArgs()[0]);
+
 		}
 		
 		//INIT
@@ -118,8 +121,8 @@ package Controller {
 			
 			// Load the Media Asset Data
 			// Gets out the Media Meta-data
-			trace("loading current asset id", currentAssetID);
-			AppModel.getInstance().getThisMediasData(currentAssetID, mediasDataLoaded);
+			trace("loading current asset id", CollaborationController.getCurrentMediaAssetID());
+			AppModel.getInstance().getThisMediasData(CollaborationController.getCurrentMediaAssetID(), mediasDataLoaded);
 			
 			// Don't get out the comments etc here, we need to know the medias type,
 			// before we can add them.
@@ -145,7 +148,7 @@ package Controller {
 		 */		
 		private function deleteAsset(e:CloseEvent):void {
 			if (e.detail==Alert.OK) {
-				AppModel.getInstance().deleteAsset(currentAssetID, currentMediaData.meta_username);
+				AppModel.getInstance().deleteAsset(CollaborationController.getCurrentMediaAssetID(), currentMediaData.meta_username);
 			}
 		}
 		
@@ -186,7 +189,8 @@ package Controller {
 		private function sharingInfoChanged(e:IDEvent):void {
 			var username:String = e.data.username;
 			var access:String = e.data.access;
-			AppModel.getInstance().changeAccess(currentAssetID, username, "system", access, true, sharingInfoUpdated);
+			AppModel.getInstance().changeAccess(CollaborationController.getCurrentMediaAssetID(),
+				username, "system", access, true, sharingInfoUpdated);
 		}
 		
 		
@@ -201,7 +205,7 @@ package Controller {
 			var annotationText:String = e.data.annotationText;
 			
 			AppModel.getInstance().saveNewBoxAnnotation(
-				currentAssetID,
+				CollaborationController.getCurrentMediaAssetID(),
 				xCoor,
 				yCoor,
 				width,
@@ -219,7 +223,7 @@ package Controller {
 			var path:String = e.data.path;
 			var text:String = e.data.text;
 			AppModel.getInstance().saveNewPenAnnotation(
-				currentAssetID,
+				CollaborationController.getCurrentMediaAssetID(),
 				path,
 				text,
 				newAnnotationSaved
@@ -236,7 +240,7 @@ package Controller {
 			var text:String = e.data.text;
 			
 			AppModel.getInstance().saveNewHighlightAnnotation(
-				currentAssetID,
+				CollaborationController.getCurrentMediaAssetID(),
 				xCoor,
 				yCoor,
 				page1,
@@ -278,7 +282,7 @@ package Controller {
 				if(!items[i].annotationType) {
 					items[i].annotationType = 2;
 				}
-				items[i].parentID = currentAssetID;
+				items[i].parentID = CollaborationController.getCurrentMediaAssetID();
 				AppModel.getInstance().saveAnnotation(items[i]);
 			}
 			
@@ -287,7 +291,7 @@ package Controller {
 		
 		// TODO REMOVE THIS FUNCTION (ONLY SO WE CAN UPDATE ANNOTATIONS FROM DEKKERS CODE
 		private function getAnnotations():void {
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+			AppModel.getInstance().getThisAssetsCommentary(CollaborationController.getCurrentMediaAssetID(), mediasCommentaryLoaded);
 		}
 		
 		private function deleteAnnotation(e:IDEvent):void {
@@ -346,10 +350,10 @@ package Controller {
 			mediaView.addMediaData(media);
 			
 			// Gets out the Commentary Data for hte asset (that is, comments and annotations
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+			AppModel.getInstance().getThisAssetsCommentary(CollaborationController.getCurrentMediaAssetID(), mediasCommentaryLoaded);
 			
 			// Load the Sharing Data
-			AppModel.getInstance().getAccess(currentAssetID, sharingDataLoaded);
+			AppModel.getInstance().getAccess(CollaborationController.getCurrentMediaAssetID(), sharingDataLoaded);
 			
 
 //			// Add all of the assets inside this collection
@@ -392,11 +396,11 @@ package Controller {
 			
 			// So lets just get out all the annotations/comments again
 			// so we can update the display with the new annotation
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+			AppModel.getInstance().getThisAssetsCommentary(CollaborationController.getCurrentMediaAssetID(), mediasCommentaryLoaded);
 		}
 		
 		public function annotationDeleted(e:Event):void {
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+			AppModel.getInstance().getThisAssetsCommentary(CollaborationController.getCurrentMediaAssetID(), mediasCommentaryLoaded);
 		}
 		
 		private function mediaDetailsUpdated(e:Event):void {

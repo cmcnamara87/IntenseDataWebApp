@@ -7,16 +7,14 @@ package Controller
 
 	public class CollaborationController extends AppController
 	{
-		public static var currentAssetID:Number; // The current ID for either media or collection
+		private static var currentAssetID:Number; // The current ID for either media or collection
+		private static var currentMediaAssetID:Number;
+		private static var currentCollectionAssetID:Number = -1;
 		
-		public function CollaborationController(currentAssetID:Number)
+		public function CollaborationController()
 		{
 			super();
-			
-			CollaborationController.currentAssetID = currentAssetID;
-			
 			setupCollabListeners(); 
-			
 		}
 		
 		private function setupCollabListeners():void {
@@ -60,6 +58,35 @@ package Controller
 		public function commentSaved(commentID:Number, commentText:String, newCommentObject:NewComment):void {
 			trace("new comment object is", newCommentObject);
 			(view as CollabViewInterface).commentSaved(commentID, commentText, newCommentObject);
+		}
+		
+		/**
+		 * Stores the current id for the media we are looking at now. 
+		 * @param id	The ID of the media we are looking at now.
+		 * 
+		 */		
+		public static function setCurrentMediaAssetID(id:Number):void {
+			CollaborationController.currentMediaAssetID = id;
+			CollaborationController.currentAssetID = id;
+		}
+		
+		/**
+		 * Sets the current id for the collection we are looking at now. 
+		 * @param id	The ID of the colleciton we are looking at now
+		 * 
+		 */
+		public static function setCurrentCollectionID(id:Number):void {
+			trace("Setting current collection id", id);
+			CollaborationController.currentCollectionAssetID = id;
+			CollaborationController.currentAssetID = id;
+		}
+		
+		public static function getCurrentMediaAssetID():Number {
+			return CollaborationController.currentMediaAssetID;
+		}
+		
+		public static function getCurrentCollectionID():Number {
+			return CollaborationController.currentCollectionAssetID;
 		}
 	}
 }

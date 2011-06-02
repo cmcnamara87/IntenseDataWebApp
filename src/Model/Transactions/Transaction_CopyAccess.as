@@ -1,5 +1,7 @@
 package Model.Transactions
 {
+	import Controller.Utilities.Auth;
+	
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
@@ -9,14 +11,15 @@ package Model.Transactions
 		private var copyFromID:Number;
 		private var copyToID:Number;
 		private var connection:Connection;
+		private var dontIncludeCurrentUser:Boolean;
 		
-		public function Transaction_CopyAccess(copyFromID:Number, copyToID:Number, connection:Connection)
+		public function Transaction_CopyAccess(copyFromID:Number, copyToID:Number, dontIncludeCurrentUser:Boolean, connection:Connection)
 		{
 			trace("Copy ACLS from", copyFromID, "to", copyToID);
 			this.copyFromID = copyFromID;
 			this.copyToID = copyToID;
 			this.connection = connection;
-			
+			this.dontIncludeCurrentUser = dontIncludeCurrentUser;
 			getFromACLs();
 		}
 		
@@ -41,7 +44,16 @@ package Model.Transactions
 			baseXML.service.args.id = copyToID;
 			
 			for each(var acl:XML in acls) {
-				baseXML.service.args.appendChild(XML('<acl><actor type="user">' + acl.actor + '</actor><access>'+ acl.content +'</access></acl>'));
+				if(dontIncludeCurrentUser) {
+					if(acl.actor != "system:" + Auth.getInstance().getUsername()) {
+						trace("Copying actor", acl.actor);
+						baseXML.service.args.appendChild(XML('<acl><actor type="user">' + acl.actor + '</actor><access>'+ acl.content +'</access></acl>'));
+					} else {
+						trace("Ignoring creator actor", acl.actor);
+					}
+				} else {
+					baseXML.service.args.appendChild(XML('<acl><actor type="user">' + acl.actor + '</actor><access>'+ acl.content +'</access></acl>'));
+				}
 			}
 			
 			trace("set users request", baseXML);

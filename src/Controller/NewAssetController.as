@@ -123,18 +123,18 @@ package Controller {
 				// Add this new asset, to whatever the current collection is
 				// Provided its not All Assets or Shared Assets, since they are smart collections
 				// And assets appear in them authomatically.
-				if(CollaborationController.currentAssetID != BrowserController.ALLASSETID &&
-					CollaborationController.currentAssetID != BrowserController.SHAREDID) {
+				if(CollaborationController.getCurrentCollectionID() != BrowserController.ALLASSETID &&
+					CollaborationController.getCurrentCollectionID() != BrowserController.SHAREDID) {
 					
 					// Create a shell for the new asset
 					var newAsset:Model_Media = new Model_Media();
 					newAsset.base_asset_id = assetID;
 					// Add it to the current collections assets
 					BrowserController.currentCollectionAssets.push(newAsset);
-					trace("Adding new asset", assetID  ,"to collection", CollaborationController.currentAssetID,
+					trace("Adding new asset", assetID  ,"to collection", CollaborationController.getCurrentCollectionID(),
 						BrowserController.currentCollectionTitle, "and saving"); 
 					AppModel.getInstance().saveCollection(
-						CollaborationController.currentAssetID, 
+						CollaborationController.getCurrentCollectionID(), 
 						BrowserController.currentCollectionTitle, 
 						BrowserController.currentCollectionAssets, 
 						function(collectionID:Number):void {

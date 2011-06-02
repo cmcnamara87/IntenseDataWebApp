@@ -2,6 +2,8 @@ package Model.Transactions
 {
 	import Controller.Utilities.Auth;
 	
+	import Model.AppModel;
+	import Model.Model_Notification;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
@@ -17,11 +19,12 @@ package Model.Transactions
 	{
 		private var mediaID:Number;
 		private var username:String;
-		private var msg:String;
+		private var notificationType:String;
 		private var connection:Connection;
 		private var assetID:Number;
 		private var userList:Array; // The list of users that has access to mediaID
 		private var notificationID:Number; //
+		
 		/**
 		 *  
 		 * @param mediaID 		The ID of the media that was affected. e.g. If someone comments on an image, this is the image's ID
@@ -30,15 +33,41 @@ package Model.Transactions
 		 * @param assetID		(opt) The ID of the asset that as added/changed (e.g. the ID of the comment)
 		 * 
 		 */		
-		public function Transaction_Notification(mediaID:Number, msg:String, connection:Connection, assetID:Number = 0)
+		public function Transaction_Notification(mediaID:Number, notificationType1:String, connection:Connection, assetID:Number = 0)
 		{
 			this.mediaID = mediaID;
 			this.username = Auth.getInstance().getUsername();
-			this.msg = msg;
 			this.connection = connection;
 			this.assetID = assetID;
 			
-			createNotification();
+			// We first need to determine if we have an ambiguous type of notification
+			if(notificationType1 == Model_Notification.COMMENT) {
+				// Comment can be either on a collection or an asset
+				// We need to determien the type of mediaID to know what the comment is on
+				var args:Object = new Object();
+				args.id = mediaID;
+				connection.sendRequest(connection.packageRequest('asset.class.list', args, true), function(e:Event):void {
+					
+					var classification:String = XML(e.target.data).reply.result.asset['class'];
+					
+					switch(classification) {
+						case 'base/resource/media':
+							trace("Comment on media");
+							notificationType = Model_Notification.COMMENT_ON_MEDIA;
+							break;
+						case 'base/resource/collection':
+							trace("Comment on collection");
+							notificationType = Model_Notification.COMMENT_ON_COLLECTION;
+							break;
+						default:
+							trace("oh crap");
+					}
+					createNotification();
+				});
+			} else {
+				this.notificationType = notificationType1
+				createNotification();
+			}
 		}
 		
 		/**
@@ -70,11 +99,8 @@ package Model.Transactions
 			// The creator of the notification
 			baseXML.service.args.meta.id_notification.username = Auth.getInstance().getUsername();
 			
-			if(msg != "") {
-				baseXML.service.args.meta.id_notification.message = msg;
-			}
-			// TODO do this for things besides comments
-			baseXML.service.args.meta.id_notification.controller = "view";
+			// The type of then notification (see Model_Notification)
+			baseXML.service.args.meta.id_notification.type = notificationType;
 
 			baseXML.service.args.meta.id_notification.date = "now";
 			
@@ -99,12 +125,17 @@ package Model.Transactions
 				// Get out the new notifications ID
 				this.notificationID = dataXML.reply.result.id;
 				
-				getUsersToNotify();
+				// Make the people who have access to this notification
+				// the same people who have access to the asset (except the creator of the notification, they dont
+				// need to be notified).
+				AppModel.getInstance().copyAccess(mediaID, notificationID, true);
+				
 				setNotificationClassification();
 			} else {
 				trace("Failed to create notification", e.target.data);
 			}
 		}
+		
 		/**
 		 * Called when comment has finished saving in database. Converts the data returned
 		 * to a Model_annotation. Calls @see BrowserController.commentSaved
@@ -122,46 +153,5 @@ package Model.Transactions
 				// Send the request
 				connection.sendRequest(baseXML, null);
 		}
-
-		/**
-		 * Gets the users to notify of this change. 
-		 * 
-		 */		
-		private function getUsersToNotify():void {
-			var args:Object = new Object();
-			args.id = mediaID;
-			connection.sendRequest(
-				connection.packageRequest('asset.acl.describe', args, true), 
-				setUsersToNotify
-			);
-		}
-		
-		/**
-		 * Adds those users to notify to the Notifiaction object 
-		 * @param e
-		 * 
-		 */		
-		private function setUsersToNotify(e:Event):void {
-			trace("users to notify", e.target.data);
-
-			// Get out the ACL from the media object in the reply
-			var acls:XMLList = XML(e.target.data).reply.result.asset.acl;
-
-			// Set the same ACLs for the notification
-			var baseXML:XML = connection.packageRequest('asset.acl.grant', new Object(), true);
-			baseXML.service.args.id = notificationID;
-			
-			for each(var acl:XML in acls) {
-				if("system:" + Auth.getInstance().getUsername() != acl.actor) {
-					baseXML.service.args.appendChild(XML('<acl><actor type="user">' + acl.actor + '</actor><access>'+ acl.content +'</access></acl>'));
-				}
-			}
-
-			trace("set users request", baseXML);
-			connection.sendRequest(baseXML, function(e:Event):void {
-				trace("access granted to notification", e.target.data);
-				
-			});
-		}		
 	}
 }

@@ -46,27 +46,24 @@ package Controller {
 				trace("layout exists");
 				if(layout.header.logoutButton) {
 					trace("Logout button exists");
-					layout.header.logoutButton.visible = showLogoutButton;
+					layout.header.logoutButton.visible = true;
 					layout.header.logoutButton.addEventListener(MouseEvent.MOUSE_UP,logoutClicked);
-					layout.header.profileButton.visible = showLogoutButton;
+					layout.header.profileButton.visible = true;
 					layout.header.profileButton.label = Auth.getInstance().getUsername();
-					
-					trace("Trying to remove event listener for profile button");
-					layout.header.profileButton.removeEventListener(MouseEvent.CLICK, profileClicked);
-					
+
 //					if(layout.header.profileButton222.hasEventListener(MouseEvent.CLICK)) {
 //						trace("Profile button already has click event");
 //					} else {
 //						trace("Profile button adding mouse clicked event");
-						layout.header.profileButton.addEventListener(MouseEvent.CLICK, profileClicked);
+						layout.header.profileButton.addEventListener(MouseEvent.MOUSE_DOWN, profileClicked);
 //						layout.header.profileButton222.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
 //							trace("you clicked the profile button");
 //						});
 //					}
 					
-					layout.header.notificationButton.addEventListener(MouseEvent.CLICK, showNotifications);
+					layout.header.notificationButton.addEventListener(MouseEvent.MOUSE_DOWN, showNotifications);
 					
-					layout.header.notificationButton.visible = showLogoutButton; 
+					layout.header.notificationButton.visible = true; 
 				} else {
 					trace("Logout button does not exists");
 				}
@@ -104,8 +101,8 @@ package Controller {
 				if(layout.header.logoutButton) {
 					if(layout.header.logoutButton.hasEventListener(MouseEvent.MOUSE_UP)) {
 						layout.header.logoutButton.removeEventListener(MouseEvent.MOUSE_UP,logoutClicked);
-						layout.header.profileButton.removeEventListener(MouseEvent.CLICK, profileClicked);
-						layout.header.notificationButton.removeEventListener(MouseEvent.CLICK, showNotifications);
+						layout.header.profileButton.removeEventListener(MouseEvent.MOUSE_DOWN, profileClicked);
+						layout.header.notificationButton.removeEventListener(MouseEvent.MOUSE_DOWN, showNotifications);
 					}
 				}
 				layout.content.removeAllElements();

@@ -1,6 +1,7 @@
 package Model.Transactions {
 	import Model.AppModel;
 	import Model.Model_Media;
+	import Model.Model_Notification;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
@@ -21,6 +22,9 @@ package Model.Transactions {
 		private var _callback:Function;
 		private var _connection:Connection;
 		private var existingAssets:Number = 0;
+		
+		private var assetsRemoved:Array = new Array();
+		private var assetsAdded:Array = new Array();
 		
 		
 		public function Transaction_SaveCollection(connection:Connection, collectionID:Number, collectionTitle:String, mediaAssets:Array, callback:Function) {
@@ -137,6 +141,9 @@ package Model.Transactions {
 			for(var i:Number = 0; i < mediaAssets.length; i++) {
 				AppModel.getInstance().copyAccess(collectionID, mediaAssets[i].base_asset_id);
 			}
+			
+//			AppModel.getInstance().sendNotification(collectionID, Model_Notification.
+			// Send a notification 
 			_callback(collectionID);
 		}
 		

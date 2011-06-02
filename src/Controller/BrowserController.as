@@ -40,7 +40,7 @@ package Controller {
 		private static var collectionBeingEditedID:Number; 	// The ID of the collection being edited.
 		
 		private var modifyAccess:Boolean = true;
-//		public static var currentAssetID:Number = ALLASSETID; //1576; //ALLASSETID; //1492; //ALLASSETID;	// Stores the ID for the current collection we are viewing
+//		public static var currentCollectionID:Number = ALLASSETID; //1576; //ALLASSETID; //1492; //ALLASSETID;	// Stores the ID for the current collection we are viewing
 		public static var currentCollectionTitle:String = ""; // The title of the current collection we are looking at
 		public static var editCollectionName:String = ""; // The title of the current collection we are editing
 		
@@ -53,7 +53,7 @@ package Controller {
 		public function BrowserController() {
 			trace("--- Creating Browser Controller ---");
 			view = new BrowserView();
-			super(ALLASSETID);
+			super();
 		}
 		
 		/**
@@ -66,7 +66,8 @@ package Controller {
 			shelfAssets = new Array();
 			editAssets = new Array();
 			collectionBeingEditedID = -1;
-			currentAssetID = ALLASSETID;
+			
+			CollaborationController.setCurrentCollectionID(ALLASSETID);
 		}
 		
 		//INIT
@@ -85,7 +86,7 @@ package Controller {
 			// collection we have selected when this runs (not just All Assets
 			// because we could be coming back from an asset and we
 			// want to return the collection we were previously in)
-			switch(currentAssetID) {
+			switch(CollaborationController.getCurrentCollectionID()) {
 				case BrowserController.ALLASSETID:
 					loadAllMyMedia();
 					break;
@@ -93,7 +94,7 @@ package Controller {
 					loadShared();
 					break;
 				default:
-					loadAssetsInCollection(currentAssetID);
+					loadAssetsInCollection(CollaborationController.getCurrentCollectionID());
 			}
 			
 		}
@@ -234,9 +235,9 @@ package Controller {
 		public function fixedCollectionAssetsLoaded(e:Event):void {
 			// TODO need to add in another transaction for this similar to the regular collections
 			
-			if(currentAssetID != ALLASSETID && currentAssetID != SHAREDID) {
+			if(CollaborationController.getCurrentCollectionID() != ALLASSETID && CollaborationController.getCurrentCollectionID() != SHAREDID) {
 				trace("returned a fixed collection, but we arent looking at one currently," +
-					"FIX ME UP lol", currentAssetID);
+					"FIX ME UP lol", CollaborationController.getCurrentCollectionID());
 				return;
 			}
 			
@@ -280,7 +281,7 @@ package Controller {
 				//}
 			}
 			currentView.addCollections(collections);
-			currentView.highlightCollectionListItem(currentAssetID);
+			currentView.highlightCollectionListItem(CollaborationController.getCurrentCollectionID());
 			//LoadAnim.hide();
 		}
 		
@@ -292,8 +293,8 @@ package Controller {
 		public function collectionMediaLoaded(collectionID:Number, e:Event):void {
 			// If we have just got data back from a collection we are no longer looking at
 			// ignore it.
-			trace("got data for", collectionID, "we are looking at", currentAssetID);
-			if(collectionID != currentAssetID) {
+			trace("got data for", collectionID, "we are looking at", CollaborationController.getCurrentCollectionID());
+			if(collectionID != CollaborationController.getCurrentCollectionID()) {
 				return;
 			}
 			var currentView:BrowserView = view as BrowserView;
@@ -354,7 +355,7 @@ package Controller {
 			var dataXML:XML = XML(e.target.data);
 			var newCollectionID:Number = dataXML.reply.result.id;
 			// Set the current collection being view, to the net collection
-			currentAssetID = newCollectionID;
+			CollaborationController.setCurrentCollectionID(newCollectionID);
 			
 			
 			trace("- Collection Created:", e);
@@ -395,7 +396,7 @@ package Controller {
 			currentView.clearShelf();
 
 			// Set the current collection being view, to the net collection
-			currentAssetID = collectionID;
+			CollaborationController.setCurrentCollectionID(collectionID);
 			
 			// Lets reload the collections and diplay them.
 			trace("- Collection Saved.")
@@ -494,7 +495,7 @@ package Controller {
 				this.setCollectionCreationMode(false);
 				
 				// Save the current collections being edited ID
-				collectionBeingEditedID = currentAssetID;
+				collectionBeingEditedID = CollaborationController.getCurrentCollectionID();
 				
 				// Copy the media assets for the current collection, so they can be edited.
 				BrowserController.editAssets = new Array();
@@ -542,13 +543,13 @@ package Controller {
 		 */		
 		private function deleteCollection(e:CloseEvent):void {
 			if (e.detail==Alert.OK) {
-				AppModel.getInstance().deleteCollection(currentAssetID, collectionDeleted);
+				AppModel.getInstance().deleteCollection(CollaborationController.getCurrentCollectionID(), collectionDeleted);
 				
 				var currentView:BrowserView = view as BrowserView;
 				
 				// The collection was deleted, so lets re-load the 
 				// all assets collection
-				this.saveCurrentCollectionID(ALLASSETID);
+				CollaborationController.setCurrentCollectionID(ALLASSETID);
 				loadAllMyMedia();				
 				//currentView.setToolbarToFixedCollectionMode();
 				
@@ -659,9 +660,9 @@ package Controller {
 			var currentView:BrowserView = view as BrowserView;
 			
 			// Save the Collections ID (-1)
-			this.saveCurrentCollectionID(e.data.assetID);
+			CollaborationController.setCurrentCollectionID(e.data.assetID);
 				
-			currentView.highlightCollectionListItem(currentAssetID);
+			currentView.highlightCollectionListItem(CollaborationController.getCurrentCollectionID());
 			
 			//currentView.setToolbarToFixedCollectionMode();
 			loadAllMyMedia();
@@ -676,9 +677,9 @@ package Controller {
 			var currentView:BrowserView = view as BrowserView;
 			
 			// Save the Collections ID (-2)
-			this.saveCurrentCollectionID(e.data.assetID);
+			CollaborationController.setCurrentCollectionID(e.data.assetID);
 			// Highlight this collection (to show we clicked it);
-			currentView.highlightCollectionListItem(currentAssetID);
+			currentView.highlightCollectionListItem(CollaborationController.getCurrentCollectionID());
 				
 			//currentView.setToolbarToFixedCollectionMode();
 			loadShared();
@@ -712,13 +713,13 @@ package Controller {
 			var currentView:BrowserView = view as BrowserView;
 			
 			// Save the Collections ID
-			this.saveCurrentCollectionID(e.data.assetID);
+			CollaborationController.setCurrentCollectionID(e.data.assetID);
 			this.modifyAccess = e.data.access;
 			trace("Saving current collection name", e.data.collectionName);
 			this.saveCurrentCollectionName(e.data.collectionName);
 			
 			// Highlight the collection we clicked (in the sidebar)
-			currentView.highlightCollectionListItem(currentAssetID);
+			currentView.highlightCollectionListItem(CollaborationController.getCurrentCollectionID());
 			
 			//currentView.setToolbarToRegularCollectionMode();
 			loadAssetsInCollection(e.data.assetID);
@@ -728,7 +729,7 @@ package Controller {
 		
 		
 		/**
-		 * Called when save is clicked in the shelf. 
+		 * Called when save is clicked in the shelf (either editing or creating a new collection) 
 		 * @param e
 		 * 
 		 */		
@@ -786,7 +787,7 @@ package Controller {
 		private function sharingInfoChanged(e:IDEvent):void {
 			var username:String = e.data.username;
 			var access:String = e.data.access;
-			AppModel.getInstance().changeAccess(currentAssetID, username, "system", access, true, sharingInfoUpdated);
+			AppModel.getInstance().changeAccess(CollaborationController.getCurrentCollectionID(), username, "system", access, true, sharingInfoUpdated);
 		}
 		
 		
@@ -1013,16 +1014,6 @@ package Controller {
 		}
 		public function setCollectionCreationMode(value:Boolean):void {
 			shelfOn = value;
-		}
-		
-		/**
-		 * Saves the current collection we are showing (so we can go back to it, after going into an asset
-		 * and so we can highlight the correct collection in the collection list). 
-		 * @param id	The collection ID.
-		 * 
-		 */		
-		private function saveCurrentCollectionID(id:Number):void {
-			currentAssetID = id;
 		}
 		
 		private function saveCurrentCollectionName(name:String):void {

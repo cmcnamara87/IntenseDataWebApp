@@ -4,6 +4,7 @@ package Model.Transactions
 	
 	import Model.AppModel;
 	import Model.Model_Commentary;
+	import Model.Model_Notification;
 	import Model.Utilities.Connection;
 	
 	import View.components.Comments.NewComment;
@@ -103,7 +104,7 @@ package Model.Transactions
 			this.commentID = dataXML.reply.result.id;
 
 			// Copy the ACLs from the parent asset, to the comment
-			var transaction:Transaction_CopyAccess = new Transaction_CopyAccess(commentParentID, commentID, _connection);
+			AppModel.getInstance().copyAccess(commentParentID, commentID);
 			
 			// Add the 'Annotation' Classification to the comment asset
 			var args:Object = new Object();
@@ -114,7 +115,7 @@ package Model.Transactions
 			_connection.sendRequest(baseXML,null);
 			
 			// Sending Notification
-			AppModel.getInstance().sendNotification(this.commentParentID, "add a comment", commentID);
+			AppModel.getInstance().sendNotification(this.commentParentID, Model_Notification.COMMENT, commentID);
 			
 			trace("Comment Saved");
 			callback(commentID, commentText, newCommentObject);

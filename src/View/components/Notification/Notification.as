@@ -2,6 +2,8 @@ package View.components.Notification
 {
 	import Controller.Dispatcher;
 	
+	import Model.Model_Notification;
+	
 	import View.components.IDGUI;
 	
 	import flash.events.MouseEvent;
@@ -14,49 +16,9 @@ package View.components.Notification
 	public class Notification extends VGroup
 	{
 		private var notificationOn:Number;
-		public function Notification(username:String, message:String, notificationOn:Number, notificationOnTitle:String, 
+		public function Notification(username:String, notificationType:String, notificationOn:Number, notificationOnTitle:String, 
 									 notificationOf:Number, notificationOfTitle:String) {
 			super();
-			this.notificationOn = notificationOn;
-			this.maxHeight = 400;
-			
-			var details:HGroup = new HGroup();
-			details.width = 200;
-			this.addElement(details);
-			
-			var usernameLabel:Label = new Label();
-			//usernameLabel.setStyle('color', 0x336699);
-			usernameLabel.setStyle('fontWeight', 'bold');
-			usernameLabel.setStyle('color', 0x555555);
-			usernameLabel.text = username;
-			details.addElement(usernameLabel);
-			
-			var messageLabel:Label = new Label();
-			messageLabel.setStyle('color', 0x555555);
-			messageLabel.text = message + " on ";
-			details.addElement(messageLabel);
-			
-			var notificationOnTitleLabel:Label = new Label();
-			notificationOnTitleLabel.setStyle('color', 0x336699);
-			notificationOnTitleLabel.setStyle('fontWeight', 'bold');
-			notificationOnTitleLabel.text = notificationOnTitle;
-			details.addElement(notificationOnTitleLabel);
-			
-			notificationOnTitleLabel.useHandCursor = true;
-			notificationOnTitleLabel.buttonMode = true;
-			
-			
-			notificationOnTitleLabel.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-				Dispatcher.call('view/' + notificationOn);
-			});
-			
-			if(notificationOfTitle != "") {
-				var notificationOfTitleLabel:Label = new Label();
-				notificationOfTitleLabel.text = "\"" + notificationOfTitle + "\"";
-				notificationOfTitleLabel.setStyle('fontStyle', 'italic');
-				notificationOfTitleLabel.setStyle('color', 0x555555);
-				this.addElement(notificationOfTitleLabel);
-			}
 		}
 	}
 }
