@@ -37,7 +37,7 @@
 		height="100" width="100%" top="0"  bottom="140" id="view"
 		>
 		<!-- cornerRadius="10"    left="10" right="10" top="10" bottom="10" -->
-		<Videoviewer:VideoScreen id="screenviewer"  width="100%" height="100%" backgroundColor="#000000" borderColor="#000000"  />
+		<Videoviewer:VideoScreen id="screenviewer"  width="100%" height="100%" backgroundColor="#000000" borderColor="#DDDDDD"  />
 	</mx:Canvas>
 	<!-- paddingLeft="10" paddingBottom="10" paddingRight="10" paddingTop="10"
 	cornerRadius="10" -->

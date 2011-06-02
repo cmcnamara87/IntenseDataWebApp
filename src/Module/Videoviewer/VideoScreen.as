@@ -1,5 +1,7 @@
 package Module.Videoviewer {
 	
+	import Controller.Dispatcher;
+	
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.display.StageDisplayState;
@@ -21,6 +23,7 @@ package Module.Videoviewer {
 	import flash.text.TextFormatAlign;
 	import flash.utils.Timer;
 	
+	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	import mx.messaging.channels.StreamingAMFChannel;
 	
@@ -397,8 +400,10 @@ package Module.Videoviewer {
 				case "NetStream.Play.Failed":
 				case "NetStream.Play.StreamNotFound":
 					trace("Media is currently being encoded, please try again later");
-					code = "Media is currently being encoded, please try again later";
-					delegate.playFailed(code);
+					Alert.show("This Media is currently being transcoded. It will become available shortly.");
+					Dispatcher.call('browse');
+//					code = "Media is currently being encoded, please try again later";
+//					delegate.playFailed(code);
 					break;				
 			}
 		}

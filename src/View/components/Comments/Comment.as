@@ -122,6 +122,8 @@ package View.components.Comments
 				editButton.percentWidth 	= 100;
 				editButton.label			= "Edit";
 				buttonHGroup.addElement(editButton);
+				editButton.visible = false;
+				editButton.includeInLayout = false;
 				
 				// Create a Delete button
 				var deleteButton:Button		= new Button();
