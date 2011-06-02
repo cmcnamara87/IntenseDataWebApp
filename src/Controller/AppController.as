@@ -153,6 +153,7 @@ package Controller {
 		 * 
 		 */		
 		private function showNotifications(e:MouseEvent):void {
+			layout.notificationPanel.includeInLayout = false;
 			trace("stuff", layout.notificationPanel, "visible", layout.notificationPanel.visible);
 			if(!layout.notificationPanel.visible) {
 				layout.notificationPanel.visible = true;
