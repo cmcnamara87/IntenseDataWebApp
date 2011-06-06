@@ -133,6 +133,9 @@ package Controller {
 		
 			// The PDF has loaded and finished being displayed on screen
 			public static var MEDIA_LOADED:String = "id_pdfLoaded"; 
+			
+			public static var DELETE_NOTIFICATION:String = "id_deleteNotification";
+			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 		}

@@ -6,6 +6,8 @@ package Model.Transactions
 	import Model.Model_Notification;
 	import Model.Utilities.Connection;
 	
+	import View.components.Sharing.SharingPanel;
+	
 	import flash.events.Event;
 	
 	import mx.controls.Alert;
@@ -19,6 +21,7 @@ package Model.Transactions
 	{
 		private var mediaID:Number;
 		private var username:String;
+		private var other_username:String;
 		private var notificationType:String;
 		private var connection:Connection;
 		private var assetID:Number;
@@ -33,15 +36,18 @@ package Model.Transactions
 		 * @param assetID		(opt) The ID of the asset that as added/changed (e.g. the ID of the comment)
 		 * 
 		 */		
-		public function Transaction_Notification(mediaID:Number, notificationType1:String, connection:Connection, assetID:Number = 0)
-		{
+		public function Transaction_Notification(connection:Connection) {
+			this.connection = connection;	
+			this.username = Auth.getInstance().getUsername();
+		}
+		
+		public function sendNotification(mediaID:Number, type:String, assetID:Number = 0):void {
 			this.mediaID = mediaID;
 			this.username = Auth.getInstance().getUsername();
-			this.connection = connection;
 			this.assetID = assetID;
 			
 			// We first need to determine if we have an ambiguous type of notification
-			if(notificationType1 == Model_Notification.COMMENT) {
+			if(type == Model_Notification.COMMENT) {
 				// Comment can be either on a collection or an asset
 				// We need to determien the type of mediaID to know what the comment is on
 				var args:Object = new Object();
@@ -65,11 +71,53 @@ package Model.Transactions
 					createNotification();
 				});
 			} else {
-				this.notificationType = notificationType1
+				this.notificationType = type;
 				createNotification();
 			}
 		}
 		
+//		public function sendSharingNotification(mediaID:Number, type:String, other_username:String):void {
+//			this.mediaID = mediaID;
+//			this.other_username = other_username;
+//			this.assetID = assetID;
+//			
+//			// We first need to determine if we have an ambiguous type of notification
+//			if(notificationType1 == Model_Notification.COMMENT) {
+//				// Comment can be either on a collection or an asset
+//				// We need to determien the type of mediaID to know what the comment is on
+//				var args:Object = new Object();
+//				args.id = mediaID;
+//				connection.sendRequest(connection.packageRequest('asset.class.list', args, true), function(e:Event):void {
+//					
+//					var classification:String = XML(e.target.data).reply.result.asset['class'];
+//					
+//					switch(classification) {
+//						case 'base/resource/media':
+//							trace("Comment on media");
+//							if(notificationType1 == Model_Notification.COMMENT) {
+//								notificationType = Model_Notification.COMMENT_ON_MEDIA;
+//							} else if (notificationType1 == Model_Notification.SHARING) {
+//								notificationType = Model_Notification.MEDIA_SHARED;
+//							}
+//							break;
+//						case 'base/resource/collection':
+//							trace("Comment on collection");
+//							if(notificationType1 == Model_Notification.COMMENT) {
+//								notificationType = Model_Notification.COMMENT_ON_COLLECTION;
+//							} else if (notificationType1 == Model_Notification.SHARING) {
+//								notificationType = Model_Notification.COLLECTION_SHARED;
+//							}
+//							break;
+//						default:
+//							trace("oh crap");
+//					}
+//					createNotification();
+//				});
+//			} else {
+//				this.notificationType = notificationType1
+//				createNotification();
+//			}
+//		}
 		/**
 		 * Creates the Notification object in the database. 
 		 * 
@@ -153,5 +201,48 @@ package Model.Transactions
 				// Send the request
 				connection.sendRequest(baseXML, null);
 		}
+		
+		
+		
+		public function deleteNotificationForUser(notificationID:Number):void {
+			this.notificationID = notificationID;
+			// Get out how many people have access
+			var args:Object = new Object();
+			args.id = this.notificationID;
+			connection.sendRequest(
+				connection.packageRequest('asset.acl.describe', args, true), 
+				gotUserList
+			);
+		}
+		
+		private function gotUserList(e:Event):void {
+			trace("get users with access", e.target.data);
+			
+			// Get out the ACL from the media object in the reply
+			var acls:XMLList = XML(e.target.data).reply.result.asset.acl;
+			
+			if(acls.length() == 1) {
+				// There is only one user with access to this file, it must be the current user
+				// otherwise how could they see it
+				// <= just as a precaution
+				trace("Only one user has access to file", acls[0].actor, "current user is", Auth.getInstance().getUsername());
+				AppModel.getInstance().assetDestroy(notificationID, deleteComplete);
+			} else if (acls.length() == 0) {
+				// In case something bad happens
+				trace("No user has access to this file, destroying it");
+				AppModel.getInstance().assetDestroy(notificationID, deleteComplete);
+			} else {
+				// Other people are still using this file, only
+				// remove this current users access to it, so it remains unchanged for others
+				AppModel.getInstance().changeAccess(notificationID, Auth.getInstance().getUsername(),
+					"system", SharingPanel.NOACCESS, false, deleteComplete);
+			}
+		}
+		
+		private function deleteComplete(e:Event):void {
+			trace("delete compelte", e.target.data);
+		}
+		
+		
 	}
 }

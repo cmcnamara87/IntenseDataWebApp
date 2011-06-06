@@ -140,10 +140,6 @@ package Controller {
 //			currentView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
 			
 			
-			
-			// Listne for 'Sharing Changed' update to be pushed through from the view (in the sharing panel)
-			currentView.addEventListener(IDEvent.SHARING_CHANGED, sharingInfoChanged);
-			
 			// Collection Browser
 			//(view as Browser).collectionbrowser.addEventListener(RecensioEvent.ASSET_MEDIA_CLICKED,assetCollectionClicked);
 			/*(view as Browser).collectionbrowser.addEventListener(RecensioEvent.ASSET_MEDIA_CLICKED,assetCollectionClicked);
@@ -423,26 +419,6 @@ package Controller {
 			currentView.setupAssetsSharingInformation(userData);
 		}
 		
-		/**
-		 * The database has replied about updating the collections shared information. 
-		 * @param e
-		 * 
-		 */		
-		private function sharingInfoUpdated(e:Event):void {
-			// Get out the returned data
-			var data:XML = XML(e.target.data);
-			
-			// Was the sharing update not access
-			if(data.reply.@type == "result") {
-				// Sharing update successfully
-				trace("Sharing Updated Successfully", e.target.data);
-				trace("-------------------------");
-			} else {
-				//Alert.show("Sharing Update Failed");
-				trace("Sharing Update Failed", e.target.data);
-			} 
-		}
-
 		/* ========================= FUNCTIONS THAT ARE CALLED FROM USER MOUSE EVENTS ========================= */
 		
 		/**
@@ -775,20 +751,7 @@ package Controller {
 		
 		
 
-		/**
-		 * Changes the Sharing information for a collection.
-		 * 
-		 * Grants/Revokes access to a collection, and to all of its children assets.
-		 *  
-		 * @param e.username	The username whose access has changed.
-		 * @param e.access		The access ('no-access', 'read' or 'read-write')
-		 * 
-		 */				
-		private function sharingInfoChanged(e:IDEvent):void {
-			var username:String = e.data.username;
-			var access:String = e.data.access;
-			AppModel.getInstance().changeAccess(CollaborationController.getCurrentCollectionID(), username, "system", access, true, sharingInfoUpdated);
-		}
+		
 		
 		
 		// Sets up the "add media asset" button

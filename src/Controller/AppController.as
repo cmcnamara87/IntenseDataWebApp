@@ -5,6 +5,7 @@ package Controller {
 	import Model.Model_Notification;
 	
 	import View.Layout;
+	import View.components.Sharing.SharingPanel;
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
@@ -27,9 +28,9 @@ package Controller {
 		//The specific view
 		protected var view:UIComponent;
 		//Whether the logout button is shown or not
-		protected static var showLogoutButton:Boolean = true;
+		protected static var showLogoutButton:Boolean = false;
 		
-		private var notifications:XML;
+		private var notificationsArray:Array;
 		
 		public function AppController() {
 			trace("App Controller Called");
@@ -44,11 +45,12 @@ package Controller {
 			trace("Setting Logout Button");
 			if(layout) {
 				trace("layout exists");
+				layout.addEventListener(IDEvent.DELETE_NOTIFICATION, deleteNotification);
 				if(layout.header.logoutButton) {
 					trace("Logout button exists");
-					layout.header.logoutButton.visible = true;
+					layout.header.logoutButton.visible = showLogoutButton;
 					layout.header.logoutButton.addEventListener(MouseEvent.MOUSE_UP,logoutClicked);
-					layout.header.profileButton.visible = true;
+					layout.header.profileButton.visible = showLogoutButton;
 					layout.header.profileButton.label = Auth.getInstance().getUsername();
 
 //					if(layout.header.profileButton222.hasEventListener(MouseEvent.CLICK)) {
@@ -63,7 +65,7 @@ package Controller {
 					
 					layout.header.notificationButton.addEventListener(MouseEvent.MOUSE_DOWN, showNotifications);
 					
-					layout.header.notificationButton.visible = true; 
+					layout.header.notificationButton.visible = showLogoutButton; 
 				} else {
 					trace("Logout button does not exists");
 				}
@@ -73,10 +75,7 @@ package Controller {
 		//Calls the logout method
 		private function logoutClicked(e:MouseEvent):void {
 			trace("log out button clicked");
-			layout.header.notificationButton.visible = false;
-			layout.header.profileButton.visible = false;
-			layout.header.logoutButton.visible = false;
-			
+			showLogoutButton = false;
 			Dispatcher.logout();
 		}
 		
@@ -106,6 +105,7 @@ package Controller {
 					}
 				}
 				layout.content.removeAllElements();
+				layout.removeEventListener(IDEvent.DELETE_NOTIFICATION, deleteNotification);
 			}
 		}
 		
@@ -120,6 +120,7 @@ package Controller {
 		 * 
 		 */		
 		private function getNotifications():void {
+			trace("Getting Notifications");
 			AppModel.getInstance().getNotifications(gotNotifications);
 		}
 		
@@ -132,13 +133,13 @@ package Controller {
 		 * 
 		 */		
 		private function gotNotifications(e:Event):void {
-			trace("got notifications", e.target.data);
 			var dataXML:XML = XML(e.target.data);
 			if(dataXML.reply.@type == "result") {
 				// Save the notifications, and get the notification count
-				this.notifications = dataXML;
-				var notificationsList:XMLList = dataXML.reply.result.asset
-				layout.header.notificationButton.label = "Notifications (" + notificationsList.length() + ")";
+//				this.notifications = dataXML;
+				notificationsArray = AppModel.getInstance().extractAssetsFromXML(dataXML, Model_Notification);
+				notificationsArray = notificationsArray.reverse();
+				layout.header.notificationButton.label = "Notifications (" + notificationsArray.length + ")";
 			} else {
 				trace("Could not get notifications");
 			}
@@ -151,26 +152,37 @@ package Controller {
 		 */		
 		private function showNotifications(e:MouseEvent):void {
 			layout.notificationPanel.includeInLayout = false;
-			trace("stuff", layout.notificationPanel, "visible", layout.notificationPanel.visible);
 			if(!layout.notificationPanel.visible) {
 				layout.notificationPanel.visible = true;
 				layout.notificationPanel.x = layout.header.notificationButton.x + layout.header.notificationButton.width - layout.notificationPanel.width;
 				layout.notificationPanel.y = layout.header.notificationButton.y + layout.header.notificationButton.height;
+				
+				if(notificationsArray) {
+					layout.header.notificationButton.label = "Notifications (" + notificationsArray.length + ")";
+					layout.notificationPanel.addNotifications(notificationsArray);
+				} else {
+					trace("Something went wrong, and we dont have any notifications stored");
+				}
+				
 			} else {
 				layout.notificationPanel.visible = false;
+				getNotifications();
 			}
-			
-			if(notifications) {
-				trace("We have some notifications");
-				var notificationArray:Array = AppModel.getInstance().extractAssetsFromXML(notifications, Model_Notification);
-				notificationArray = notificationArray.reverse();
-				layout.header.notificationButton.label = "Notifications (" + notificationArray.length + ")";
-				
-				layout.notificationPanel.addNotifications(notificationArray);
-			} else {
-				trace("Something went wrong, and we dont have any notifications stored");
-			}
+		}
 		
+		private function deleteNotification(e:IDEvent):void {
+			trace("Deleting notification", e.data.notificationID);
+			var notificationID:Number = e.data.notificationID;
+			AppModel.getInstance().deleteNotification(notificationID);
+			// remove the notification from the notificationsarray
+			var tempArray:Array = new Array();
+			for(var i:Number = 0; i < notificationsArray.length; i++) {
+				if(notificationsArray[i].base_asset_id != notificationID) {
+					tempArray.push(notificationsArray[i]);
+				}
+			}
+			notificationsArray = tempArray;
+			layout.header.notificationButton.label = "Notifications (" + (notificationsArray.length) + ")";
 		}
 	}
 }

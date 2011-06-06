@@ -1,6 +1,7 @@
 package View.components.Notification
 {
 	import Controller.Dispatcher;
+	import Controller.IDEvent;
 	
 	import Model.Model_Notification;
 	
@@ -28,7 +29,7 @@ package View.components.Notification
 		{
 			super();
 			
-			this.width = 300;
+			this.width = 400;
 			this.minHeight = 200;
 			this.maxHeight = 600;
 				
@@ -61,10 +62,12 @@ package View.components.Notification
 				// We have some notifications, add them to the display
 				for(var i:Number = 0; i < notificationArray.length; i++) {
 					var notificationData:Model_Notification = notificationArray[i];
+					
 					if(notificationData.type == Model_Notification.COMMENT_ON_MEDIA ||
 						notificationData.type == Model_Notification.ANNOTATION_ON_MEDIA ||
 						notificationData.type == Model_Notification.COMMENT_ON_COLLECTION) {
 						var commentaryNotification:CommentaryNotification = new CommentaryNotification(
+							notificationData.base_asset_id,
 							notificationData.username,
 							notificationData.type,
 							notificationData.notificationOnTitle,
@@ -72,7 +75,19 @@ package View.components.Notification
 							notificationData.notificationOfContent
 						);
 						content.addElement(commentaryNotification);
-					} else {
+					} else if (notificationData.type == Model_Notification.MEDIA_ADDED_TO_COLLECTION || 
+								notificationData.type == Model_Notification.MEDIA_REMOVED_FROM_COLLECTION) {
+						var collectionNotification:CollectionNotification = new CollectionNotification(
+							notificationData.base_asset_id,
+							notificationData.username,
+							notificationData.type,
+							notificationData.notificationOn,
+							notificationData.notificationOnTitle,
+							notificationData.notificationOf,
+							notificationData.notificationOfContent
+						);
+						content.addElement(collectionNotification);
+					} else { 
 						trace("got a weird notification type", notificationData.type);
 					} 
 

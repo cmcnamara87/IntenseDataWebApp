@@ -112,6 +112,12 @@ package View.components.MediaViewer.PDFViewer {
 			
 			SWFData.addEventListener(Event.COMPLETE, loadComplete);
 
+			SWFData.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
+				// The loading has progressed. 
+				trace("loading event 2", e.bytesLoaded, e.bytesTotal);
+				dispatchEvent(e);
+			});
+			
 			// Listen for errors (which in most cases, means the PDF is still being converted to a SWF)
 			SWFData.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent):void {
 				Alert.show("This PDF is still being transcoded so we can display it. It will become available shortly.");
@@ -132,12 +138,6 @@ package View.components.MediaViewer.PDFViewer {
 		 */		
 		private function loadComplete(e:Event):void {
 			SWFLoader = new Loader();
-			SWFLoader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
-				// The loading has progressed. 
-				trace("loading event 2", e.bytesLoaded, e.bytesTotal);
-				dispatchEvent(e);
-			});
-			
 			SWFLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, addPageToStage);
 			SWFLoader.loadBytes(SWFData.data);
 		}

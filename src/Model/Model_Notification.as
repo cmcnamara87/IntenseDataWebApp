@@ -9,6 +9,7 @@ package Model {
 		public var notificationOf:Number; // THe ID of the asset this is a notificaoitn of (e.g. the comments ID)
 		public var notificationOfContent:String = "FAIL";
 		public var type:String;
+		public var other_username:String;
 		
 		
 		public static var COMMENT:String = "comment";
@@ -35,7 +36,11 @@ package Model {
 			this.notificationOn = rawData.related.(@type=="notification_on").asset.@id;
 			this.notificationOnTitle = rawData.related.(@type=="notification_on").asset.meta.r_resource.title;
 			this.notificationOf = rawData.related.(@type=="notification_of").asset.@id;
-			this.notificationOfContent = rawData.related.(@type=="notification_of").asset.meta.r_annotation.text;
+			if(type == COMMENT_ON_MEDIA || type == COMMENT_ON_COLLECTION || type == ANNOTATION_ON_MEDIA) {
+				this.notificationOfContent = rawData.related.(@type=="notification_of").asset.meta.r_annotation.text;
+			} else {
+				this.notificationOfContent = rawData.related.(@type=="notification_of").asset.meta.r_resource.title;
+			}
 		}
 	}
 }

@@ -4,6 +4,10 @@ package Controller
 	
 	import View.CollabViewInterface;
 	import View.components.Comments.NewComment;
+	
+	import flash.events.Event;
+	
+	import mx.controls.Alert;
 
 	public class CollaborationController extends AppController
 	{
@@ -22,6 +26,44 @@ package Controller
 			view.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
 			// Listen for 'Delete Comment' button being clicked.
 			view.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
+			// Listne for 'Sharing Changed' update to be pushed through from the view (in the sharing panel)
+			view.addEventListener(IDEvent.SHARING_CHANGED, sharingInfoChanged);
+		}
+		
+		/**
+		 * Changes the Sharing information for a collection.
+		 * 
+		 * Grants/Revokes access to a collection, and to all of its children assets.
+		 *  
+		 * @param e.username	The username whose access has changed.
+		 * @param e.access		The access ('no-access', 'read' or 'read-write')
+		 * 
+		 */				
+		private function sharingInfoChanged(e:IDEvent):void {
+			var username:String = e.data.username;
+			var access:String = e.data.access;
+			AppModel.getInstance().changeAccess(
+				CollaborationController.getCurrentCollectionID(), username, "system", access, true, sharingInfoUpdated);
+		}
+		
+		/**
+		 * The database has replied about updating the collections shared information. 
+		 * @param e
+		 * 
+		 */		
+		private function sharingInfoUpdated(e:Event):void {
+			// Get out the returned data
+			var data:XML = XML(e.target.data);
+			
+			// Was the sharing update not access
+			if(data.reply.@type == "result") {
+				// Sharing update successfully
+				trace("Sharing Updated Successfully", e.target.data);
+				trace("-------------------------");
+			} else {
+				Alert.show("Sharing Update Failed");
+				trace("Sharing Update Failed", e.target.data);
+			} 
 		}
 		
 		/**
@@ -59,7 +101,7 @@ package Controller
 			trace("new comment object is", newCommentObject);
 			(view as CollabViewInterface).commentSaved(commentID, commentText, newCommentObject);
 		}
-		
+
 		/**
 		 * Stores the current id for the media we are looking at now. 
 		 * @param id	The ID of the media we are looking at now.

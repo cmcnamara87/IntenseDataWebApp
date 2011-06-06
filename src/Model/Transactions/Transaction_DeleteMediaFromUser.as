@@ -75,13 +75,14 @@ package Model.Transactions
 				trace("Only one user has access to file", acls[0].actor, "current user is", Auth.getInstance().getUsername());
 				AppModel.getInstance().assetDestroy(assetID, deleteComplete);
 			} else if (acls.length() == 0) {
+				// In case something bad happens
 				trace("No user has access to this file, destroying it");
 				AppModel.getInstance().assetDestroy(assetID, deleteComplete);
 			} else {
 				// Other people are still using this file, only
 				// remove this current users access to it, so it remains unchanged for others
 				AppModel.getInstance().changeAccess(assetID, Auth.getInstance().getUsername(),
-					"system", SharingPanel.NOACCESS, false, deleteComplete);
+					"system", SharingPanel.NOACCESS, true, deleteComplete);
 				
 				
 			}
@@ -90,7 +91,6 @@ package Model.Transactions
 		private function deleteComplete(e:Event):void {
 			trace("delete compelte", e.target.data);
 			callback(e);
-			
 		}
 		
 	}

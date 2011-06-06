@@ -15,19 +15,19 @@ package View.components.Notification
 	import spark.components.VGroup;
 	import spark.primitives.Line;
 	
-	public class CommentaryNotification extends VGroup
+	public class CommentaryNotification extends Notification
 	{
 		private var mediaID:Number = 0; // The ID of the media or collection the comment is on.
 		private var type:String; // Either collection or media
 		
-		public function CommentaryNotification(username:String, type:String, assetName:String, assetID:Number, comment:String) {
-			super();
+		public function CommentaryNotification(notificationID:Number, username:String, type:String, assetName:String, assetID:Number, comment:String) {
+			super(notificationID);
 
 //			this.maxHeight = 400;
 			
 			var details:HGroup = new HGroup();
-			details.width = 200;
-			this.addElement(details);
+//			details.width = 200;
+			content.addElement(details);
 			
 			var usernameLabel:Label = new Label();
 			usernameLabel.setStyle('fontWeight', 'bold');
@@ -40,7 +40,7 @@ package View.components.Notification
 			if(type == Model_Notification.COMMENT_ON_MEDIA || type == Model_Notification.COMMENT_ON_COLLECTION) {
 				messageLabel.text = "commented on";
 			} else {
-				messageLabel.text = "annotation on";
+				messageLabel.text = "annotated on";
 			}
 			details.addElement(messageLabel);
 			
@@ -64,11 +64,13 @@ package View.components.Notification
 				}
 			});
 			
-			var commentLabel:Label = new Label();
-			commentLabel.text = "\"" + comment + "\"";
-			commentLabel.setStyle('fontStyle', 'italic');
-			commentLabel.setStyle('color', 0x555555);
-			this.addElement(commentLabel);
+			if(comment != "") {
+				var commentLabel:Label = new Label();
+				commentLabel.text = "\"" + comment + "\"";
+				commentLabel.setStyle('fontStyle', 'italic');
+				commentLabel.setStyle('color', 0x555555);
+				content.addElement(commentLabel);
+			}
 			
 		}
 	}

@@ -67,6 +67,7 @@ package Controller {
 			loginAlreadyReceived = true;
 			(view as Login).loginbox.setNotification(e.data.message);
 			if(e.data.success) {
+				AppController.showLogoutButton = true;
 				loginSuccessful();
 			} else {
 				trace("***"+e.data.message);
@@ -77,9 +78,9 @@ package Controller {
 		// Called if login was successful
 		private function loginSuccessful():void {
 			trace("- Login Successful, redirecting");
-			AppModel.getInstance().getNotifications(function(e:Event):void {
-				trace("Notifications", e.target.data);
-			});
+//			AppModel.getInstance().getNotifications(function(e:Event):void {
+//				trace("Notifications", e.target.data);
+//			});
 			redirect();
 		}
 		

@@ -4,6 +4,8 @@ package Model {
 	import Controller.Utilities.Auth;
 	
 	import Model.Objects.Annotations;
+	import Model.Transactions.Transaction_Annotations;
+	import Model.Transactions.Transaction_ChangeAccess;
 	import Model.Transactions.Transaction_ChangePassword;
 	import Model.Transactions.Transaction_CopyAccess;
 	import Model.Transactions.Transaction_CreateUser;
@@ -31,6 +33,7 @@ package Model {
 	import flash.utils.setInterval;
 	
 	import mx.charts.AreaChart;
+	import mx.containers.Box;
 	import mx.controls.Alert;
 	
 	public class AppModel extends EventDispatcher {
@@ -310,41 +313,10 @@ package Model {
 		 * 
 		 */		
 		public function changeAccess(assetID:Number, username:String, domain:String, access:String, related:Boolean, callback:Function=null):void {
-			var args:Object = new Object();
-			
-			trace("Changing access on asset", assetID);
-			trace("Access for", domain, username, access);
-			var baseXML:XML;
-			
-			if(access == SharingPanel.NOACCESS) {
-				trace("Should be revoking access");
-				// We want to revoke a users access to this asset
-				baseXML = _connection.packageRequest('asset.acl.revoke', args, true);
-				baseXML.service.args.acl.id = assetID;
-				baseXML.service.args.acl.actor = domain + ":" + username;
-				baseXML.service.args.acl.actor.@type = "user";
-				// Update all the related assets
-				baseXML.service.args.related = true;
-			} else {
-				trace("Should be granting access");
-				// We are granting access to the asset for a user
-				// Example mediaflux statement asset.acl.grant :acl < :id 1718 :actor system:coke -type user :access read-write >
-				baseXML = _connection.packageRequest('asset.acl.grant', args, true);
-				baseXML.service.args.acl.id = assetID;
-				baseXML.service.args.acl.actor = domain + ":" + username;
-				baseXML.service.args.acl.actor.@type = "user";
-				baseXML.service.args.acl.access = access;
-				// Update all the related assets
-				baseXML.service.args.related = true;
-			}
-			
-			// Send the connection
-			if(_connection.sendRequest(baseXML, callback)) {
-				//All good
-			} else {
-				Alert.show("Could not change access properties");
-			}
+			var transaction:Transaction_ChangeAccess = new Transaction_ChangeAccess(_connection);
+			transaction.changeAccess(assetID, username, domain, access, related, callback);
 		}
+		
 		/**
 		 * Saves a new comment, either a reply or a new comment
 		 * @param commentText		The text of the new comment
@@ -408,29 +380,6 @@ package Model {
 			}
 		}
 		
-		private function setupAnnotation(mediaAssetID:Number):XML {
-			var args:Object = new Object();
-			args.namespace = "recensio";
-			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
-			
-			// Set the annotations parent media asset
-			baseXML.service.args["related"]["to"] = mediaAssetID;
-			baseXML.service.args["related"]["to"].@relationship = "is_child";
-			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
-			baseXML.service.args["meta"]["r_base"]["active"] = "true";
-			
-			// Set the creator to be the current user
-			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
-			baseXML.service.args["meta"]["r_base"].@id = 2;
-			
-			// Set it as an annotation
-			baseXML.service.args["meta"]["r_resource"]["title"] = "Annotation";
-			baseXML.service.args["meta"]["r_resource"]["description"] = " ";
-			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
-			
-			return baseXML;
-		}
-		
 		/**
 		 * Saves a new pen annotation. 
 		 * @param mediaAssetID	The ID of the media asset which the annotation is on
@@ -440,54 +389,14 @@ package Model {
 		 * 
 		 */
 		public function saveNewPenAnnotation(mediaAssetID:Number, path:String, text:String, callback:Function):void {
-			trace("- App Model: Saving Pen annotation...");	
-			
-			var baseXML:XML = setupAnnotation(mediaAssetID);
-			
-			// Set All of the annotations data
-			baseXML.service.args["meta"]["r_annotation"]["path"] = path;
-			if(text != "") {
-				baseXML.service.args["meta"]["r_annotation"]["text"] = text;
-			}
-
-			// This annotation is a 'Annotation' annotation, lol, not a comment
-			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.ANNOTATION_PEN_TYPE_ID;
-			
-
-			// Try and save, then call the callback.
-			if(_connection.sendRequest(baseXML, callback)) {
-				trace("- App Model: Annotation Saved");
-				//All good
-			} else {
-				Alert.show("Could not save annotation");
-			}
-			
+			var annotation:Transaction_Annotations = new Transaction_Annotations(_connection);
+			annotation.saveNewPenAnnotation(mediaAssetID, path, text, callback);
 		}
 		
 		public function saveNewHighlightAnnotation(mediaAssetID:Number, xCoor:Number, yCoor:Number, page1:Number, startTextIndex:Number, 
 													endTextIndex:Number, text:String, callback:Function):void {
-			
-			var baseXML:XML = setupAnnotation(mediaAssetID);
-			
-			// Set All of the annotations data
-			baseXML.service.args["meta"]["r_annotation"]["x"] = xCoor;
-			baseXML.service.args["meta"]["r_annotation"]["y"] = yCoor;
-			baseXML.service.args["meta"]["r_annotation"]["start"] = startTextIndex;
-			baseXML.service.args["meta"]["r_annotation"]["end"] = endTextIndex;
-			baseXML.service.args["meta"]["r_annotation"]["text"] = text;
-			baseXML.service.args["meta"]["r_annotation"]["lineNum"] = page1; // We are storing the page number, in the lin num variable
-
-			// This annotation is a 'Annotation' annotation, lol, not a comment
-			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.ANNOTATION_HIGHLIGHT_TYPE_ID + "";
-			
-			// Try and save, then call the callback.
-			if(_connection.sendRequest(baseXML, callback)) {
-				trace("- App Model: Annotation Saved");
-				//All good
-			} else {
-				Alert.show("Could not save annotation");
-			}
-			
+			var annotation:Transaction_Annotations = new Transaction_Annotations(_connection);
+			annotation.saveNewHighlightAnnotation(mediaAssetID, xCoor, yCoor, page1, startTextIndex, endTextIndex, text, callback);
 		}
 		/**
 		 * Saves a new Box Annotation. 
@@ -507,43 +416,9 @@ package Model {
 											startTime:Number, endTime:Number,
 											annotationText:String, callback:Function):void {
 			
-			trace("- App Model: Saving box annotation...");
+			var annotation:Transaction_Annotations = new Transaction_Annotations(_connection);
+			annotation.saveNewBoxAnnotation(mediaAssetID, xCoor, yCoor, annotationWidth, annotationHeight, startTime, endTime, annotationText, callback);
 			
-			var baseXML:XML = setupAnnotation(mediaAssetID);
-			
-			// Set All of the annotations data
-			baseXML.service.args["meta"]["r_annotation"]["x"] = xCoor;
-			baseXML.service.args["meta"]["r_annotation"]["y"] = yCoor;
-			baseXML.service.args["meta"]["r_annotation"]["width"] = Math.round(annotationWidth);
-			baseXML.service.args["meta"]["r_annotation"]["height"] = Math.round(annotationHeight);
-			baseXML.service.args["meta"]["r_annotation"]["start"] = startTime;
-			baseXML.service.args["meta"]["r_annotation"]["end"] = endTime;
-			baseXML.service.args["meta"]["r_annotation"]["text"] = annotationText;
-
-			// This annotation is a 'Annotation' annotation, lol, not a comment
-			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = Model_Commentary.ANNOTATION_BOX_TYPE_ID + "";
-			
-			// Try and save, then call the callback.
-			if(_connection.sendRequest(baseXML, function(e:Event):void {
-				setClassAndCreateNotification(mediaAssetID, e, callback);
-			})) {
-				trace("- App Model: Annotation Saved");
-				//All good
-			} else {
-				Alert.show("Could not save annotation");
-			}
-		}
-		
-		private function setClassAndCreateNotification(mediaAssetID:Number, e:Event, callback:Function):void {
-			var dataXML:XML = XML(e.target.data);
-			if(dataXML.reply.@type != "result") {
-				callback(e);
-			} else {
-				AppModel.getInstance().sendNotification(mediaAssetID, Model_Notification.ANNOTATION_ON_MEDIA, dataXML.reply.result.id);
-				AppModel.getInstance().setAnnotationClassForID(dataXML.reply.result.id, function(event:Event):void {
-					callback(e);	
-				});
-			}
 		}
 		
 		public function copyAccess(copyFromID:Number, copyToID:Number, dontIncludeCurrentUser:Boolean = false):void {
@@ -613,7 +488,13 @@ package Model {
 			baseXML.service.args["scheme"] = "recensio";
 			baseXML.service.args["class"] = "base/resource/annotation";
 			baseXML.service.args["id"] = annotationID;
-			_connection.sendRequest(baseXML, callback);
+			_connection.sendRequest(baseXML, function(e:Event):void {
+				trace("App Model: Annotation Class Saved");
+				trace("*************************");
+				if(callback != null) {
+					callback(e);
+				}
+			});
 		}
 		
 		// Sets a saved asset to have the correct class
@@ -1295,7 +1176,8 @@ package Model {
 		 * 
 		 */		
 		public function sendNotification(mediaID:Number, type:String, assetID:Number = 0):void {
-			var transaction:Transaction_Notification = new Transaction_Notification(mediaID, type, _connection, assetID);
+			var transaction:Transaction_Notification = new Transaction_Notification(_connection);
+			transaction.sendNotification(mediaID, type, assetID);
 		}
 		
 		public function getNotifications(callback:Function):void {
@@ -1304,8 +1186,12 @@ package Model {
 			args.action = "get-meta";
 			args['get-related-meta'] = true;
 			var baseXML:XML = _connection.packageRequest('asset.query', args, true);
-			trace("notification query", baseXML);
 			_connection.sendRequest(baseXML, callback);
+		}
+		
+		public function deleteNotification(notificationID:Number):void {
+			var transaction:Transaction_Notification = new Transaction_Notification(_connection);
+			transaction.deleteNotificationForUser(notificationID);
 		}
 	}
 		

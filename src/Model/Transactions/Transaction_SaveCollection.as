@@ -21,10 +21,9 @@ package Model.Transactions {
 		private var collectionTitle:String;
 		private var _callback:Function;
 		private var _connection:Connection;
-		private var existingAssets:Number = 0;
+		private var existingAssetsCount:Number = 0;
 		
-		private var assetsRemoved:Array = new Array();
-		private var assetsAdded:Array = new Array();
+		private var existingAssets:Array = new Array();
 		
 		
 		public function Transaction_SaveCollection(connection:Connection, collectionID:Number, collectionTitle:String, mediaAssets:Array, callback:Function) {
@@ -65,12 +64,17 @@ package Model.Transactions {
 			if (dataXML.reply.@type == "result") {
 				//var items:XMLList = (dataXML.reply.result.related.(@type=="has_child").to as XMLList);
 				var items:XMLList = (dataXML.reply.result.id as XMLList);
-				existingAssets = items.length();
+				existingAssetsCount = items.length();
 				
-				if(existingAssets > 0) {
+				if(existingAssetsCount > 0) {
 					trace("- Deleting Existing Asset Relationships");
 					for each(var item:XML in items) {
+						// Delete the existing relationship
 						deleteRelationship(item.toString());
+						
+						// Store that this relationship existed
+						// We use this later for notifications
+						existingAssets.push(item.toString());	
 					}
 				} else {
 					trace("- No assets currently in collection");
@@ -97,8 +101,8 @@ package Model.Transactions {
 		
 		// Called once the collection no longer has any assets, so that the updated assets list can be re-added
 		private function relationshipDeleted(e:Event):void {
-			existingAssets--;
-			if(existingAssets == 0) {
+			existingAssetsCount--;
+			if(existingAssetsCount == 0) {
 				trace("- All existing relationships removed", e.target.data);
 				createNewRelationships();
 			}
@@ -142,7 +146,37 @@ package Model.Transactions {
 				AppModel.getInstance().copyAccess(collectionID, mediaAssets[i].base_asset_id);
 			}
 			
-//			AppModel.getInstance().sendNotification(collectionID, Model_Notification.
+			// Send notifications
+			// Get out all the media that was added
+			for(i = 0; i < mediaAssets.length; i++) {
+				var mediaAdded:Boolean = true;
+				for(var j:Number = 0; j < existingAssets.length; j++) {
+					if(existingAssets[j] == mediaAssets[i].base_asset_id) {
+						mediaAdded = false;
+						break;
+					}
+				}
+				if(mediaAdded) {
+					AppModel.getInstance().sendNotification(collectionID, Model_Notification.MEDIA_ADDED_TO_COLLECTION, mediaAssets[i].base_asset_id);
+				}
+			}
+			// Get out all the media that was removed
+			for(i = 0; i < existingAssets.length; i++) {
+				var mediaRemoved:Boolean = true;
+				for(j = 0; j < mediaAssets.length; j++) {
+					if(existingAssets[i] == mediaAssets[j].base_asset_id) {
+						mediaRemoved = false;
+						break;
+					}
+				}
+				if(mediaRemoved) {
+					AppModel.getInstance().sendNotification(collectionID, Model_Notification.MEDIA_REMOVED_FROM_COLLECTION, existingAssets[i]);
+				}
+			}
+			
+			
+			
+			
 			// Send a notification 
 			_callback(collectionID);
 		}

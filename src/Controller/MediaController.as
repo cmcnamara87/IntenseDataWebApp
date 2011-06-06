@@ -91,9 +91,6 @@ package Controller {
 //			mediaView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
 //			mediaView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
 			
-			// Listen for 'Save Sharing' autosave
-			mediaView.addEventListener(IDEvent.SHARING_CHANGED, sharingInfoChanged);
-			
 			// Listen for 'Save Annotation'
 			mediaView.addEventListener(IDEvent.ANNOTATION_SAVE_BOX, saveNewBoxAnnotation);
 			mediaView.addEventListener(IDEvent.ANNOTATION_SAVE_PEN, saveNewPenAnnotation);
@@ -175,24 +172,6 @@ package Controller {
 			trace("Deleting a comment:", e.data.assetID);
 			AppModel.getInstance().deleteComment(e.data.assetID);
 		}
-		
-		
-		/**
-		 * Changes the Sharing information for a collection.
-		 * 
-		 * Grants/Revokes access to a collection, and to all of its children assets.
-		 *  
-		 * @param e.username	The username whose access has changed.
-		 * @param e.access		The access ('no-access', 'read' or 'read-write')
-		 * 
-		 */				
-		private function sharingInfoChanged(e:IDEvent):void {
-			var username:String = e.data.username;
-			var access:String = e.data.access;
-			AppModel.getInstance().changeAccess(CollaborationController.getCurrentMediaAssetID(),
-				username, "system", access, true, sharingInfoUpdated);
-		}
-		
 		
  		//Called when an annotation is saved.  Sets the data correctly and pushes the information to the model
 		private function saveNewBoxAnnotation(e:IDEvent):void {
@@ -414,25 +393,7 @@ package Controller {
 				mediaView.detailsSaved(false);
 			}
 		}
-		/**
-		 * The database has replied about updating the collections shared information. 
-		 * @param e
-		 * 
-		 */		
-		private function sharingInfoUpdated(e:Event):void {
-			// Get out the returned data
-			var data:XML = XML(e.target.data);
-			
-			// Was the sharing update not access
-			if(data.reply.@type == "result") {
-				// Sharing update successfully
-				trace("Sharing Updated Successfully", e.target.data);
-				trace("-------------------------");
-			} else {
-				Alert.show("Sharing Update Failed");
-				trace("Sharing Update Failed", e.target.data);
-			} 
-		}
+		
 		
 //		// Loads the asset information, the annotations for the asset, and the current users in mediaflux (for sharing)
 //		private function loadData():void {
