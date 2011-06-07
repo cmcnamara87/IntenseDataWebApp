@@ -19,8 +19,8 @@ package View
 	import View.components.MediaViewer.ImageViewer.ImageViewerOLD;
 	import View.components.MediaViewer.MediaAndAnnotationHolder;
 	import View.components.MediaViewer.MediaViewer;
-	import View.components.MediaViewer.VideoViewer.VideoViewer;
-	import View.components.MediaViewer.Viewer;
+	import View.components.MediaViewer.SpaceViewer;
+	import View.components.MediaViewer.TimelineViewer;
 	import View.components.Panel;
 	import View.components.Sharing.SharingPanel;
 	import View.components.Toolbar;
@@ -212,7 +212,7 @@ package View
 			switch(mediaData.type) {
 				case "image":
 //					mediaViewer = new ImageViewer();
-					mediaViewer = Viewer.getViewer(MediaAndAnnotationHolder.MEDIA_IMAGE);
+					mediaViewer = SpaceViewer.getViewer(MediaAndAnnotationHolder.MEDIA_IMAGE);
 					addAnnotationButton.visible = true;
 					hideShowAnnotationButton.visible = true;
 					break;
@@ -220,11 +220,15 @@ package View
 					mediaViewer = new AudioView();
 					break;
 				case "video":
-					mediaViewer = new Videoview();
+//					mediaViewer = TimelineViewer.getViewer(MediaAndAnnotationHolder.MEDIA_VIDEO);//new Videoview();
+					mediaViewer = SpaceViewer.getViewer(MediaAndAnnotationHolder.MEDIA_VIDEO);//new Videoview();
+//					mediaViewer = new Videoview();
+					addAnnotationButton.visible = true;
+					hideShowAnnotationButton.visible = true;
 					break;
 				case "document":
 //					mediaViewer = new Module.PDFViewer.PDFViewer();
-					mediaViewer = Viewer.getViewer(MediaAndAnnotationHolder.MEDIA_PDF);
+					mediaViewer = SpaceViewer.getViewer(MediaAndAnnotationHolder.MEDIA_PDF);
 					addAnnotationButton.visible = true;
 					hideShowAnnotationButton.visible = true;
 //					mediaViewer = new Module.PDFViewer.PDFViewer();

@@ -14,6 +14,7 @@ package View.components.MediaViewer
 	import View.components.Annotation.AnnotationToolbar;
 	import View.components.MediaViewer.ImageViewer.ImageMedia;
 	import View.components.MediaViewer.PDFViewer.PDF;
+	import View.components.MediaViewer.VideoViewer.VideoMedia;
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -29,6 +30,7 @@ package View.components.MediaViewer
 	{
 		public static const MEDIA_PDF:String = "pdf";
 		public static const MEDIA_IMAGE:String = "image";
+		public static const MEDIA_VIDEO:String = "video";
 		
 		private var mediaType:String; // The type of media we are using
 		private var sourceURL:String; // The URL of the media we are using
@@ -69,13 +71,15 @@ package View.components.MediaViewer
 				media = new PDF(sourceURL);
 			} else if (mediaType == MEDIA_IMAGE) {
 				media = new ImageMedia(sourceURL);
+			} else if (mediaType == MEDIA_VIDEO) {
+				media = new VideoMedia(sourceURL);
 			}
 			media.visible = false;
 			this.addChild(media);
 			
 			trace("media issss", media);
 			// Listen for the media to have finished loaded, and then to have added to the display
-			media.addEventListener(IDEvent.MEDIA_LOADED, sourceLoaded);
+			this.addEventListener(IDEvent.MEDIA_LOADED, sourceLoaded);
 			
 			
 			media.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {

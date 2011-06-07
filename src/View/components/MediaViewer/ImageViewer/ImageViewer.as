@@ -1,4 +1,4 @@
-package View.components.MediaViewer
+package View.components.MediaViewer.ImageViewer
 {
 	import Lib.it.transitions.Tweener;
 	
@@ -7,12 +7,19 @@ package View.components.MediaViewer
 	
 	import spark.components.HSlider;
 	import spark.components.Label;
+	import View.components.MediaViewer.MediaAndAnnotationHolder;
+	import View.components.MediaViewer.SpaceViewer;
 
-	public class ImageViewer extends Viewer
+	public class ImageViewer extends SpaceViewer
 	{
-		public function ImageViewer(mediaType:String)
+		public function ImageViewer()
 		{
-			super(mediaType);
+			super(MediaAndAnnotationHolder.MEDIA_IMAGE);
+		}
+		
+		override protected function makeMedia():MediaAndAnnotationHolder {
+			trace("asdfasdf", mediaType);
+			return new MediaAndAnnotationHolder(mediaType);
 		}
 		
 		override protected function makeBottomToolbar():void {

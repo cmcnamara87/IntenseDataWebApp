@@ -1,4 +1,4 @@
-package View.components.MediaViewer
+package View.components.MediaViewer.PDFViewer
 {
 	import Lib.it.transitions.Tweener;
 	
@@ -16,8 +16,10 @@ package View.components.MediaViewer
 	import spark.components.Label;
 	import spark.components.TextInput;
 	import spark.primitives.Line;
+	import View.components.MediaViewer.MediaAndAnnotationHolder;
+	import View.components.MediaViewer.SpaceViewer;
 
-	public class PDFViewer extends Viewer
+	public class PDFViewer extends SpaceViewer
 	{
 		// GUI
 		private var searchInput:TextInput; // The search box
@@ -30,9 +32,13 @@ package View.components.MediaViewer
 												// 0 <= selectedSearchResult < searchResultYCoors.length
 		private var searchResultLabel:Label; 
 		
-		public function PDFViewer(mediaType:String)
+		public function PDFViewer()
 		{
-			super(mediaType);
+			super(MediaAndAnnotationHolder.MEDIA_PDF);
+		}
+		
+		override protected function makeMedia():MediaAndAnnotationHolder {
+			return new MediaAndAnnotationHolder(mediaType);
 		}
 		
 		override protected function makeBottomToolbar():void {

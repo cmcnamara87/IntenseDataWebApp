@@ -55,7 +55,7 @@ package View.components.MediaViewer
 	import spark.layouts.VerticalAlign;
 	import spark.layouts.VerticalLayout;
 	
-	public class Viewer extends MediaViewer implements MediaViewerInterface
+	public class TimelineViewer extends MediaViewer implements MediaViewerInterface
 	{
 		protected var mediaType:String;
 		
@@ -65,7 +65,7 @@ package View.components.MediaViewer
 		
 		
 		private var scrollerContents:Group; // The contents of the scrollbar (the image and the annotations)
-			
+		
 		private var annotationTextOverlayBox:AnnotationTextOverlayBox; // The box that houses the annotation text content
 		
 		protected var scrollerAndOverlayGroup:Group;
@@ -108,7 +108,7 @@ package View.components.MediaViewer
 		
 		protected var sliderResizerContainer:BorderContainer;
 		
-		public function Viewer(mediaType:String)
+		public function TimelineViewer(mediaType:String)
 		{
 			super();
 			this.mediaType = mediaType;
@@ -128,44 +128,45 @@ package View.components.MediaViewer
 			
 			
 			// Creatoe a group for the Image Scroller and the Annotation Text Overlay
-			scrollerAndOverlayGroup = new Group();
-			scrollerAndOverlayGroup.percentHeight = 100;
-			scrollerAndOverlayGroup.percentWidth = 100;
-			this.addElement(scrollerAndOverlayGroup);
+//			scrollerAndOverlayGroup = new Group();
+//			scrollerAndOverlayGroup.percentHeight = 100;
+//			scrollerAndOverlayGroup.percentWidth = 100;
+//			this.addElement(scrollerAndOverlayGroup);
 			
 			// Create scroller so we can scroll
-			myScroller = new Scroller();
-			myScroller.percentHeight = 100;
-			myScroller.percentWidth = 100;
+//			myScroller = new Scroller();
+//			myScroller.percentHeight = 100;
+//			myScroller.percentWidth = 100;
 			
 			// This group will contain the image
 			// And this group is placed inside the scroller
-			scrollerContents = new Group();
-			scrollerContents.percentHeight = 100;
-			scrollerContents.percentWidth = 100;
+//			scrollerContents = new Group();
+//			scrollerContents.percentHeight = 100;
+//			scrollerContents.percentWidth = 100;
 			
-			// So we can align the image/annotations vertically
-			var verticalAlignGroup:HGroup = new HGroup();
-			verticalAlignGroup.percentHeight = 100;
-			verticalAlignGroup.percentWidth = 100;
-			verticalAlignGroup.verticalAlign = VerticalAlign.MIDDLE;
-			scrollerContents.addElement(verticalAlignGroup);
+//			 So we can align the image/annotations vertically
+//			var verticalAlignGroup:HGroup = new HGroup();
+//			verticalAlignGroup.percentHeight = 100;
+//			verticalAlignGroup.percentWidth = 100;
+//			verticalAlignGroup.verticalAlign = VerticalAlign.MIDDLE;
+//			scrollerContents.addElement(verticalAlignGroup);
+//			
+//			// So we can align the image/annotations horizontally.
+//			var horizontalAlignGroup:VGroup = new VGroup();
+//			horizontalAlignGroup.percentWidth = 100;
+//			horizontalAlignGroup.horizontalAlign = HorizontalAlign.CENTER;
+//			verticalAlignGroup.addElement(horizontalAlignGroup);
+//			
+//			// Adding the group to the scroller
+//			myScroller.viewport = scrollerContents;
+//			scrollerAndOverlayGroup.addElement(myScroller);
 			
-			// So we can align the image/annotations horizontally.
-			var horizontalAlignGroup:VGroup = new VGroup();
-			horizontalAlignGroup.percentWidth = 100;
-			horizontalAlignGroup.horizontalAlign = HorizontalAlign.CENTER;
-			verticalAlignGroup.addElement(horizontalAlignGroup);
-			
-			// Adding the group to the scroller
-			myScroller.viewport = scrollerContents;
-			scrollerAndOverlayGroup.addElement(myScroller);
-			
-			// The group that will contain the Image and its Annotations
+//			 The group that will contain the Image and its Annotations
 			mediaGroup = new Group();
-			horizontalAlignGroup.addElement(mediaGroup);
+//			horizontalAlignGroup.addElement(mediaGroup);
+			this.addElement(mediaGroup);
 			
-			media = new MediaAndAnnotationHolder(mediaType);
+			media = makeMedia();
 			mediaGroup.addElement(media);
 			
 			loadingLabel = new Label();
@@ -202,13 +203,13 @@ package View.components.MediaViewer
 			bottomLayout.verticalAlign = "middle";
 			bottomLayout.horizontalAlign = "right";
 			sliderResizerContainer.layout = bottomLayout;
-		
+			
 			makeBottomToolbar();
 			
 			annotationTextOverlayBox = new AnnotationTextOverlayBox();
 			annotationTextOverlayBox.visible = false;
-			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
-			
+//			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
+			mediaGroup.addElement(annotationTextOverlayBox);
 			
 			// Event Listeners
 			this.addEventListener(Event.CANCEL, cancelAnnotationButtonClicked);
@@ -224,21 +225,13 @@ package View.components.MediaViewer
 					loadingLabel.includeInLayout = false;
 				}
 			});
-			media.addEventListener(IDEvent.PAGE_LOADED, function(e:IDEvent):void {
-				loadingLabel.visible = true;
-				loadingLabel.includeInLayout = true;
-				loadingLabel.text = "Loading Page " + e.data.page + " of " + e.data.totalPages;
-				if(e.data.page == e.data.totalPages) {
-					loadingLabel.visible = false;
-					loadingLabel.includeInLayout = false;
-				}
-			});
-			
+
 			this.addEventListener(IDEvent.SCROLL_TO_ANNOTATION, function(e:IDEvent):void {
 				trace("Showing annotation from annotation list");
 				scrollToPoint(e.data.xCoor - 10, e.data.yCoor - 10);
 			});
 		}
+		
 		
 		/**
 		 * Creates a new Viewer based on hte media type 
@@ -246,19 +239,13 @@ package View.components.MediaViewer
 		 * @return A viewer
 		 * 
 		 */		
-		public static function getViewer(mediaType:String):Viewer {
-			switch(mediaType) {
-				case MediaAndAnnotationHolder.MEDIA_PDF:
-					trace("Creating PDF viewr");
-					return new PDFViewer(mediaType);
-					break;
-				case MediaAndAnnotationHolder.MEDIA_IMAGE:
-					trace("Creating image viewer");
-					return new ImageViewer(mediaType);
-					break;
-				default:
-					trace("Unknown Viewer type");
-			}
+		public static function getViewer(mediaType:String):TimelineViewer {
+//			switch(mediaType) {
+//				case MediaAndAnnotationHolder.MEDIA_VIDEO:
+//					return new VideoViewer();
+//				default:
+//					trace("Unknown Viewer type");
+//			}
 			return null;
 		}
 		
@@ -269,6 +256,11 @@ package View.components.MediaViewer
 		 */		
 		protected function makeBottomToolbar():void {
 			trace("Viewer:makeBottomToolbar Should be overwritten");
+		}
+		
+		protected function makeMedia():MediaAndAnnotationHolder {
+			trace("Viewer:makeMedia Should be overwritten");
+			return null;
 		}
 		
 		/**
@@ -401,7 +393,7 @@ package View.components.MediaViewer
 		}
 		
 		/* ===================== EVENT LISTENER FUNCTIONS ====================== */
-
+		
 		
 		
 		override public function saveNewAnnotation():void {
@@ -458,7 +450,7 @@ package View.components.MediaViewer
 		
 		
 		
-			
+		
 		/* ============= HELPER FUNCTIONS ============= */
 		
 		/**
@@ -483,7 +475,7 @@ package View.components.MediaViewer
 			annotationTextOverlayBox.visible = false;
 			annotationTextOverlayBox.setText("");
 		}
-
+		
 		/**
 		 * Shows hte text overlay in view mode. 
 		 * 
@@ -499,7 +491,8 @@ package View.components.MediaViewer
 				scrollerAndOverlayGroup.removeElement(annotationTextOverlayBox);
 			}
 			annotationTextOverlayBox = new AnnotationTextOverlayBox();
-			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
+//			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
+			mediaGroup.addElement(annotationTextOverlayBox);
 			
 			
 			if(bottom) {
@@ -536,7 +529,8 @@ package View.components.MediaViewer
 				scrollerAndOverlayGroup.removeElement(annotationTextOverlayBox);
 			}
 			annotationTextOverlayBox = new AnnotationTextOverlayBox();
-			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
+//			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
+			mediaGroup.addElement(annotationTextOverlayBox);
 			
 			// Put the Annotation Text Overlay in edit mode
 			// So the user can write the text for their new annotation

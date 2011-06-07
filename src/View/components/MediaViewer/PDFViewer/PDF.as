@@ -7,7 +7,7 @@ package View.components.MediaViewer.PDFViewer {
 	
 	import Module.PDFViewer.PDFAnnotation;
 	
-	import View.components.MediaViewer.Viewer;
+	import View.components.MediaViewer.SpaceViewer;
 	
 	import flash.display.Loader;
 	import flash.display.MovieClip;
@@ -74,7 +74,7 @@ package View.components.MediaViewer.PDFViewer {
 		
 		
 		private var SWFLoader:Loader;
-		private var viewer:Viewer;
+		private var viewer:SpaceViewer;
 		
 		private var annotationsInsert:Array = new Array();
 		public var loadedAnnotations:Boolean = false;
