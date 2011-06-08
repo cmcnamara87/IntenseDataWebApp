@@ -45,7 +45,11 @@ package View.Element {
 		// Sets the progress of the upload
 		public function setProgress(newText:String,percentage:String):void {
 			if(newText != "") {
-				var extension:String = newText.substr(newText.length-3);
+				// TODO CRAIG only matches last 3 characters, should relaly fix this up
+				// for things like JPEG, only matches 'peg', which is fine, since no other allowed
+				// file string has PEG in it.
+				var extension:String =  newText.substr(newText.length-3).toLowerCase();
+				trace("extension is", extension);
 				var fileTypes:Array = AssetLookup.getFileTypes();
 				var fileType:String = "";
 				for(var i:Number=0; i<fileTypes.length; i++) {
