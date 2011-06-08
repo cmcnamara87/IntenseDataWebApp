@@ -76,6 +76,7 @@ package Controller {
 		private function logoutClicked(e:MouseEvent):void {
 			trace("log out button clicked");
 			showLogoutButton = false;
+			layout.notificationPanel.visible = false;
 			Dispatcher.logout();
 		}
 		
