@@ -1,5 +1,6 @@
 package View.components.MediaViewer.VideoViewer
 {
+	import Controller.Dispatcher;
 	import Controller.IDEvent;
 	
 	import flash.events.AsyncErrorEvent;
@@ -13,6 +14,7 @@ package View.components.MediaViewer.VideoViewer
 	import flash.net.ObjectEncoding;
 	import flash.utils.setTimeout;
 	
+	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
 	import mx.events.VideoEvent;
@@ -26,11 +28,8 @@ package View.components.MediaViewer.VideoViewer
 	public class VideoMedia extends UIComponent
 	{
 		private var video:Video = new Video();
-		private var sourceURL:String;
-		
-		
 		private var _rtmpUri:String = "rtmp://recensio.dyndns.org/vod/";
-		private var _fileName:String = "";
+		private var sourceURL:String = "";
 		
 		private var _netConnection:NetConnection;
 		private var _netStream:NetStream;
@@ -41,23 +40,30 @@ package View.components.MediaViewer.VideoViewer
 		
 		public function VideoMedia(sourceURL:String) {
 			super();
-
-			trace("video content uri", sourceURL);
+			trace("Video URL", sourceURL);
+			this.sourceURL = sourceURL.substring(sourceURL.lastIndexOf("\\")+1, sourceURL.length);
 			
-			_fileName =	sourceURL.substring(sourceURL.lastIndexOf("\\")+1, sourceURL.length);
-			trace("filename", _fileName);
+			// Setup the net connection
 			_netConnection = new NetConnection();
 			_netConnection.call("checkBandwidth", null);
-			_netConnection.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionStatus );
+			// Listen for the net connection status to change (e.g. when its ready, or when its playing, its a lot of stuff)
+			_netConnection.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionStatus);
+			
+			// A whole bunch of crap associated with the netconnection
 			_netConnection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityError);
 			_netConnection.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onAsyncError );
 			_netConnection.objectEncoding = ObjectEncoding.AMF3;
 			_netConnection.client = this;
 			
+			// Connect to the stream
 			_netConnection.connect( _rtmpUri, "model.logedinUser.username");
-
 		}
 		
+		/**
+		 * The connections status has been updated. 
+		 * @param e
+		 * 
+		 */		
 		private function onNetConnectionStatus(e:NetStatusEvent):void {
 			var code:String = e.info.code;
 			trace("NETCONNECTION:"+code);
@@ -101,6 +107,8 @@ package View.components.MediaViewer.VideoViewer
 //						_playing = true;
 //					}
 					break;
+				case "NetStream.Play.InsufficientBW":
+					break;
 				case "NetConnection.Connect.Success":
 					connectVideoStream();
 					break;
@@ -121,10 +129,16 @@ package View.components.MediaViewer.VideoViewer
 			}
 		}
 		
-		
+		/**
+		 * Connects the netStream to the net connection that has been successfully made. 
+		 * 
+		 */		
 		private function connectVideoStream():void {
 			_netStream = new NetStream(_netConnection);
+			// Listen for status events
 			_netStream.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionStatus);
+			
+			// Set the default buffer time
 			_netStream.bufferTime = 5;
 			_netStream.inBufferSeek = true;
 			_netStream.backBufferTime = 30;
@@ -141,7 +155,7 @@ package View.components.MediaViewer.VideoViewer
 			video.attachNetStream(_netStream);
 			video.visible = true;
 			
-			_netStream.play(_fileName,0);
+			_netStream.play(sourceURL,0);
 		}
 		
 		public function onMetaData(info:Object):void {
@@ -162,13 +176,19 @@ package View.components.MediaViewer.VideoViewer
 		
 		
 		private function onAsyncError(e:AsyncErrorEvent):void {
-			trace("SOME ERROR #1");
+			trace("Async Error", e);
+			Alert.show("Async error occured on this video");
+			Dispatcher.call("browse");
 		}
 		
 		private function onSecurityError(e:SecurityErrorEvent):void {
-			trace("SOME ERROR #2");
+			trace("Security Error Received", e);
+			Alert.show("A Security Error has occured with this video.");
+			Dispatcher.call("browse");
 		}
 		
+		
+		/* ====================== NETSTREAM REQUIRED FUNCTIONS ============================ */
 		public function onBWDone(a:*=null,b:*=null,c:*=null,d:*=null):void {
 			trace("THIS IS SOMETHING");
 		}
@@ -177,5 +197,15 @@ package View.components.MediaViewer.VideoViewer
 			return 0;
 		} 
 		
+		public function onPlayStatus(e:Object):void {
+			var code:String = e.code;
+			trace("Play status", code);
+			if(code == "NetStream.Play.Complete") {
+				trace("Video Finished Playing");
+				trace("**********************");
+			}
+		}
 	}
 }
+
+

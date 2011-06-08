@@ -56,6 +56,7 @@ package View.components.MediaViewer
 	import spark.layouts.HorizontalLayout;
 	import spark.layouts.VerticalAlign;
 	import spark.layouts.VerticalLayout;
+	import View.components.MediaViewer.VideoViewer.VideoViewer;
 	
 	public class SpaceViewer extends MediaViewer implements MediaViewerInterface
 	{
