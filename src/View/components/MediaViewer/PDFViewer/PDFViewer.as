@@ -52,7 +52,6 @@ package View.components.MediaViewer.PDFViewer
 			resizeSlider.minimum = 10;
 			resizeSlider.value = 100;
 			sliderResizerContainer.addElement(resizeSlider);
-			this.addElement(sliderResizerContainer);
 			
 			var zoomInLabel:Label = new Label();
 			zoomInLabel.text = 'Zoom In';

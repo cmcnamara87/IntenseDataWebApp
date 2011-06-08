@@ -34,7 +34,7 @@ package View.components.MediaViewer.VideoViewer
 		private var _netConnection:NetConnection;
 		private var _netStream:NetStream;
 		
-		private var _metaData:Object = { duration:0, width: 0, height: 0 ,videoKeyFrameFrequence:.5};
+		private var _metaData:Object = {duration:0, width: 0, height: 0 , videoKeyFrameFrequence:.5};
 		
 		private var videoPlayer:VideoDisplay;
 		
@@ -158,23 +158,6 @@ package View.components.MediaViewer.VideoViewer
 			_netStream.play(sourceURL,0);
 		}
 		
-		public function onMetaData(info:Object):void {
-			_metaData = info;
-			video.width = info.width;
-			video.height = info.height;
-			
-			
-			this.height = video.height;
-			this.width = video.width;
-			
-			var event:IDEvent = new IDEvent(IDEvent.MEDIA_LOADED, true);
-			dispatchEvent(event);
-			
-//			delegate.setDuration(_metaData.duration);
-//			resize();
-		}
-		
-		
 		private function onAsyncError(e:AsyncErrorEvent):void {
 			trace("Async Error", e);
 			Alert.show("Async error occured on this video");
@@ -189,6 +172,22 @@ package View.components.MediaViewer.VideoViewer
 		
 		
 		/* ====================== NETSTREAM REQUIRED FUNCTIONS ============================ */
+		public function onMetaData(info:Object):void {
+			_metaData = info;
+			video.width = info.width;
+			video.height = info.height;
+			
+			
+			this.height = video.height;
+			this.width = video.width;
+			
+			var event:IDEvent = new IDEvent(IDEvent.MEDIA_LOADED, true);
+			dispatchEvent(event);
+			
+			//			delegate.setDuration(_metaData.duration);
+			//			resize();
+		}
+		
 		public function onBWDone(a:*=null,b:*=null,c:*=null,d:*=null):void {
 			trace("THIS IS SOMETHING");
 		}

@@ -205,7 +205,8 @@ package View.components.MediaViewer
 			bottomLayout.verticalAlign = "middle";
 			bottomLayout.horizontalAlign = "right";
 			sliderResizerContainer.layout = bottomLayout;
-		
+			this.addElement(sliderResizerContainer);
+			
 			makeBottomToolbar();
 			
 			annotationTextOverlayBox = new AnnotationTextOverlayBox();
