@@ -3,6 +3,7 @@ package Model {
 	import Controller.Dispatcher;
 	import Controller.Utilities.Auth;
 	
+	import Model.Transactions.Transaction_ChangeAccess;
 	import Model.Transactions.Transaction_ChangePassword;
 	import Model.Transactions.Transaction_CopyAccess;
 	import Model.Transactions.Transaction_CreateUser;
@@ -296,40 +297,43 @@ package Model {
 		}
 		
 		public function changeAccess(collectionID:Number, username:String, domain:String, access:String, related:Boolean, callback:Function=null):void {
-			var args:Object = new Object();
+			var transaction:Transaction_ChangeAccess = new Transaction_ChangeAccess(_connection);
+			transaction.changeAccess(collectionID, username, domain, access, related, callback);
 			
-			trace("Changing access on collection", collectionID);
-			trace("Access for", domain, username, access);
-			var baseXML:XML;
-			
-			if(access == SharingPanel.NOACCESS) {
-				trace("Should be revoking access");
-				// We want to revoke a users access to this asset
-				baseXML = _connection.packageRequest('asset.acl.revoke', args, true);
-				baseXML.service.args.acl.id = collectionID;
-				baseXML.service.args.acl.actor = domain + ":" + username;
-				baseXML.service.args.acl.actor.@type = "user";
-				// Update all the related assets
-				baseXML.service.args.related = true;
-			} else {
-				trace("Should be granting access");
-				// We are granting access to the asset for a user
-				// Example mediaflux statement asset.acl.grant :acl < :id 1718 :actor system:coke -type user :access read-write >
-				baseXML = _connection.packageRequest('asset.acl.grant', args, true);
-				baseXML.service.args.acl.id = collectionID;
-				baseXML.service.args.acl.actor = domain + ":" + username;
-				baseXML.service.args.acl.actor.@type = "user";
-				baseXML.service.args.acl.access = access;
-				// Update all the related assets
-				baseXML.service.args.related = true;
-			}
-			
-			// Send the connection
-			if(_connection.sendRequest(baseXML, callback)) {
-				//All good
-			} else {
-				Alert.show("Could not change access properties");
-			}
+//			var args:Object = new Object();
+//			
+//			trace("Changing access on collection", collectionID);
+//			trace("Access for", domain, username, access);
+//			var baseXML:XML;
+//			
+//			if(access == SharingPanel.NOACCESS) {
+//				trace("Should be revoking access");
+//				// We want to revoke a users access to this asset
+//				baseXML = _connection.packageRequest('asset.acl.revoke', args, true);
+//				baseXML.service.args.acl.id = collectionID;
+//				baseXML.service.args.acl.actor = domain + ":" + username;
+//				baseXML.service.args.acl.actor.@type = "user";
+//				// Update all the related assets
+//				baseXML.service.args.related = true;
+//			} else {
+//				trace("Should be granting access");
+//				// We are granting access to the asset for a user
+//				// Example mediaflux statement asset.acl.grant :acl < :id 1718 :actor system:coke -type user :access read-write >
+//				baseXML = _connection.packageRequest('asset.acl.grant', args, true);
+//				baseXML.service.args.acl.id = collectionID;
+//				baseXML.service.args.acl.actor = domain + ":" + username;
+//				baseXML.service.args.acl.actor.@type = "user";
+//				baseXML.service.args.acl.access = access;
+//				// Update all the related assets
+//				baseXML.service.args.related = true;
+//			}
+//			
+//			// Send the connection
+//			if(_connection.sendRequest(baseXML, callback)) {
+//				//All good
+//			} else {
+//				Alert.show("Could not change access properties");
+//			}
 		}
 		/**
 		 * Saves a new comment, either a reply or a new comment
