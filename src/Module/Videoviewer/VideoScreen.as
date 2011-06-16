@@ -198,22 +198,24 @@ package Module.Videoviewer {
 		}
 		
 		private function connectVideoStream():void {
-			_netStream = new NetStream(_netConnection);
-			_netStream.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionStatus);
-			_netStream.bufferTime = 5;
-			_netStream.inBufferSeek = true;
-			_netStream.backBufferTime = 30;
-			_netStream.client = this;
-			_videoPlayer.attachNetStream(_netStream);
-			_videoPlayer.visible = true;
-			_netStream.play(_fileName,0);
-			if(!autoplay) {
-				//pause();
-				delegate.isPaused(true);
-			} else {
-				delegate.isPaused(false);
+			if(_netConnection) {
+				_netStream = new NetStream(_netConnection);
+				_netStream.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionStatus);
+				_netStream.bufferTime = 5;
+				_netStream.inBufferSeek = true;
+				_netStream.backBufferTime = 30;
+				_netStream.client = this;
+				_videoPlayer.attachNetStream(_netStream);
+				_videoPlayer.visible = true;
+				_netStream.play(_fileName,0);
+				if(!autoplay) {
+					//pause();
+					delegate.isPaused(true);
+				} else {
+					delegate.isPaused(false);
+				}
+				_connected = true;
 			}
-			_connected = true;
 		}
 		
 		public function stop():void {

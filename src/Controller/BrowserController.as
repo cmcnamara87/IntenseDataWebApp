@@ -1,4 +1,5 @@
 package Controller {
+	import Controller.Utilities.Auth;
 	import Controller.Utilities.Router;
 	
 	import Lib.LoadingAnimation.LoadAnim;
@@ -38,6 +39,9 @@ package Controller {
 		private static var collectionBeingEditedID:Number; 	// The ID of the collection being edited.
 		
 		private var modifyAccess:Boolean = true;
+		
+		private var collectionData:Model_Collection;
+		
 		public static var currentCollectionID:Number = ALLASSETID; //1576; //ALLASSETID; //1492; //ALLASSETID;	// Stores the ID for the current collection we are viewing
 		public static var currentCollectionTitle:String = ""; // The title of the current collection we are looking at
 		public static var editCollectionName:String = ""; // The title of the current collection we are editing
@@ -544,7 +548,12 @@ package Controller {
 		 * 
 		 */		
 		private function deleteButtonClicked(e:IDEvent):void {
-			var myAlert:Alert = Alert.show("Are you sure you wish to delete this collection?", "Delete Collection", Alert.OK | Alert.CANCEL, null, deleteCollection, null, Alert.CANCEL);
+			if(collectionData.meta_username == Auth.getInstance().getUsername()) {
+				// We are the creator of the collection
+				var myAlert:Alert = Alert.show("Are you sure you wish to delete this collection?", "Delete Collection", Alert.OK | Alert.CANCEL, null, deleteCollection, null, Alert.CANCEL);	
+			} else {
+				myAlert = Alert.show("Are you sure you wish to remove this collection?", "Remove Collection", Alert.OK | Alert.CANCEL, null, deleteCollection, null, Alert.CANCEL);	
+			}
 			myAlert.height = 100;
 			myAlert.width = 300;
 		}
@@ -556,10 +565,10 @@ package Controller {
 		 */		
 		private function deleteCollection(e:CloseEvent):void {
 			if (e.detail==Alert.OK) {
-				AppModel.getInstance().deleteCollection(currentCollectionID, collectionDeleted);
+				AppModel.getInstance().deleteCollection(currentCollectionID, collectionData.meta_username, collectionDeleted);
 				
 				var currentView:BrowserView = (view as Browser).craigsbrowser;
-				
+
 				// The collection was deleted, so lets re-load the 
 				// all assets collection
 				this.saveCurrentCollectionID(ALLASSETID);
@@ -727,6 +736,8 @@ package Controller {
 			// Save the Collections ID
 			this.saveCurrentCollectionID(e.data.assetID);
 			this.modifyAccess = e.data.access;
+			this.collectionData = e.data.collectionData;
+			
 			trace("Saving current collection name", e.data.collectionName);
 			this.saveCurrentCollectionName(e.data.collectionName);
 			

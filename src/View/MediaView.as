@@ -248,8 +248,8 @@ package View
 			// Enable the back button 
 			backButton.enabled = true;
 			downloadButton.enabled = true;
-			trace("- File access permissions:", mediaData.access_modify);
-			if(mediaData.access_modify) {
+			trace("- File access permissions:", mediaData.access_modify_content);
+			if(mediaData.access_modify_content) {
 				deleteAssetButton.enabled = true;
 				addAnnotationButton.enabled = true;
 				
@@ -261,10 +261,10 @@ package View
 			commentsButton.enabled = true;
 //			}
 			
-			mySharingPanel.setUserAccess(mediaData.access_modify);
-			myAnnotationListPanel.setUserAccess(mediaData.access_modify);
-			myEditPanel.setUserAccess(mediaData.access_modify);
-			myCommentsPanel.setUserAccess(mediaData.access_modify);
+			mySharingPanel.setUserAccess(mediaData.access_modify_content);
+			myAnnotationListPanel.setUserAccess(mediaData.access_modify_content);
+			myEditPanel.setUserAccess(mediaData.access_modify_content);
+			myCommentsPanel.setUserAccess(mediaData.access_modify_content);
 		}
 		
 		/**

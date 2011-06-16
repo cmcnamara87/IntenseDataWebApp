@@ -2,6 +2,7 @@ package Model.Transactions
 {
 	import Controller.Utilities.Auth;
 	
+	import Model.AppModel;
 	import Model.Utilities.Connection;
 	
 	import View.components.Panels.Sharing.SharingPanel;
@@ -48,13 +49,17 @@ package Model.Transactions
 		}
 		
 		private function changeShareCount(e:Event):void {
-			var data:XML = XML(e.target.data);
-			if(data.reply.@type != "result") {
+			
+			if(!AppModel.getInstance().callSuccessful(e)) {
 				// We failed to get the assets meta-data, so we should throw an error.
 				trace("Transaction_SetUserAssetShareCount: Failed to get asset meta-data", e.target.data);
-//				callback(e);
+				callback(e);
+				return;
 			}
-			trace("Transaction_SetUserAssetShareCount: Got the sharing data");
+			
+			trace("Transaction_SetUserAssetShareCount: Changing the sharing data");
+			
+			var data:XML = XML(e.target.data);
 			
 			// Get out the current asset count for this user
 			var userShareCounts:XMLList = data.reply.result.asset.meta.id_sharing.user_share_count;
@@ -120,8 +125,14 @@ package Model.Transactions
 			
 			
 			connection.sendRequest(baseXML, function(e:Event):void {
-				trace("Transaction_SetUserAssetShareCount: ", e.target.data);
-				callback(highestAccessLevel);
+				if(!AppModel.getInstance().callSuccessful(e)) {
+					trace("Transaction_SetUserAssetShareCount: Failed to Change User Access Meta");
+					callback(e);
+					return;
+				}
+				
+				trace("Transaction_SetUserAssetShareCount: Changed Successfully");
+				callback(e, highestAccessLevel);
 			});
 		}
 	}

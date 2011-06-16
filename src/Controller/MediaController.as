@@ -140,7 +140,8 @@ package Controller {
 		 */		
 		private function deleteAsset(e:CloseEvent):void {
 			if (e.detail==Alert.OK) {
-				AppModel.getInstance().deleteAsset(currentAssetID, currentMediaData.meta_username);
+				//AppModel.getInstance().deleteAsset(currentAssetID, currentMediaData.meta_username);
+				AppModel.getInstance().deleteMedia(currentAssetID, currentMediaData.meta_username);
 			}
 		}
 		

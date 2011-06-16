@@ -231,23 +231,7 @@ package View
 			trace("Self collection name set as:", name);
 			myShelf.setCollectionName(name);
 		}
-		
-//		/**
-//		 * Sets the Toolbar to 'Fixed Collection' mode. Means no 'share or comments' 
-//		 * 
-//		 */		
-//		public function setToolbarToFixedCollectionMode():void {
-//			myAssetBrowser.setToolbarToFixedCollectionMode();
-//		}
-		
-//		/**
-//		 * Sets the Toolbar to 'Regular' mode. This means showing 'share and comments' 
-//		 * 
-//		 */		
-//		public function setToolbarToRegularCollectionMode():void {
-//			myAssetBrowser.setToolbarToRegularCollectionMode();
-//		}
-		
+
 		/**
 		 * Adds a single asset to the shelf view 
 		 * @param asset the model_media of the asset to be added

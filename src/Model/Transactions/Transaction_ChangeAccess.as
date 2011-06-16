@@ -57,7 +57,13 @@ package Model.Transactions
 			AppModel.getInstance().setUserAssetShareCount(username, assetID, viaAsset, access, setACLs);
 		}
 			
-		private function setACLs(highestAccessLevel:String):void {
+		private function setACLs(e:Event, highestAccessLevel:String = ""):void {
+			if(!AppModel.getInstance().callSuccessful(e)) {
+				trace("Transaction_ChangeAccess: Failed to get/set Highest Access Level");
+				callback(e);
+				return;
+			}
+			
 			this.highestAccessLevel = highestAccessLevel;
 
 			trace("Transaction_ChangeAccess: Changing access on Asset", assetID,  "for", domain, username, "with access", highestAccessLevel);
@@ -88,6 +94,10 @@ package Model.Transactions
 				callback(e);
 				return;
 			}
+			
+			// Tell the controller we have finished changing for this collection, but we 
+			// will keep doing stuff with the children in the background
+			callback(e);
 			
 			trace("Transaction_ChangeAccess: This is a collection, changing access to commentary and assets");
 			// needs to do 2 things
@@ -141,7 +151,11 @@ package Model.Transactions
 				baseXML.service.args.acl.id = assetID;
 				baseXML.service.args.acl.actor = domain + ":" + username;
 				baseXML.service.args.acl.actor.@type = "user";
-				baseXML.service.args.acl.access = accessLevel;
+				baseXML.service.args.acl.content = accessLevel;
+				baseXML.service.args.acl.metadata = "read-write";
+				// TODO work this out, we always have to keep the meta writable, since the id_sharing is in there
+				// and we need to update it.
+				
 				
 				// only update the related assets, if its not a collection
 				baseXML.service.args.related = !isCollection;

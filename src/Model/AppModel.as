@@ -775,6 +775,33 @@ package Model {
 			}
 		}
 		
+		
+		public function deleteCollection(assetID:Number, creatorUsername:String, callback:Function):void {
+			trace("AppModel deleteCollection: Deleting Asset:", assetID, ", creator is: ", creatorUsername);
+			if(Auth.getInstance().isSysAdmin() || creatorUsername == Auth.getInstance().getUsername()) {
+				trace("AppModel deleteCollection: Either the sys admin, or, the current user is the creator of the collection, so delete it");
+				AppModel.getInstance().assetDestroy(assetID, callback);
+			} else {
+				// get the users that have access to this file
+				trace("AppModel deleteCollection: Not the creator, removing access to collection");
+				AppModel.getInstance().changeAccess(assetID, Auth.getInstance().getUsername(), "system", 
+					SharingPanel.NOACCESS, true, callback);
+			}
+		}
+		
+		public function deleteMedia(assetID:Number, creatorUsername:String):void {
+			trace("AppModel deleteMedia: Deleting Asset:", assetID, ", creator is: ", creatorUsername);
+			if(Auth.getInstance().isSysAdmin() || creatorUsername == Auth.getInstance().getUsername()) {
+				trace("AppModel deleteMedia: Either the sys admin, or, the current user is the creator of the file, so delete it");
+				AppModel.getInstance().assetDestroy(assetID, assetDeleted);
+			} else {
+				// get the users that have access to this file
+				trace("AppModel deleteCollection: Not the creator, removing access to media");
+				AppModel.getInstance().changeAccess(assetID, Auth.getInstance().getUsername(), "system", 
+					SharingPanel.NOACCESS, false, assetDeleted);
+			}
+		}
+		
 		/**
 		 * Removes access to an asset for a user (or deletes the asset, if only 1 pesron has asset, or if
 		 * the current user is the creator) 
@@ -782,14 +809,14 @@ package Model {
 		 * @param creator_username		The creator of the asset
 		 * 
 		 */		
-		public function deleteAsset(assetID:Number, creatorUsername:String):void {
-			var transaction:Transaction_DeleteMediaFromUser = new Transaction_DeleteMediaFromUser(
-				assetID,
-				creatorUsername,
-				_connection,
-				assetDeleted
-			);
-		}
+//		public function deleteAsset(assetID:Number, creatorUsername:String):void {
+//			var transaction:Transaction_DeleteMediaFromUser = new Transaction_DeleteMediaFromUser(
+//				assetID,
+//				creatorUsername,
+//				_connection,
+//				assetDeleted
+//			);
+//		}
 		
 		public function assetDestroy(assetID:Number, callback:Function):void {
 			trace("Destroying asset", assetID);
@@ -904,16 +931,16 @@ package Model {
 		}
 		
 		// Deletes a collection
-		public function deleteCollection(assetID:Number, callback:Function):void {
-			var args:Object = new Object();
-			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
-			baseXML.service.args["id"] = assetID;
-			if(_connection.sendRequest(baseXML, callback)) {
-				//All good
-			} else {
-				Alert.show("Could not delete collection");
-			}
-		}
+//		public function deleteCollection(assetID:Number, callback:Function):void {
+//			var args:Object = new Object();
+//			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
+//			baseXML.service.args["id"] = assetID;
+//			if(_connection.sendRequest(baseXML, callback)) {
+//				//All good
+//			} else {
+//				Alert.show("Could not delete collection");
+//			}
+//		}
 		
 		
 		
@@ -1304,6 +1331,11 @@ package Model {
 		{
 			var transaction:Transaction_SetUserAssetShare = new Transaction_SetUserAssetShare(username, assetID, viaAsset, accessLevel, _connection, callback);
 			
+		}
+		
+		public function callSuccessful(e:Event):Boolean {
+			var dataXML:XML = XML(e.target.data);
+			return (dataXML.reply.@type == "result");
 		}
 	}
 		

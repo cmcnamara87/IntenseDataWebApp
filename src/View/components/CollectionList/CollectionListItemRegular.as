@@ -66,8 +66,9 @@ package View.components.CollectionList
 			trace('collection clicked id: ', collectionData.base_asset_id);
 			var clickEvent:IDEvent = new IDEvent(IDEvent.ASSET_COLLECTION_CLICKED,true);
 			clickEvent.data.assetID = collectionData.base_asset_id;
-			clickEvent.data.access = collectionData.access_modify;
+			clickEvent.data.access = collectionData.access_modify_content;
 			clickEvent.data.collectionName = collectionData.meta_title;
+			clickEvent.data.collectionData = this.collectionData;
 			this.dispatchEvent(clickEvent);
 			
 		}

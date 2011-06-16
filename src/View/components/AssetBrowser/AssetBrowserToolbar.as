@@ -188,6 +188,7 @@ package View.components.AssetBrowser
 		public function setToolbarToRegularCollectionMode(modifyAccess:Boolean):void {
 			trace("Setting toolbar to regular collection mode, access type", modifyAccess);
 			if(modifyAccess) {
+				// We have Full access to the collection
 				uploadNewAssetButton.visible = true;
 				uploadNewAssetButton.includeInLayout = true;
 				
@@ -201,6 +202,7 @@ package View.components.AssetBrowser
 				editButton.includeInLayout = true;
 				
 				deleteButton.visible = true;
+				deleteButton.label = "Delete Collection";
 				deleteButton.includeInLayout = true;
 				
 				deleteShareLine.visible = true;
@@ -212,20 +214,22 @@ package View.components.AssetBrowser
 				commentsButton.visible = true;
 				commentsButton.includeInLayout = true;
 			} else {
+				// We only have view access to the collection
 				uploadNewAssetButton.visible = false;
 				uploadNewAssetButton.includeInLayout = false;
 				
 				uploadSearchLine.visible = false;
 				uploadSearchLine.includeInLayout = false;
 				
-				searchEditLine.visible = false;
-				searchEditLine.includeInLayout = false;
+				searchEditLine.visible = true;
+				searchEditLine.includeInLayout = true;
 				
 				editButton.visible = false;
 				editButton.includeInLayout = false;
 				
-				deleteButton.visible = false;
-				deleteButton.includeInLayout = false;
+				deleteButton.visible = true;
+				deleteButton.label = "Remove Collection";
+				deleteButton.includeInLayout = true;
 				
 				deleteShareLine.visible = true;
 				deleteShareLine.includeInLayout = true;

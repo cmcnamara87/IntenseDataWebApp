@@ -7,6 +7,8 @@ package View
 	import Model.AppModel;
 	import Model.Model_User;
 	
+	import View.components.IDButton;
+	import View.components.IDGUI;
 	import View.components.SubToolbar;
 	import View.components.Toolbar;
 	
@@ -26,6 +28,7 @@ package View
 	import spark.components.Label;
 	import spark.components.Scroller;
 	import spark.components.VGroup;
+	import spark.layouts.HorizontalAlign;
 	import spark.layouts.VerticalLayout;
 	import spark.primitives.Line;
 
@@ -60,6 +63,8 @@ package View
 		
 		private var subToolbarLabel:Label;
 		
+		private var centeringGroup:VGroup
+		
 		public function ProfileView()
 		{
 			// Setup size
@@ -92,36 +97,36 @@ package View
 				heading.setStyle('fontSize', 16);
 				myToolbar.addElement(heading);
 				
-				var uploadSearchLine:Line = new Line();
-				uploadSearchLine.percentHeight = 100;
-				uploadSearchLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
+				var uploadSearchLine:Line = IDGUI.makeLine();
 				myToolbar.addElement(uploadSearchLine);
 				
 				// Add Add User button
-				addUserButton = new Button();
-				addUserButton.percentHeight = 100;
-				addUserButton.label = 'Add User';
+				addUserButton = new IDButton('Add User');
+				addUserButton.enabled = false;
 				myToolbar.addElement(addUserButton);
 
+				var addUserLine:Line = IDGUI.makeLine();
+				myToolbar.addElement(addUserLine);
+				
 				// Create user dropdown list here
 				// Has all the users in the database
 				// Lets the user change between users to edit their details
 				userListComboBox = new ComboBox();
+				userListComboBox.enabled = false;
 				userListComboBox.percentHeight = 100;
 				userListComboBox.percentWidth = 100;
 				myToolbar.addElement(userListComboBox);
 				
 				// Create the suspend user button
-				suspendUserButton = new Button();
-				suspendUserButton.percentHeight = 100;
-				suspendUserButton.label = 'Suspend User';
+				suspendUserButton = new IDButton('Suspend User');
+				suspendUserButton.enabled = false;
 				myToolbar.addElement(suspendUserButton);
 				
 				// Create the delete user button
-				deleteUserButton = new Button();
-				deleteUserButton.percentHeight = 100;
-				deleteUserButton.label = 'Delete User';
+				deleteUserButton = new IDButton('Delete User');
+				deleteUserButton.enabled = false;
 				myToolbar.addElement(deleteUserButton);
+				
 			} else {
 				// Create a heading for the toolbar for a non-admin user
 				heading = new Label();
@@ -177,9 +182,18 @@ package View
 			myScroller.percentWidth = 100;
 			userDetailsGroup.addElement(myScroller);
 			
+			// Add box to center user details
+			centeringGroup = new VGroup();
+			centeringGroup.percentHeight = 100;
+			centeringGroup.percentWidth = 100;
+			centeringGroup.horizontalAlign = HorizontalAlign.CENTER;
+			myScroller.viewport = centeringGroup;
+			
 			// Add users details for the scroller
 			userDetailsView = new Profile();
-			myScroller.viewport = userDetailsView;
+			centeringGroup.addElement(userDetailsView);
+			
+//			myScroller.viewport = userDetailsView;
 			this.disableUserDetailsView();
 
 			// Setup Event Listeners
@@ -207,6 +221,7 @@ package View
 		 * 
 		 */		
 		public function addUsers(userList:ArrayList):void {
+			userListComboBox.enabled = true;
 			userListComboBox.selectedIndex = -1;
 			userListComboBox.dataProvider = userList;	
 			userListComboBox.selectedIndex = 0;
@@ -223,6 +238,11 @@ package View
 			
 			// If the current user is the admin user
 			if(admin) {
+				
+				addUserButton.enabled = true;
+				suspendUserButton.enabled = true;
+				deleteUserButton.enabled = true;
+				
 				// Show the password reset form only if the user selected is them
 				// Or if its the first time this has loaded (since userDetails will == null)
 				// We know if then must be the manager signed in
@@ -311,7 +331,20 @@ package View
 		private function userListComboBoxChanged(e:Event):void {
 			if(userListComboBox.selectedIndex >= 0) {
 				
+				addUserButton.enabled = false;
+				suspendUserButton.enabled = false;
+				deleteUserButton.enabled = false;
+				
 				var newUser:String = userListComboBox.selectedItem;
+				
+				if(newUser == Auth.getInstance().getUsername()) {
+					suspendUserButton.enabled = false;
+					deleteUserButton.enabled = false;
+				} else {
+					suspendUserButton.enabled = true;
+					deleteUserButton.enabled = true;
+				}
+				
 				var myEvent:IDEvent = new IDEvent(IDEvent.USER_CHANGED);
 				myEvent.data.username = newUser;
 				this.dispatchEvent(myEvent);
@@ -506,10 +539,7 @@ package View
 			if(addingUser) {
 				// We are adding a user, so the 'discard' button 
 				// Is now the 'cancel' button
-				myScroller.viewport = userDetailsView;
-				addingUser = false;
-				// Hide the toolbar
-				mySubToolbar.height = 0;
+				switchToViewMode();
 			} else {
 				// Replace the current details, with the ones saved
 				this.addDetails(this.userDetails);
@@ -520,22 +550,35 @@ package View
 			// Say we are in editing a user mode
 			addingUser = true;
 			// Show the sub-toolbar
-			mySubToolbar.height = SubToolbar.SUB_TOOLBAR_HEIGHT;
-			mySubToolbar.visible = true;
+			showSubToolbar(0xAFAFAF, "", true);
+			
 			// Change the label on the sub-toolbar to be 'cancel' TODO 
 			discardButton.label = "Cancel";
 			newUserView = new NewProfile();
-			myScroller.viewport = newUserView;
-			
-			userListComboBox.enabled = false;	
-			suspendUserButton.enabled = false;
-			deleteUserButton.enabled = false;
+				
+			centeringGroup.removeAllElements();
+			centeringGroup.addElement(newUserView);
+//			myScroller.viewport = newUserView;
+		
+			if(admin) {
+				addUserButton.enabled = false;
+				userListComboBox.enabled = false;	
+				suspendUserButton.enabled = false;
+				deleteUserButton.enabled = false;
+			}
 		} 
 		
 		public function switchToViewMode():void {
+			addingUser = false;
+			// Hide the toolbar
+			mySubToolbar.height = 0;
+			
 			userDetailsView = new Profile();
 			
-			myScroller.viewport = userDetailsView;
+			centeringGroup.removeAllElements();
+			centeringGroup.addElement(userDetailsView);
+			
+//			myScroller.viewport = userDetailsView;
 			
 			// Make sure the button on the profile when you click it, it updates
 			userDetailsView.updateProfileInformation.addEventListener(MouseEvent.CLICK, saveButtonClicked);
@@ -544,7 +587,8 @@ package View
 			
 			// Check if 
 			if(admin) {
-				userListComboBox.enabled = true;	
+				addUserButton.enabled = true;
+//				userListComboBox.enabled = true;	
 				suspendUserButton.enabled = true;
 				deleteUserButton.enabled = true;
 			}
