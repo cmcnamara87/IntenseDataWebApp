@@ -10,10 +10,10 @@ package View
 	import Module.PDFViewer.PDFViewer;
 	import Module.Videoviewer.Videoview;
 	
-	import View.components.AnnotationList.AnnotationListPanel;
-	import View.components.Comments.CommentsPanel;
-	import View.components.Comments.NewComment;
-	import View.components.EditDetails.EditDetailsPanel;
+	import View.components.Panels.AnnotationList.AnnotationListPanel;
+	import View.components.Panels.Comments.CommentsPanel;
+	import View.components.Panels.Comments.NewComment;
+	import View.components.Panels.EditDetails.EditDetailsPanel;
 	import View.components.IDGUI;
 	import View.components.MediaViewer.AudioViewer;
 	import View.components.MediaViewer.ImageViewer.ImageViewerOLD;
@@ -21,8 +21,8 @@ package View
 	import View.components.MediaViewer.MediaViewer;
 	import View.components.MediaViewer.VideoViewer.VideoViewer;
 	import View.components.MediaViewer.Viewer;
-	import View.components.Panel;
-	import View.components.Sharing.SharingPanel;
+	import View.components.Panels.Panel;
+	import View.components.Panels.Sharing.SharingPanel;
 	import View.components.Toolbar;
 	
 	import flash.events.MouseEvent;
@@ -252,12 +252,19 @@ package View
 			if(mediaData.access_modify) {
 				deleteAssetButton.enabled = true;
 				addAnnotationButton.enabled = true;
-				editDetailsButton.enabled = true;
-				hideShowAnnotationButton.enabled = true;
-				shareButton.enabled = true;
-				annotationListButton.enabled = true;
-				commentsButton.enabled = true;
+				
 			}
+			editDetailsButton.enabled = true;
+			hideShowAnnotationButton.enabled = true;
+			shareButton.enabled = true;
+			annotationListButton.enabled = true;
+			commentsButton.enabled = true;
+//			}
+			
+			mySharingPanel.setUserAccess(mediaData.access_modify);
+			myAnnotationListPanel.setUserAccess(mediaData.access_modify);
+			myEditPanel.setUserAccess(mediaData.access_modify);
+			myCommentsPanel.setUserAccess(mediaData.access_modify);
 		}
 		
 		/**

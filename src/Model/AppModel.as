@@ -14,13 +14,14 @@ package Model {
 	import Model.Transactions.Transaction_SaveCollection;
 	import Model.Transactions.Transaction_SaveNewComment;
 	import Model.Transactions.Transaction_SetAccess;
+	import Model.Transactions.Transaction_SetUserAssetShare;
 	import Model.Transactions.Transaction_SuspendUser;
 	import Model.Transactions.Transaction_UnsuspendUser;
 	import Model.Utilities.Connection;
 	
 	import View.Element.Comment;
-	import View.components.Comments.NewComment;
-	import View.components.Sharing.SharingPanel;
+	import View.components.Panels.Comments.NewComment;
+	import View.components.Panels.Sharing.SharingPanel;
 	
 	import flash.events.DataEvent;
 	import flash.events.Event;
@@ -182,6 +183,8 @@ package Model {
 		 * 
 		 */		
 		public function getThisAssetsCommentary(assetID:Number, callback:Function):void {
+			trace("AppModel getThisAssetsCommentary: Getting Commentary for Asset", assetID);
+			
 			var args:Object = new Object();
 			
 			args.where = "namespace = recensio and r_base/active = true and class >= 'recensio:base/resource/annotation' " +
@@ -197,8 +200,8 @@ package Model {
 			} else {
 				Alert.show("Could not load annotations");
 			}
-			
 		}
+		
 		//Gets all assets owned by the user
 		/*public function getAllAssets(callback:Function):void {
 			var args:Object = new Object();
@@ -296,9 +299,9 @@ package Model {
 			var transaction:Transaction_SetAccess = new Transaction_SetAccess(_connection,assetID,access,callback);
 		}
 		
-		public function changeAccess(collectionID:Number, username:String, domain:String, access:String, related:Boolean, callback:Function=null):void {
+		public function changeAccess(assetID:Number, username:String, domain:String, access:String, isCollection:Boolean, callback:Function=null):void {
 			var transaction:Transaction_ChangeAccess = new Transaction_ChangeAccess(_connection);
-			transaction.changeAccess(collectionID, username, domain, access, related, callback);
+			transaction.changeAccess(assetID, assetID, username, domain, access, isCollection, callback);
 			
 //			var args:Object = new Object();
 //			
@@ -1295,6 +1298,12 @@ package Model {
 		 */		
 		public function changePassword(domain:String, newPassword:String, callback:Function):void {
 			var transaction:Transaction_ChangePassword = new Transaction_ChangePassword(domain, newPassword, callback, _connection);
+		}
+		
+		public function setUserAssetShareCount(username:String, assetID:Number, viaAsset:Number, accessLevel:String, callback:Function):void
+		{
+			var transaction:Transaction_SetUserAssetShare = new Transaction_SetUserAssetShare(username, assetID, viaAsset, accessLevel, _connection, callback);
+			
 		}
 	}
 		

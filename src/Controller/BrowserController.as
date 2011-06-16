@@ -11,7 +11,7 @@ package Controller {
 	import View.Browser;
 	import View.BrowserView;
 	import View.Element.SmallButton;
-	import View.components.Comments.NewComment;
+	import View.components.Panels.Comments.NewComment;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -165,6 +165,8 @@ package Controller {
 			
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
+			currentView.setToolbarToFixedCollectionMode();
+			
 			currentView.showMediaLoading();
 			//LoadAnim.show((view as Browser), 0, 0, 0x999999,2);
 //			LoadAnim.show((view as Browser),(view as Browser).width/2,(view as Browser).height/2+(view as Browser).navbar.height,0x999999,2);
@@ -200,6 +202,11 @@ package Controller {
 			
 			currentView.showMediaLoading();
 			
+			
+			// Change to the Regular toolbar
+			currentView.setToolbarToRegularCollectionMode(modifyAccess);
+			
+			
 			// Get the Media inside/ this collection
 			AppModel.getInstance().getThisCollectionsMediaAssets(collectionID, collectionMediaLoaded);
 			
@@ -215,8 +222,10 @@ package Controller {
 		 */		
 		private function loadShared():void {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			
+			currentView.setToolbarToFixedCollectionMode();
+			
 			currentView.showMediaLoading();
-			//LoadAnim.show(currentView, currentView.width / 2, currentView.height/2, 0x999999,2);
 			Model.AppModel.getInstance().getSharedAssets(fixedCollectionAssetsLoaded);
 		}
 		
@@ -318,11 +327,6 @@ package Controller {
 			
 			// Add all of the assets inside this collection
 			currentView.addMediaAssets(BrowserController.currentCollectionAssets);
-			
-			// Change to the Regular toolbar
-			currentView.setToolbarToRegularCollectionMode(modifyAccess);
-
-			
 		}
 		
 		/**
@@ -672,8 +676,7 @@ package Controller {
 			this.saveCurrentCollectionID(e.data.assetID);
 				
 			currentView.highlightCollectionListItem(currentCollectionID);
-			
-			//currentView.setToolbarToFixedCollectionMode();
+					
 			loadAllMyMedia();
 		}
 		

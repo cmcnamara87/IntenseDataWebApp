@@ -440,8 +440,10 @@ package Module.Videoviewer {
 			_tickTimer.removeEventListener(TimerEvent.TIMER,tick);
 			_tickTimer.stop();
 			_tickTimer = null;
-			_netStream.pause();
-			if(_netConnection.connected) {
+			if(_netStream) {
+				_netStream.pause();
+			}
+			if(_netConnection && _netConnection.connected) {
 				_netConnection.close();
 			}
 			_netStream = null;

@@ -18,7 +18,7 @@ package Controller {
 	import View.Element.AssetOptionsForm;
 	import View.MediaView;
 	import View.ModuleWrapper.*;
-	import View.components.Comments.NewComment;
+	import View.components.Panels.Comments.NewComment;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;

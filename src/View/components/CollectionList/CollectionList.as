@@ -176,12 +176,32 @@ package View.components.CollectionList
 				// TODO REMOVE THIS Check that the collection has some items in it otherwise, ignore it.
 				//if ((collectionArray[i] as Model_Collection).numberOfChildren()) {
 					
-					var newCollectionListItem:CollectionListItem = new CollectionListItemRegular(collectionArray[i]);
-
-					
+					var newCollectionListItem:CollectionListItemRegular = new CollectionListItemRegular(collectionArray[i]);
+					newCollectionListItem.toolTip = newCollectionListItem.getCollectionName();
 					regularCollectionListItems.addElement(newCollectionListItem);	
 				//} 
 				
+			}
+		}
+
+		/**
+		 * When we are in edit mode, any collection that is 'read only' should not be able to be accessed
+		 */		
+		public function enterEditMode():void {
+			for(var i:Number = 0; i < regularCollectionListItems.numElements; i++) {
+				var regularListItem:CollectionListItemRegular = regularCollectionListItems.getElementAt(i) as CollectionListItemRegular;
+				if(!regularListItem.getAccess()) {
+					regularListItem.toolTip = "Read Only Access";
+					regularListItem.enabled = false;
+				}
+			}
+		}
+		
+		public function exitEditMode():void {
+			for(var i:Number = 0; i < regularCollectionListItems.numElements; i++) {
+				var regularListItem:CollectionListItemRegular = regularCollectionListItems.getElementAt(i) as CollectionListItemRegular;
+				regularListItem.toolTip = regularListItem.getCollectionName();
+				regularListItem.enabled = true;
 			}
 		}
 		

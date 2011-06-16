@@ -1,5 +1,6 @@
 package View.components
 {
+	import Controller.BrowserController;
 	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
@@ -84,6 +85,7 @@ package View.components
 			loadingLabel.setStyle('fontSize', 30);
 			loadingLabel.setStyle('fontWeight', 'bold');
 			loadingLabel.setStyle('textAlign', 'center');
+			loadingLabel.setStyle('color', 0x999999);
 			loadingLabel.visible = false;
 			loadingLabel.percentWidth = 100;
 			loadingGroup.addElement(loadingLabel);
@@ -160,6 +162,10 @@ package View.components
 			// Add the elements to the display
 			for(var i:Number = 0; i < assetArray.length; i++) {
 				content.addElement(new AssetTile(assetArray[i], eventToThrowWhenAssetClicked));	
+			}
+			
+			if(BrowserController.getEditOn() || BrowserController.getShelfOn()) {
+				lockReadOnlyFiles();
 			}
 		}
 		
@@ -298,10 +304,26 @@ package View.components
 		}
 		
 		
+		public function lockReadOnlyFiles():void {
+			for(var i:Number = 0; i < content.numElements; i++) {
+				var assetTile:AssetTile = content.getElementAt(i) as AssetTile;
+				
+				if(!assetTile.getAccess()) {
+					assetTile.enabled = false;
+				}
+			}
+		}
+		
+		public function unlockFiles():void {
+			for(var i:Number = 0; i < content.numElements; i++) {
+				(content.getElementAt(i) as AssetTile).enabled = true;
+			}
+		}
 		
 		/* ============== LOADABLE CONTENT INTERFACE FUNCTIONS ================ */
 		public function loadingContent():void {
 			for(var i:Number = 0; i < content.numElements; i++) {
+				(content.getElementAt(i) as AssetTile).enabled = true;
 				(content.getElementAt(i) as AssetTile).alpha = 0.1;
 				(content.getElementAt(i) as AssetTile).removeClickListener();
 			}

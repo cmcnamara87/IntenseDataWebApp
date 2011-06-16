@@ -72,6 +72,9 @@ package Controller {
 					if(layout.header.logoutButton.hasEventListener(MouseEvent.MOUSE_UP)) {
 						layout.header.logoutButton.removeEventListener(MouseEvent.MOUSE_UP,logoutClicked);
 					}
+					if(layout.header.profileButton.hasEventListener(MouseEvent.MOUSE_UP)) {
+						layout.header.profileButton.removeEventListener(MouseEvent.MOUSE_UP, profileClicked);
+					}
 				}
 				layout.content.removeAllElements();
 			}

@@ -6,7 +6,7 @@ package Model.Transactions
 	import Model.Model_Commentary;
 	import Model.Utilities.Connection;
 	
-	import View.components.Comments.NewComment;
+	import View.components.Panels.Comments.NewComment;
 	
 	import flash.events.Event;
 	

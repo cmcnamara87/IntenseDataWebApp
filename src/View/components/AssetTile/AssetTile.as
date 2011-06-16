@@ -60,6 +60,11 @@ package View.components.AssetTile
 			image = new AssetTileImage(assetData.type);
 			this.addElement(image);
 			
+			this.toolTip = "Created by: " + assetData.meta_username + ".";
+			if(assetData.meta_description != "") {
+				this.toolTip += "\nDescription: " +  assetData.meta_description;
+			};
+			
 			// Are we in Edit/Shelf Mode???
 			showOverlay();
 					
@@ -228,6 +233,10 @@ package View.components.AssetTile
 				returnString += " " + currentAnnotation.annotation_text.toLowerCase();
 			}
 			return returnString;
+		}
+		
+		public function getAccess():Boolean {
+			return assetData.access_modify;
 		}
 	}
 }

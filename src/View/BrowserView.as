@@ -8,10 +8,10 @@ package View
 	import View.components.AssetBrowser.AssetBrowser;
 	import View.components.AssetBrowser.AssetBrowserToolbar;
 	import View.components.CollectionList.CollectionList;
-	import View.components.Comments.CommentsPanel;
-	import View.components.Comments.NewComment;
-	import View.components.Panel;
-	import View.components.Sharing.SharingPanel;
+	import View.components.Panels.Comments.CommentsPanel;
+	import View.components.Panels.Comments.NewComment;
+	import View.components.Panels.Panel;
+	import View.components.Panels.Sharing.SharingPanel;
 	import View.components.Shelf;
 	
 	import mx.effects.Effect;
@@ -96,8 +96,7 @@ package View
 			//myAssetBrowser.setStyle("resizeEffect", new mx.effects.Resize());
 			myVGroup.addElement(myAssetBrowser);
 			
-			
-			
+	
 			// Lets add the Comments Panel
 			myCommentsPanel = new CommentsPanel();
 			myCommentsPanel.width = 0;
@@ -185,10 +184,13 @@ package View
 			myAssetBrowser.percentHeight = 50;
 			myAssetBrowser.refreshMediaAssetsDisplay();
 			
+			myAssetBrowser.lockReadOnlyFiles();
+			
 			myShelf.percentHeight = 50;
 			myShelf.refreshMediaAssetsDisplay();
 			this.myShelf.visible = true;
 			
+			myCollectionList.enterEditMode();
 			// Set all the tiles into edit mode
 			//myAssetBrowser.setEditMode(assetsInShelf);
 		}
@@ -198,12 +200,15 @@ package View
 			myShelf.height = 0;
 			myAssetBrowser.percentHeight = 100;
 			
+			myAssetBrowser.unlockFiles();
+			
 			// Pop both the buttons that could be down, up.
 			myCollectionList.unsetCreateCollectionButton();
 			this.unsetEditButton();
 			
 			myAssetBrowser.refreshMediaAssetsDisplay();
 			
+			myCollectionList.exitEditMode();
 			//this.myShelf.visible = false;
 		}
 		
@@ -306,6 +311,8 @@ package View
 		}
 		
 		public function setToolbarToRegularCollectionMode(modifyAccess:Boolean):void {
+			myCommentsPanel.setUserAccess(modifyAccess);
+			mySharingPanel.setUserAccess(modifyAccess);
 			myAssetBrowserToolbar.setToolbarToRegularCollectionMode(modifyAccess);
 		}
 		

@@ -5,7 +5,7 @@ package Model.Transactions
 	import Model.AppModel;
 	import Model.Utilities.Connection;
 	
-	import View.components.Sharing.SharingPanel;
+	import View.components.Panels.Sharing.SharingPanel;
 	
 	import flash.events.Event;
 

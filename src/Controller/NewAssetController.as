@@ -1,12 +1,14 @@
 package Controller {
 	
 	import Controller.Utilities.AssetLookup;
+	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
 	import Model.Model_Media;
 	import Model.Transactions.Transaction_CopyAccess;
 	
 	import View.NewAsset;
+	import View.components.Panels.Sharing.SharingPanel;
 	
 	import flash.events.DataEvent;
 	import flash.events.Event;
@@ -118,7 +120,10 @@ package Controller {
 				trace("New Asset created", assetID);
 				
 				// Set the Owner ACLs for the asset
-				AppModel.getInstance().setOwnerACL(xml.reply.result.id);
+				AppModel.getInstance().changeAccess(assetID, Auth.getInstance().getUsername(), "system", SharingPanel.READWRITE, false);
+//				AppModel.getInstance().setOwnerACL(assetID);
+//				
+//				AppModel.getInstance().setUserAssetShareCount(Auth.getInstance().getUsername(), assetID, true);
 				
 				// Add this new asset, to whatever the current collection is
 				// Provided its not All Assets or Shared Assets, since they are smart collections
@@ -126,13 +131,16 @@ package Controller {
 				if(BrowserController.currentCollectionID != BrowserController.ALLASSETID &&
 					BrowserController.currentCollectionID != BrowserController.SHAREDID) {
 					
-					// Create a shell for the new asset
+					// Create a shell asset for the new asset
 					var newAsset:Model_Media = new Model_Media();
 					newAsset.base_asset_id = assetID;
+					
 					// Add it to the current collections assets
 					BrowserController.currentCollectionAssets.push(newAsset);
 					trace("Adding new asset", assetID  ,"to collection", BrowserController.currentCollectionID,
 						BrowserController.currentCollectionTitle, "and saving"); 
+					
+					// Save it in the collection
 					AppModel.getInstance().saveCollection(
 						BrowserController.currentCollectionID, 
 						BrowserController.currentCollectionTitle, 

@@ -227,14 +227,14 @@ package View.components.AssetBrowser
 				deleteButton.visible = false;
 				deleteButton.includeInLayout = false;
 				
-				deleteShareLine.visible = false;
-				deleteShareLine.includeInLayout = false;
+				deleteShareLine.visible = true;
+				deleteShareLine.includeInLayout = true;
 				
-				shareButton.visible = false;
-				shareButton.includeInLayout = false;
+				shareButton.visible = true;
+				shareButton.includeInLayout = true;
 				
-				commentsButton.visible = false;
-				commentsButton.includeInLayout = false;
+				commentsButton.visible = true;
+				commentsButton.includeInLayout = true;
 			}
 
 			

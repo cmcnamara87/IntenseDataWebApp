@@ -72,6 +72,19 @@ package View.components.CollectionList
 			
 		}
 		
+		/**
+		 * Gets if we can modify this collection. 
+		 * @return 
+		 * 
+		 */		
+		public function getAccess():Boolean {
+			return collectionData.access_modify;
+		}
+		
+		public function getCollectionName():String {
+			return collectionData.meta_title;
+		}
+		
 		override public function getCollectionID():Number {
 			return collectionData.base_asset_id;
 		}
