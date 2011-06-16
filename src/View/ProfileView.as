@@ -239,15 +239,19 @@ package View
 			// If the current user is the admin user
 			if(admin) {
 				
-				addUserButton.enabled = true;
-				suspendUserButton.enabled = true;
+				suspendUserButton.enabled = true
 				deleteUserButton.enabled = true;
+				addUserButton.enabled = true;
 				
 				// Show the password reset form only if the user selected is them
 				// Or if its the first time this has loaded (since userDetails will == null)
 				// We know if then must be the manager signed in
 				if(userListComboBox.selectedItem == Auth.getInstance().getUsername() || !this.userDetails) {
 					userDetailsView.passForm.visible = true;
+					
+					suspendUserButton.enabled = false;
+					deleteUserButton.enabled = false;
+					
 				} else {
 					// The user is not the currently logged in user,
 					// Hide the reset form (for now! sicne its a mediaflux bug that you cant reset
@@ -336,15 +340,7 @@ package View
 				deleteUserButton.enabled = false;
 				
 				var newUser:String = userListComboBox.selectedItem;
-				
-				if(newUser == Auth.getInstance().getUsername()) {
-					suspendUserButton.enabled = false;
-					deleteUserButton.enabled = false;
-				} else {
-					suspendUserButton.enabled = true;
-					deleteUserButton.enabled = true;
-				}
-				
+								
 				var myEvent:IDEvent = new IDEvent(IDEvent.USER_CHANGED);
 				myEvent.data.username = newUser;
 				this.dispatchEvent(myEvent);
@@ -539,6 +535,7 @@ package View
 			if(addingUser) {
 				// We are adding a user, so the 'discard' button 
 				// Is now the 'cancel' button
+				userListComboBox.enabled = true;
 				switchToViewMode();
 			} else {
 				// Replace the current details, with the ones saved
@@ -589,8 +586,10 @@ package View
 			if(admin) {
 				addUserButton.enabled = true;
 //				userListComboBox.enabled = true;	
-				suspendUserButton.enabled = true;
-				deleteUserButton.enabled = true;
+				if(userListComboBox.selectedItem != Auth.getInstance().getUsername()) {
+					suspendUserButton.enabled = true;
+					deleteUserButton.enabled = true;
+				}
 			}
 			mySubToolbar.height = 0;
 			mySubToolbar.visible = false;
