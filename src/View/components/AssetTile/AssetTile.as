@@ -236,7 +236,7 @@ package View.components.AssetTile
 		}
 		
 		public function getAccess():Boolean {
-			return assetData.access_modify;
+			return assetData.access_modify_content;
 		}
 	}
 }

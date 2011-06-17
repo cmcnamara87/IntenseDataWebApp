@@ -1,5 +1,6 @@
 package Model.Transactions
 {
+	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
@@ -85,6 +86,12 @@ package Model.Transactions
 		}
 
 		
+		/**
+		 * Changes access for all sub-elements. Used by a collection to change the access to
+		 * all its comments, and all media contained within it. 
+		 * @param e
+		 * 
+		 */		
 		private function changeAccessForChildren(e:Event):void {
 			var dataXML:XML = XML(e.target.data);
 			
@@ -127,19 +134,54 @@ package Model.Transactions
 			
 			for(var i:Number = 0; i < assetArray.length; i++) {
 				var annotationData:Model_Media = assetArray[i] as Model_Media;
-				changeAccess(annotationData.base_asset_id, collectionID, username, domain, highestAccessLevel, false, null);
+				
+				var transaction:Transaction_ChangeAccess = new Transaction_ChangeAccess(connection);
+				transaction.changeAccess(annotationData.base_asset_id, collectionID, username, domain, highestAccessLevel, false, null);
 			}
 		}
 		
 
 		private function grantAccess(assetID:Number, domain:String, username:String, accessLevel:String, isCollection:Boolean, callback:Function):void {
 			
+			if(username == Auth.getInstance().getUsername()) {
+				// TODO FIX THIS ALL UP! WITH THE REVOKE ETC!!! BLURGH MEDIAFLUX!
+				trace("Transaction_ChangeAccess: Cannot change access for current user (Mediaflux problem)", assetID, domain, username);
+				
+				var args:Object = new Object();				
+				
+				// We are granting access to the asset for a user
+				// Example mediaflux statement asset.acl.grant :acl < :id 1718 :actor system:coke -type user :access read-write >
+				var baseXML:XML = connection.packageRequest('asset.acl.grant', args, true);
+				baseXML.service.args.acl.id = assetID;
+				baseXML.service.args.acl.actor = domain + ":" + username;
+				baseXML.service.args.acl.actor.@type = "user";
+				baseXML.service.args.acl.content = accessLevel;
+				baseXML.service.args.acl.metadata = "read-write";
+				// TODO work this out, we always have to keep the meta writable, since the id_sharing is in there
+				// and we need to update it.
+				
+				
+				// only update the related assets, if its not a collection
+				baseXML.service.args.related = !isCollection;
+				
+				
+				connection.sendRequest(baseXML, function(e:Event):void {
+					if(callback != null) {
+						callback(e);
+					}
+				});
+				
+				return;
+			}
+			
+			// First revoke access, then grant it again (its a problem with fucking mediaflux)
 			revokeAccess(assetID, domain, username, isCollection, function(e:Event):void {
 				if(XML(e.target.data).reply.@type != "result") {
 					trace("Transaction_ChangeAccess: Could not set revoke access for", assetID, domain, username);
 					// We couldnt successfully revoke access, tell the controller.
 					callback(e);
 				}
+				trace("Transaction_ChangeAccess: Access revoked for", assetID, username, e.target.data);
 				
 				trace("Transaction_ChangeAccess: Granting access on Asset", assetID, domain, username, accessLevel);
 				
@@ -161,7 +203,12 @@ package Model.Transactions
 				baseXML.service.args.related = !isCollection;
 				
 				
-				connection.sendRequest(baseXML, callback);
+				connection.sendRequest(baseXML, function(e:Event):void {
+					trace("Transaction_ChangeAccess: Granting access Result", e.target.data);
+					if(callback != null) {
+						callback(e);
+					}
+				});
 			});
 			
 			

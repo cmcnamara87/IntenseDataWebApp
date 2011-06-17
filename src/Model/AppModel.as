@@ -862,8 +862,11 @@ package Model {
 		// Deletes a comment
 		public function deleteComment(assetID:Number):void {
 			var args:Object = new Object();
-			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
+//			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
+			var baseXML:XML = _connection.packageRequest('asset.set', args, true);
 			baseXML.service.args["id"] = assetID;
+			baseXML.service.args["meta"]["r_annotation"]["text"] = "Comment Removed";
+			
 			if(_connection.sendRequest(baseXML,null)) {
 				//All good
 			} else {

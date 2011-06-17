@@ -12,8 +12,9 @@ package View.components.Panels.Comments
 	import flashx.textLayout.elements.TextFlow;
 	
 	import mx.containers.Canvas;
-	import mx.controls.Label;
+	import mx.controls.Alert;
 	import mx.core.UIComponent;
+	import mx.events.CloseEvent;
 	import mx.graphics.SolidColorStroke;
 	
 	import spark.components.BorderContainer;
@@ -31,6 +32,7 @@ package View.components.Panels.Comments
 		private var creator:String;
 		private var commentText:String;
 		
+		private var comment:Label;
 		/**
 		 * Creates a comment 
 		 * @param assetID		The ID of the comment in the database
@@ -88,10 +90,13 @@ package View.components.Panels.Comments
 			username.setStyle('fontWeight', 'bold');
 			usernameAndComment.addElement(username);
 			
-			var comment:spark.components.Label = new spark.components.Label();
+			comment = new spark.components.Label();
 			comment.text = commentText;
 			comment.percentWidth = 100;
 			usernameAndComment.addElement(comment);
+			if(commentText == "Comment Removed") {
+				comment.setStyle("fontStyle", "italic");
+			}
 			
 			// Create a HGroup for the buttons
 			var buttonHGroup:HGroup 	= new HGroup();
@@ -165,12 +170,25 @@ package View.components.Panels.Comments
 		
 		private function deleteButtonClicked(e:MouseEvent):void {
 			trace("Delete Button Clicked");
-			var myEvent:IDEvent = new IDEvent(IDEvent.COMMENT_DELETE, true);
-			myEvent.data.assetID = this.assetID;
-			this.dispatchEvent(myEvent);
-			this.visible = false;
-			this.height = 0;
-			//(this.parent as spark.components.BorderContainer).removeElement(this);
+			//(view as AssetView).navbar.deselectButtons();
+			var myAlert:Alert = Alert.show("Are you sure you want to delete this comment?", "Delete Comment", Alert.OK | Alert.CANCEL, null, 
+				deleteButtonOkay, null, Alert.CANCEL);
+			
+			myAlert.height=100;
+			myAlert.width=300;
+		}
+		
+		private function deleteButtonOkay(e:CloseEvent):void {
+			if (e.detail == Alert.OK) {
+				var myEvent:IDEvent = new IDEvent(IDEvent.COMMENT_DELETE, true);
+				myEvent.data.assetID = this.assetID;
+				this.dispatchEvent(myEvent);
+				
+				comment.text = "Comment Removed";
+				comment.setStyle("fontStyle", "italic");
+//				this.visible = false;
+//				this.height = 0;
+			}
 		}
 		
 		/* GETTERS/SETTERS */

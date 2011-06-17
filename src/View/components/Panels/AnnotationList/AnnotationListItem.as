@@ -13,7 +13,9 @@ package View.components.Panels.AnnotationList
 	import flashx.textLayout.elements.TextFlow;
 	
 	import mx.containers.Canvas;
+	import mx.controls.Alert;
 	import mx.controls.Label;
+	import mx.events.CloseEvent;
 	import mx.graphics.SolidColorStroke;
 	
 	import spark.components.Button;
@@ -133,12 +135,23 @@ package View.components.Panels.AnnotationList
 		}
 		
 		private function deleteButtonClicked(e:MouseEvent):void {
-			trace("Annotation Deletion Clicked", assetID);
-			this.height = 0;
-			this.visible = false;
-			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_DELETED, true);
-			myEvent.data.assetID = assetID;
-			this.dispatchEvent(myEvent);
+			trace("Delete Button Clicked");
+			//(view as AssetView).navbar.deselectButtons();
+			var myAlert:Alert = Alert.show("Are you sure you want to delete this annotation?", "Delete Annotation", Alert.OK | Alert.CANCEL, null, 
+				deleteButtonOkay, null, Alert.CANCEL);
+			myAlert.height=100;
+			myAlert.width=300;
+		}
+		
+		private function deleteButtonOkay(e:CloseEvent):void {
+			if (e.detail == Alert.OK) {
+				trace("Annotation Deletion Clicked", assetID);
+				this.height = 0;
+				this.visible = false;
+				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_DELETED, true);
+				myEvent.data.assetID = assetID;
+				this.dispatchEvent(myEvent);
+			}
 		}
 		
 		/* GETTERS/SETTERS */

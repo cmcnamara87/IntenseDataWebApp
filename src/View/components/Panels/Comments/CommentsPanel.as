@@ -70,12 +70,6 @@ package View.components.Panels.Comments
 			closeButton.width = 30;
 			toolbar.addElement(closeButton);
 			
-			
-			
-			
-			
-			
-						
 			// Event Listenrs
 			addCommentButton.addEventListener(MouseEvent.CLICK, addCommentButtonClicked);
 			
@@ -116,7 +110,6 @@ package View.components.Panels.Comments
 			for(var i:Number = 0; i < commentArray.length; i++) {
 				var commentData:Model_Commentary = commentArray[i] as Model_Commentary;
 				
-//				trace("Adding a comment?", commentData.text);
 				// Check if this comment is a reply
 				if(commentData.annotation_start > 0) {
 //					trace("Found a reply comment, in reply to", commentData.annotation_start);
@@ -249,13 +242,19 @@ package View.components.Panels.Comments
 				// Get out class name of comment (so we can see if its a new comment)
 				var commentClassName:String = flash.utils.getQualifiedClassName(content.getElementAt(i));
 				// If the class of the element displayed is a 'New comment', remove it
-				if(commentClassName == "View.components.Comments::NewComment") {
+				if(commentClassName == "View.components.Panels.Comments::NewComment") {
 					content.removeElementAt(i);
 				}
 				
 			}
 		}
 		
+		/**
+		 * Finds the Index of the Comment object being displayed, that matches a given ID. -1 if not found. 
+		 * @param assetID
+		 * @return 
+		 * 
+		 */
 		private function getCommentIndexFromAssetID(assetID:Number):Number {
 			
 			for(var i:Number = content.numElements - 1; i >= 0; i--) { // Not sure why this isbackwards lol

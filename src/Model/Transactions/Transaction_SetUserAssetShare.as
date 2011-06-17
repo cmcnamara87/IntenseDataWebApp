@@ -36,7 +36,7 @@ package Model.Transactions
 		}
 		
 		private function getShare():void {
-			trace("Transaction_SetUserAssetShareCount: Getting share data");
+			trace("Transaction_SetUserAssetShareCount: Getting share data for", username, assetID);
 			
 			var args:Object = new Object();
 			args.id = assetID;

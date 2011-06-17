@@ -62,7 +62,8 @@ package View.components.Panels
 			
 			// Set the backgrond colour & border collect
 			this.backgroundFill = new SolidColor(0xFFFFFF);
-			this.borderStroke = new SolidColorStroke(0xAAAAAA,1,1);
+			this.setStyle("borderVisible", false);
+//			this.borderStroke = new SolidColorStroke(0xAAAAAA,1,1);
 			
 			// Add the Toolbar at the top of the panel
 			toolbar = new Toolbar();
