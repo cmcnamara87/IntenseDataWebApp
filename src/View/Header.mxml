@@ -17,6 +17,8 @@
 					   width="100%" 
 					   height="88" 
 					   backgroundColor="0x336699"
+					   backgroundImage="{backgroundImage}"
+					   backgroundImageFillMode="repeat"
 					   borderVisible="false">
 		<s:layout>
 			<s:HorizontalLayout
