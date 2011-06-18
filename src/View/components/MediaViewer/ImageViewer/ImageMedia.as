@@ -25,7 +25,7 @@ package View.components.MediaViewer.ImageViewer
 			
 			// Listen for loading progress (to display hte loading graphics)
 			image.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
-				trace("loading event 2", e.bytesLoaded, e.bytesTotal);
+				//trace("loading event 2", e.bytesLoaded, e.bytesTotal);
 				dispatchEvent(e);
 			});
 			

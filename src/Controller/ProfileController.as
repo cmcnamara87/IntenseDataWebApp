@@ -287,7 +287,7 @@ package Controller {
 				//(view as Profile).profilevalidation.setStyle("color","0x00930a");
 				//(view as Profile).profilevalidation.text = "Profile Updated";
 			} else {
-				trace("Failed to save");
+				trace("ProfileController:profileSaved - Failed to save", e.target.data);
 				trace("*****************");
 				profileView.changeFailed("Error: "+dataXML.reply.message);
 				//				(view as Profile).profilevalidation.setStyle("color","0xFF000");

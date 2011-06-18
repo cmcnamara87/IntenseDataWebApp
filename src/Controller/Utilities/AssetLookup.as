@@ -121,6 +121,7 @@ package Controller.Utilities {
 				case "audio/wav":
 				case "audio/wma":
 				case 'audio/mp3':
+				case 'audio/mpeg':
 					type = 'audio';
 					break;
 				case "image/gif":

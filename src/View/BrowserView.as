@@ -257,8 +257,8 @@ package View
 		 * Passes the data to the sharing panel. 
 		 * @param	sharingData	An array of data with user+access information.
 		 */		
-		public function setupAssetsSharingInformation(sharingData:Array):void {
-			mySharingPanel.setupAssetsSharingInformation(sharingData);
+		public function setupAssetsSharingInformation(sharingData:Array, assetCreatorUsername:String):void {
+			mySharingPanel.setupAssetsSharingInformation(sharingData, assetCreatorUsername);
 		}
 		
 		/**

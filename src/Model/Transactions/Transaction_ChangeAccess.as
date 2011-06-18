@@ -61,7 +61,9 @@ package Model.Transactions
 		private function setACLs(e:Event, highestAccessLevel:String = ""):void {
 			if(!AppModel.getInstance().callSuccessful(e)) {
 				trace("Transaction_ChangeAccess: Failed to get/set Highest Access Level");
-				callback(e);
+				if(callback != null) {
+					callback(e);
+				}
 				return;
 			}
 			
@@ -98,13 +100,17 @@ package Model.Transactions
 			
 			if(dataXML.reply.@type != "result") {
 				trace("Transaction_ChangeAccess: Failed to set Highest ACL for collection");
-				callback(e);
+				if(callback != null) {
+					callback(e);
+				}
 				return;
 			}
 			
 			// Tell the controller we have finished changing for this collection, but we 
 			// will keep doing stuff with the children in the background
-			callback(e);
+			if(callback != null) {
+				callback(e);
+			}
 			
 			trace("Transaction_ChangeAccess: This is a collection, changing access to commentary and assets");
 			// needs to do 2 things
@@ -179,7 +185,9 @@ package Model.Transactions
 				if(XML(e.target.data).reply.@type != "result") {
 					trace("Transaction_ChangeAccess: Could not set revoke access for", assetID, domain, username);
 					// We couldnt successfully revoke access, tell the controller.
-					callback(e);
+					if(callback != null) {
+						callback(e);
+					}
 				}
 				trace("Transaction_ChangeAccess: Access revoked for", assetID, username, e.target.data);
 				

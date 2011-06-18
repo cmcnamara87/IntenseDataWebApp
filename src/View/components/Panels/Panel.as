@@ -1,6 +1,10 @@
 package View.components.Panels
 {
 	
+	import View.components.PanelElement;
+	import View.components.SubToolbar;
+	import View.components.Toolbar;
+	
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	
@@ -12,14 +16,12 @@ package View.components.Panels
 	
 	import spark.components.BorderContainer;
 	import spark.components.Button;
+	import spark.components.Group;
 	import spark.components.Label;
 	import spark.components.Scroller;
 	import spark.components.TextInput;
 	import spark.components.VGroup;
 	import spark.layouts.VerticalLayout;
-	import View.components.PanelElement;
-	import View.components.SubToolbar;
-	import View.components.Toolbar;
 	
 	public class Panel extends BorderContainer
 	{
@@ -119,13 +121,18 @@ package View.components.Panels
 			searchInput.addEventListener(Event.CHANGE, searchTermEntered);
 		}
 		
+		/**
+		 * Adds an item to the panel. The item is enabled if the panel has modify access. 
+		 * @param item	The UI Component to add to the panel
+		 * 
+		 */		
 		protected function addPanelItem(item:UIComponent):void {
-			item.enabled = modifyAccess;
+//			item.enabled = modifyAccess;
 			content.addElement(item);
 		}
 		
 		protected function addPanelItemAtIndex(item:UIComponent, index:Number):void {
-			item.enabled = modifyAccess;
+//			item.enabled = modifyAccess;
 			content.addElementAt(item, index);
 		}
 		
@@ -170,12 +177,30 @@ package View.components.Panels
 		}
 		
 		public function setUserAccess(modify:Boolean):void {
+			trace("Panel setUserAccess:", modify);
 			modifyAccess = modify;
 			
-			for(var i:Number = 0; i < content.numElements; i++) {
-				var element:UIComponent = content.getElementAt(i) as UIComponent;
-				element.enabled = modifyAccess;
-			}
+			content.enabled = modify;
+			
+			content.removeAllElements();
+		
+			var temp:VGroup = new VGroup();
+			temp.percentWidth = 100;
+			temp.paddingLeft = 10;
+			temp.paddingBottom = 10;
+			temp.paddingRight = 10;
+			temp.paddingTop = 10;
+			content.addElement(temp);
+			
+			var loadingLabel:Label = new Label();
+			loadingLabel.text = "Loading...";
+			loadingLabel.percentWidth = 100;
+			temp.addElement(loadingLabel);
+			
+//			for(var i:Number = 0; i < content.numElements; i++) {
+//				var element:UIComponent = content.getElementAt(i) as UIComponent;
+//				element.enabled = modifyAccess;
+//			}
 		}
 		
 	}

@@ -1,7 +1,9 @@
 package View.components.AssetBrowser
 {
+	import Controller.BrowserController;
 	import Controller.Dispatcher;
 	import Controller.IDEvent;
+	import Controller.Utilities.Auth;
 	
 	import View.BrowserView;
 	import View.components.IDGUI;
@@ -202,7 +204,7 @@ package View.components.AssetBrowser
 				editButton.includeInLayout = true;
 				
 				deleteButton.visible = true;
-				deleteButton.label = "Delete Collection";
+//				deleteButton.label = "Delete Collection";
 				deleteButton.includeInLayout = true;
 				
 				deleteShareLine.visible = true;
@@ -228,7 +230,7 @@ package View.components.AssetBrowser
 				editButton.includeInLayout = false;
 				
 				deleteButton.visible = true;
-				deleteButton.label = "Remove Collection";
+//				deleteButton.label = "Remove Collection";
 				deleteButton.includeInLayout = true;
 				
 				deleteShareLine.visible = true;
@@ -240,8 +242,17 @@ package View.components.AssetBrowser
 				commentsButton.visible = true;
 				commentsButton.includeInLayout = true;
 			}
-
 			
+			// If we arent the author of the collection, make it say 'remove' instead of delete
+			// We need to check if the collectionData is null, cause it could mean we are making a 
+			// collection while on a fixed collection (and there is no data) ... TODO fix this up
+			if((BrowserController.collectionData != null) && (BrowserController.collectionData.meta_username != Auth.getInstance().getUsername())) {
+				trace("AssetBrowserToolbar: Collection author is", BrowserController.collectionData.meta_username, Auth.getInstance().getUsername());
+				deleteButton.label = "Remove Collection";
+			} else {
+				trace("AssetBrowserToolbar: Collection author is", BrowserController.collectionData.meta_username, Auth.getInstance().getUsername());
+				deleteButton.label = "Delete Collection";
+			}
 		}
 		
 		/**

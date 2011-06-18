@@ -177,7 +177,7 @@ package View.components.CollectionList
 				//if ((collectionArray[i] as Model_Collection).numberOfChildren()) {
 					
 					var newCollectionListItem:CollectionListItemRegular = new CollectionListItemRegular(collectionArray[i]);
-					newCollectionListItem.toolTip = newCollectionListItem.getCollectionName();
+//					newCollectionListItem.toolTip = newCollectionListItem.getCollectionName();
 					regularCollectionListItems.addElement(newCollectionListItem);	
 				//} 
 				
@@ -188,21 +188,25 @@ package View.components.CollectionList
 		 * When we are in edit mode, any collection that is 'read only' should not be able to be accessed
 		 */		
 		public function enterEditMode():void {
-			for(var i:Number = 0; i < regularCollectionListItems.numElements; i++) {
-				var regularListItem:CollectionListItemRegular = regularCollectionListItems.getElementAt(i) as CollectionListItemRegular;
-				if(!regularListItem.getAccess()) {
-					regularListItem.toolTip = "Read Only Access";
-					regularListItem.enabled = false;
-				}
-			}
+			// DEPRECATED - opted instead just to disable the assets, not hte collections
+			// solves problems when we are in a collection, and hit 'new collection' and the collection should be
+			// disabled.
+			
+//			for(var i:Number = 0; i < regularCollectionListItems.numElements; i++) {
+//				var regularListItem:CollectionListItemRegular = regularCollectionListItems.getElementAt(i) as CollectionListItemRegular;
+//				if(!regularListItem.getAccess()) {
+//					regularListItem.toolTip = "Read Only Access";
+//					regularListItem.enabled = false;
+//				}
+//			}
 		}
 		
 		public function exitEditMode():void {
-			for(var i:Number = 0; i < regularCollectionListItems.numElements; i++) {
-				var regularListItem:CollectionListItemRegular = regularCollectionListItems.getElementAt(i) as CollectionListItemRegular;
-				regularListItem.toolTip = regularListItem.getCollectionName();
-				regularListItem.enabled = true;
-			}
+//			for(var i:Number = 0; i < regularCollectionListItems.numElements; i++) {
+//				var regularListItem:CollectionListItemRegular = regularCollectionListItems.getElementAt(i) as CollectionListItemRegular;
+//				regularListItem.toolTip = regularListItem.getCollectionName();
+//				regularListItem.enabled = true;
+//			}
 		}
 		
 		/**

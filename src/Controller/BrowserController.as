@@ -13,6 +13,7 @@ package Controller {
 	import View.BrowserView;
 	import View.Element.SmallButton;
 	import View.components.Panels.Comments.NewComment;
+	import View.components.Panels.Sharing.SharingPanel;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -40,7 +41,7 @@ package Controller {
 		
 		private var modifyAccess:Boolean = true;
 		
-		private var collectionData:Model_Collection;
+		public static var collectionData:Model_Collection;
 		
 		public static var currentCollectionID:Number = ALLASSETID; //1576; //ALLASSETID; //1492; //ALLASSETID;	// Stores the ID for the current collection we are viewing
 		public static var currentCollectionTitle:String = ""; // The title of the current collection we are looking at
@@ -366,8 +367,9 @@ package Controller {
 			trace("- Collection Created:", e);
 			// Update the Collection Class so it is a 'collection'
 			AppModel.getInstance().setCollectionClass(e);
-			AppModel.getInstance().setOwnerACL(newCollectionID);
-
+			// Set this user as the owner of the collection
+			AppModel.getInstance().changeAccess(newCollectionID, Auth.getInstance().getUsername(), "system", SharingPanel.READWRITE, true);
+			
 			// Remove all teh current items from the shelf
 			shelfAssets.length = 0;
 			
@@ -437,7 +439,11 @@ package Controller {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			// Send the data to view
-			currentView.setupAssetsSharingInformation(userData);
+			if(collectionData != null) {
+				currentView.setupAssetsSharingInformation(userData, collectionData.meta_username);
+			} else {
+				currentView.setupAssetsSharingInformation(userData, "");
+			}
 		}
 		
 		/**
@@ -736,7 +742,7 @@ package Controller {
 			// Save the Collections ID
 			this.saveCurrentCollectionID(e.data.assetID);
 			this.modifyAccess = e.data.access;
-			this.collectionData = e.data.collectionData;
+			collectionData = e.data.collectionData;
 			
 			trace("Saving current collection name", e.data.collectionName);
 			this.saveCurrentCollectionName(e.data.collectionName);

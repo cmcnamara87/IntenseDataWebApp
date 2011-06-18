@@ -34,7 +34,7 @@ package Controller {
 	public class MediaController extends AppController {
 		
 		
-		private var assetData:Model_Media;
+//		private var assetData:Model_Media;
 		private var comments:Array = new Array();
 		private var annotations:Array = new Array();
 		private var module:UIComponent;
@@ -306,7 +306,11 @@ package Controller {
 		private function sharingDataLoaded(userData:Array):void {
 			// Send the data to view
 			trace("Permissions Retrieved");
-			mediaView.setupAssetsSharingInformation(userData);
+			if(currentMediaData != null) {
+				mediaView.setupAssetsSharingInformation(userData, currentMediaData.meta_username);
+			} else {
+				mediaView.setupAssetsSharingInformation(userData, "");
+			}
 		}
 		
 		

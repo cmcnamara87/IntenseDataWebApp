@@ -434,8 +434,8 @@ package View
 					myEvent.data.meta_organisation = newUserView.meta_organisation.text;
 					myEvent.data.meta_url = newUserView.meta_url.text;
 					myEvent.data.meta_tel_business = newUserView.meta_tel_business.text;
-					myEvent.data.meta_tel_home = int(newUserView.meta_tel_home.text);
-					myEvent.data.meta_tel_mobile = int(newUserView.meta_tel_mobile.text);
+					myEvent.data.meta_tel_home = newUserView.meta_tel_home.text;
+					myEvent.data.meta_tel_mobile = newUserView.meta_tel_mobile.text;
 					myEvent.data.meta_Address_1 = newUserView.meta_Address_1.text;
 					myEvent.data.meta_Address_2 = newUserView.meta_Address_2.text;
 					myEvent.data.meta_Address_3 = newUserView.meta_Address_3.text;
@@ -481,8 +481,8 @@ package View
 					myEvent.data.meta_organisation = userDetailsView.meta_organisation.text;
 					myEvent.data.meta_url = userDetailsView.meta_url.text;
 					myEvent.data.meta_tel_business = userDetailsView.meta_tel_business.text;
-					myEvent.data.meta_tel_home = int(userDetailsView.meta_tel_home.text);
-					myEvent.data.meta_tel_mobile = int(userDetailsView.meta_tel_mobile.text);
+					myEvent.data.meta_tel_home = userDetailsView.meta_tel_home.text;
+					myEvent.data.meta_tel_mobile = userDetailsView.meta_tel_mobile.text;
 					myEvent.data.meta_Address_1 = userDetailsView.meta_Address_1.text;
 					myEvent.data.meta_Address_2 = userDetailsView.meta_Address_2.text;
 					myEvent.data.meta_Address_3 = userDetailsView.meta_Address_3.text;
@@ -537,6 +537,7 @@ package View
 				// Is now the 'cancel' button
 				userListComboBox.enabled = true;
 				switchToViewMode();
+				this.addDetails(this.userDetails);
 			} else {
 				// Replace the current details, with the ones saved
 				this.addDetails(this.userDetails);

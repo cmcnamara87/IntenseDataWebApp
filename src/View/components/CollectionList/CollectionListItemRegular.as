@@ -50,6 +50,8 @@ package View.components.CollectionList
 			itemCountLabel.setStyle('textAlign', TextAlign.RIGHT); 
 			this.addElement(itemCountLabel);
 			
+			this.toolTip = collectionData.meta_title + "\nCreated by: " + collectionData.meta_username; 
+			
 			// Listen for click
 			this.addEventListener(MouseEvent.CLICK, collectionListItemClicked);
 		}

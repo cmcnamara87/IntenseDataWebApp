@@ -2,6 +2,7 @@ package View
 {
 	import Controller.Dispatcher;
 	import Controller.IDEvent;
+	import Controller.Utilities.Auth;
 	
 	import Model.Model_Media;
 	
@@ -10,10 +11,6 @@ package View
 	import Module.PDFViewer.PDFViewer;
 	import Module.Videoviewer.Videoview;
 	
-	import View.components.Panels.AnnotationList.AnnotationListPanel;
-	import View.components.Panels.Comments.CommentsPanel;
-	import View.components.Panels.Comments.NewComment;
-	import View.components.Panels.EditDetails.EditDetailsPanel;
 	import View.components.IDGUI;
 	import View.components.MediaViewer.AudioViewer;
 	import View.components.MediaViewer.ImageViewer.ImageViewerOLD;
@@ -21,6 +18,10 @@ package View
 	import View.components.MediaViewer.MediaViewer;
 	import View.components.MediaViewer.VideoViewer.VideoViewer;
 	import View.components.MediaViewer.Viewer;
+	import View.components.Panels.AnnotationList.AnnotationListPanel;
+	import View.components.Panels.Comments.CommentsPanel;
+	import View.components.Panels.Comments.NewComment;
+	import View.components.Panels.EditDetails.EditDetailsPanel;
 	import View.components.Panels.Panel;
 	import View.components.Panels.Sharing.SharingPanel;
 	import View.components.Toolbar;
@@ -199,13 +200,14 @@ package View
 		
 		/* ============== INPUT FUNCTIONS CALLED BY CONTROLLER ================ */
 		public function addMediaData(mediaData:Model_Media):void {
+			trace("MediaView:addMediaData Adding data", mediaData);
 			trace("Media Data Loaded");
 			this.mediaData = mediaData;
 			
 			setHeading(mediaData.meta_title);
 			
 			myEditPanel.addDetails(mediaData);
-			
+				
 			// Check what kind of media it is
 			trace("Media Type:", mediaData.type);
 			trace("Media Title:", mediaData.meta_title);
@@ -250,10 +252,26 @@ package View
 			downloadButton.enabled = true;
 			trace("- File access permissions:", mediaData.access_modify_content);
 			if(mediaData.access_modify_content) {
-				deleteAssetButton.enabled = true;
+				// We have modify access to the file, so we enable adding annotations
 				addAnnotationButton.enabled = true;
-				
 			}
+			
+			// If we are the author, then the button should say 'delete'
+			// otherwise it will say remove
+			if(mediaData.meta_username == Auth.getInstance().getUsername()) {
+				deleteAssetButton.label = "Delete File";
+			} else {
+				deleteAssetButton.label = "Remove File";
+			}
+			
+			// The delete button should be enabled, provided its been shared via the asset
+			// and not via the collection 
+			if(mediaData.meta_media_access_level == SharingPanel.READWRITE || 
+				mediaData.meta_media_access_level == SharingPanel.READ) {
+				// We have read-write or read access to the file itself
+				// not through a collection
+				deleteAssetButton.enabled = true;
+			} 
 			editDetailsButton.enabled = true;
 			hideShowAnnotationButton.enabled = true;
 			shareButton.enabled = true;
@@ -272,8 +290,8 @@ package View
 		 * Passes the data to the sharing panel. 
 		 * @param	sharingData	An array of data with user+access information.
 		 */		
-		public function setupAssetsSharingInformation(sharingData:Array):void {
-			mySharingPanel.setupAssetsSharingInformation(sharingData);
+		public function setupAssetsSharingInformation(sharingData:Array, assetCreatorUsername:String):void {
+			mySharingPanel.setupAssetsSharingInformation(sharingData, assetCreatorUsername);
 		}
 		
 		

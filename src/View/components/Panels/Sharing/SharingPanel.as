@@ -1,5 +1,6 @@
 package View.components.Panels.Sharing
 {
+	import Controller.BrowserController;
 	import Controller.IDEvent;
 	
 	import Model.Model_Commentary;
@@ -72,8 +73,11 @@ package View.components.Panels.Sharing
 		 * @param sharingData 	The data containing which users have access etc
 		 * 
 		 */		
-		public function setupAssetsSharingInformation(sharingData:Array):void {
+		public function setupAssetsSharingInformation(sharingData:Array, assetCreatorUsername:String):void {
+			trace("SharingPanel:setupAssetsSharingInformation");
 			content.removeAllElements();
+			
+			trace("SharingPanel setupAssetsSharingInformation: Creator", assetCreatorUsername);
 			
 			// Save the sharingData
 			this.sharingData = sharingData;
@@ -86,8 +90,13 @@ package View.components.Panels.Sharing
 				
 				// Add a new Sharing Panel User to the content for the panel
 				var sharingPanelUser:SharingPanelUser = new SharingPanelUser(username, access);
-				if(!modifyAccess) {
+//				if(!modifyAccess) {
+//					sharingPanelUser.enabled = false;
+//				}
+				
+				if(assetCreatorUsername == username) {
 					sharingPanelUser.enabled = false;
+				} else {
 				}
 				addPanelItem(sharingPanelUser);
 			}

@@ -12,9 +12,9 @@ package View.components.Panels.EditDetails
 	import flash.utils.setTimeout;
 	
 	import mx.controls.Button;
-	import mx.controls.Label;
 	
 	import spark.components.Group;
+	import spark.components.Label;
 
 	public class EditDetailsPanel extends Panel
 	{
@@ -81,33 +81,42 @@ package View.components.Panels.EditDetails
 			
 			assetID = mediaData.base_asset_id;
 			
-			trace("Adding Details to Edit Details Panel");
-			metaTitle = new DetailListItem("Title", mediaData.meta_title);
-			addPanelItem(metaTitle);
+			trace("EditDetailsPanel:addDetails", mediaData, mediaData.meta_title, mediaData.meta_description);
 			
-			metaDescription = new DetailListItem("Description", mediaData.meta_description);
-			addPanelItem(metaDescription);
-			
-			metaDatePublished = new DetailListItem("Date Published", mediaData.meta_datepublished,"date");
-			addPanelItem(metaDatePublished);
-			
-			metaSubject = new DetailListItem("Subject", mediaData.meta_subject);
-			addPanelItem(metaSubject);
+			setTimeout(function():void {
+				trace("EditDetailsPanel:addDetails removing now!");
+				content.removeAllElements();	
 
-			metaKeywords = new DetailListItem("Keywords", mediaData.meta_keywords);
-			addPanelItem(metaKeywords);
-			
-			metaOtherContrib = new DetailListItem("Other Contributors", mediaData.meta_othercontrib);
-			addPanelItem(metaOtherContrib);
-			
-			metaCreativeWorkType = new DetailListItem("Creative Work Type", mediaData.meta_creativeworktype,"dropdown",AssetLookup.creativeworktypeLookup);
-			addPanelItem(metaCreativeWorkType);
-			
-			metaCreativeWorkSubType = new DetailListItem("Creative Work Subtype", mediaData.meta_creativeworksubtype,"dropdown",AssetLookup.creativeworksubtypeLookup);
-			addPanelItem(metaCreativeWorkSubType);
+				trace("Adding Details to Edit Details Panel");
+				metaTitle = new DetailListItem("Title", mediaData.meta_title);
+				addPanelItem(metaTitle);
+				
+				metaDescription = new DetailListItem("Description", mediaData.meta_description);
+				addPanelItem(metaDescription);
+				
+				metaDatePublished = new DetailListItem("Date Published", mediaData.meta_datepublished,"date");
+				addPanelItem(metaDatePublished);
+				
+				metaSubject = new DetailListItem("Subject", mediaData.meta_subject);
+				addPanelItem(metaSubject);
+	
+				metaKeywords = new DetailListItem("Keywords", mediaData.meta_keywords);
+				addPanelItem(metaKeywords);
+				
+				metaOtherContrib = new DetailListItem("Other Contributors", mediaData.meta_othercontrib);
+				addPanelItem(metaOtherContrib);
+				
+				metaCreativeWorkType = new DetailListItem("Creative Work Type", mediaData.meta_creativeworktype,"dropdown",AssetLookup.creativeworktypeLookup);
+				addPanelItem(metaCreativeWorkType);
+				
+				metaCreativeWorkSubType = new DetailListItem("Creative Work Subtype", mediaData.meta_creativeworksubtype,"dropdown",AssetLookup.creativeworksubtypeLookup);
+				addPanelItem(metaCreativeWorkSubType);
+	
+				metaSponsorFunder = new DetailListItem("Sponsor/Funder", mediaData.meta_sponsorfunder);
+				addPanelItem(metaSponsorFunder);
+				
+			}, 5000);
 
-			metaSponsorFunder = new DetailListItem("Sponsor/Funder", mediaData.meta_sponsorfunder);
-			addPanelItem(metaSponsorFunder);
 		}
 		
 		

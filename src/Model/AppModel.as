@@ -733,41 +733,36 @@ package Model {
 			// The title is compulsory, so if its not there, it should error.
 			baseXMLUpdate.service.args["meta"]["r_resource"]["title"] = assetData.meta_title;
 			
-			
-			if(assetData.meta_description != "") {
-				baseXMLUpdate.service.args.meta.r_resource.description = assetData.meta_description;	
-			}
+			// Cause for some fucking reason
+			// mediaflux doesnt let you delete a entry
+			// it also doesnt allow you to set it to be "" or even " ";
+			if(assetData.meta_description == "") assetData.meta_description = "*";
+			if(assetData.meta_subject == "") assetData.meta_subject = "*";
+			if(assetData.meta_keywords == "") assetData.meta_keywords = "*";
+			if(assetData.meta_datepublished == "") assetData.meta_datepublished = "*";
+			if(assetData.meta_othercontrib == "") assetData.meta_othercontrib = "*";
+			if(assetData.meta_sponsorfunder == "") assetData.meta_sponsorfunder = "*";
+			if(assetData.meta_creativeworksubtype == "") assetData.meta_creativeworksubtype = "*";
+			if(assetData.meta_creativeworktype == "") assetData.meta_creativeworktype = "*";
+		
+			baseXMLUpdate.service.args.meta.r_resource.description = assetData.meta_description;	
 			
 			baseXMLUpdate.service.args.meta.r_base.properties = "";
 			
-			if(assetData.meta_subject != "") {
-				baseXMLUpdate.service.args.meta.r_base.properties.appendChild(XML('<property name="Subject">'+assetData.meta_subject+'</property>'));
-			}
+			baseXMLUpdate.service.args.meta.r_base.properties.appendChild(XML('<property name="Subject">'+assetData.meta_subject+'</property>'));
 			
-			if(assetData.meta_keywords != "") {
-				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+assetData.meta_keywords+'</property>'));
-			}
+			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+assetData.meta_keywords+'</property>'));
+				
+			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+assetData.meta_datepublished+'</property>'));
+				
+			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+assetData.meta_othercontrib+'</property>'));
+						
+			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+assetData.meta_sponsorfunder+'</property>'));
 			
-			if(assetData.meta_datepublished != "") {
-				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+assetData.meta_datepublished+'</property>'));
-			}
+			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+assetData.meta_creativeworksubtype+'</property>'));
 			
-			if(assetData.meta_othercontrib != "") {
-				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+assetData.meta_othercontrib+'</property>'));
-			}
-			
-			if(assetData.meta_sponsorfunder != "") {
-				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+assetData.meta_sponsorfunder+'</property>'));
-			}
-			
-			if(assetData.meta_creativeworksubtype != "") {
-				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+assetData.meta_creativeworksubtype+'</property>'));
-			}
-			
-			if(assetData.meta_creativeworktype != "") {
-				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+assetData.meta_creativeworktype+'</property>'));
-			}
-			
+			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+assetData.meta_creativeworktype+'</property>'));
+						
 			if(_connection.sendRequest(baseXMLUpdate, callback)) {
 				//All good
 			} else {
@@ -914,7 +909,10 @@ package Model {
 			// Set the description, to be the number of items in the collection
 			baseXML.service.args["meta"]["r_resource"]["description"] = shelfAssets.length;
 			
-			if(_connection.sendRequest(baseXML,callback)) {
+			if(_connection.sendRequest(baseXML,function(e:Event):void {
+//				AppModel.getInstance().setUserAssetShareCount(
+				callback(e);
+			})) {
 				trace("SENDING NEW COLLECTION");
 				//All good
 			} else {
@@ -1291,6 +1289,20 @@ package Model {
 			baseXML.service.args["user"] = username;
 			baseXML.service.args["domain"] = "system";
 			baseXML.service.args["email"] = details.meta_email;
+			
+			if(details.meta_firstname == "") 	details.meta_firstname = " ";
+			if(details.meta_lastname == "") 	details.meta_lastname = " ";
+			if(details.meta_email == "") 		details.meta_email = " ";
+			if(details.meta_initial == "") 		details.meta_initial = " ";
+			if(details.meta_organisation == "") details.meta_organisation = " ";
+			if(details.meta_url == "") 			details.meta_url = " ";
+			if(details.meta_tel_business == "") details.meta_tel_business = " ";
+			if(details.meta_tel_home == "") 	details.meta_tel_home = " ";
+			if(details.meta_tel_mobile == "") 	details.meta_tel_mobile = " ";
+			if(details.meta_Address_1 == "") 	details.meta_Address_1 = " ";
+			if(details.meta_Address_2 == "") 	details.meta_Address_2 = " ";
+			if(details.meta_Address_3 == "") 	details.meta_Address_3 = " ";
+			
 			baseXML.service.args["meta"]["r_user"]["firstname"] = details.meta_firstname;
 			baseXML.service.args["meta"]["r_user"]["lastname"] = details.meta_lastname;
 			baseXML.service.args["meta"]["r_user"]["email"] = details.meta_email;
