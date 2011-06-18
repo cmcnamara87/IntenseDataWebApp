@@ -12,6 +12,7 @@ package View.components.Notification
 	
 	import spark.components.HGroup;
 	import spark.components.Label;
+	import spark.components.TileGroup;
 	import spark.components.VGroup;
 	import spark.primitives.Line;
 	
@@ -23,7 +24,7 @@ package View.components.Notification
 		public function CollectionNotification(notificationID:Number, username:String, type:String, collectionID:Number, collectionName:String, mediaID:Number, mediaName:String) { 
 			super(notificationID);
 			
-			var details:HGroup = new HGroup();
+			var details:TileGroup = new TileGroup();
 			details.width = 200;
 			content.addElement(details);
 			

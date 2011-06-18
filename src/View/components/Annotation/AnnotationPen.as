@@ -51,7 +51,7 @@ package View.components.Annotation
 				annotation.highlight();
 				
 				// tell the viewer to display the overlay to go with this
-				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+				var myEvent:IDEvent = new IDEvent(IDEvent.SHOW_ANNOTATION, true);
 				myEvent.data.text = annotation.getText();
 				myEvent.data.author = annotation.getAuthor();
 				dispatchEvent(myEvent);
@@ -62,7 +62,7 @@ package View.components.Annotation
 				var annotation:AnnotationInterface = e.target as AnnotationInterface;
 				annotation.unhighlight();
 				// tell the viewer to hide the annotation text overlay
-				dispatchEvent(new IDEvent(IDEvent.ANNOTATION_MOUSE_OUT, true));
+				dispatchEvent(new IDEvent(IDEvent.HIDE_ANNOTATATION, true));
 			});
 			
 		}

@@ -217,8 +217,8 @@ package View.components.MediaViewer
 			// Event Listeners
 			this.addEventListener(Event.CANCEL, cancelAnnotationButtonClicked);
 			this.addEventListener(IDEvent.SHOW_ANNOTATION_TEXT_ENTRY, showAnnotationTextOverlayTextEntryMode);
-			this.addEventListener(IDEvent.ANNOTATION_MOUSE_OVER, annotationMouseOver);
-			this.addEventListener(IDEvent.ANNOTATION_MOUSE_OUT, annotationMouseOut);
+			this.addEventListener(IDEvent.SHOW_ANNOTATION, annotationMouseOver);
+			this.addEventListener(IDEvent.HIDE_ANNOTATATION, annotationMouseOut);
 			
 			media.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
 				trace("got a progress event");
@@ -261,9 +261,6 @@ package View.components.MediaViewer
 					trace("Creating image viewer");
 					return new ImageViewer();
 					break;
-				case MediaAndAnnotationHolder.MEDIA_VIDEO:
-					trace("Creating video viewer");
-					return new VideoViewer();
 				default:
 					trace("Unknown Viewer type");
 			}
@@ -313,7 +310,7 @@ package View.components.MediaViewer
 			var scrollX:Number = myScroller.horizontalScrollBar.value  / media.scaleX;
 			var scrollY:Number = myScroller.verticalScrollBar.value / media.scaleY;
 			Tweener.addTween(media, {'scaleX': scaleX, 'scaleY': scaleY, 'time': 1, 'onUpdate': function():void {
-				trace("scaling is currently", scaleX, scaleY);
+//				trace("scaling is currently", scaleX, scaleY);
 				myScroller.horizontalScrollBar.value = scrollX * media.scaleX;
 				myScroller.verticalScrollBar.value = scrollY * media.scaleY;
 			}});

@@ -2,6 +2,7 @@ package Controller {
 	
 	import flash.events.Event;
 	
+	import mx.charts.chartClasses.StackedSeries;
 	import mx.messaging.channels.StreamingAMFChannel;
 	
 	public class IDEvent extends Event {
@@ -105,8 +106,8 @@ package Controller {
 			
 			// ANNOTATION STUFF
 			public static var SHOW_ANNOTATION_TEXT_ENTRY:String = "id_showAnnotationTextEntry";
-			public static var ANNOTATION_MOUSE_OVER:String = "id_annotationMouseOver";
-			public static var ANNOTATION_MOUSE_OUT:String = "id_annotationMouseOut";
+			public static var SHOW_ANNOTATION:String = "id_annotationMouseOver";
+			public static var HIDE_ANNOTATATION:String = "id_annotationMouseOut";
 			
 			// Called when we find the annotation that was moused over, and we 
 			// want to send back its y position to the viewer so it can scroll to it
@@ -135,6 +136,12 @@ package Controller {
 			public static var MEDIA_LOADED:String = "id_pdfLoaded"; 
 			
 			public static var DELETE_NOTIFICATION:String = "id_deleteNotification";
+			
+			// The time the netstream is up to
+			public static var PLAYHEAD_POSITION:String = "id_playheadPosition";
+			public static var SEEK_TO:String = "id_seekTo";
+			public static var START_TIME_SET:String = "id_startTimeSet";
+			public static var END_TIME_SET:String = "id_endTimeSet";
 			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);

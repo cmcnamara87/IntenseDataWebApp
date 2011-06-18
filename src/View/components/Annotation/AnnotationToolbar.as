@@ -2,6 +2,7 @@ package View.components.Annotation
 {
 	import Controller.IDEvent;
 	
+	import View.components.IDButton;
 	import View.components.IDGUI;
 	import View.components.MediaViewer.ImageViewer.ImageViewerOLD;
 	import View.components.MediaViewer.MediaAndAnnotationHolder;
@@ -42,6 +43,9 @@ package View.components.Annotation
 		private var color:uint = BLUE;
 		
 		// GUI elements
+		private var setStartTimeButton:IDButton;
+		private var setEndTimeButton:IDButton
+		
 		private var freeDrawButton:ToggleButton;
 		private var drawBoxButton:ToggleButton;
 		private var textHighlightButton:ToggleButton;
@@ -69,6 +73,14 @@ package View.components.Annotation
 			this.setStyle("borderVisible", false);
 //			noteButton = IDGUI.makeToggleButton("Add Note");
 //			this.addElement(noteButton);
+			setStartTimeButton = new IDButton("Set Start Time");
+			this.addElement(setStartTimeButton);
+			
+			setEndTimeButton = new IDButton("Set End Time");
+			this.addElement(setEndTimeButton);
+			
+			var timeLine:Line = IDGUI.makeLine(0x000000);
+			this.addElement(timeLine);
 			
 			// Create the Box Button
 			drawBoxButton = IDGUI.makeToggleButton("Draw Box", true);
@@ -133,6 +145,11 @@ package View.components.Annotation
 			clearButton.addEventListener(MouseEvent.CLICK, clearButtonClicked);
 			// Listne for Add text button click
 			addTextButton.addEventListener(MouseEvent.CLICK, addTextButtonClicked);
+			
+			// Set time stuff
+			setStartTimeButton.addEventListener(MouseEvent.CLICK, setStartTimeButtonClicked);
+			setEndTimeButton.addEventListener(MouseEvent.CLICK, setEndTimeButtonClicked);
+			
 		}
 		
 		/* =================== EVENT LISTENER FUNCTIONS ====================== */
@@ -225,6 +242,17 @@ package View.components.Annotation
 		private function addTextButtonClicked(e:MouseEvent):void {
 			imageViewer.showAnnotationTextOverlayTextEntryMode();
 		}
+		
+		private function setStartTimeButtonClicked(e:MouseEvent):void {
+			var event:IDEvent = new IDEvent(IDEvent.START_TIME_SET, true);
+			this.dispatchEvent(event);
+		}
+		
+		private function setEndTimeButtonClicked(e:MouseEvent):void {
+			var event:IDEvent = new IDEvent(IDEvent.END_TIME_SET, true);
+			this.dispatchEvent(event);
+		}
+		
 		/* =================== PUBLIC FUNCTIONS ============================== */
 		public function show():void {
 			this.visible = true;
@@ -242,6 +270,18 @@ package View.components.Annotation
 		
 		public function getSelectedColor():uint {
 			return color;
+		}
+		
+		/**
+		 * Changes the 'set start time' button to display the time the start was set at 
+		 * @param startTime
+		 * 
+		 */		
+		public function setStartTimeDisplay(startTime:String):void {
+			setStartTimeButton.label = startTime;
+		}
+		public function setEndTimeDisplay(endTime:String):void {
+			setEndTimeButton.label = endTime;
 		}
 		
 		/* =================== HELPER FUNCTIONS ============================= */

@@ -220,8 +220,8 @@ package View
 					mediaViewer = new AudioView();
 					break;
 				case "video":
-//					mediaViewer = TimelineViewer.getViewer(MediaAndAnnotationHolder.MEDIA_VIDEO);//new Videoview();
-					mediaViewer = SpaceViewer.getViewer(MediaAndAnnotationHolder.MEDIA_VIDEO);//new Videoview();
+					mediaViewer = TimelineViewer.getViewer(MediaAndAnnotationHolder.MEDIA_VIDEO);//new Videoview();
+//					mediaViewer = SpaceViewer.getViewer(MediaAndAnnotationHolder.MEDIA_VIDEO);//new Videoview();
 //					mediaViewer = new Videoview();
 					addAnnotationButton.visible = true;
 					hideShowAnnotationButton.visible = true;

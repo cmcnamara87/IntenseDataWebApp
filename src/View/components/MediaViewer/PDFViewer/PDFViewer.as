@@ -4,6 +4,8 @@ package View.components.MediaViewer.PDFViewer
 	
 	import View.components.IDButton;
 	import View.components.IDGUI;
+	import View.components.MediaViewer.MediaAndAnnotationHolder;
+	import View.components.MediaViewer.SpaceViewer;
 	
 	import flash.events.Event;
 	import flash.events.FocusEvent;
@@ -16,8 +18,6 @@ package View.components.MediaViewer.PDFViewer
 	import spark.components.Label;
 	import spark.components.TextInput;
 	import spark.primitives.Line;
-	import View.components.MediaViewer.MediaAndAnnotationHolder;
-	import View.components.MediaViewer.SpaceViewer;
 
 	public class PDFViewer extends SpaceViewer
 	{
@@ -27,6 +27,7 @@ package View.components.MediaViewer.PDFViewer
 		private var nextSearchResultButton:IDButton; // Button to go to next search result
 		
 		// Variables
+		private var pdfHolder:PDFAndAnnotationHolder;
 		private var searchResultYCoors:Array; // Stores the Y value for all of the 
 		private var selectedSearchResult:Number; // The current number of the search result we are looking at
 												// 0 <= selectedSearchResult < searchResultYCoors.length
@@ -35,10 +36,12 @@ package View.components.MediaViewer.PDFViewer
 		public function PDFViewer()
 		{
 			super(MediaAndAnnotationHolder.MEDIA_PDF);
+			// Just to save us from casting all the time.
+			pdfHolder = super.media as PDFAndAnnotationHolder;
 		}
 		
 		override protected function makeMedia():MediaAndAnnotationHolder {
-			return new MediaAndAnnotationHolder(mediaType);
+			return new PDFAndAnnotationHolder(mediaType);
 		}
 		
 		override protected function makeBottomToolbar():void {
@@ -141,7 +144,7 @@ package View.components.MediaViewer.PDFViewer
 				searchBox.setStyle('borderColor', 0x888888);
 				searchBox.setStyle('contentBackgroundColor', 0xFFFFFF);
 				// Clear all text highlighting
-				media.searchForText("");
+				pdfHolder.searchForText("");
 				
 				searchResultLabel.text = "";
 				
@@ -151,7 +154,7 @@ package View.components.MediaViewer.PDFViewer
 			}
 			
 			trace('Searching for: ', (e.target as TextInput).text);
-			this.searchResultYCoors = media.searchForText(searchString);
+			this.searchResultYCoors = pdfHolder.searchForText(searchString);
 			
 			if(searchResultYCoors.length) {
 				trace("Match found");
@@ -252,31 +255,31 @@ package View.components.MediaViewer.PDFViewer
 			
 			// for PDF resizing,
 			// Fit button - fits 1 page
-			var scaleX:Number = scrollerAndOverlayGroup.height / media.getFitHeightSize();
-			var scaleY:Number = scrollerAndOverlayGroup.height / media.getFitHeightSize();
+			var scaleX:Number = scrollerAndOverlayGroup.height / pdfHolder.getFitHeightSize();
+			var scaleY:Number = scrollerAndOverlayGroup.height / pdfHolder.getFitHeightSize();
 			scaleMedia(scaleX, scaleY);
 			
-			resizeSlider.value = scrollerAndOverlayGroup.height / media.getFitHeightSize() * 100;
+			resizeSlider.value = scrollerAndOverlayGroup.height / pdfHolder.getFitHeightSize() * 100;
 		}
 		
 		private function getCurrentPage():Number {
-			trace("Page is", myScroller.verticalScrollBar.value/media.scaleY / media.getFitHeightSize());
+			trace("Page is", myScroller.verticalScrollBar.value/media.scaleY / pdfHolder.getFitHeightSize());
 			
 			// The thickness of the grey border around our pages
 			var borderThickness:Number = 1;
 			// Because there are graphic errors, we want to make sure anything more than 0.99 we round up, and anything else,
 			// we want to round down
 			// so we need to get out the decimals
-			var decimals:Number = (myScroller.verticalScrollBar.value / media.scaleY / media.getFitHeightSize()) - Math.floor(myScroller.verticalScrollBar.value / media.scaleY / media.getFitHeightSize());
+			var decimals:Number = (myScroller.verticalScrollBar.value / pdfHolder.scaleY / pdfHolder.getFitHeightSize()) - Math.floor(myScroller.verticalScrollBar.value / pdfHolder.scaleY / pdfHolder.getFitHeightSize());
 			// and see if they are 0.99+
 			if(decimals > 0.98) {
 				// Fixes graphical errors, and rounds us up to the next page, when we are oh so close!
 				// The Math.max part is so...when we are at the first page, and we are - 1 off for the 1px solid border
 				// It pushes it back up to 0 (not -1)
-				var currentPage:Number = Math.max(Math.ceil((myScroller.verticalScrollBar.value - (borderThickness * media.scaleY)) / media.scaleY / media.getFitHeightSize()), 0);
+				var currentPage:Number = Math.max(Math.ceil((myScroller.verticalScrollBar.value - (borderThickness * pdfHolder.scaleY)) / pdfHolder.scaleY / pdfHolder.getFitHeightSize()), 0);
 			} else {
 				// They arent 0.99+ so we want to floor it (so it does the page we are on, and goes to the previous/next)
-				currentPage = Math.max(Math.floor((myScroller.verticalScrollBar.value - (borderThickness * media.scaleY)) / media.scaleY / media.getFitHeightSize()), 0);
+				currentPage = Math.max(Math.floor((myScroller.verticalScrollBar.value - (borderThickness * pdfHolder.scaleY)) / pdfHolder.scaleY / pdfHolder.getFitHeightSize()), 0);
 			}
 			return currentPage;
 
@@ -288,7 +291,7 @@ package View.components.MediaViewer.PDFViewer
 			//myScroller.verticalScrollBar.value = page * media.getFitHeightSize() * media.scaleY - (borderThickness * media.scaleY);
 			
 			var xCoor:Number = myScroller.horizontalScrollBar.value;
-			var yCoor:Number = page * media.getFitHeightSize() - borderThickness; // THe scale is facotred in by scrolToPoint 
+			var yCoor:Number = page * pdfHolder.getFitHeightSize() - borderThickness; // THe scale is facotred in by scrolToPoint 
 			
 //			myScroller.verticalScrollBar.value = page * media.getFitHeightSize() * media.scaleY - (borderThickness * media.scaleY);
 //			myScroller.verticalScrollBar.value = (page * media.getFitHeightSize() - borderThickness) * media.scaleY;

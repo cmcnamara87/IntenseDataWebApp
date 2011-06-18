@@ -2,7 +2,7 @@ package View.components.Annotation
 {
 	import Controller.IDEvent;
 	
-	import View.components.MediaViewer.PDFViewer.PDF;
+	import View.components.MediaViewer.PDFViewer.PDFMedia;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -19,9 +19,9 @@ package View.components.Annotation
 		private var assetID:Number;
 		private var author:String;
 		private var text:String;
-		private var pdf:PDF;
+		private var pdf:PDFMedia;
 		
-		public function AnnotationHighlight(assetID:Number, author:String, text:String, xCoor:Number, yCoor:Number, page1:Number, startTextIndex:Number, endTextIndex:Number, pdf:PDF)
+		public function AnnotationHighlight(assetID:Number, author:String, text:String, xCoor:Number, yCoor:Number, page1:Number, startTextIndex:Number, endTextIndex:Number, pdf:PDFMedia)
 		{
 			trace("Highlight created", xCoor, yCoor);
 			// Save the annotation data
@@ -59,7 +59,7 @@ package View.components.Annotation
 				annotation.highlight();
 				
 				// tell the viewer to display the overlay to go with this
-				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+				var myEvent:IDEvent = new IDEvent(IDEvent.SHOW_ANNOTATION, true);
 				myEvent.data.text = annotation.getText();
 				myEvent.data.author = annotation.getAuthor();
 				dispatchEvent(myEvent);
@@ -70,7 +70,7 @@ package View.components.Annotation
 				var annotation:AnnotationInterface = e.target as AnnotationInterface;
 				annotation.unhighlight();
 				// tell the viewer to hide the annotation text overlay
-				dispatchEvent(new IDEvent(IDEvent.ANNOTATION_MOUSE_OUT, true));
+				dispatchEvent(new IDEvent(IDEvent.HIDE_ANNOTATATION, true));
 			});
 			
 		}

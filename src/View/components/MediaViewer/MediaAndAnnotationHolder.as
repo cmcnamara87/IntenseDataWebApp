@@ -13,7 +13,7 @@ package View.components.MediaViewer
 	import View.components.Annotation.AnnotationPen;
 	import View.components.Annotation.AnnotationToolbar;
 	import View.components.MediaViewer.ImageViewer.ImageMedia;
-	import View.components.MediaViewer.PDFViewer.PDF;
+	import View.components.MediaViewer.PDFViewer.PDFMedia;
 	import View.components.MediaViewer.VideoViewer.VideoMedia;
 	
 	import flash.display.Sprite;
@@ -35,21 +35,23 @@ package View.components.MediaViewer
 		private var mediaType:String; // The type of media we are using
 		private var sourceURL:String; // The URL of the media we are using
 		
-		private var media:UIComponent; // The actual loaded media we are dispalyed
+		protected var media:UIComponent; // The actual loaded media we are dispalyed
 		
-		private var annotationsData:Array; // The data for each annotation (all model_commentaries)
-		private var annotations:Array; // All the current annotations saved and added to the media (annotation objects0
+		protected var annotationsData:Array; // The data for each annotation (all model_commentaries)
+		protected var annotations:Array; // All the current annotations saved and added to the media (annotation objects0
 		private var newAnnotationSpace:Sprite; // The space where we can draw new annotations
 		private var annotationCoordinates:AnnotationCoordinateCollection; // Stores the coordiante pairs for using the pen tool
 		
-		private var mediaLoaded:Boolean; // Stores whether the media has finish loading
-		private var annotationsLoaded:Boolean; // Stores whether the annotations have loaded
+		protected var mediaLoaded:Boolean; // Stores whether the media has finish loading
+		protected var annotationsLoaded:Boolean; // Stores whether the annotations have loaded
 		
 		private var startAnnotationMouseX:Number = -1; // THe X position of the mouse, when the user starts to draw an annotation
 		private var startAnnotationMouseY:Number = -1; // The y position of the mouse when they start 
 		private var finishAnnotationMouseX:Number = -1;  // the X position when they stop drawing
 		private var finishAnnotationMouseY:Number = -1; // The Y position when they stop
 		
+		private var startTime:Number = 0;
+		private var endTime:Number = 0;
 		
 		public function MediaAndAnnotationHolder(mediaType:String)
 		{
@@ -58,6 +60,12 @@ package View.components.MediaViewer
 			this.mediaType = mediaType;
 		}
 		
+		/* ================================= PUBLIC FUNCTIONS ==================================== */
+		/**
+		 * Load the media 
+		 * @param url	The Medias URL
+		 * 
+		 */		
 		public function load(url:String):void {
 			trace("Loading ", mediaType, "...", url);
 			// Save the URL
@@ -68,7 +76,7 @@ package View.components.MediaViewer
 			annotationCoordinates = new AnnotationCoordinateCollection();
 
 			if(mediaType == MEDIA_PDF) {
-				media = new PDF(sourceURL);
+				media = new PDFMedia(sourceURL);
 			} else if (mediaType == MEDIA_IMAGE) {
 				media = new ImageMedia(sourceURL);
 			} else if (mediaType == MEDIA_VIDEO) {
@@ -89,6 +97,11 @@ package View.components.MediaViewer
 			});
 		}
 		
+		/**
+		 * The Media has finished loaded. Display it. 
+		 * @param e
+		 * 
+		 */		
 		private function sourceLoaded(e:IDEvent=null):void {
 			trace("Finished loading media");
 			// We have finished loading hte media
@@ -106,29 +119,21 @@ package View.components.MediaViewer
 		}
 		
 		/**
-		 * Searches for text in the media. Should only be used ofr PDFs 
-		 * @param text	The string to search for.
-		 * @return The y-pos of the first match
+		 * Set the starts time for the annotation 
+		 * @param time	The time the annotation starts
 		 * 
 		 */		
-		public function searchForText(text:String):Array {
-			// This should only be used for the pdfs whatever!!!!
-			// this should alll be extended into another class, ill do it later, on a deadline atm TODO!!!
-			if(mediaType == MEDIA_PDF) {
-				return (media as PDF).searchForText(text);
-			} else {
-				throw new Error("Only to be run on PDFs");
-			}
+		public function setAnnotationStartTime(time:Number):void {
+			startTime = time;
 		}
 		
-		public function getFitHeightSize():Number {
-			if(mediaType == MEDIA_PDF) {
-				return (media as PDF).getPageHeight();
-			} else if (mediaType == MEDIA_IMAGE) {
-				return media.height;
-			} else {
-				return -1;
-			}
+		/**
+		 * Sets the end time for the annotation 
+		 * @param time	The time the annotation end
+		 * 
+		 */		
+		public function setAnnotationEndTime(time:Number):void {
+			endTime = time;
 		}
 		
 		/* ================== ANNOTATION FUNCTION =================== */
@@ -156,7 +161,7 @@ package View.components.MediaViewer
 			}
 			
 			if(mediaType == MEDIA_PDF) {
-				(media as PDF).clearHighlight();
+				(media as PDFMedia).clearHighlight();
 			}
 		}
 		
@@ -183,7 +188,7 @@ package View.components.MediaViewer
 			//			}
 			newAnnotationSpace.graphics.clear();
 			try{
-				(media as PDF).clearHighlight();
+				(media as PDFMedia).clearHighlight();
 			} catch(error:Error) {}
 			annotationCoordinates = new AnnotationCoordinateCollection();
 		}
@@ -236,7 +241,7 @@ package View.components.MediaViewer
 					dispatchEvent(scrollToAnnotationEvent);
 					
 					// tell the viewer to display the overlay to go with this
-					var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+					var myEvent:IDEvent = new IDEvent(IDEvent.SHOW_ANNOTATION, true);
 					myEvent.data.bottom = true; // this means we want to show the text overlay at the bottom
 					myEvent.data.text = annotation.getText();
 					myEvent.data.author = annotation.getAuthor();
@@ -271,7 +276,7 @@ package View.components.MediaViewer
 		 * annotations Array. 
 		 * 
 		 */		
-		private function addAnnotationsToDisplay():void {
+		protected function addAnnotationsToDisplay():void {
 			trace("Adding annotations to view");
 			
 			this.removeAllAnnotations();
@@ -296,7 +301,9 @@ package View.components.MediaViewer
 						annotationData.annotation_height, 
 						annotationData.annotation_width, 
 						annotationData.annotation_x,
-						annotationData.annotation_y
+						annotationData.annotation_y,
+						annotationData.start,
+						annotationData.end
 					);
 					trace("Added at", annotation.x, annotation.y);
 					
@@ -324,7 +331,7 @@ package View.components.MediaViewer
 						annotationData.annotation_linenum,
 						annotationData.annotation_start,
 						annotationData.annotation_end,
-						media as PDF
+						media as PDFMedia
 					);
 					//TODO make this work with scaling, it wont
 					
@@ -404,7 +411,7 @@ package View.components.MediaViewer
 			trace("drawing annotation", e.target.mouseX, e.target.mouseY);
 			
 			try {
-				(media as PDF).clearHighlight();
+				(media as PDFMedia).clearHighlight();
 			} catch (error:Error) {
 				trace("couldnt claer the annotation cause its not a pdf");
 			}
@@ -456,8 +463,8 @@ package View.components.MediaViewer
 				}
 			} else if (AnnotationToolbar.mode == AnnotationToolbar.HIGHLIGHT) {
 				trace("Adding an text highlight stuff");
-				(media as PDF).clearHighlight();
-				(media as PDF).highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, 
+				(media as PDFMedia).clearHighlight();
+				(media as PDFMedia).highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, 
 														e.target.mouseX, e.target.mouseY);
 			} 
 			
@@ -531,12 +538,12 @@ package View.components.MediaViewer
 					startAnnotationMouseY = -1;
 					finishAnnotationMouseX = -1;
 					finishAnnotationMouseY  = -1;
-					(media as PDF).clearHighlight();	
+					(media as PDFMedia).clearHighlight();	
 					
 					return;
 				}	
 				
-				(media as PDF).highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, 
+				(media as PDFMedia).highlightFromCoordinates(startAnnotationMouseX, startAnnotationMouseY, 
 														e.target.mouseX, e.target.mouseY);
 				
 				// tell the viewer to show the text input box
@@ -668,10 +675,12 @@ package View.components.MediaViewer
 				-1, // we dont have an assetID# for hte annotation get
 				Auth.getInstance().getUsername(), 
 				annotationText,
-				Math.abs(finishAnnotationMouseY - startAnnotationMouseY),// / this.scaleY, 
-				Math.abs(finishAnnotationMouseX - startAnnotationMouseX),// / this.scaleX, 
+				Math.abs(finishAnnotationMouseY - startAnnotationMouseY), 
+				Math.abs(finishAnnotationMouseX - startAnnotationMouseX), 
 				Math.min(startAnnotationMouseX, finishAnnotationMouseX),// / this.scaleX,
-				Math.min(startAnnotationMouseY, finishAnnotationMouseY)// / this.scaleY,
+				Math.min(startAnnotationMouseY, finishAnnotationMouseY),// / this.scaleY,
+				startTime,
+				endTime
 			);
 			
 			this.addChild(annotation);
@@ -705,7 +714,7 @@ package View.components.MediaViewer
 		}
 		
 		private function saveHighlightAnnotation(annotationText:String):void {
-			if((media as PDF).getStartTextIndex() == (media as PDF).getEndTextIndex()) {
+			if((media as PDFMedia).getStartTextIndex() == (media as PDFMedia).getEndTextIndex()) {
 				Alert.show("No text highlighted");
 				this.removeAllNonSavedAnnotations();
 				this.stopListeningForAnnotating();
@@ -742,16 +751,16 @@ package View.components.MediaViewer
 				annotationText,
 				xCoor,
 				yCoor,
-				(media as PDF).getSelectionPage(),
-				(media as PDF).getStartTextIndex(),
-				(media as PDF).getEndTextIndex(),
-				(media as PDF)
+				(media as PDFMedia).getSelectionPage(),
+				(media as PDFMedia).getStartTextIndex(),
+				(media as PDFMedia).getEndTextIndex(),
+				(media as PDFMedia)
 			);
 			this.addChild(annotationHighlight);
 			annotations.push(annotationHighlight);
 			annotationHighlight.save();
 			
-			(media as PDF).clearHighlight();
+			(media as PDFMedia).clearHighlight();
 		}
 		
 	}

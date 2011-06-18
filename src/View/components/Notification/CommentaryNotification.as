@@ -26,7 +26,7 @@ package View.components.Notification
 //			this.maxHeight = 400;
 			
 			var details:HGroup = new HGroup();
-//			details.width = 200;
+			details.width = 200;
 			content.addElement(details);
 			
 			var usernameLabel:Label = new Label();
@@ -66,6 +66,7 @@ package View.components.Notification
 			
 			if(comment != "") {
 				var commentLabel:Label = new Label();
+				commentLabel.width = 200;
 				commentLabel.text = "\"" + comment + "\"";
 				commentLabel.setStyle('fontStyle', 'italic');
 				commentLabel.setStyle('color', 0x555555);

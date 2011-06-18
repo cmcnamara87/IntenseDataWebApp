@@ -13,16 +13,23 @@ package View.components.MediaViewer
 	import View.components.Annotation.AnnotationHighlight;
 	import View.components.Annotation.AnnotationInterface;
 	import View.components.Annotation.AnnotationPen;
+	import View.components.Annotation.AnnotationPopUp;
 	import View.components.Annotation.AnnotationTextOverlayBox;
 	import View.components.Annotation.AnnotationToolbar;
+	import View.components.GoodBorderContainer;
 	import View.components.MediaViewer.ImageViewer.ImageMedia;
+	import View.components.MediaViewer.ImageViewer.ImageViewer;
+	import View.components.MediaViewer.PDFViewer.PDFViewer;
+	import View.components.MediaViewer.VideoViewer.VideoViewer;
 	import View.components.Toolbar;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.ProgressEvent;
+	import flash.geom.Point;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	import flash.utils.getQualifiedClassName;
@@ -59,7 +66,7 @@ package View.components.MediaViewer
 	{
 		protected var mediaType:String;
 		
-		private var annotationToolbar:AnnotationToolbar; // The box containing the annotation tools
+		protected var annotationToolbar:AnnotationToolbar; // The box containing the annotation tools
 		
 		private var assetID:Number;
 		
@@ -104,9 +111,12 @@ package View.components.MediaViewer
 		
 		private var UITest:UIComponent;
 		
-		protected var media:MediaAndAnnotationHolder;
+		protected var mediaHolder:MediaAndAnnotationHolder;
 		
-		protected var sliderResizerContainer:BorderContainer;
+		protected var bottomToolbar:Group;
+		
+		
+		protected var annotationPopUps:Array = new Array();
 		
 		public function TimelineViewer(mediaType:String)
 		{
@@ -128,46 +138,45 @@ package View.components.MediaViewer
 			
 			
 			// Creatoe a group for the Image Scroller and the Annotation Text Overlay
-//			scrollerAndOverlayGroup = new Group();
-//			scrollerAndOverlayGroup.percentHeight = 100;
-//			scrollerAndOverlayGroup.percentWidth = 100;
-//			this.addElement(scrollerAndOverlayGroup);
+			scrollerAndOverlayGroup = new Group();
+			scrollerAndOverlayGroup.percentHeight = 100;
+			scrollerAndOverlayGroup.percentWidth = 100;
+			this.addElement(scrollerAndOverlayGroup);
 			
 			// Create scroller so we can scroll
-//			myScroller = new Scroller();
-//			myScroller.percentHeight = 100;
-//			myScroller.percentWidth = 100;
+			myScroller = new Scroller();
+			myScroller.percentHeight = 100;
+			myScroller.percentWidth = 100;
 			
 			// This group will contain the image
 			// And this group is placed inside the scroller
-//			scrollerContents = new Group();
-//			scrollerContents.percentHeight = 100;
-//			scrollerContents.percentWidth = 100;
+			scrollerContents = new Group();
+			scrollerContents.percentHeight = 100;
+			scrollerContents.percentWidth = 100;
 			
-//			 So we can align the image/annotations vertically
-//			var verticalAlignGroup:HGroup = new HGroup();
-//			verticalAlignGroup.percentHeight = 100;
-//			verticalAlignGroup.percentWidth = 100;
-//			verticalAlignGroup.verticalAlign = VerticalAlign.MIDDLE;
-//			scrollerContents.addElement(verticalAlignGroup);
-//			
-//			// So we can align the image/annotations horizontally.
-//			var horizontalAlignGroup:VGroup = new VGroup();
-//			horizontalAlignGroup.percentWidth = 100;
-//			horizontalAlignGroup.horizontalAlign = HorizontalAlign.CENTER;
-//			verticalAlignGroup.addElement(horizontalAlignGroup);
-//			
-//			// Adding the group to the scroller
-//			myScroller.viewport = scrollerContents;
-//			scrollerAndOverlayGroup.addElement(myScroller);
+			// So we can align the image/annotations vertically
+			var verticalAlignGroup:HGroup = new HGroup();
+			verticalAlignGroup.percentHeight = 100;
+			verticalAlignGroup.percentWidth = 100;
+			verticalAlignGroup.verticalAlign = VerticalAlign.MIDDLE;
+			scrollerContents.addElement(verticalAlignGroup);
 			
-//			 The group that will contain the Image and its Annotations
+			// So we can align the image/annotations horizontally.
+			var horizontalAlignGroup:VGroup = new VGroup();
+			horizontalAlignGroup.percentWidth = 100;
+			horizontalAlignGroup.horizontalAlign = HorizontalAlign.CENTER;
+			verticalAlignGroup.addElement(horizontalAlignGroup);
+			
+			// Adding the group to the scroller
+			myScroller.viewport = scrollerContents;
+			scrollerAndOverlayGroup.addElement(myScroller);
+			
+			// The group that will contain the Image and its Annotations
 			mediaGroup = new Group();
-//			horizontalAlignGroup.addElement(mediaGroup);
-			this.addElement(mediaGroup);
+			horizontalAlignGroup.addElement(mediaGroup);
 			
-			media = makeMedia();
-			mediaGroup.addElement(media);
+			mediaHolder = makeMedia();
+			mediaGroup.addElement(mediaHolder);
 			
 			loadingLabel = new Label();
 			loadingLabel.text = "Loading...";
@@ -188,36 +197,47 @@ package View.components.MediaViewer
 			
 			// Now we are going to add a bordercontainer at the bottom
 			// to have the slider/resizer
-			sliderResizerContainer = new BorderContainer();
-			sliderResizerContainer.percentWidth = 100;
-			sliderResizerContainer.height = 40;
+//			bottomToolbar = new BorderContainer();
+			var bottomToolbarBox:Group = new Group();
+			bottomToolbarBox.percentWidth = 100;
+			this.addElement(bottomToolbarBox);
+//			bottomToolbar.height = 40;
+			
+			var bottomToolbarBackground:GoodBorderContainer = new GoodBorderContainer(0xDDDDDD, 1);
+			bottomToolbarBackground.percentHeight = 100;
+			bottomToolbarBackground.percentWidth = 100;
+//			bottomToolbarBackground.backgroundFill = new SolidColor(0xDDDDDD, 1);
+//			bottomToolbarBackground.borderStroke = new SolidColorStroke(0xDDDDDD,1,1);
+			bottomToolbarBox.addElement(bottomToolbarBackground);
 			
 			// Set the resizers containers background and stroke
-			sliderResizerContainer.backgroundFill = new SolidColor(0xDDDDDD, 1);
-			sliderResizerContainer.borderStroke = new SolidColorStroke(0xDDDDDD,1,1);
+			bottomToolbar = new Group();
+			bottomToolbar.percentHeight = 100;
+			bottomToolbar.percentWidth = 100;
+			bottomToolbarBox.addElement(bottomToolbar);
 			var bottomLayout:HorizontalLayout = new HorizontalLayout();
-			bottomLayout.paddingRight = 10;
-			bottomLayout.paddingLeft = 10;
-			bottomLayout.paddingBottom = 10;
-			bottomLayout.paddingTop = 10;
+			bottomLayout.paddingRight = 5;
+			bottomLayout.paddingLeft = 5;
+			bottomLayout.paddingBottom = 5;
+			bottomLayout.paddingTop = 5;
 			bottomLayout.verticalAlign = "middle";
 			bottomLayout.horizontalAlign = "right";
-			sliderResizerContainer.layout = bottomLayout;
+			bottomToolbar.layout = bottomLayout;
 			
 			makeBottomToolbar();
 			
 			annotationTextOverlayBox = new AnnotationTextOverlayBox();
 			annotationTextOverlayBox.visible = false;
-//			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
-			mediaGroup.addElement(annotationTextOverlayBox);
+			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
+			
 			
 			// Event Listeners
 			this.addEventListener(Event.CANCEL, cancelAnnotationButtonClicked);
 			this.addEventListener(IDEvent.SHOW_ANNOTATION_TEXT_ENTRY, showAnnotationTextOverlayTextEntryMode);
-			this.addEventListener(IDEvent.ANNOTATION_MOUSE_OVER, annotationMouseOver);
-			this.addEventListener(IDEvent.ANNOTATION_MOUSE_OUT, annotationMouseOut);
+			this.addEventListener(IDEvent.SHOW_ANNOTATION, annotationMouseOver);
+			this.addEventListener(IDEvent.HIDE_ANNOTATATION, annotationMouseOut);
 			
-			media.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
+			mediaHolder.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
 				trace("got a progress event");
 				loadingLabel.text = "Loading " + Math.round((e.bytesLoaded / e.bytesTotal * 100)) + "%";
 				if(e.bytesLoaded == e.bytesTotal) {
@@ -225,11 +245,22 @@ package View.components.MediaViewer
 					loadingLabel.includeInLayout = false;
 				}
 			});
-
+			mediaHolder.addEventListener(IDEvent.PAGE_LOADED, function(e:IDEvent):void {
+				loadingLabel.visible = true;
+				loadingLabel.includeInLayout = true;
+				loadingLabel.text = "Loading Page " + e.data.page + " of " + e.data.totalPages;
+				if(e.data.page == e.data.totalPages) {
+					loadingLabel.visible = false;
+					loadingLabel.includeInLayout = false;
+				}
+			});
+			
 			this.addEventListener(IDEvent.SCROLL_TO_ANNOTATION, function(e:IDEvent):void {
 				trace("Showing annotation from annotation list");
 				scrollToPoint(e.data.xCoor - 10, e.data.yCoor - 10);
 			});
+			
+			addSpecificListeners();
 		}
 		
 		
@@ -240,13 +271,19 @@ package View.components.MediaViewer
 		 * 
 		 */		
 		public static function getViewer(mediaType:String):TimelineViewer {
-//			switch(mediaType) {
-//				case MediaAndAnnotationHolder.MEDIA_VIDEO:
-//					return new VideoViewer();
-//				default:
-//					trace("Unknown Viewer type");
-//			}
+			switch(mediaType) {
+				case MediaAndAnnotationHolder.MEDIA_VIDEO:
+					trace("Creating video viewer");
+					return new VideoViewer();
+					break;
+				default:
+					trace("Unknown Viewer type");
+			}
 			return null;
+		}
+		
+		protected function addSpecificListeners():void {
+			trace("addSpecificListeners: Should be overwritten by children, since i cant make this an abstract class");
 		}
 		
 		/**
@@ -273,11 +310,11 @@ package View.components.MediaViewer
 		protected function scrollToPoint(xCoor:Number, yCoor:Number):void {
 			// Try and scroll the vertical scroll bar (try/catch incase it doesnt exist)
 			try {
-				Tweener.addTween(myScroller.verticalScrollBar,{'value': yCoor * media.scaleY, 'time': 1});
+				Tweener.addTween(myScroller.verticalScrollBar,{'value': yCoor * mediaHolder.scaleY, 'time': 1});
 			} catch (e:Error) {}
 			// Try and scroll the horizontal scroll bar (try/catch in case the scrollbar doesnt exist)
 			try {
-				Tweener.addTween(myScroller.horizontalScrollBar,{'value': xCoor * media.scaleX, 'time': 1});
+				Tweener.addTween(myScroller.horizontalScrollBar,{'value': xCoor * mediaHolder.scaleX, 'time': 1});
 			} catch (e:Error) {}
 		}
 		
@@ -289,12 +326,12 @@ package View.components.MediaViewer
 		 */		
 		protected function scaleMedia(scaleX:Number, scaleY:Number):void {
 			// save the scrollbars current value
-			var scrollX:Number = myScroller.horizontalScrollBar.value  / media.scaleX;
-			var scrollY:Number = myScroller.verticalScrollBar.value / media.scaleY;
-			Tweener.addTween(media, {'scaleX': scaleX, 'scaleY': scaleY, 'time': 1, 'onUpdate': function():void {
-				trace("scaling is currently", scaleX, scaleY);
-				myScroller.horizontalScrollBar.value = scrollX * media.scaleX;
-				myScroller.verticalScrollBar.value = scrollY * media.scaleY;
+			var scrollX:Number = myScroller.horizontalScrollBar.value  / mediaHolder.scaleX;
+			var scrollY:Number = myScroller.verticalScrollBar.value / mediaHolder.scaleY;
+			Tweener.addTween(mediaHolder, {'scaleX': scaleX, 'scaleY': scaleY, 'time': 1, 'onUpdate': function():void {
+//				trace("scaling is currently", scaleX, scaleY);
+				myScroller.horizontalScrollBar.value = scrollX * mediaHolder.scaleX;
+				myScroller.verticalScrollBar.value = scrollY * mediaHolder.scaleY;
 			}});
 		}
 		
@@ -306,7 +343,7 @@ package View.components.MediaViewer
 		 * 
 		 */		
 		override public function load(url:String):void {
-			media.load(url);
+			mediaHolder.load(url);
 		}
 		
 		/**
@@ -326,8 +363,8 @@ package View.components.MediaViewer
 				
 				// Hide the currently saved annotations
 				// Just to make it easier for people to draw new ones
-				media.hideAnnotations();
-				media.listenForAnnotating();
+				mediaHolder.hideAnnotations();
+				mediaHolder.listenForAnnotating();
 				this.hideAnnotationTextOverlay();
 			} else {
 				trace("Already in add annotation mode");
@@ -338,7 +375,7 @@ package View.components.MediaViewer
 		 * Removes all the current annotations 
 		 */		
 		public function clearAnnotations():void {
-			media.removeAllAnnotations();
+			mediaHolder.removeAllAnnotations();
 		}
 		
 		/**
@@ -347,25 +384,25 @@ package View.components.MediaViewer
 		 */		
 		override public function clearNonSavedAnnotations():void {
 			trace("Image Viewer: Removing all non-saved annotations");
-			media.removeAllNonSavedAnnotations();
+			mediaHolder.removeAllNonSavedAnnotations();
 			hideAnnotationTextOverlay();
 		}
 		
 		
 		override public function addAnnotations(annotationsArray:Array):void {
 			trace("Adding Annotatio");
-			media.addAnnotations(annotationsArray);
+			mediaHolder.addAnnotations(annotationsArray);
 			this.hideAnnotationTextOverlay();
 		}
 		
 		override public function showAnnotations():void {
 			// Hide the currently saved annotations
-			media.showAnnotations();
+			mediaHolder.showAnnotations();
 		}
 		
 		override public function hideAnnotations():void {
 			// Hide the currently saved annotations
-			media.hideAnnotations();
+			mediaHolder.hideAnnotations();
 		}
 		
 		/**
@@ -376,7 +413,7 @@ package View.components.MediaViewer
 		 */		
 		override public function highlightAnnotation(assetID:Number):void {
 			if(!addAnnotationMode) {
-				media.highlightAnnotation(assetID);
+				mediaHolder.highlightAnnotation(assetID);
 			}
 		}
 		
@@ -387,7 +424,7 @@ package View.components.MediaViewer
 		 */		
 		override public function unhighlightAnnotation(assetID:Number):void {
 			if(!addAnnotationMode) {
-				media.unhighlightAnnotation(assetID);
+				mediaHolder.unhighlightAnnotation(assetID);
 				this.hideAnnotationTextOverlay();
 			}
 		}
@@ -398,7 +435,7 @@ package View.components.MediaViewer
 		
 		override public function saveNewAnnotation():void {
 			trace("Save Button Clicked");
-			media.saveNewAnnotation(annotationTextOverlayBox.getText());
+			mediaHolder.saveNewAnnotation(annotationTextOverlayBox.getText());
 			this.leaveNewAnnotationMode();
 		}
 		
@@ -424,16 +461,32 @@ package View.components.MediaViewer
 		private function annotationMouseOver(e:IDEvent):void {
 			trace("Caught annotation mouse over");
 			trace("author is", e.data.author);
-			if(e.data.bottom && e.data.bottom == true) {
-				// Only show the annotaton overlay at the bottom
-				// this is when the request comes from the annotaiton list panel
-				// and not from an actual annotation being mouse overed
-				this.showAnnotationTextOverlayViewMode(true);
-			} else {
-				this.showAnnotationTextOverlayViewMode();
+			
+			var annotationID:Number = e.data.id;
+			var alreadyShowing:Boolean = false;
+			for(var i:Number = 0; i < annotationPopUps.length; i++) {
+				if((annotationPopUps[i] as AnnotationPopUp).getID() == annotationID) {
+					alreadyShowing = true;
+				}
 			}
-			annotationTextOverlayBox.setAuthor(e.data.author);
-			annotationTextOverlayBox.setText(e.data.text);
+			
+			if(!alreadyShowing) {
+				var test:AnnotationPopUp = new AnnotationPopUp(annotationID, e.data.author, e.data.text);
+				
+				var point:Point = localToLocal(mediaHolder, scrollerAndOverlayGroup, new Point(e.data.x + e.data.width, e.data.y)); 
+				
+				trace("annotation x, y", point.x, point.y, e.data.x, e.data.y);
+				
+				test.x = point.x;
+				test.y = point.y;
+				scrollerAndOverlayGroup.addElement(test);
+				
+				annotationPopUps.push(test);
+			}
+			
+			
+//			annotationTextOverlayBox.setAuthor(e.data.author);
+//			annotationTextOverlayBox.setText(e.data.text);
 			trace("**********************");
 		}
 		
@@ -442,9 +495,21 @@ package View.components.MediaViewer
 		 * 
 		 */		
 		private function annotationMouseOut(e:IDEvent):void {
-			trace("Caught annotation mouse out");
-			this.hideAnnotationTextOverlay();
-			trace("**********************");
+//			trace("Caught annotation mouse out");
+			var annotationID:Number = e.data.id;
+			
+			var newShit:Array = new Array();
+			for(var i:Number = 0; i < annotationPopUps.length; i++) {
+				if((annotationPopUps[i] as AnnotationPopUp).getID() == annotationID) {
+					scrollerAndOverlayGroup.removeElement(annotationPopUps[i]);
+				} else {
+					newShit.push(annotationPopUps[i]);
+				}
+			}
+			annotationPopUps = newShit;
+			
+//			this.hideAnnotationTextOverlay();
+//			trace("**********************");
 		}
 		
 		
@@ -460,16 +525,16 @@ package View.components.MediaViewer
 		private function leaveNewAnnotationMode():void {
 			// Clear any half/finished annotations
 			addAnnotationMode = false;
-			media.stopListeningForAnnotating();
-			media.removeAllNonSavedAnnotations();
-			media.showAnnotations();
+			mediaHolder.stopListeningForAnnotating();
+			mediaHolder.removeAllNonSavedAnnotations();
+			mediaHolder.showAnnotations();
 			this.hideAnnotationTextOverlay();
 		}
 		/**
 		 * Hide the annotayion text overlay box, and set it to read-only mode 
 		 * 
 		 */		
-		private function hideAnnotationTextOverlay():void {
+		protected function hideAnnotationTextOverlay():void {
 			// Hide the annotationtextoverlay
 			annotationTextOverlayBox.enterReadOnlyMode();
 			annotationTextOverlayBox.visible = false;
@@ -491,8 +556,7 @@ package View.components.MediaViewer
 				scrollerAndOverlayGroup.removeElement(annotationTextOverlayBox);
 			}
 			annotationTextOverlayBox = new AnnotationTextOverlayBox();
-//			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
-			mediaGroup.addElement(annotationTextOverlayBox);
+			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
 			
 			
 			if(bottom) {
@@ -529,8 +593,7 @@ package View.components.MediaViewer
 				scrollerAndOverlayGroup.removeElement(annotationTextOverlayBox);
 			}
 			annotationTextOverlayBox = new AnnotationTextOverlayBox();
-//			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
-			mediaGroup.addElement(annotationTextOverlayBox);
+			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
 			
 			// Put the Annotation Text Overlay in edit mode
 			// So the user can write the text for their new annotation
@@ -550,5 +613,12 @@ package View.components.MediaViewer
 			annotationTextOverlayBox.visible = true;
 		}
 		
+		private function localToLocal(containerFrom:DisplayObject, containerTo:DisplayObject, origin:Point=null):Point
+		{
+			var point:Point = origin ? origin : new Point();
+			point = containerFrom.localToGlobal(point);
+			point = containerTo.globalToLocal(point);
+			return point;
+		}
 	}
 }

@@ -181,6 +181,8 @@ package Controller {
 			var yCoor:Number = e.data.yCoor;
 			var width:Number = e.data.width;
 			var height:Number = e.data.height;
+			var startTime:Number = e.data.startTime;
+			var endTime:Number = e.data.endTime;
 			var annotationText:String = e.data.annotationText;
 			
 			AppModel.getInstance().saveNewBoxAnnotation(
@@ -189,8 +191,8 @@ package Controller {
 				yCoor,
 				width,
 				height,
-				0,
-				0,
+				startTime,
+				endTime,
 				annotationText,
 				newAnnotationSaved
 			);

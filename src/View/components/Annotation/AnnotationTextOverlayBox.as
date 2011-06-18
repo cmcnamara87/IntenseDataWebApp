@@ -38,7 +38,8 @@ package View.components.Annotation
 			
 			// Setup background
 			this.backgroundFill = new SolidColor(0x000000, 0.8);
-
+			this.setStyle("borderVisible", false);
+			
 			// Add Creator label
 			annotationCreator = new Label();
 			annotationCreator.percentWidth = 100;

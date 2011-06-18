@@ -35,7 +35,7 @@ package View.components.MediaViewer.PDFViewer {
 	 * @author cmcnamara87
 	 * 
 	 */	
-	public class PDF extends UIComponent {
+	public class PDFMedia extends UIComponent {
 		
 		private var swfURL:String = "";
 		private var pdfScale:Number = 100;
@@ -95,7 +95,7 @@ package View.components.MediaViewer.PDFViewer {
 		private var endTextIndex:Number; // The index of what point in the document we are finishing highlighting (e.g. character 120)
 		private var selectionPage:Number; // The page where the selection starts
 		
-		public function PDF(sourceURL:String) {
+		public function PDFMedia(sourceURL:String) {
 			super();
 			this.swfURL = sourceURL;
 			this.addChild(pdfContainer);

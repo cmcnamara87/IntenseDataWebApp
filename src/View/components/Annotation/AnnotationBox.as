@@ -27,6 +27,8 @@ package View.components.Annotation
 		private var xCoor:Number;
 		private var yCoor:Number;
 		
+		private var startTime:Number = 0; // The start time for this annotation, 0 for images/pdf
+		private var endTime:Number = 0; // THe end time for this annotation, 0 for images/pdf
 		private var actualWidth:Number;
 		private var actualHeight:Number;
 
@@ -44,7 +46,7 @@ package View.components.Annotation
 		 * 
 		 */		
 		public function AnnotationBox(assetID:Number, author:String, text:String, height:Number, width:Number,
-									xCoor:Number, yCoor:Number)
+									xCoor:Number, yCoor:Number, startTime:Number, endTime:Number)
 		{
 			super();
 			
@@ -61,6 +63,11 @@ package View.components.Annotation
 			this.yCoor = yCoor;
 			this.actualHeight = height;
 			this.actualWidth = width;
+			
+			// Save the times of the annotation
+			// These will be 0,0 for a image or pdf annotation
+			this.startTime = startTime;
+			this.endTime = endTime;
 			
 			// Setup size
 			this.height = height;
@@ -82,7 +89,7 @@ package View.components.Annotation
 				annotation.highlight();
 				
 				// tell the viewer to display the overlay to go with this
-				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+				var myEvent:IDEvent = new IDEvent(IDEvent.SHOW_ANNOTATION, true);
 				myEvent.data.text = annotation.getText();
 				myEvent.data.author = annotation.getAuthor();
 				dispatchEvent(myEvent);
@@ -93,7 +100,7 @@ package View.components.Annotation
 				var annotation:AnnotationInterface = e.target as AnnotationInterface;
 				annotation.unhighlight();
 				// tell the viewer to hide the annotation text overlay
-				dispatchEvent(new IDEvent(IDEvent.ANNOTATION_MOUSE_OUT, true));
+				dispatchEvent(new IDEvent(IDEvent.HIDE_ANNOTATATION, true));
 			});
 		}
 		
@@ -110,9 +117,9 @@ package View.components.Annotation
 			myEvent.data.width = actualWidth;
 			myEvent.data.height = actualHeight;
 			myEvent.data.annotationText = text;
+			myEvent.data.startTime = startTime;
+			myEvent.data.endTime = endTime;
 			this.dispatchEvent(myEvent);
-			
-			
 		}		
 		
 		public function highlight():void {
@@ -164,6 +171,14 @@ package View.components.Annotation
 		}
 		public function getY():Number {
 			return this.y;
+		}
+		
+		public function getStartTime():Number {
+			return this.startTime;
+		}
+		
+		public function getEndTime():Number {
+			return this.endTime;
 		}
 	}
 }
