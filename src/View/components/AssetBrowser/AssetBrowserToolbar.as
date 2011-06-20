@@ -98,11 +98,11 @@ package View.components.AssetBrowser
 			this.addElement(searchEditLine);
 			
 			// Add the Edit Button
-			editButton = IDGUI.makeToggleButton('Edit Collection', false, false, false);
+			editButton = IDGUI.makeToggleButton('Edit ' + BrowserController.PORTAL, false, false, false);
 			this.addElement(editButton);
 			
 			// Add the Delete
-			deleteButton = IDGUI.makeButton('Delete Collection', false, false);
+			deleteButton = IDGUI.makeButton('Delete ' + BrowserController.PORTAL, false, false);
 			this.addElement(deleteButton);
 			
 			// Add a line to separate the delete and share button
@@ -110,7 +110,8 @@ package View.components.AssetBrowser
 			this.addElement(deleteShareLine);
 			
 			// Add the Share Button
-			shareButton = IDGUI.makeButton('Share Collection', false, false);
+//			shareButton = IDGUI.makeButton('Share ' + , false, false);
+			shareButton = IDGUI.makeButton('+ Add People', false, false);
 			this.addElement(shareButton);
 			
 			// Add the Comments
@@ -246,12 +247,12 @@ package View.components.AssetBrowser
 			// If we arent the author of the collection, make it say 'remove' instead of delete
 			// We need to check if the collectionData is null, cause it could mean we are making a 
 			// collection while on a fixed collection (and there is no data) ... TODO fix this up
-			if((BrowserController.collectionData != null) && (BrowserController.collectionData.meta_username != Auth.getInstance().getUsername())) {
-				trace("AssetBrowserToolbar: Collection author is", BrowserController.collectionData.meta_username, Auth.getInstance().getUsername());
-				deleteButton.label = "Remove Collection";
+			if((BrowserController.collectionData != null) && (BrowserController.collectionData.base_creator_username != Auth.getInstance().getUsername())) {
+				trace("AssetBrowserToolbar: Collection author is", BrowserController.collectionData.base_creator_username, Auth.getInstance().getUsername());
+				deleteButton.label = "Remove " + BrowserController.PORTAL;
 			} else {
-				trace("AssetBrowserToolbar: Collection author is", BrowserController.collectionData.meta_username, Auth.getInstance().getUsername());
-				deleteButton.label = "Delete Collection";
+//				trace("AssetBrowserToolbar: Collection author is", BrowserController.collectionData.meta_username, Auth.getInstance().getUsername());
+				deleteButton.label = "Delete " + BrowserController.PORTAL;
 			}
 		}
 		

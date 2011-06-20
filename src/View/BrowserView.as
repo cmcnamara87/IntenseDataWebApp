@@ -99,12 +99,12 @@ package View
 	
 			// Lets add the Comments Panel
 			myCommentsPanel = new CommentsPanel();
-			myCommentsPanel.width = 0;
+			myCommentsPanel.hide();
 			myAssetBrowserAndPanels.addElement(myCommentsPanel);
 			
 			// Lets add the Sharing Panel
 			mySharingPanel = new SharingPanel();
-			mySharingPanel.width = 0;
+			mySharingPanel.hide();
 			myAssetBrowserAndPanels.addElement(mySharingPanel);
 			
 			// Listen for Comments Button being clicked (done in here, 
@@ -206,10 +206,11 @@ package View
 			myCollectionList.unsetCreateCollectionButton();
 			this.unsetEditButton();
 			
+			// Removes the overlays (it does this based on the values in the browser controller
+			// so you have to make sure the edit and collection creation are set to false)
 			myAssetBrowser.refreshMediaAssetsDisplay();
 			
-			myCollectionList.exitEditMode();
-			//this.myShelf.visible = false;
+//			myCollectionList.exitEditMode();
 		}
 		
 		public function unsetCreateCollectionButton():void {
@@ -310,15 +311,27 @@ package View
 			myAssetBrowserToolbar.setCommentCount(commentCount);
 		}
 		
-		
+		public function unlockSharingPanelUsers():void {
+			mySharingPanel.unlockUsers();
+		}
+		/**
+		 * Hides all the panels being displayed.
+		 * 
+		 * Used when we switch to a fixed collection, like All Assets, or Shared with Me 
+		 * 
+		 */		
+		public function hideAllPanels():void {
+			myCommentsPanel.hide();
+			mySharingPanel.hide();
+		}
 		
 		
 		/* ============== EVENT LISTENER FUNCTIONS ==================== */
 		private function commentsButtonClicked(e:IDEvent):void {
 //			if(e.data.buttonState) {
-				mySharingPanel.width = 0;
+				mySharingPanel.hide();
 				
-				myCommentsPanel.width = Panel.DEFAULT_WIDTH;
+				myCommentsPanel.show();
 //			} else {
 //				myCommentsPanel.width = 0;
 //			}
@@ -326,9 +339,9 @@ package View
 		
 		private function shareButtonClicked(e:IDEvent):void {
 //			if(e.data.buttonState) {
-				myCommentsPanel.width = 0;
+				myCommentsPanel.hide();
 				
-				mySharingPanel.width = Panel.DEFAULT_WIDTH;
+				mySharingPanel.show();
 //			} else {
 //				mySharingPanel.width = 0;
 //			}

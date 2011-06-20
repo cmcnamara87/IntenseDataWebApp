@@ -17,6 +17,7 @@ package Model {
 		public var base_namespace:String;
 		public var base_path:String;
 		public var base_creator_id:Number;  //domain, user
+		public var base_creator_username:String;
 		public var base_ctime:String;
 		public var base_ctimestring:String;
 		public var base_mtime:String;
@@ -55,6 +56,7 @@ package Model {
 			base_namespace = rawData.namespace;
 			base_path = rawData.path;
 			base_creator_id = rawData.creator.@id;
+			base_creator_username = rawData.creator.user;
 			base_ctime = rawData.ctime.@millisec;
 			base_mtime = rawData.mtime.@millisec;
 			base_ctimestring = rawData.ctime;

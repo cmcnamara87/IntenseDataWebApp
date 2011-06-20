@@ -117,7 +117,7 @@ package Model.Transactions
 			// sets the acls for the comments on the collection
 			AppModel.getInstance().getThisAssetsCommentary(assetID, setCommentaryACLs);
 			// set the acls for the assets inside this collection
-			AppModel.getInstance().getThisCollectionsMediaAssets(assetID, setAssetACLs);
+			AppModel.getInstance().getThisCollectionsMediaAssets(assetID, setMediaSharing);
 		}
 		
 		private function setCommentaryACLs(e:Event):void {
@@ -132,7 +132,7 @@ package Model.Transactions
 			}			
 		}
 		
-		private function setAssetACLs(collectionID:Number, e:Event):void {
+		private function setMediaSharing(collectionID:Number, e:Event):void {
 			// Get out the returned data
 			var data:XML = XML(e.target.data);
 			

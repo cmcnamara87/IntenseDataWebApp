@@ -136,6 +136,18 @@ package View.components.Panels
 			content.addElementAt(item, index);
 		}
 		
+		
+		public function hide():void {
+			this.width = 0;
+		}
+		
+		public function show(expanded:Boolean = false):void {
+			if(expanded) {
+				this.width = Panel.EXPANDED_WIDTH;
+			} else {
+				this.width = Panel.DEFAULT_WIDTH;
+			}
+		}
 		/**
 		 * Sets the heading of the panel
 		 * @param heading

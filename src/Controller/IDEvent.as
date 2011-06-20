@@ -28,6 +28,9 @@ package Controller {
 			public static var SHARE_BUTTON_CLICKED:String = "recensio_shareButtonClicked";
 			
 			
+			public static var SHELF_CLOSE_BUTTON_CLICKED:String = "id_shelfCloseButtonClicked"; 
+			
+			
 			//When a collection list item is clicked
 			public static var ASSET_COLLECTION_CLICKED:String = "recensio_assetCollectionClicked";
 			//When the all assets collection tab is clicked

@@ -10,6 +10,7 @@ package Model {
 	import Model.Transactions.Transaction_DeleteMediaFromUser;
 	import Model.Transactions.Transaction_GetAccess;
 	import Model.Transactions.Transaction_GetCollections;
+	import Model.Transactions.Transaction_GetPeopleAndCollectionNames;
 	import Model.Transactions.Transaction_GetThisCollectionsMediaAssets;
 	import Model.Transactions.Transaction_SaveCollection;
 	import Model.Transactions.Transaction_SaveNewComment;
@@ -299,44 +300,13 @@ package Model {
 			var transaction:Transaction_SetAccess = new Transaction_SetAccess(_connection,assetID,access,callback);
 		}
 		
+		public function getPeople(people:XMLList, callback:Function):void {
+			var transaction:Transaction_GetPeopleAndCollectionNames = new Transaction_GetPeopleAndCollectionNames(_connection);
+			transaction.getPeopleAndCollectionNames(people, callback);
+		}
 		public function changeAccess(assetID:Number, username:String, domain:String, access:String, isCollection:Boolean, callback:Function=null):void {
 			var transaction:Transaction_ChangeAccess = new Transaction_ChangeAccess(_connection);
 			transaction.changeAccess(assetID, assetID, username, domain, access, isCollection, callback);
-			
-//			var args:Object = new Object();
-//			
-//			trace("Changing access on collection", collectionID);
-//			trace("Access for", domain, username, access);
-//			var baseXML:XML;
-//			
-//			if(access == SharingPanel.NOACCESS) {
-//				trace("Should be revoking access");
-//				// We want to revoke a users access to this asset
-//				baseXML = _connection.packageRequest('asset.acl.revoke', args, true);
-//				baseXML.service.args.acl.id = collectionID;
-//				baseXML.service.args.acl.actor = domain + ":" + username;
-//				baseXML.service.args.acl.actor.@type = "user";
-//				// Update all the related assets
-//				baseXML.service.args.related = true;
-//			} else {
-//				trace("Should be granting access");
-//				// We are granting access to the asset for a user
-//				// Example mediaflux statement asset.acl.grant :acl < :id 1718 :actor system:coke -type user :access read-write >
-//				baseXML = _connection.packageRequest('asset.acl.grant', args, true);
-//				baseXML.service.args.acl.id = collectionID;
-//				baseXML.service.args.acl.actor = domain + ":" + username;
-//				baseXML.service.args.acl.actor.@type = "user";
-//				baseXML.service.args.acl.access = access;
-//				// Update all the related assets
-//				baseXML.service.args.related = true;
-//			}
-//			
-//			// Send the connection
-//			if(_connection.sendRequest(baseXML, callback)) {
-//				//All good
-//			} else {
-//				Alert.show("Could not change access properties");
-//			}
 		}
 		/**
 		 * Saves a new comment, either a reply or a new comment
@@ -705,7 +675,7 @@ package Model {
 //		}
 		
 		// Sets a saved collection to have the correct class
-		public function setCollectionClass(e:Event):void {
+		public function setCollectionClass(e:Event, callback:Function):void {
 			var dataXML:XML = XML(e.target.data);
 			if (dataXML.reply.@type == "result") {
 				trace("DONG DONG");
@@ -715,7 +685,7 @@ package Model {
 				baseXML.service.args["scheme"] = "recensio";
 				baseXML.service.args["class"] = "base/resource/collection";
 				baseXML.service.args["id"] = dataXML.reply.result.id;
-				_connection.sendRequest(baseXML,null);
+				_connection.sendRequest(baseXML, callback);
 			} else {
 				Alert.show("Could not set collection type");
 			}
@@ -770,7 +740,13 @@ package Model {
 			}
 		}
 		
-		
+		/**
+		 * Removes access to an collection for a user (or deletes the asset, if
+		 * the current user is the creator) 
+		 * @param assetID				The ID of the asset to delete
+		 * @param creator_username		The creator of the asset
+		 * 
+		 */	
 		public function deleteCollection(assetID:Number, creatorUsername:String, callback:Function):void {
 			trace("AppModel deleteCollection: Deleting Asset:", assetID, ", creator is: ", creatorUsername);
 			if(Auth.getInstance().isSysAdmin() || creatorUsername == Auth.getInstance().getUsername()) {
@@ -784,6 +760,13 @@ package Model {
 			}
 		}
 		
+		/**
+		 * Removes access to media for a user (or deletes the asset, if
+		 * the current user is the creator) 
+		 * @param assetID				The ID of the asset to delete
+		 * @param creator_username		The creator of the asset
+		 * 
+		 */	
 		public function deleteMedia(assetID:Number, creatorUsername:String):void {
 			trace("AppModel deleteMedia: Deleting Asset:", assetID, ", creator is: ", creatorUsername);
 			if(Auth.getInstance().isSysAdmin() || creatorUsername == Auth.getInstance().getUsername()) {
@@ -797,13 +780,7 @@ package Model {
 			}
 		}
 		
-		/**
-		 * Removes access to an asset for a user (or deletes the asset, if only 1 pesron has asset, or if
-		 * the current user is the creator) 
-		 * @param assetID				The ID of the asset to delete
-		 * @param creator_username		The creator of the asset
-		 * 
-		 */		
+			
 //		public function deleteAsset(assetID:Number, creatorUsername:String):void {
 //			var transaction:Transaction_DeleteMediaFromUser = new Transaction_DeleteMediaFromUser(
 //				assetID,
@@ -813,6 +790,12 @@ package Model {
 //			);
 //		}
 		
+		/**
+		 * Deletes an asset from the database. 
+		 * @param assetID
+		 * @param callback
+		 * 
+		 */		
 		public function assetDestroy(assetID:Number, callback:Function):void {
 			trace("Destroying asset", assetID);
 			var args:Object = new Object();
@@ -854,10 +837,22 @@ package Model {
 			Dispatcher.call("browse");
 		}
 		
-		// Deletes a comment
+		/**
+		 * Removes a comment. 
+		 * 
+		 * If the user is the sys-admin, the comment is actually deleted,
+		 * if the user is not a sys-admin, the comment text is replaced with 'comment removed'.
+		 * @param assetID
+		 * 
+		 */		
 		public function deleteComment(assetID:Number):void {
+			
+			if(Auth.getInstance().isSysAdmin()) {
+				AppModel.getInstance().assetDestroy(assetID, null);
+				return;
+			}
+			
 			var args:Object = new Object();
-//			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
 			var baseXML:XML = _connection.packageRequest('asset.set', args, true);
 			baseXML.service.args["id"] = assetID;
 			baseXML.service.args["meta"]["r_annotation"]["text"] = "Comment Removed";
@@ -911,7 +906,20 @@ package Model {
 			
 			if(_connection.sendRequest(baseXML,function(e:Event):void {
 //				AppModel.getInstance().setUserAssetShareCount(
-				callback(e);
+				
+				if(!callSuccessful(e)) {
+					trace("AppModel:createCollection - Failed to Create collection", e.target.data);
+					callback(e);
+					return;
+				}
+				
+				// Update the Collection Class so it is a 'collection'
+				AppModel.getInstance().setCollectionClass(e, function(j:Event):void {
+					callback(e);					
+				});
+				// Set this user as the owner of the collection
+				AppModel.getInstance().changeAccess(XML(e.target.data).reply.result.id, Auth.getInstance().getUsername(), "system", SharingPanel.READWRITE, true);
+				
 			})) {
 				trace("SENDING NEW COLLECTION");
 				//All good

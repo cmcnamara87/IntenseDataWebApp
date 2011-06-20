@@ -125,7 +125,11 @@ package Model.Transactions {
 		
 		// Returns the information back to the controller which called it
 		private function relationshipsAdded(e:Event):void {
-			trace("- Relationships Added", e.target.data);
+			trace("Transaction_SaveCollection:relationshipsAdded", e.target.data);
+//			for each(var mediaAsset:Model_Media in mediaAssets) {
+//				trace("Transaction_SaveCollection:Copy Collection Access to", mediaAsset.base_asset_id);
+			var transaction:Transaction_CopyCollectionAccess = new Transaction_CopyCollectionAccess(collectionID, mediaAssets, _connection);
+//			}
 			_callback(collectionID);
 		}
 		

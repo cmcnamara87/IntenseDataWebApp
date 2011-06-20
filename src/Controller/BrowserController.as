@@ -17,12 +17,17 @@ package Controller {
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 	import flash.utils.setTimeout;
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
 	
 	public class BrowserController extends AppController {
+		
+		
+		public static const PORTAL:String = "Portal";
 		
 		private var collectionToDelete:Number = 0;
 		//private var addButton:SmallButton;
@@ -51,12 +56,15 @@ package Controller {
 		public static const SHAREDID:Number = -2;   // we just make some up
 		public static const SHELFID:Number = -3;
 		
+		private var collectionListRefreshTimer:Timer;
 		
 		//Calls the superclass
 		public function BrowserController() {
 			trace("--- Creating Browser Controller ---");
 			view = new Browser();
+			resetShelf();
 			super();
+			
 		}
 		
 		/**
@@ -72,6 +80,15 @@ package Controller {
 			currentCollectionID = ALLASSETID;
 		}
 		
+		
+		private function resetShelf():void {
+			editOn = false;
+			shelfOn = false;
+			currentCollectionAssets = new Array();
+			shelfAssets = new Array();
+			editAssets = new Array();
+		}
+		
 		//INIT
 		override public function init():void {
 			setupEventListeners();
@@ -82,7 +99,15 @@ package Controller {
 			reAddAssetsToShelf();
 			
 			// Load the collections for the sidebar
-			loadAllMyCollections();
+			refreshCollectionList()
+//			collectionListRefreshTimer = new Timer(60000);
+//			collectionListRefreshTimer.addEventListener(TimerEvent.TIMER, function(e:TimerEvent):void {
+//				trace("refreshing the collection");
+//				loadAllMyCollections();	
+//			});
+//			collectionListRefreshTimer.start();
+//			
+//			loadAllMyCollections();
 			
 			// Load the appropriate assets for whatever
 			// collection we have selected when this runs (not just All Assets
@@ -98,7 +123,12 @@ package Controller {
 				default:
 					loadAssetsInCollection(currentCollectionID);
 			}
-			
+		}
+		
+		private function refreshCollectionList():void {
+			trace("Refreshing collection list");
+			loadAllMyCollections();
+			setTimeout(refreshCollectionList, 60000);
 		}
 		
 		// Sets up all the event listeners
@@ -114,6 +144,9 @@ package Controller {
 			
 			// Listen for Delete Collection button being clicked
 			currentView.addEventListener(IDEvent.COLLECTION_DELETE_BUTTON_CLICKED, deleteButtonClicked);
+			
+			// Listen for Shelf Being closed (clicking the X button on the shelf);
+			currentView.addEventListener(IDEvent.SHELF_CLOSE_BUTTON_CLICKED, closeShelfButtonClicked);
 			
 			// Listen for Media Asset being clicked inside the Asset Browser
 			currentView.addEventListener(IDEvent.ASSET_BROWSER_MEDIA_CLICKED, assetBrowserMediaClicked);
@@ -171,7 +204,7 @@ package Controller {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			currentView.setToolbarToFixedCollectionMode();
-			
+			currentView.hideAllPanels();
 			currentView.showMediaLoading();
 			//LoadAnim.show((view as Browser), 0, 0, 0x999999,2);
 //			LoadAnim.show((view as Browser),(view as Browser).width/2,(view as Browser).height/2+(view as Browser).navbar.height,0x999999,2);
@@ -229,7 +262,7 @@ package Controller {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			currentView.setToolbarToFixedCollectionMode();
-			
+			currentView.hideAllPanels();
 			currentView.showMediaLoading();
 			Model.AppModel.getInstance().getSharedAssets(fixedCollectionAssetsLoaded);
 		}
@@ -286,11 +319,13 @@ package Controller {
 			var collections:Array = AppModel.getInstance().parseResults(XML(e.target.data),Model_Collection);
 			// Add the collections to the sidebar
 			
-			for(var i:Number = 0; i < collections.length; i++) {
-				//if((collections[i] as Model_Collection).numberOfChildren()) {
-					trace("found collection " + (collections[i] as Model_Collection).meta_title);
-				//}
-			}
+			collections.sortOn(["meta_title"],[Array.CASEINSENSITIVE]);
+			
+//			for(var i:Number = 0; i < collections.length; i++) {
+//				//if((collections[i] as Model_Collection).numberOfChildren()) {
+//					trace("found collection " + (collections[i] as Model_Collection).meta_title);
+//				//}
+//			}
 			currentView.addCollections(collections);
 			currentView.highlightCollectionListItem(currentCollectionID);
 			//LoadAnim.hide();
@@ -365,11 +400,11 @@ package Controller {
 			
 			
 			trace("- Collection Created:", e);
-			// Update the Collection Class so it is a 'collection'
-			AppModel.getInstance().setCollectionClass(e);
-			// Set this user as the owner of the collection
-			AppModel.getInstance().changeAccess(newCollectionID, Auth.getInstance().getUsername(), "system", SharingPanel.READWRITE, true);
-			
+//			// Update the Collection Class so it is a 'collection'
+//			AppModel.getInstance().setCollectionClass(e);
+//			// Set this user as the owner of the collection
+//			AppModel.getInstance().changeAccess(newCollectionID, Auth.getInstance().getUsername(), "system", SharingPanel.READWRITE, true);
+//			
 			// Remove all teh current items from the shelf
 			shelfAssets.length = 0;
 			
@@ -440,7 +475,7 @@ package Controller {
 			
 			// Send the data to view
 			if(collectionData != null) {
-				currentView.setupAssetsSharingInformation(userData, collectionData.meta_username);
+				currentView.setupAssetsSharingInformation(userData, collectionData.base_creator_username);
 			} else {
 				currentView.setupAssetsSharingInformation(userData, "");
 			}
@@ -459,6 +494,8 @@ package Controller {
 			if(data.reply.@type == "result") {
 				// Sharing update successfully
 				trace("Sharing Updated Successfully", e.target.data);
+				var currentView:BrowserView = (view as Browser).craigsbrowser;
+				currentView.unlockSharingPanelUsers();
 				trace("-------------------------");
 			} else {
 				//Alert.show("Sharing Update Failed");
@@ -548,13 +585,20 @@ package Controller {
 			}
 		}
 
+		private function closeShelfButtonClicked(e:IDEvent):void {
+			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			this.setEdit(false);
+			this.setCollectionCreationMode(false);
+			currentView.hideShelf();
+		}
+		
 		/**
 		 * Called when the delete button is clicked in the browser.
 		 * Asks if the user is sure 
 		 * 
 		 */		
 		private function deleteButtonClicked(e:IDEvent):void {
-			if(collectionData.meta_username == Auth.getInstance().getUsername()) {
+			if(collectionData.base_creator_username == Auth.getInstance().getUsername()) {
 				// We are the creator of the collection
 				var myAlert:Alert = Alert.show("Are you sure you wish to delete this collection?", "Delete Collection", Alert.OK | Alert.CANCEL, null, deleteCollection, null, Alert.CANCEL);	
 			} else {
@@ -571,7 +615,7 @@ package Controller {
 		 */		
 		private function deleteCollection(e:CloseEvent):void {
 			if (e.detail==Alert.OK) {
-				AppModel.getInstance().deleteCollection(currentCollectionID, collectionData.meta_username, collectionDeleted);
+				AppModel.getInstance().deleteCollection(currentCollectionID, collectionData.base_creator_username, collectionDeleted);
 				
 				var currentView:BrowserView = (view as Browser).craigsbrowser;
 
@@ -691,7 +735,7 @@ package Controller {
 			this.saveCurrentCollectionID(e.data.assetID);
 				
 			currentView.highlightCollectionListItem(currentCollectionID);
-					
+		
 			loadAllMyMedia();
 		}
 		
@@ -707,7 +751,7 @@ package Controller {
 			this.saveCurrentCollectionID(e.data.assetID);
 			// Highlight this collection (to show we clicked it);
 			currentView.highlightCollectionListItem(currentCollectionID);
-				
+
 			//currentView.setToolbarToFixedCollectionMode();
 			loadShared();
 		}

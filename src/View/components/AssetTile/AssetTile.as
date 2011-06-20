@@ -30,6 +30,7 @@ package View.components.AssetTile
 	import spark.components.VGroup;
 	import spark.effects.Fade;
 	import spark.effects.Resize;
+	import spark.layouts.HorizontalAlign;
 	
 	public class AssetTile extends VGroup
 	{
@@ -58,9 +59,17 @@ package View.components.AssetTile
 
 			// Setup Image
 			image = new AssetTileImage(assetData.type);
-			this.addElement(image);
+			var centerImage:VGroup = new VGroup();
+			centerImage.horizontalAlign = HorizontalAlign.CENTER;
+			centerImage.percentWidth = 100;
+			this.addElement(centerImage);
 			
-			this.toolTip = "Created by: " + assetData.meta_username + ".";
+			centerImage.addElement(image);
+			
+//			image.scaleX = 0.9;
+//			image.scaleY = 0.9;
+		
+			this.toolTip = "Created by: " + assetData.base_creator_username + ".";
 			if(assetData.meta_description != "") {
 				this.toolTip += "\nDescription: " +  assetData.meta_description;
 			};

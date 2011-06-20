@@ -1,5 +1,6 @@
 package View
 {
+	import Controller.BrowserController;
 	import Controller.Dispatcher;
 	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
@@ -11,6 +12,7 @@ package View
 	import Module.PDFViewer.PDFViewer;
 	import Module.Videoviewer.Videoview;
 	
+	import View.components.IDButton;
 	import View.components.IDGUI;
 	import View.components.MediaViewer.AudioViewer;
 	import View.components.MediaViewer.ImageViewer.ImageViewerOLD;
@@ -23,6 +25,7 @@ package View
 	import View.components.Panels.Comments.NewComment;
 	import View.components.Panels.EditDetails.EditDetailsPanel;
 	import View.components.Panels.Panel;
+	import View.components.Panels.People.PeoplePanel;
 	import View.components.Panels.Sharing.SharingPanel;
 	import View.components.Toolbar;
 	
@@ -57,6 +60,7 @@ package View
 		private var mySharingPanel:SharingPanel;	// The sharing panel
 		private var myEditPanel:EditDetailsPanel; // The temporary edit panel
 		private var myAnnotationListPanel:AnnotationListPanel;
+		private var myPeoplePanel:PeoplePanel;
 		
 		private var mediaViewer:MediaViewer;
 		private var mediaData:Model_Media;	// The Media's Meta-data
@@ -69,12 +73,14 @@ package View
 		private var deleteAssetButton:Button;
 		private var editDetailsButton:Button;
 		private var shareButton:Button;
+		private var peopleButton:IDButton;
 		private var annotationListButton:Button;
 		private var commentsButton:Button;
 		
 		private var viewerAndPanels:HGroup;
 		
 		public static var saveAnnotationFunction:Function;
+		
 		
 		// Can remove the save annotation function after redoing the modules, only there for dekkers code
 		public function MediaView(saveAnnotationFunction:Function)
@@ -141,6 +147,7 @@ package View
 			var deleteAddLine:Line = IDGUI.makeLine();
 			myToolbar.addElement(deleteAddLine);
 			
+			// ADD THE PANELS
 			// Add Edit Details button
 			editDetailsButton = IDGUI.makeButton('Edit Details');
 			editDetailsButton.enabled = false;
@@ -148,8 +155,12 @@ package View
 			
 			// Add Share buttons
 			shareButton = IDGUI.makeButton('Share');
-			shareButton.enabled = false;
-			myToolbar.addElement(shareButton);
+//			shareButton.enabled = false;
+//			myToolbar.addElement(shareButton);
+			
+			peopleButton = new IDButton(BrowserController.PORTAL + 's');
+			peopleButton.enabled = false;
+			myToolbar.addElement(peopleButton);
 			
 			// Add annotations button
 			annotationListButton = IDGUI.makeButton('Annotation List');
@@ -194,6 +205,8 @@ package View
 			
 			backButton.addEventListener(MouseEvent.CLICK, backButtonClicked);
 			downloadButton.addEventListener(MouseEvent.CLICK, downloadButtonClicked);
+			
+			peopleButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
 		}
 		
 		
@@ -250,18 +263,32 @@ package View
 			// Enable the back button 
 			backButton.enabled = true;
 			downloadButton.enabled = true;
+			
+			// If we are the author, then the button should say 'delete'
+			// otherwise it will say remove
+			if(mediaData.base_creator_username == Auth.getInstance().getUsername()) {
+				deleteAssetButton.label = "Delete File";
+			} else {
+				deleteAssetButton.label = "Remove File";
+			}
+			
+			setupAccess();
+		}
+		
+		private function setupAccess():void {
+			editDetailsButton.enabled = true;
+			hideShowAnnotationButton.enabled = true;
+//			shareButton.enabled = true;
+			shareButton.includeInLayout = false;
+			shareButton.visible = false;
+			annotationListButton.enabled = true;
+			commentsButton.enabled = true;
+			peopleButton.enabled = true;
+			
 			trace("- File access permissions:", mediaData.access_modify_content);
 			if(mediaData.access_modify_content) {
 				// We have modify access to the file, so we enable adding annotations
 				addAnnotationButton.enabled = true;
-			}
-			
-			// If we are the author, then the button should say 'delete'
-			// otherwise it will say remove
-			if(mediaData.meta_username == Auth.getInstance().getUsername()) {
-				deleteAssetButton.label = "Delete File";
-			} else {
-				deleteAssetButton.label = "Remove File";
 			}
 			
 			// The delete button should be enabled, provided its been shared via the asset
@@ -272,12 +299,8 @@ package View
 				// not through a collection
 				deleteAssetButton.enabled = true;
 			} 
-			editDetailsButton.enabled = true;
-			hideShowAnnotationButton.enabled = true;
-			shareButton.enabled = true;
-			annotationListButton.enabled = true;
-			commentsButton.enabled = true;
-//			}
+			
+			//			}
 			
 			mySharingPanel.setUserAccess(mediaData.access_modify_content);
 			myAnnotationListPanel.setUserAccess(mediaData.access_modify_content);
@@ -294,6 +317,9 @@ package View
 			mySharingPanel.setupAssetsSharingInformation(sharingData, assetCreatorUsername);
 		}
 		
+		public function addPeople(peopleCollection:Array):void {
+			myPeoplePanel.addPeople(peopleCollection);	
+		}
 		
 		public function setHeading(text:String):void {
 			// Set heading
@@ -322,6 +348,10 @@ package View
 			if(mediaViewer) {
 				mediaViewer.addAnnotations(annotationsArray);
 			}
+		}
+		
+		public function unlockSharingPanelUsers():void {
+			mySharingPanel.unlockUsers();
 		}
 		
 		/* ============== UPDATE FUNCTIONS CALLED BY CONTROLLER ================= */
@@ -414,6 +444,10 @@ package View
 					mySharingPanel.width = Panel.DEFAULT_WIDTH;
 					mySharingPanel.visible = true;
 					break;
+				case peopleButton:
+					myPeoplePanel.width = Panel.DEFAULT_WIDTH;
+					myPeoplePanel.visible = true;
+					break;
 				case annotationListButton:
 					trace("annotation list button clicked");
 					myAnnotationListPanel.width = Panel.DEFAULT_WIDTH;
@@ -483,6 +517,11 @@ package View
 			mySharingPanel.visible = false;
 			viewerAndPanels.addElement(mySharingPanel);
 			
+			myPeoplePanel = new PeoplePanel();
+			myPeoplePanel.width = 0;
+			myPeoplePanel.visible = false;
+			viewerAndPanels.addElement(myPeoplePanel);
+			
 			// Lets add the Comments Panel
 			myCommentsPanel = new CommentsPanel();
 			myCommentsPanel.width = 0;
@@ -505,6 +544,8 @@ package View
 			mySharingPanel.width = 0;
 			myAnnotationListPanel.width = 0;
 			myAnnotationListPanel.visible = false;
+			myPeoplePanel.width = 0;
+			myPeoplePanel.visible = false;
 		}
 		
 	}

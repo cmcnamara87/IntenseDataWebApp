@@ -1,5 +1,6 @@
 package View.components
 {
+	import Controller.BrowserController;
 	import Controller.IDEvent;
 	
 	import Model.Model_Collection;
@@ -7,6 +8,7 @@ package View.components
 	
 	import flash.events.MouseEvent;
 	
+	import mx.controls.Alert;
 	import mx.controls.Button;
 	import mx.controls.TextInput;
 	import mx.graphics.GradientEntry;
@@ -72,10 +74,12 @@ package View.components
 			collectionTitleBox.addElement(collectionTextInput);
 			
 			// Add 'Save' Button
-			var saveButton:Button = new Button();
-			saveButton.label = "Save Collection";
-			saveButton.percentHeight = 100;
+			var saveButton:IDButton = new IDButton('Save ' + BrowserController.PORTAL);
 			collectionTitleBox.addElement(saveButton);
+			
+			var closeButton:IDButton = new IDButton('X');
+			closeButton.width = 30;
+			collectionTitleBox.addElement(closeButton);
 			
 			// Add the Asset Displayer
 			myAssetDisplayer = new AssetDisplayer(IDEvent.SHELF_MEDIA_CLICKED, true);
@@ -87,6 +91,7 @@ package View.components
 			// Listen for Save Button clicked
 			saveButton.addEventListener(MouseEvent.CLICK, saveButtonClicked);
 				
+			closeButton.addEventListener(MouseEvent.CLICK, closeShelfButtonClicked);
 			
 		}
 		
@@ -138,8 +143,15 @@ package View.components
 				// Clear the 'collection name' entered (so its clear for next time :)
 				collectionTextInput.text = "";
 				this.dispatchEvent(clickEvent);
+			} else {
+				// Collection name is empty
+				Alert.show("Please enter a name for the " + BrowserController.PORTAL);
 			}
-			
+		}
+		
+		private function closeShelfButtonClicked(e:MouseEvent):void {
+			trace("Shelf:closeShelfButtonClicked");
+			this.dispatchEvent(new IDEvent(IDEvent.SHELF_CLOSE_BUTTON_CLICKED, true));
 		}
 		
 		

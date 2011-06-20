@@ -12,9 +12,11 @@ package View.components.Panels.Sharing
 	import flash.events.MouseEvent;
 	import flash.sampler.Sample;
 	import flash.utils.getQualifiedClassName;
+	import flash.utils.setTimeout;
 	
 	import mx.controls.Button;
 	import mx.controls.Label;
+	import mx.core.UIComponent;
 	import mx.graphics.SolidColor;
 	import mx.graphics.SolidColorStroke;
 	
@@ -32,6 +34,11 @@ package View.components.Panels.Sharing
 		public static var NOACCESS:String = 'no-access';
 		public static var READ:String = 'read';
 		public static var READWRITE:String = 'read-write';
+		
+		private var assetCreatorUsername:String;
+		
+		private var sharingPanelUsersWithAccessArray:Array = new Array();
+		
 		/**
 		 * The Sharing Panel sits on the right side on the main asset browser 
 		 * and shows all the comments a specific collection has.
@@ -43,13 +50,7 @@ package View.components.Panels.Sharing
 			super();
 
 			// Set heading on the panel
-			setHeading("Sharing");
-			
-			// Add 'Add Comment' Button to toolbar
-//			var saveSharing:Button = new Button();
-//			saveSharing.label = "Save";
-//			saveSharing.percentHeight = 100;
-//			toolbar.addElement(saveSharing);
+			setHeading("Add People");
 
 			// Add the close button to the panel
 			var closeButton:Button = new Button();
@@ -61,9 +62,11 @@ package View.components.Panels.Sharing
 			
 			// Event Listenrs
 //			saveSharing.addEventListener(MouseEvent.CLICK, saveNewSharingInformation);
-			this.addEventListener(Event.CHANGE, checkBoxClicked);
+//			this.addEventListener(Event.CHANGE, checkBoxClicked);
 			
 			closeButton.addEventListener(MouseEvent.CLICK, closeButtonClicked);
+			
+			this.addEventListener(IDEvent.SHARING_CHANGED, lockUsers);
 		}
 		
 		/**
@@ -74,6 +77,9 @@ package View.components.Panels.Sharing
 		 * 
 		 */		
 		public function setupAssetsSharingInformation(sharingData:Array, assetCreatorUsername:String):void {
+
+			this.assetCreatorUsername = assetCreatorUsername;
+			
 			trace("SharingPanel:setupAssetsSharingInformation");
 			content.removeAllElements();
 			
@@ -98,28 +104,53 @@ package View.components.Panels.Sharing
 					sharingPanelUser.enabled = false;
 				} else {
 				}
-				addPanelItem(sharingPanelUser);
+				if(access == 'none') {
+					addPanelItem(sharingPanelUser);
+				} else {
+					sharingPanelUsersWithAccessArray.unshift(sharingPanelUser);
+				}
+			}
+			for each(sharingPanelUser in sharingPanelUsersWithAccessArray) {
+				addPanelItemAtIndex(sharingPanelUser, 0);
 			}
 		}
 
+		public function lockUsers(e:Event=null):void {
+			for(var i:Number = 0; i < content.numElements; i++) {
+				(content.getElementAt(i) as SharingPanelUser).enabled = false;
+			}
+		}
 		
+		public function unlockUsers():void {
+			trace("SharingPanel:unlockUsers - Should be unlocking users");
+			setTimeout(function():void {
+				for(var i:Number = 0; i < content.numElements; i++) {
+					if((content.getElementAt(i) as SharingPanelUser).getUsername() == assetCreatorUsername) {
+						(content.getElementAt(i) as SharingPanelUser).enabled = false;
+					} else {
+						(content.getElementAt(i) as SharingPanelUser).enabled = true;
+					}
+				}			
+			}, 3000);
+			
+		}
 		/**
 		 * REMOVE THIS FUNCTION (DEPRECATED) Save button clicked on sharing panel. Send the change to the controller. 
 		 * @param e
 		 * 
 		 */		
-		private function checkBoxClicked(e:Event):void {
-			trace("Saving sharing information");
-			var sharingSavedEvent:IDEvent = new IDEvent(IDEvent.SHARED_SAVED, true);
-			
-			var sharingInformationArray:Array =  
-				
-				
-				//getNewSharingInformation();
-			sharingSavedEvent.data.sharingInformationArray = sharingInformationArray;
-			
-			this.dispatchEvent(sharingSavedEvent);
-		}
+//		private function checkBoxClicked(e:Event):void {
+//			trace("Saving sharing information");
+//			var sharingSavedEvent:IDEvent = new IDEvent(IDEvent.SHARED_SAVED, true);
+//			
+//			var sharingInformationArray:Array =  
+//				
+//				
+//				//getNewSharingInformation();
+//			sharingSavedEvent.data.sharingInformationArray = sharingInformationArray;
+//			
+//			this.dispatchEvent(sharingSavedEvent);
+//		}
 		
 		private function closeButtonClicked(e:MouseEvent):void {
 			this.width = 0;

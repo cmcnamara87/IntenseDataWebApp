@@ -35,11 +35,14 @@ package Lib.LoadingAnimation {
 			_instance._zoom = zoom;
 			_instance.x = xPos;
 			_instance.y = yPos;
-			if(parent.addElement) {
-				_parent.addElement(_instance);
-			} else {
-				_parent.addChild(_instance);
-			}
+			_parent.addElement(_instance);
+			trace("LoadAnim:show - Adding element");
+//			if(parent.addElement) {
+//				trace("LoadAnim:show - Adding element");
+//				_parent.addElement(_instance);
+//			} else {
+//				_parent.addChild(_instance);
+//			}
 		}
 		
 		public static function hide():void {

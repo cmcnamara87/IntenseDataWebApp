@@ -18,6 +18,7 @@ package View.components.Panels.EditDetails
 	public class DetailListItem extends VGroup implements PanelElement
 	{
 		private var detailName:String;
+		private var detailValue:String;
 		private var textArea:TextArea;
 		private var dropdownArea:DropDownList;
 		private var dateArea:DateField;
@@ -28,6 +29,7 @@ package View.components.Panels.EditDetails
 			super();
 			this.type = type;
 			this.detailName = detailName;
+			this.detailValue = detailValue;
 			
 			this.percentWidth = 100;
 			
@@ -88,8 +90,16 @@ package View.components.Panels.EditDetails
 			return "";
 		}
 		
+		/**
+		 * Checks if either the name of the field, or the fields content
+		 * matches a search string 
+		 * @param search	The search string to match
+		 * @return 			True if found, false if not
+		 * 
+		 */		
 		public function searchMatches(search:String):Boolean {
-			if(detailName.toLowerCase().indexOf(search.toLowerCase()) == -1) {
+			// If we cant match either the detailname or the detailvalue, return false, else, we found it
+			if(detailName.toLowerCase().indexOf(search.toLowerCase()) == -1 && detailValue.toLowerCase().indexOf(search.toLowerCase()) == -1) {
 				return false;
 			} else {
 				return true;

@@ -30,6 +30,8 @@ package Controller {
 		private var _validMeta:Boolean = false;
 		private var file:FileReference;
 		
+		private var assetID:Number; // THe ID of the asset after we have finished uploading
+		
 		//Calls the superclass
 		public function NewAssetController() {
 			view = new NewAsset();
@@ -107,61 +109,62 @@ package Controller {
 		private function responseHandler( e:DataEvent ) :void {
 			// Get out the XML data from the Mediaflux response
 			var xml:XML = XML(e.data);
-			trace("- Upload Finished, response", e);
-			trace("response2 ", xml.reply.@type);
+//			trace("- Upload Finished, response", e);
+//			trace("response2 ", xml.reply.@type);
 			if(xml.reply.@type == "result") {
 				// The file upload correctly,
 				// sets it as a 'media' type
 				// and set this user to be the owner
 				AppModel.getInstance().setMediaClass(e);
 				// Get out the new assets ID
-				var assetID:Number = xml.reply.result.id;
+				assetID = xml.reply.result.id;
 				
-				trace("New Asset created", assetID);
+				trace("NewAssetController:uploadComplete - New Asset created", assetID);
 				
 				// Set the Owner ACLs for the asset
-				AppModel.getInstance().changeAccess(assetID, Auth.getInstance().getUsername(), "system", SharingPanel.READWRITE, false);
-//				AppModel.getInstance().setOwnerACL(assetID);
-//				
-//				AppModel.getInstance().setUserAssetShareCount(Auth.getInstance().getUsername(), assetID, true);
-				
-				// Add this new asset, to whatever the current collection is
-				// Provided its not All Assets or Shared Assets, since they are smart collections
-				// And assets appear in them authomatically.
-				if(BrowserController.currentCollectionID != BrowserController.ALLASSETID &&
-					BrowserController.currentCollectionID != BrowserController.SHAREDID) {
-					
-					// Create a shell asset for the new asset
-					var newAsset:Model_Media = new Model_Media();
-					newAsset.base_asset_id = assetID;
-					
-					// Add it to the current collections assets
-					BrowserController.currentCollectionAssets.push(newAsset);
-					trace("Adding new asset", assetID  ,"to collection", BrowserController.currentCollectionID,
-						BrowserController.currentCollectionTitle, "and saving"); 
-					
-					// Save it in the collection
-					AppModel.getInstance().saveCollection(
-						BrowserController.currentCollectionID, 
-						BrowserController.currentCollectionTitle, 
-						BrowserController.currentCollectionAssets, 
-						function(collectionID:Number):void {
-							trace("Collection Updated", collectionID);
-							// The asset has been saved
-							// Make sure this asset has the same ACLs as its parent collection
-							AppModel.getInstance().copyAccess(collectionID, assetID);
-							
-							// Display it to the user
-							assetSaved();
-						}
-					);
-					
-				} else {
-					flash.utils.setTimeout(assetSaved,200);
-				}
+				AppModel.getInstance().changeAccess(assetID, Auth.getInstance().getUsername(), "system", SharingPanel.READWRITE, false, creatorAccessSaved);
+			} else {
+				trace("NewAssetController:uploadComplete - Failed to creator asset", e);
+				Alert.show("Failed to upload file");
+				Dispatcher.call('browse');
 			}
 		}
 		
+		private function creatorAccessSaved(e:Event):void {
+			if(!AppModel.getInstance().callSuccessful(e)) {
+				trace("NewAssetController:creatorAccessSaved - Failed to give creator access", e.target.data);
+			}
+			
+			// Add this new asset, to whatever the current collection is
+			// Provided its not All Assets or Shared Assets, since they are smart collections
+			// And assets appear in them authomatically.
+			if(BrowserController.currentCollectionID != BrowserController.ALLASSETID &&
+				BrowserController.currentCollectionID != BrowserController.SHAREDID) {
+				
+				// Create a shell asset for the new asset
+				var newAsset:Model_Media = new Model_Media();
+				newAsset.base_asset_id = assetID;
+				
+				// Add it to the current collections assets
+				BrowserController.currentCollectionAssets.push(newAsset);
+				trace("Adding new asset", assetID  ,"to collection", BrowserController.currentCollectionID,
+					BrowserController.currentCollectionTitle, "and saving"); 
+				
+				// Save it in the collection
+				AppModel.getInstance().saveCollection(
+					BrowserController.currentCollectionID, 
+					BrowserController.currentCollectionTitle, 
+					BrowserController.currentCollectionAssets, 
+					function(collectionID:Number):void {
+						trace("NewAssetController:creatorAccessSaved - Collection Updated", collectionID);
+						assetSaved();
+					}
+				);
+				
+			} else {
+				flash.utils.setTimeout(assetSaved,200);
+			}
+		}
 		// Called when the save media asset button is clicked
 		private function saveAsset():void {
 			if(validate()) {
@@ -212,8 +215,7 @@ package Controller {
 		
 		// After the file is uploaded successfully, switches the view
 		public function assetSaved():void {
-			trace("- Asset Saved");
-			trace("*************************");
+			trace("NewAssetController:assetSaved - Asset Saved Successfully");
 			Dispatcher.call("browse");
 		}
 	}

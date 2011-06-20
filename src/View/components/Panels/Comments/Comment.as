@@ -31,6 +31,7 @@ package View.components.Panels.Comments
 		private var reply:Boolean;
 		private var creator:String;
 		private var commentText:String;
+		private var deleteButton:Button;	
 		
 		private var comment:Label;
 		/**
@@ -131,11 +132,14 @@ package View.components.Panels.Comments
 				editButton.includeInLayout = false;
 				
 				// Create a Delete button
-				var deleteButton:Button		= new Button();
-				deleteButton.percentHeight 	= 100;
-				deleteButton.percentWidth	= 100;
-				deleteButton.label			= "Delete";
-				buttonHGroup.addElement(deleteButton);
+				trace("Is sys-admin?", Auth.getInstance().isSysAdmin());
+				if(commentText != "Comment Removed" || Auth.getInstance().isSysAdmin()) {
+					deleteButton		= new Button();
+					deleteButton.percentHeight 	= 100;
+					deleteButton.percentWidth	= 100;
+					deleteButton.label			= "Delete";
+					buttonHGroup.addElement(deleteButton);
+				}
 			}
 			
 			// Add a horizontal rule at the bottom of the comment
@@ -186,6 +190,8 @@ package View.components.Panels.Comments
 				
 				comment.text = "Comment Removed";
 				comment.setStyle("fontStyle", "italic");
+				deleteButton.includeInLayout = false;
+				deleteButton.visible = false;
 //				this.visible = false;
 //				this.height = 0;
 			}

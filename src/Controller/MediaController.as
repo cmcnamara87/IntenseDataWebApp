@@ -141,7 +141,7 @@ package Controller {
 		private function deleteAsset(e:CloseEvent):void {
 			if (e.detail==Alert.OK) {
 				//AppModel.getInstance().deleteAsset(currentAssetID, currentMediaData.meta_username);
-				AppModel.getInstance().deleteMedia(currentAssetID, currentMediaData.meta_username);
+				AppModel.getInstance().deleteMedia(currentAssetID, currentMediaData.base_creator_username);
 			}
 		}
 		
@@ -306,13 +306,18 @@ package Controller {
 		private function sharingDataLoaded(userData:Array):void {
 			// Send the data to view
 			trace("Permissions Retrieved");
+			trace("MediaController:SharingDataLoaded - Looking at this asset in collection", BrowserController.currentCollectionID);
+			
 			if(currentMediaData != null) {
-				mediaView.setupAssetsSharingInformation(userData, currentMediaData.meta_username);
+				mediaView.setupAssetsSharingInformation(userData, currentMediaData.base_creator_username);
 			} else {
 				mediaView.setupAssetsSharingInformation(userData, "");
 			}
 		}
 		
+		private function peopleCollectionLoaded(peopleCollection:Array):void {
+			mediaView.addPeople(peopleCollection);
+		}
 		
 		private function mediasCommentaryLoaded(e:Event):void {
 			// Get out the returned data
@@ -346,6 +351,10 @@ package Controller {
 			// Gets out the Commentary Data for hte asset (that is, comments and annotations
 			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
 			
+			
+			// Get out the People data
+			AppModel.getInstance().getPeople(media.meta_users_access, peopleCollectionLoaded);
+				
 			// Load the Sharing Data
 			AppModel.getInstance().getAccess(currentAssetID, sharingDataLoaded);
 			
@@ -432,6 +441,7 @@ package Controller {
 			if(data.reply.@type == "result") {
 				// Sharing update successfully
 				trace("Sharing Updated Successfully", e.target.data);
+				mediaView.unlockSharingPanelUsers();
 				trace("-------------------------");
 			} else {
 				Alert.show("Sharing Update Failed");

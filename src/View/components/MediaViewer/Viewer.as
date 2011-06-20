@@ -217,7 +217,7 @@ package View.components.MediaViewer
 			this.addEventListener(IDEvent.ANNOTATION_MOUSE_OUT, annotationMouseOut);
 			
 			media.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
-				trace("got a progress event");
+//				trace("got a progress event");
 				loadingLabel.text = "Loading " + Math.round((e.bytesLoaded / e.bytesTotal * 100)) + "%";
 				if(e.bytesLoaded == e.bytesTotal) {
 					loadingLabel.visible = false;

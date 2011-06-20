@@ -43,6 +43,11 @@ package Controller.Utilities {
 		private static var Asseticon_collection:Class;
 		private static var Asseticon_collection_data:BitmapData;
 		
+		[Embed(source="Assets/Template/loader.gif")] 
+		private static var Loadericon:Class;
+		private static var Loadericon_data:BitmapData = (new Loadericon as Bitmap).bitmapData;
+		
+		
 		// Icon for Reply Button
 		[Embed(source="Assets/Template/reply_icon.png")]
 		private static var Buttonicon_reply:Class;
@@ -206,6 +211,10 @@ package Controller.Utilities {
 		
 		public static function getCollectionIconClass():Class {
 			return Asseticon_collection;
+		}
+		
+		public static function getLoadingIconClass():Class {
+			return Loadericon;
 		}
 		
 		/**

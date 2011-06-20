@@ -56,9 +56,7 @@ package Model.Transactions
 				callback(e);
 				return;
 			}
-			
-			trace("Transaction_SetUserAssetShareCount: Changing the sharing data");
-			
+						
 			var data:XML = XML(e.target.data);
 			
 			// Get out the current asset count for this user
@@ -104,7 +102,9 @@ package Model.Transactions
 						'<via_asset>'+ shareViaAsset +'</via_asset>' +
 						'<access_level>'+ shareAccessLevel +'</access_level>' +
 					'</user_share_count>'
-				));					
+				));		
+				
+				trace("Transaction_SetUserAssetShareCount: Sharing", assetID, "with", shareUser, "via", shareViaAsset, "level", shareAccessLevel);
 			}
 			
 			if(!alreadySharedWithUser) {
@@ -117,6 +117,8 @@ package Model.Transactions
 					'</user_share_count>'
 				));		
 				highestAccessLevel = accessLevel;
+				
+				trace("Transaction_SetUserAssetShareCount: Adding new Sharing", assetID, "with", username, "via", viaAsset, "level", accessLevel);
 			}
 			
 			// We need to get out the highest access level for this user

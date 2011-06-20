@@ -70,7 +70,7 @@ package View.components.CollectionList
 			
 			// Add The panel heading
 			var heading:Label = new Label();
-			heading.text = "Collections";;
+			heading.text = BrowserController.PORTAL + "s";
 			heading.setStyle('textAlign', 'left');
 			heading.setStyle('color', 0x333333);
 			heading.setStyle('fontSize', 16);
@@ -80,7 +80,7 @@ package View.components.CollectionList
 			// Add 'Create Collection' Button
 			// Add the Shelf Button
 			createCollectionButton = new ToggleButton();
-			createCollectionButton.label = "New Collection";
+			createCollectionButton.label = "New " + BrowserController.PORTAL;
 			createCollectionButton.selected = false;
 			createCollectionButton.percentHeight = 100;
 			myToolbar.addElement(createCollectionButton);
@@ -256,7 +256,7 @@ package View.components.CollectionList
 		 */		
 		public function unsetCreateCollectionButton():void {
 			createCollectionButton.selected = false;
-			createCollectionButton.label = "New Collection";
+			createCollectionButton.label = "New " + BrowserController.PORTAL;
 		}
 		
 		
@@ -272,9 +272,9 @@ package View.components.CollectionList
 			
 			// Change the button label to say 'hide collection' if its selected
 			if(createCollectionButton.selected) {
-				createCollectionButton.label = "Hide New Collection";
+				createCollectionButton.label = "Hide New " + BrowserController.PORTAL;
 			} else {
-				createCollectionButton.label = "New Collection";
+				createCollectionButton.label = "New " + BrowserController.PORTAL;
 			}
 			
 			var clickEvent:IDEvent = new IDEvent(IDEvent.SHELF_CLICKED, true);

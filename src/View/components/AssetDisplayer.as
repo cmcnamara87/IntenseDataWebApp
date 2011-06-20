@@ -17,6 +17,7 @@ package View.components
 	import flash.display.BitmapData;
 	import flash.events.Event;
 	
+	import mx.controls.Image;
 	import mx.controls.Label;
 	import mx.events.SliderEvent;
 	import mx.graphics.BitmapFill;
@@ -32,6 +33,7 @@ package View.components
 	import spark.components.Scroller;
 	import spark.components.TileGroup;
 	import spark.components.VGroup;
+	import spark.layouts.HorizontalAlign;
 	import spark.layouts.TileLayout;
 	import spark.layouts.VerticalLayout;
 	import spark.layouts.supportClasses.LayoutBase;
@@ -89,6 +91,16 @@ package View.components
 			loadingLabel.visible = false;
 			loadingLabel.percentWidth = 100;
 			loadingGroup.addElement(loadingLabel);
+			
+			// List Icon
+//			LoadAnim.show(loadingGroup,0,0,0x000000,1);
+			
+//			var myIcon:Image = new Image();
+//			myIcon.source = AssetLookup.getLoadingIconClass();
+//			myIcon.width = 126;
+//			myIcon.height = 22;
+//			loadingGroup.addElement(myIcon);
+			
 			
 			// Add a VGroup inside this broder container.
 			// That way we can add the 'Loading' to the AssetDisplayer,
@@ -303,7 +315,13 @@ package View.components
 			}
 		}
 		
-		
+		/**
+		 * Disables all tiles for files that are read-only.
+		 * 
+		 * Used when we are editing/creating a new collection, we need to disable
+		 * all tiles that we dont have the rights to access // RIGHTS MANAGEMENT 
+		 * 
+		 */		
 		public function lockReadOnlyFiles():void {
 			for(var i:Number = 0; i < content.numElements; i++) {
 				var assetTile:AssetTile = content.getElementAt(i) as AssetTile;
@@ -314,6 +332,10 @@ package View.components
 			}
 		}
 		
+		/**
+		 * Enables all tiles. 
+		 * 
+		 */		
 		public function unlockFiles():void {
 			for(var i:Number = 0; i < content.numElements; i++) {
 				(content.getElementAt(i) as AssetTile).enabled = true;
@@ -321,6 +343,10 @@ package View.components
 		}
 		
 		/* ============== LOADABLE CONTENT INTERFACE FUNCTIONS ================ */
+		/**
+		 * Disables the tiles and shows the loading message. 
+		 * 
+		 */		
 		public function loadingContent():void {
 			for(var i:Number = 0; i < content.numElements; i++) {
 				(content.getElementAt(i) as AssetTile).enabled = true;

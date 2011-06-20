@@ -35,9 +35,10 @@ package Model {
 		public var meta_media_trancoded:Boolean;
 		public var meta_media_uri:String;
 		
+		public var meta_users_access:XMLList;
 		
 		public var meta_media_access_level:String = SharingPanel.NOACCESS;
-		
+	 
 		/* CONTENT */
 		public var content_id:Number;
 		public var content_type:String;
@@ -103,6 +104,8 @@ package Model {
 			belongsTo = xmlToArray(rawData.related.(@type=="is_child").to);
 			hasChild = xmlToArray(rawData.related.(@type=="has_child").to);
 			type = AssetLookup.getCommonType(base_type);
+			
+			meta_users_access = rawData.meta.id_sharing.user_share_count;
 			
 			for each(var userShareCount:XML in rawData.meta.id_sharing.user_share_count) {
 				// Get out the access level we have for this asset (via the asset alone)	
