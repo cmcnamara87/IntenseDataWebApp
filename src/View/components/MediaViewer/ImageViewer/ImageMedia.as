@@ -24,15 +24,20 @@ package View.components.MediaViewer.ImageViewer
 			
 			
 			// Listen for loading progress (to display hte loading graphics)
-			image.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
-				//trace("loading event 2", e.bytesLoaded, e.bytesTotal);
-				dispatchEvent(e);
-			});
+			image.addEventListener(ProgressEvent.PROGRESS, progress);
 			
 			image.addEventListener(Event.COMPLETE, sourceLoaded);
-		
+			
+			this.addEventListener(Event.REMOVED_FROM_STAGE, function(e:Event):void {
+				trace("ImageMedia:EVENT - Removing Image Media");
+				image.removeEventListener(Event.COMPLETE, sourceLoaded);
+				image.removeEventListener(ProgressEvent.PROGRESS, progress);
+			});
 		}
 		
+		private function progress(e:ProgressEvent):void {
+			dispatchEvent(e);
+		}
 		private function sourceLoaded(e:Event):void {
 			trace("image size", image.width, image.height, image.contentWidth, image.contentHeight);
 			this.width = image.contentWidth;

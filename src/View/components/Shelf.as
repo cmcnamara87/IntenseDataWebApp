@@ -25,6 +25,9 @@ package View.components
 	{
 		private var myAssetDisplayer:AssetDisplayer; // Displays the assets as tiles
 		private var collectionTextInput:TextInput; // the collection name input
+		
+		private var saveButton:IDButton;
+		private var closeButton:IDButton;
 		/**
 		 * The shelf is where items can be temporarily stored, and makes collections.
 		 * Scrolls up from the bottom of the page. 
@@ -74,10 +77,10 @@ package View.components
 			collectionTitleBox.addElement(collectionTextInput);
 			
 			// Add 'Save' Button
-			var saveButton:IDButton = new IDButton('Save ' + BrowserController.PORTAL);
+			saveButton = new IDButton('Save ' + BrowserController.PORTAL);
 			collectionTitleBox.addElement(saveButton);
 			
-			var closeButton:IDButton = new IDButton('X');
+			closeButton = new IDButton('X');
 			closeButton.width = 30;
 			collectionTitleBox.addElement(closeButton);
 			
@@ -94,7 +97,7 @@ package View.components
 			closeButton.addEventListener(MouseEvent.CLICK, closeShelfButtonClicked);
 			
 		}
-		
+
 		/**
 		 * Add a media tile to the display 
 		 * @param 	asset	A media object
@@ -124,6 +127,12 @@ package View.components
 			myAssetDisplayer.refreshMediaAssetsDisplay();
 		}
 		
+		public function enableButtons():void {
+			collectionTextInput.enabled = true;
+			saveButton.enabled = true;
+			closeButton.enabled = true;
+		}
+		
 		/* ======================================== EVENT LISTENERS ======================================== */
 		/**
 		 * Called when save button is clicked. Sends the name of the collection to the controller 
@@ -142,6 +151,11 @@ package View.components
 					
 				// Clear the 'collection name' entered (so its clear for next time :)
 				collectionTextInput.text = "";
+				
+				collectionTextInput.enabled = false;
+				saveButton.enabled = false;
+				closeButton.enabled = false;
+				
 				this.dispatchEvent(clickEvent);
 			} else {
 				// Collection name is empty

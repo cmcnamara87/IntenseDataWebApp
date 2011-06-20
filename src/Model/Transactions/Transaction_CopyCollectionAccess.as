@@ -12,18 +12,20 @@ package Model.Transactions
 	public class Transaction_CopyCollectionAccess
 	{
 		private var collectionID:Number;
+		private var callback:Function;
 		private var mediaAssets2:Array;
 		private var connection:Connection;
 		private var userShareCounts:XMLList;
 		private var currentUserIndex:Number = 0;
 		private var mediaAssetCount:Number;
 		
-		public function Transaction_CopyCollectionAccess(collectionID:Number, mediaAssets:Array, connection:Connection)
+		public function Transaction_CopyCollectionAccess(collectionID:Number, mediaAssets:Array, connection:Connection, callback:Function)
 		{
 //			trace("Copy ACLS from", collectionID, "to", mediaAssets);
 			this.collectionID = collectionID;
 			this.mediaAssets2 = mediaAssets;
 			this.connection = connection;
+			this.callback = callback;
 			
 			getShare();
 		}
@@ -86,6 +88,7 @@ package Model.Transactions
 				if(currentUserIndex == userShareCounts.length()) {
 					// we have finished sharing
 					trace("Transaction_CopyCollectionAccess:changeShareCount - Sharing Finished");
+					callback();
 				} else {
 					// Share it again for the enxt user
 					shareWithUser();

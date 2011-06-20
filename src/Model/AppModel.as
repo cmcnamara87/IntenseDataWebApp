@@ -6,6 +6,7 @@ package Model {
 	import Model.Transactions.Transaction_ChangeAccess;
 	import Model.Transactions.Transaction_ChangePassword;
 	import Model.Transactions.Transaction_CopyAccess;
+	import Model.Transactions.Transaction_CopyCollectionAccess;
 	import Model.Transactions.Transaction_CreateUser;
 	import Model.Transactions.Transaction_DeleteMediaFromUser;
 	import Model.Transactions.Transaction_GetAccess;
@@ -304,6 +305,17 @@ package Model {
 			var transaction:Transaction_GetPeopleAndCollectionNames = new Transaction_GetPeopleAndCollectionNames(_connection);
 			transaction.getPeopleAndCollectionNames(people, callback);
 		}
+		
+		/**
+		 * Changes access to an asset 
+		 * @param assetID		The Asset ID
+		 * @param username		The username to change access for
+		 * @param domain		The domain of the user
+		 * @param access		The access level
+		 * @param isCollection	Whether the asset is a collection or not
+		 * @param callback		Function to call when complete
+		 * 
+		 */		
 		public function changeAccess(assetID:Number, username:String, domain:String, access:String, isCollection:Boolean, callback:Function=null):void {
 			var transaction:Transaction_ChangeAccess = new Transaction_ChangeAccess(_connection);
 			transaction.changeAccess(assetID, assetID, username, domain, access, isCollection, callback);
@@ -913,12 +925,17 @@ package Model {
 					return;
 				}
 				
-				// Update the Collection Class so it is a 'collection'
-				AppModel.getInstance().setCollectionClass(e, function(j:Event):void {
-					callback(e);					
-				});
 				// Set this user as the owner of the collection
-				AppModel.getInstance().changeAccess(XML(e.target.data).reply.result.id, Auth.getInstance().getUsername(), "system", SharingPanel.READWRITE, true);
+				AppModel.getInstance().changeAccess(XML(e.target.data).reply.result.id, Auth.getInstance().getUsername(), 
+					"system", SharingPanel.READWRITE, true, function(k:Event):void {
+						trace("**********************************");
+						trace("AppModel:createCollection - Finished Creating the Collection");
+						
+					// Update the Collection Class so it is a 'collection'
+					AppModel.getInstance().setCollectionClass(e, function(j:Event):void {
+						callback(e);					
+					});
+				});
 				
 			})) {
 				trace("SENDING NEW COLLECTION");

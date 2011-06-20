@@ -115,13 +115,13 @@ package View.components.AssetTile
 			
 			if(BrowserController.getEditOn()) {
 				// If we are in Edit Mode
-				trace("In Edit Mode");
+//				trace("In Edit Mode");
 				assetsToMatch = BrowserController.getEditAssets();
 				
 				
 			} else if (BrowserController.getShelfOn()) {
 				// if we are in collection create mode
-				trace("In Creation Mode");
+//				trace("In Creation Mode");
 				assetsToMatch = BrowserController.getShelfAssets();
 			} 
 			

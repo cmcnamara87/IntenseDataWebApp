@@ -116,7 +116,7 @@ package Model.Transactions {
 				trace("- Adding relationship to:", mediaAsset.base_asset_id);
 				baseXML.service.args["related"].appendChild(XML('<to relationship="has_child">' + mediaAsset.base_asset_id + '</to>'));
 			}
-			if(_connection.sendRequest(baseXML,relationshipsAdded)) {
+			if(_connection.sendRequest(baseXML, relationshipsAdded)) {
 				
 			} else {
 				error();
@@ -128,9 +128,12 @@ package Model.Transactions {
 			trace("Transaction_SaveCollection:relationshipsAdded", e.target.data);
 //			for each(var mediaAsset:Model_Media in mediaAssets) {
 //				trace("Transaction_SaveCollection:Copy Collection Access to", mediaAsset.base_asset_id);
-			var transaction:Transaction_CopyCollectionAccess = new Transaction_CopyCollectionAccess(collectionID, mediaAssets, _connection);
+			var transaction:Transaction_CopyCollectionAccess = new Transaction_CopyCollectionAccess(collectionID, mediaAssets, _connection, function():void {
+				trace("*****************************");
+				trace("Finished Copying COllection Access");
+				_callback(collectionID);	
+			});
 //			}
-			_callback(collectionID);
 		}
 		
 		// Called if an error occurs

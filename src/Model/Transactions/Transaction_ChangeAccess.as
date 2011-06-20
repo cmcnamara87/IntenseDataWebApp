@@ -24,6 +24,7 @@ package Model.Transactions
 		private var access:String;
 		private var highestAccessLevel:String;
 		private var isCollection:Boolean;
+		private var collectionMediaCount:Number;
 		
 		public function Transaction_ChangeAccess(connection:Connection)
 		{
@@ -96,9 +97,8 @@ package Model.Transactions
 		 */		
 		private function changeAccessForChildren(e:Event):void {
 			var dataXML:XML = XML(e.target.data);
-			
-			
-			if(dataXML.reply.@type != "result") {
+
+			if(!AppModel.getInstance().callSuccessful(e)) {
 				trace("Transaction_ChangeAccess: Failed to set Highest ACL for collection");
 				if(callback != null) {
 					callback(e);
@@ -106,11 +106,11 @@ package Model.Transactions
 				return;
 			}
 			
-			// Tell the controller we have finished changing for this collection, but we 
-			// will keep doing stuff with the children in the background
-			if(callback != null) {
-				callback(e);
-			}
+//			// Tell the controller we have finished changing for this collection, but we 
+//			// will keep doing stuff with the children in the background
+//			if(callback != null) {
+//				callback(e);
+//			}
 			
 			trace("Transaction_ChangeAccess: This is a collection, changing access to commentary and assets");
 			// needs to do 2 things
@@ -126,6 +126,7 @@ package Model.Transactions
 			
 			var commentsForMedia:Array = AppModel.getInstance().extractCommentsFromXML(data);
 			
+			
 			for(var i:Number = 0; i < commentsForMedia.length; i++) {
 				var commentData:Model_Commentary = commentsForMedia[i] as Model_Commentary;
 				AppModel.getInstance().copyAccess(assetID, commentData.base_asset_id);
@@ -138,11 +139,23 @@ package Model.Transactions
 			
 			var assetArray:Array = AppModel.getInstance().extractAssetsFromXML(data, Model_Media);
 			
+			// Save the number of media in the collection
+			collectionMediaCount = assetArray.length;
+			trace("Transaction_ChangeAccess:setMediaSharing - Collection", collectionID, "has", collectionMediaCount, "assets");
+				
 			for(var i:Number = 0; i < assetArray.length; i++) {
 				var annotationData:Model_Media = assetArray[i] as Model_Media;
 				
 				var transaction:Transaction_ChangeAccess = new Transaction_ChangeAccess(connection);
-				transaction.changeAccess(annotationData.base_asset_id, collectionID, username, domain, highestAccessLevel, false, null);
+				transaction.changeAccess(annotationData.base_asset_id, collectionID, username, domain, highestAccessLevel, false, mediaSharingSet);
+			}
+		}
+		
+		private function mediaSharingSet(e:Event):void {
+			collectionMediaCount--;
+			
+			if(collectionMediaCount == 0) {
+				callback(e);
 			}
 		}
 		

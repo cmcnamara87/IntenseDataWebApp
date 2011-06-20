@@ -188,6 +188,7 @@ package View
 			
 			myShelf.percentHeight = 50;
 			myShelf.refreshMediaAssetsDisplay();
+			myShelf.enableButtons();
 			this.myShelf.visible = true;
 			
 			myCollectionList.enterEditMode();

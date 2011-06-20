@@ -123,7 +123,7 @@ package View.components.Panels.Sharing
 		
 		public function unlockUsers():void {
 			trace("SharingPanel:unlockUsers - Should be unlocking users");
-			setTimeout(function():void {
+//			setTimeout(function():void {
 				for(var i:Number = 0; i < content.numElements; i++) {
 					if((content.getElementAt(i) as SharingPanelUser).getUsername() == assetCreatorUsername) {
 						(content.getElementAt(i) as SharingPanelUser).enabled = false;
@@ -131,7 +131,7 @@ package View.components.Panels.Sharing
 						(content.getElementAt(i) as SharingPanelUser).enabled = true;
 					}
 				}			
-			}, 3000);
+//			}, 3000);
 			
 		}
 		/**

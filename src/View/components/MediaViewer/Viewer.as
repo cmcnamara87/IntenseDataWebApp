@@ -300,7 +300,7 @@ package View.components.MediaViewer
 			var scrollX:Number = myScroller.horizontalScrollBar.value  / media.scaleX;
 			var scrollY:Number = myScroller.verticalScrollBar.value / media.scaleY;
 			Tweener.addTween(media, {'scaleX': scaleX, 'scaleY': scaleY, 'time': 1, 'onUpdate': function():void {
-				trace("scaling is currently", scaleX, scaleY);
+//				trace("scaling is currently", scaleX, scaleY);
 				myScroller.horizontalScrollBar.value = scrollX * media.scaleX;
 				myScroller.verticalScrollBar.value = scrollY * media.scaleY;
 			}});
