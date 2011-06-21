@@ -600,9 +600,9 @@ package Controller {
 		private function deleteButtonClicked(e:IDEvent):void {
 			if(collectionData.base_creator_username == Auth.getInstance().getUsername()) {
 				// We are the creator of the collection
-				var myAlert:Alert = Alert.show("Are you sure you wish to delete this collection?", "Delete Collection", Alert.OK | Alert.CANCEL, null, deleteCollection, null, Alert.CANCEL);	
+				var myAlert:Alert = Alert.show("Are you sure you wish to delete this " + BrowserController.PORTAL + "?", "Delete " + BrowserController.PORTAL, Alert.OK | Alert.CANCEL, null, deleteCollection, null, Alert.CANCEL);	
 			} else {
-				myAlert = Alert.show("Are you sure you wish to remove this collection?", "Remove Collection", Alert.OK | Alert.CANCEL, null, deleteCollection, null, Alert.CANCEL);	
+				myAlert = Alert.show("Are you sure you wish to remove this " + BrowserController.PORTAL + "?", "Remove " + BrowserController.PORTAL, Alert.OK | Alert.CANCEL, null, deleteCollection, null, Alert.CANCEL);	
 			}
 			myAlert.height = 100;
 			myAlert.width = 300;

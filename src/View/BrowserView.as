@@ -36,6 +36,7 @@ package View
 		private var myCommentsPanel:CommentsPanel;	// The Comments panel
 		private var mySharingPanel:SharingPanel;	// The sharing panel
 		private var myAssetBrowserToolbar:AssetBrowserToolbar;
+		private var otherVGroup:VGroup;
 		
 		public function BrowserView()
 		{
@@ -64,37 +65,51 @@ package View
 			test.gap = 0;
 			this.addElement(test);
 			
-			// Add the Search Toolbar
-			myAssetBrowserToolbar = new AssetBrowserToolbar();
-			test.addElement(myAssetBrowserToolbar);
-
-			var myAssetBrowserAndPanels:HGroup = new HGroup();
-			myAssetBrowserAndPanels.percentHeight = 100;
-			myAssetBrowserAndPanels.percentWidth = 100;
-			myAssetBrowserAndPanels.gap = 0;
-			test.addElement(myAssetBrowserAndPanels);
-			
-			// Now lets create a VGroup for the AssetBrowser and the Shelf/Edit box
-			var myVGroup:VGroup = new VGroup();
-			myVGroup.percentHeight = 100;
-			myVGroup.percentWidth = 100;
-			myVGroup.gap = 0;
-			myAssetBrowserAndPanels.addElement(myVGroup);
-			
 			// Add the Shelf
 			myShelf = new Shelf();
 			myShelf.height = 0; // set at 0 at first, cause its not displayed
 			myShelf.percentWidth = 100;
 			myShelf.visible = true;
 			myShelf.setStyle("resizeEffect", new mx.effects.Resize());
-			myVGroup.addElement(myShelf);
+			test.addElement(myShelf);
+			
+			otherVGroup = new VGroup();
+			otherVGroup.gap = 0;
+			otherVGroup.percentWidth = 100;
+			otherVGroup.percentHeight = 100;
+			test.addElement(otherVGroup);
+			
+			// Add the Search Toolbar
+			myAssetBrowserToolbar = new AssetBrowserToolbar();
+			otherVGroup.addElement(myAssetBrowserToolbar);
+
+			var myAssetBrowserAndPanels:HGroup = new HGroup();
+			myAssetBrowserAndPanels.percentHeight = 100;
+			myAssetBrowserAndPanels.percentWidth = 100;
+			myAssetBrowserAndPanels.gap = 0;
+			otherVGroup.addElement(myAssetBrowserAndPanels);
+			
+			// Now lets create a VGroup for the AssetBrowser and the Shelf/Edit box
+//			var myVGroup:VGroup = new VGroup();
+//			myVGroup.percentHeight = 100;
+//			myVGroup.percentWidth = 100;
+//			myVGroup.gap = 0;
+//			myAssetBrowserAndPanels.addElement(myVGroup);
+			
+//			// Add the Shelf
+//			myShelf = new Shelf();
+//			myShelf.height = 0; // set at 0 at first, cause its not displayed
+//			myShelf.percentWidth = 100;
+//			myShelf.visible = true;
+//			myShelf.setStyle("resizeEffect", new mx.effects.Resize());
+//			myVGroup.addElement(myShelf);
 			
 			// And add the Asset Browser (includes the asset tiles, search box etc)
 			myAssetBrowser = new AssetBrowser();
 			myAssetBrowser.percentWidth = 100; // set externally as it changes (with shelf/comments shown etc)
 			myAssetBrowser.percentHeight = 100;
 			//myAssetBrowser.setStyle("resizeEffect", new mx.effects.Resize());
-			myVGroup.addElement(myAssetBrowser);
+			myAssetBrowserAndPanels.addElement(myAssetBrowser);
 			
 	
 			// Lets add the Comments Panel
@@ -181,12 +196,12 @@ package View
 		public function showShelf():void {
 			// Resize the browser/shelf
 			// Make browser and shelf 50-50
-			myAssetBrowser.percentHeight = 50;
+			otherVGroup.percentHeight = 55;
 			myAssetBrowser.refreshMediaAssetsDisplay();
 			
 			myAssetBrowser.lockReadOnlyFiles();
 			
-			myShelf.percentHeight = 50;
+			myShelf.percentHeight = 45;
 			myShelf.refreshMediaAssetsDisplay();
 			myShelf.enableButtons();
 			this.myShelf.visible = true;
@@ -199,7 +214,7 @@ package View
 		public function hideShelf():void {
 			// Make browser fullsize, and shelf 0
 			myShelf.height = 0;
-			myAssetBrowser.percentHeight = 100;
+			otherVGroup.percentHeight = 100;
 			
 			myAssetBrowser.unlockFiles();
 			
