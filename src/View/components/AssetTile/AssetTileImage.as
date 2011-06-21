@@ -99,7 +99,12 @@ package View.components.AssetTile
 			// Setup Background
 			editingOverlay.backgroundFill = new SolidColor(0x000000, 0.7);
 			overlayLabel.setStyle('color', 'white');
-			overlayLabel.text = "Add To " + BrowserController.PORTAL;
+			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
+				overlayLabel.text = "Copy New To " + BrowserController.PORTAL;	
+			} else {
+				overlayLabel.text = "Add To " + BrowserController.PORTAL;
+			}
+			
 			// Make its alpha 0, so we can fade it in.
 			editingOverlay.alpha = 0;
 			editingOverlay.visible = true;

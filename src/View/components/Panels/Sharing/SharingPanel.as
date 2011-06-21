@@ -105,7 +105,7 @@ package View.components.Panels.Sharing
 					sharingPanelUser.enabled = false;
 				} else {
 				}
-				trace("SharingPanel:setupAssetsSharingInformation -", username, access);
+//				trace("SharingPanel:setupAssetsSharingInformation -", username, access);
 				if(access == SharingPanel.NOACCESS) {
 					addPanelItem(sharingPanelUser);
 				} else {

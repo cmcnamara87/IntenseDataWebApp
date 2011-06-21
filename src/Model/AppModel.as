@@ -5,8 +5,10 @@ package Model {
 	
 	import Model.Transactions.Transaction_ChangeAccess;
 	import Model.Transactions.Transaction_ChangePassword;
+	import Model.Transactions.Transaction_CloneMedia;
 	import Model.Transactions.Transaction_CopyAccess;
 	import Model.Transactions.Transaction_CopyCollectionAccess;
+	import Model.Transactions.Transaction_CreateCollection;
 	import Model.Transactions.Transaction_CreateUser;
 	import Model.Transactions.Transaction_DeleteMediaFromUser;
 	import Model.Transactions.Transaction_GetAccess;
@@ -892,57 +894,63 @@ package Model {
 		 */		
 		public function createCollection(collectionTitle:String, shelfAssets:Array, callback:Function):void {
 			trace("Creating collection");
-			// Build up the collection object
-			var args:Object = new Object();
-			args.namespace = "recensio";
-			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
-			baseXML.service.args["meta"]["r_base"]["obtype"] = "10";
-			baseXML.service.args["meta"]["r_base"]["active"] = "true";
-			// Set creator as the current user
-			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
-			baseXML.service.args["meta"]["r_base"].@id = 2;
-			baseXML.service.args["meta"]["r_resource"]["title"] = collectionTitle;
-			
-			baseXML.service.args["meta"]["r_media"].@id = 4;
-			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
-			baseXML.service.args["related"] = "";
-			
-			// Link the collection to all the assets on the shelf.
-			for(var i:Number = 0; i < shelfAssets.length; i++) {
-				trace("Including asset", (shelfAssets[i] as Model_Media).base_asset_id);
-				baseXML.service.args["related"].appendChild(XML('<to relationship="has_child">' + (shelfAssets[i] as Model_Media).base_asset_id + '</to>'));
-			}
-			
-			// Set the description, to be the number of items in the collection
-			baseXML.service.args["meta"]["r_resource"]["description"] = shelfAssets.length;
-			
-			if(_connection.sendRequest(baseXML,function(e:Event):void {
-//				AppModel.getInstance().setUserAssetShareCount(
-				
-				if(!callSuccessful(e)) {
-					trace("AppModel:createCollection - Failed to Create collection", e.target.data);
-					callback(e);
-					return;
-				}
-				
-				// Set this user as the owner of the collection
-				AppModel.getInstance().changeAccess(XML(e.target.data).reply.result.id, Auth.getInstance().getUsername(), 
-					"system", SharingPanel.READWRITE, true, function(k:Event):void {
-						trace("**********************************");
-						trace("AppModel:createCollection - Finished Creating the Collection");
-						
-					// Update the Collection Class so it is a 'collection'
-					AppModel.getInstance().setCollectionClass(e, function(j:Event):void {
-						callback(e);					
-					});
-				});
-				
-			})) {
-				trace("SENDING NEW COLLECTION");
-				//All good
-			} else {
-				Alert.show("Could not save collection");
-			}
+			var transaction:Transaction_CreateCollection = new Transaction_CreateCollection(_connection);
+			transaction.createCollection(collectionTitle, shelfAssets, callback);
+//			// Build up the collection object
+//			var args:Object = new Object();
+//			args.namespace = "recensio";
+//			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
+//			baseXML.service.args["meta"]["r_base"]["obtype"] = "10";
+//			baseXML.service.args["meta"]["r_base"]["active"] = "true";
+//			// Set creator as the current user
+//			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
+//			baseXML.service.args["meta"]["r_base"].@id = 2;
+//			baseXML.service.args["meta"]["r_resource"]["title"] = collectionTitle;
+//			
+//			baseXML.service.args["meta"]["r_media"].@id = 4;
+//			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
+//			baseXML.service.args["related"] = "";
+//			
+//			// Link the collection to all the assets on the shelf.
+//			for(var i:Number = 0; i < shelfAssets.length; i++) {
+//				trace("Including asset", (shelfAssets[i] as Model_Media).base_asset_id);
+//				baseXML.service.args["related"].appendChild(XML('<to relationship="has_child">' + Math.abs((shelfAssets[i] as Model_Media).base_asset_id) + '</to>'));
+//				var transaction:Transaction_CloneMedia = new Transaction_CloneMedia(_connection);
+//				transaction.cloneMedia(Math.abs((shelfAssets[i] as Model_Media).base_asset_id), function(assetID:Number):void {
+//					trace("WOOOOO!!!! *****************************************", assetID);
+//				});
+//			}
+//			
+//			// Set the description, to be the number of items in the collection
+//			baseXML.service.args["meta"]["r_resource"]["description"] = shelfAssets.length;
+//			
+//			if(_connection.sendRequest(baseXML,function(e:Event):void {
+////				AppModel.getInstance().setUserAssetShareCount(
+//				
+//				if(!callSuccessful(e)) {
+//					trace("AppModel:createCollection - Failed to Create collection", e.target.data);
+//					callback(e);
+//					return;
+//				}
+//				
+//				// Set this user as the owner of the collection
+//				AppModel.getInstance().changeAccess(XML(e.target.data).reply.result.id, Auth.getInstance().getUsername(), 
+//					"system", SharingPanel.READWRITE, true, function(k:Event):void {
+//						trace("**********************************");
+//						trace("AppModel:createCollection - Finished Creating the Collection");
+//						
+//					// Update the Collection Class so it is a 'collection'
+//					AppModel.getInstance().setCollectionClass(e, function(j:Event):void {
+//						callback(e);					
+//					});
+//				});
+//				
+//			})) {
+//				trace("SENDING NEW COLLECTION");
+//				//All good
+//			} else {
+//				Alert.show("Could not save collection");
+//			}
 		}
 		
 		/**

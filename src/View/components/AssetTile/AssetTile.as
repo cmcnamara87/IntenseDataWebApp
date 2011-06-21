@@ -134,7 +134,8 @@ package View.components.AssetTile
 				// instead of add.
 				for(var i:Number = 0; i < assetsToMatch.length; i++) {
 					
-					var assetID:Number = (assetsToMatch[i] as Model_Media).base_asset_id;
+					// Math.abs as the asset id is set to negative one if its copied from 'your files'
+					var assetID:Number = Math.abs((assetsToMatch[i] as Model_Media).base_asset_id);
 					trace("Asset In Edit", assetID);
 					if(assetID == this.assetData.base_asset_id) {
 						image.setRemoveOverlay();

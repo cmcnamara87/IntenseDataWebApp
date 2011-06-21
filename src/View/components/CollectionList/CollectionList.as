@@ -108,11 +108,11 @@ package View.components.CollectionList
 			
 			// Add the 'All Assets' and 'Shared Assets' to the fixed collections part of the list.
 			fixedCollectionListItems.addElement(new CollectionListItemFixed(BrowserController.ALLASSETID, 
-				'All Assets', IDEvent.ASSET_COLLECTION_ALL_MEDIA));
+				'Your Files', IDEvent.ASSET_COLLECTION_ALL_MEDIA));
 			
-			fixedCollectionListItems.addElement(new CollectionListItemFixed(BrowserController.SHAREDID, 
-				'Shared With Me', IDEvent.ASSET_COLLECTION_SHARED_WITH_ME));
-			
+//			fixedCollectionListItems.addElement(new CollectionListItemFixed(BrowserController.SHAREDID, 
+//				'Shared With Me', IDEvent.ASSET_COLLECTION_SHARED_WITH_ME));
+//			
 			
 			// Add a line to separate the 'smart collections' and the regular collections
 			var hLine:Line = new Line();

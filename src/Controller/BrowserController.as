@@ -128,7 +128,7 @@ package Controller {
 		private function refreshCollectionList():void {
 			trace("Refreshing collection list");
 			loadAllMyCollections();
-			setTimeout(refreshCollectionList, 60000);
+//			setTimeout(refreshCollectionList, 60000);
 		}
 		
 		// Sets up all the event listeners
@@ -389,17 +389,19 @@ package Controller {
 			
 		}
 		
-		public function collectionCreated(e:Event):void {
+		public function collectionCreated(collectionID:Number):void {
 			// The collection has been created.
 			
 			// Get out ID of new collection.
-			var dataXML:XML = XML(e.target.data);
-			var newCollectionID:Number = dataXML.reply.result.id;
+			if(collectionID == -1) {
+				trace("cllection failed");
+				Alert.show("Failed to create collection");
+				return;
+			}
+			
 			// Set the current collection being view, to the net collection
-			BrowserController.currentCollectionID = newCollectionID;
+			BrowserController.currentCollectionID = collectionID;
 			
-			
-			trace("- Collection Created:", e);
 //			// Update the Collection Class so it is a 'collection'
 //			AppModel.getInstance().setCollectionClass(e);
 //			// Set this user as the owner of the collection
@@ -422,7 +424,7 @@ package Controller {
 			loadAllMyCollections();
 			
 			// Now lets load the assets for this specific collection
-			loadAssetsInCollection(newCollectionID);
+			loadAssetsInCollection(currentCollectionID);
 		}
 		
 		public function collectionUpdated(collectionID:Number):void {
@@ -660,6 +662,11 @@ package Controller {
 					currentView.removeAssetFromShelf(assetData.base_asset_id);
 				} else {
 					// Isn't in the shelf, so lets add it.
+					// We are going to make the asset ID negative, if we are making a clean copy
+					// otherwise, we leave it as positive (its just an easy flag to do)
+					if(currentCollectionID == ALLASSETID) {
+						assetData.base_asset_id = assetData.base_asset_id * -1;
+					}
 					shelfAssets.push(assetData);
 					trace('Adding asset to shelf', assetData.base_asset_id);
 					currentView.addAssetToShelf(assetData);
@@ -674,6 +681,9 @@ package Controller {
 					currentView.removeAssetFromShelf(assetData.base_asset_id);
 				} else {
 					// Isn't in the shelf, so lets add it.
+					if(currentCollectionID == ALLASSETID) {
+						assetData.base_asset_id = assetData.base_asset_id * -1;
+					}
 					editAssets.push(assetData);
 					trace('Adding asset to shelf', assetData.base_asset_id);
 					currentView.addAssetToShelf(assetData);
@@ -837,14 +847,6 @@ package Controller {
 				this.saveCurrentCollectionName(collectionTitle);
 				AppModel.getInstance().saveCollection(collectionBeingEditedID, collectionTitle, editAssets, collectionUpdated);
 			}
-			//if(e.data.assetID == -1) {
-				
-			/*} else {
-				AppModel.getInstance().saveCollection(e.data,collectionSaved);
-				if(e.data.hasChild.length == 0) {
-					(view as Browser).collectionbrowser.removeCollectionById(e.data.assetID);
-				}
-			}*/
 		}
 		
 		/**
@@ -937,7 +939,7 @@ package Controller {
 			
 			for(var i:Number = 0; i < arrayToSearch.length; i++) {
 				// The asset does not match the given asset id to remove
-				if(assetID != (arrayToSearch[i] as Model_Media).base_asset_id) {
+				if(assetID != Math.abs((arrayToSearch[i] as Model_Media).base_asset_id)) {
 					// Add it to the new shelf assets array
 					newShelfAssetsArray.push((arrayToSearch[i] as Model_Media));
 				} else {
