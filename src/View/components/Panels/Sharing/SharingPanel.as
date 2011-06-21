@@ -82,6 +82,7 @@ package View.components.Panels.Sharing
 			
 			trace("SharingPanel:setupAssetsSharingInformation");
 			content.removeAllElements();
+			sharingPanelUsersWithAccessArray = new Array();
 			
 			trace("SharingPanel setupAssetsSharingInformation: Creator", assetCreatorUsername);
 			
@@ -104,7 +105,8 @@ package View.components.Panels.Sharing
 					sharingPanelUser.enabled = false;
 				} else {
 				}
-				if(access == 'none') {
+				trace("SharingPanel:setupAssetsSharingInformation -", username, access);
+				if(access == SharingPanel.NOACCESS) {
 					addPanelItem(sharingPanelUser);
 				} else {
 					sharingPanelUsersWithAccessArray.unshift(sharingPanelUser);

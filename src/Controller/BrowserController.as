@@ -27,7 +27,7 @@ package Controller {
 	public class BrowserController extends AppController {
 		
 		
-		public static const PORTAL:String = "Portal";
+		public static const PORTAL:String = "View";
 		
 		private var collectionToDelete:Number = 0;
 		//private var addButton:SmallButton;
@@ -622,6 +622,7 @@ package Controller {
 				// The collection was deleted, so lets re-load the 
 				// all assets collection
 				this.saveCurrentCollectionID(ALLASSETID);
+				loadAllMyCollections();
 				loadAllMyMedia();				
 				//currentView.setToolbarToFixedCollectionMode();
 				

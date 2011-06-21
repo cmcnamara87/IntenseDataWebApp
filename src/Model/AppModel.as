@@ -1363,8 +1363,8 @@ package Model {
 		 * @param callback		The function to call when its completed
 		 * 
 		 */		
-		public function changePassword(domain:String, newPassword:String, callback:Function):void {
-			var transaction:Transaction_ChangePassword = new Transaction_ChangePassword(domain, newPassword, callback, _connection);
+		public function changePassword(domain:String, username:String, newPassword:String, callback:Function):void {
+			var transaction:Transaction_ChangePassword = new Transaction_ChangePassword(domain, username, newPassword, callback, _connection);
 		}
 		
 		public function setUserAssetShareCount(username:String, assetID:Number, viaAsset:Number, accessLevel:String, callback:Function):void

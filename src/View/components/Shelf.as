@@ -95,7 +95,6 @@ package View.components
 			saveButton.addEventListener(MouseEvent.CLICK, saveButtonClicked);
 				
 			closeButton.addEventListener(MouseEvent.CLICK, closeShelfButtonClicked);
-			
 		}
 
 		/**

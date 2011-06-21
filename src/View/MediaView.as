@@ -141,11 +141,11 @@ package View
 			myToolbar.addElement(addAnnotationEditDetailsLine);
 			
 			deleteAssetButton = IDGUI.makeButton("Delete File")
-			deleteAssetButton.enabled = false;
-			myToolbar.addElement(deleteAssetButton);
+//			deleteAssetButton.enabled = false;
+//			myToolbar.addElement(deleteAssetButton);
 			
 			var deleteAddLine:Line = IDGUI.makeLine();
-			myToolbar.addElement(deleteAddLine);
+//			myToolbar.addElement(deleteAddLine);
 			
 			// ADD THE PANELS
 			// Add Edit Details button
@@ -318,7 +318,7 @@ package View
 		}
 		
 		public function addPeople(peopleCollection:Array):void {
-			myPeoplePanel.addPeople(peopleCollection);	
+			myPeoplePanel.addPeople(peopleCollection, mediaData.base_asset_id);	
 		}
 		
 		public function setHeading(text:String):void {

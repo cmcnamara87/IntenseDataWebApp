@@ -256,7 +256,8 @@ package View
 					// The user is not the currently logged in user,
 					// Hide the reset form (for now! sicne its a mediaflux bug that you cant reset
 					// other users password // TODO
-					userDetailsView.passForm.visible = false;
+//					userDetailsView.passForm.visible = false;
+					userDetailsView.passForm.visible = true;
 				}
 			} else {
 				// They arent the admin user, so they can also see the details for themselves
@@ -521,8 +522,17 @@ package View
 			
 			// Set the password and the old-password off to hte controller
 			var changePasswordEvent:IDEvent = new IDEvent(IDEvent.CHANGE_PASSWORD_CLICKED);
+			if(Auth.getInstance().isSysAdmin()) {
+				changePasswordEvent.data.username = userListComboBox.selectedItem;
+			} else {
+				changePasswordEvent.data.username = Auth.getInstance().getUsername();
+			}
 			changePasswordEvent.data.newPassword = userDetailsView.password.text;
 			this.dispatchEvent(changePasswordEvent);
+			
+			// Clear the stuff that was entered
+			userDetailsView.password.text = "";
+			userDetailsView.confirm_password.text = "";
 		}
 		
 		/**

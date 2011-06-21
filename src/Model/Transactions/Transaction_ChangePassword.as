@@ -9,13 +9,15 @@ package Model.Transactions
 	public class Transaction_ChangePassword
 	{
 		private var domain:String;
+		private var username:String;
 		private var newPassword:String;
 		private var callback:Function;
 		private var connection:Connection;
 		
-		public function Transaction_ChangePassword(domain:String, newPassword:String, callback:Function, connection:Connection)
+		public function Transaction_ChangePassword(domain:String, username:String, newPassword:String, callback:Function, connection:Connection)
 		{
 			this.domain = domain;
+			this.username = username;
 			this.newPassword = newPassword;
 			this.callback = callback;
 			this.connection = connection;
@@ -27,11 +29,13 @@ package Model.Transactions
 			var args:Object = new Object();
 			var baseXML:XML = connection.packageRequest('user.password.set',args,true);
 			// The current user
-			baseXML.service.args["user"] = Auth.getInstance().getUsername();
+			baseXML.service.args["user"] = username;//Auth.getInstance().getUsername();
 			// The current users domain
 			baseXML.service.args["domain"] = domain;
 			// The old password for hte user
-			baseXML.service.args["old-password"] = Auth.getInstance().getPassword();
+			if(!Auth.getInstance().isSysAdmin()) {
+				baseXML.service.args["old-password"] = Auth.getInstance().getPassword();
+			}
 			// The new password
 			baseXML.service.args["password"] = newPassword;
 			// Send the request

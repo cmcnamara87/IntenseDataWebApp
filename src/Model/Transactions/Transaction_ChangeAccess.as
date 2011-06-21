@@ -142,7 +142,12 @@ package Model.Transactions
 			// Save the number of media in the collection
 			collectionMediaCount = assetArray.length;
 			trace("Transaction_ChangeAccess:setMediaSharing - Collection", collectionID, "has", collectionMediaCount, "assets");
-				
+			
+			if(collectionMediaCount == 0) {
+				// There are no children for this collection, so just say we are done
+				callback(e);
+			}
+			
 			for(var i:Number = 0; i < assetArray.length; i++) {
 				var annotationData:Model_Media = assetArray[i] as Model_Media;
 				

@@ -68,7 +68,8 @@ package View.components
 				hello.fillMode = BitmapFillMode.REPEAT;
 				this.backgroundFill = hello;
 			} else {
-				this.backgroundFill = new SolidColor(0xCCCCCC, 1);
+//				this.backgroundFill = new SolidColor(0xCCCCCC, 1);
+				this.backgroundFill = new SolidColor(0xFFFFDD, 1);
 			}
 			// Setup the border
 			//this.borderStroke = new SolidColorStroke(0x000000,1,0);

@@ -4,6 +4,8 @@ package Model.Transactions {
 	import Model.AppModel;
 	import Model.Utilities.Connection;
 	
+	import View.components.Panels.Sharing.SharingPanel;
+	
 	import flash.events.Event;
 	
 	import mx.controls.Alert;
@@ -40,7 +42,7 @@ package Model.Transactions {
 			var data:XML = XML(e.target.data);
 			for each(var _user:XML in data.reply.result.user) {
 				if(_user.@user != Auth.getInstance().getUsername()) {
-					userlist.push([_user.@user,"none"]);
+					userlist.push([_user.@user, SharingPanel.NOACCESS]);
 				}
 			}
 			getAccessRights();

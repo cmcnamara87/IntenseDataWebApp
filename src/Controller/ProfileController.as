@@ -120,7 +120,8 @@ package Controller {
 			trace("Change password button clicked");
 			//user.password.set :domain system :user coke :old-password test :password test2
 			var newPassword:String = e.data.newPassword;
-			AppModel.getInstance().changePassword("system", newPassword, passwordChanged);
+			var username:String = e.data.username;
+			AppModel.getInstance().changePassword("system", username, newPassword, passwordChanged);
 
 		}		
 		

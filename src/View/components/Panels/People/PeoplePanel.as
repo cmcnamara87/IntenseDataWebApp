@@ -35,13 +35,18 @@ package View.components.Panels.People
 		 * @param sharingData 	The data containing which users have access etc
 		 * 
 		 */		
-		public function addPeople(peopleCollection:Array):void {
+		public function addPeople(peopleCollection:Array, assetID:Number):void {
 			content.removeAllElements();
 	
 			for each(var collection:Array in peopleCollection) {
+				var collectionID:Number =  collection[0];
 				var collectionName:String = collection[1];
 				
-				content.addElement(new CollectionHeading(collectionName));
+				if(assetID == collectionID) {
+//					content.addElement(new CollectionHeading(collectionName, "File"));
+				} else {
+					content.addElement(new CollectionHeading(collectionName));
+				}
 				
 				for(var i:Number = 0; i < collection[2].length; i++) {
 					var usernameAndAccess:String = collection[2][i];
