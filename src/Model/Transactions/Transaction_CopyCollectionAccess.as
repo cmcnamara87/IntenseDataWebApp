@@ -4,6 +4,8 @@ package Model.Transactions
 	import Model.Model_Media;
 	import Model.Utilities.Connection;
 	
+	import View.components.Panels.Sharing.SharingPanel;
+	
 	import flash.events.Event;
 	import flash.geom.Point;
 	
@@ -13,21 +15,28 @@ package Model.Transactions
 	{
 		private var collectionID:Number;
 		private var callback:Function;
-		private var mediaAssets2:Array;
+		private var mediaAssetsIDs:Array;
 		private var connection:Connection;
 		private var userShareCounts:XMLList;
 		private var currentUserIndex:Number = 0;
 		private var mediaAssetCount:Number;
+		private var removeAccess:Boolean;
 		
-		public function Transaction_CopyCollectionAccess(collectionID:Number, mediaAssets:Array, connection:Connection, callback:Function)
+		public function Transaction_CopyCollectionAccess(collectionID:Number, mediaAssetsIDs:Array, removeAccess:Boolean, connection:Connection, callback:Function)
 		{
 //			trace("Copy ACLS from", collectionID, "to", mediaAssets);
 			this.collectionID = collectionID;
-			this.mediaAssets2 = mediaAssets;
+			this.mediaAssetsIDs = mediaAssetsIDs;
+			this.removeAccess = removeAccess;
 			this.connection = connection;
 			this.callback = callback;
 			
-			getShare();
+			if(mediaAssetsIDs.length > 0) {
+				getShare();
+			} else {
+				trace("Transaction_CopyCollectionAccess - No media assets given");
+				callback();
+			}
 		}
 		
 		private function getShare():void {
@@ -63,18 +72,22 @@ package Model.Transactions
 		
 		private function shareWithUser(e:Event=null):void {
 
-			mediaAssetCount = mediaAssets2.length;
+			mediaAssetCount = mediaAssetsIDs.length;
 			
-			for each(var media:Model_Media in mediaAssets2) {
+			for each(var mediaID:Number in mediaAssetsIDs) {
 				// For each media (since we can only be writing to it once, otherwise we get collisions)
 				// share it with a single user, then move onto the next user, when they all have completed
 				var shareUser:String = userShareCounts[currentUserIndex]["username"];
 				var shareViaAsset:Number = userShareCounts[currentUserIndex]["via_asset"];
 				var shareAccessLevel:String = userShareCounts[currentUserIndex]["access_level"];
 				
-				var transaction:Transaction_ChangeAccess = new Transaction_ChangeAccess(connection);
-				transaction.changeAccess(media.base_asset_id, collectionID, shareUser, "system", shareAccessLevel, false, mediaSharedWithUser);
-				
+				if(removeAccess) {
+					var transaction:Transaction_ChangeAccess = new Transaction_ChangeAccess(connection);
+					transaction.changeAccess(mediaID, collectionID, shareUser, "system", SharingPanel.NOACCESS, false, mediaSharedWithUser);
+				} else {
+					transaction = new Transaction_ChangeAccess(connection);
+					transaction.changeAccess(mediaID, collectionID, shareUser, "system", shareAccessLevel, false, mediaSharedWithUser);
+				}
 			}
 		}
 		

@@ -55,6 +55,7 @@ package Model.Transactions
 			baseXML.service.args.type = dataXML.reply.result.asset.type;
 			baseXML.service.args.meta.r_base = dataXML.reply.result.asset.meta.r_base;
 			baseXML.service.args.meta.r_resource = dataXML.reply.result.asset.meta.r_resource;
+			baseXML.service.args.meta.r_resource.clone = true;
 			baseXML.service.args.meta.r_media = dataXML.reply.result.asset.meta.r_media;
 			connection.sendRequest(baseXML, assetCreated);
 		}

@@ -201,6 +201,7 @@ package Module.AudioViewer
 		}
 		
 		public function loadSoundWave(file:Sound):void {
+			trace("AudioAnnotateWave:loadSoundWave", file);
 			_audioBuffer.position = 0;
 			_lBitmap.bitmapData = new BitmapData(_defaultWidth-_waveOffset*2, _channelSize-_channelPadding*2, true, 0x00000000);
 			_rBitmap.bitmapData = new BitmapData(_defaultWidth-_waveOffset*2, _channelSize-_channelPadding*2, true, 0x00000000);
@@ -228,6 +229,7 @@ package Module.AudioViewer
 			var w:int = _lBitmap.bitmapData.width;
 			var h:int = _lBitmap.bitmapData.height;
 			var channelLength:Number = _audioBuffer.length/8;
+			trace("AudioAnnotateWave:drawWave", _audioBuffer.length, channelLength);
 			_numCondense = channelLength/w;
 			_lBitmap.bitmapData.lock();
 			_rBitmap.bitmapData.lock();

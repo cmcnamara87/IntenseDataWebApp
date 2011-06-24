@@ -37,6 +37,8 @@ package Model {
 		public var meta_description:String; // The description of the asset
 		public var meta_username:String;
 		
+		public var meta_clone:Boolean = false; // Whether this is an original asset, or a clone
+		
 		public function Model_Base() {
 			super();
 		}
@@ -74,6 +76,12 @@ package Model {
 			meta_title = rawData.meta.r_resource.title;
 			meta_description = rawData.meta.r_resource.description;
 			meta_username = rawData.meta["mf-revision-history"].user.name;
+			
+			// Store if the asset is an original or not
+			// This may not be set, so if its not set, we set it to 'false'
+			if(rawData.meta.r_resource.clone == true || rawData.meta.r_resource.clone == false) {
+				meta_clone = rawData.meta.r_resource.clone;
+			}
 		}
 		
 		// Gets the creation date of an asset

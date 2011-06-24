@@ -135,10 +135,16 @@ package View.components.AssetTile
 				for(var i:Number = 0; i < assetsToMatch.length; i++) {
 					
 					// Math.abs as the asset id is set to negative one if its copied from 'your files'
-					var assetID:Number = Math.abs((assetsToMatch[i] as Model_Media).base_asset_id);
+					var assetID:Number = (assetsToMatch[i] as Model_Media).base_asset_id;
 					trace("Asset In Edit", assetID);
 					if(assetID == this.assetData.base_asset_id) {
-						image.setRemoveOverlay();
+						// If we are making a new copy of the asset, we set it to say 'remove new'
+						// otherwise, it just says 'remove'
+						if(assetID < 0) {
+							image.setRemoveOverlay(true);
+						} else {
+							image.setRemoveOverlay(false);
+						}
 					}
 				}
 			} else {

@@ -37,6 +37,7 @@ package View
 		private var mySharingPanel:SharingPanel;	// The sharing panel
 		private var myAssetBrowserToolbar:AssetBrowserToolbar;
 		private var otherVGroup:VGroup;
+		private var commentCount:Number = 0;
 		
 		public function BrowserView()
 		{
@@ -295,6 +296,7 @@ package View
 		 * 
 		 */		
 		public function commentSaved(commentID:Number, commentText:String, newCommentObject:NewComment):void {
+			this.setCommentCount(commentCount + 1);
 			myCommentsPanel.commentSaved(commentID, commentText, newCommentObject);
 		}
 		
@@ -319,11 +321,12 @@ package View
 		
 		/**
 		 * Comment button says 'Comments (0)'. We have to set that number,
-		 * to be the number of comments. 
+		 * to be the number of comments. We save this number.
 		 * @param commentCount	The numbero f comments.
 		 * 
 		 */		
 		public function setCommentCount(commentCount:Number):void {
+			this.commentCount = commentCount;
 			myAssetBrowserToolbar.setCommentCount(commentCount);
 		}
 		

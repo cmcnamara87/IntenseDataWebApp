@@ -44,14 +44,14 @@ package Model.Transactions
 						var dataXML:XML = XML(e.target.data);
 						var assetID:Number = XML(e.target.data).reply.result.asset.@id;
 						var collectionName:String = XML(e.target.data).reply.result.asset.meta.r_resource.title;
-						trace("Collection is", collectionName, assetID);
+//						trace("Collection is", collectionName, assetID);
 						
 						// users in collection array
 						var userArray:Array = new Array();
 						for each(var share:XML in peopleCollectionList) {
-							trace("Checking user", share.username);
+//							trace("Checking user", share.username);
 							if(share.via_asset == assetID) {
-								trace("Adding user", share.username);
+//								trace("Adding user", share.username);
 								if(share.access_level == SharingPanel.READWRITE) {
 									userArray.push(share.username + " - Full Access");
 								} else {

@@ -45,6 +45,7 @@ package Module.AudioViewer {
 		
 		private function audioLoaded(e:Event):void {
 			duration = _audioFile.length/1000;
+			trace("Audio loaded here", duration);
 			dispatchEvent(new Event(Event.COMPLETE));
 		}
 		
@@ -55,6 +56,7 @@ package Module.AudioViewer {
 		}
 		
 		public function play():void {
+			trace("AudioFileLoader:play - Now playing AUDIO!!!!!!!!");
 			_audioChannel = _audioFile.play(time*1000);
 			_audioTimer.start();
 			_isPlaying = true;

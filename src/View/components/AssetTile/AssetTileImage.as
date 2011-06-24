@@ -64,6 +64,7 @@ package View.components.AssetTile
 			
 			// Get and fill the asset icon for this type of asset
 			icon = new BitmapFill();
+			icon.source = url;
 			icon.source = AssetLookup.getAssetImage(type);
 			this.backgroundFill = icon;
 			
@@ -97,12 +98,14 @@ package View.components.AssetTile
 		 */		
 		public function setAddOverlay():void {
 			// Setup Background
-			editingOverlay.backgroundFill = new SolidColor(0x000000, 0.7);
+			
 			overlayLabel.setStyle('color', 'white');
 			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
-				overlayLabel.text = "Copy New To " + BrowserController.PORTAL;	
+				overlayLabel.text = "Add New To " + BrowserController.PORTAL;
+				editingOverlay.backgroundFill = new SolidColor(0x00FF00, 0.7);
 			} else {
 				overlayLabel.text = "Add To " + BrowserController.PORTAL;
+				editingOverlay.backgroundFill = new SolidColor(0x000000, 0.7);
 			}
 			
 			// Make its alpha 0, so we can fade it in.
@@ -115,10 +118,14 @@ package View.components.AssetTile
 		 * Shows the overlay that says 'Remove'. Used when editing/creating a new collection 
 		 * Turned on/off by @see AssetTile
 		 */		
-		public function setRemoveOverlay():void {
+		public function setRemoveOverlay(makingCopy:Boolean):void {
 			editingOverlay.backgroundFill = new SolidColor(0xFF0000, 0.9);
 			overlayLabel.setStyle('color', 'black');
-			overlayLabel.text = "Remove";
+			if(makingCopy) {
+				overlayLabel.text = "Remove New";
+			} else {
+				overlayLabel.text = "Remove";
+			}
 			// Fade it out
 			Lib.it.transitions.Tweener.addTween(editingOverlay,{transition:"easeInOutCubic",time:0.2,alpha:1});
 		}
@@ -137,6 +144,7 @@ package View.components.AssetTile
 		}
 		
 		private function backgroundImageLoaded(e:Event):void {
+			trace("loaded some shit");
 			var myFill:BitmapFill = new BitmapFill();
 			myFill.source = loader.content as Bitmap
 			this.backgroundFill = myFill;

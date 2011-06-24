@@ -73,7 +73,7 @@ package View
 		private var deleteAssetButton:Button;
 		private var editDetailsButton:Button;
 		private var shareButton:Button;
-		private var peopleButton:IDButton;
+		private var viewsButton:IDButton;
 		private var annotationListButton:Button;
 		private var commentsButton:Button;
 		
@@ -81,6 +81,7 @@ package View
 		
 		public static var saveAnnotationFunction:Function;
 		
+		private var commentCount:Number = 0;
 		
 		// Can remove the save annotation function after redoing the modules, only there for dekkers code
 		public function MediaView(saveAnnotationFunction:Function)
@@ -158,9 +159,9 @@ package View
 //			shareButton.enabled = false;
 //			myToolbar.addElement(shareButton);
 			
-			peopleButton = new IDButton(BrowserController.PORTAL + 's');
-			peopleButton.enabled = false;
-			myToolbar.addElement(peopleButton);
+			viewsButton = new IDButton(BrowserController.PORTAL + 's');
+			viewsButton.enabled = false;
+			myToolbar.addElement(viewsButton);
 			
 			// Add annotations button
 			annotationListButton = IDGUI.makeButton('Annotation List');
@@ -191,6 +192,9 @@ package View
 			// Create the Panels
 			this.addPanels(viewerAndPanels);
 			
+			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
+				this.hideButtonsForPureAssetView();	
+			}
 			// Add Event Listeners
 			deleteAssetButton.addEventListener(MouseEvent.CLICK, deleteAssetButtonClicked);
 			addAnnotationButton.addEventListener(MouseEvent.CLICK, addAnnotationButtonClicked);
@@ -206,7 +210,7 @@ package View
 			backButton.addEventListener(MouseEvent.CLICK, backButtonClicked);
 			downloadButton.addEventListener(MouseEvent.CLICK, downloadButtonClicked);
 			
-			peopleButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
+			viewsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
 		}
 		
 		
@@ -262,7 +266,6 @@ package View
 			
 			// Enable the back button 
 			backButton.enabled = true;
-			downloadButton.enabled = true;
 			
 			// If we are the author, then the button should say 'delete'
 			// otherwise it will say remove
@@ -272,10 +275,33 @@ package View
 				deleteAssetButton.label = "Remove File";
 			}
 			
-			setupAccess();
+			setupButtonsAccess();
+			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
+				this.hideButtonsForPureAssetView();	
+			}
 		}
 		
-		private function setupAccess():void {
+		private function hideButtonsForPureAssetView():void {
+			// If we are looking through the 'your files' in the browser controller
+			// we only show the asset, no features, like annoattions etc
+			addAnnotationButton.visible = false;
+			addAnnotationButton.includeInLayout = false;
+			hideShowAnnotationButton.visible = false;
+			hideShowAnnotationButton.includeInLayout = false;
+			editDetailsButton.visible = false;
+			editDetailsButton.includeInLayout = false;
+			shareButton.visible = false;
+			shareButton.includeInLayout = false;
+			annotationListButton.visible = false;
+			annotationListButton.includeInLayout = false;
+			commentsButton.visible = false;
+			commentsButton.includeInLayout = false;
+			viewsButton.visible = false;
+			viewsButton.includeInLayout = false;
+		}
+		
+		private function setupButtonsAccess():void {
+			// Enable all the buttons since we have loaded the data now
 			editDetailsButton.enabled = true;
 			hideShowAnnotationButton.enabled = true;
 //			shareButton.enabled = true;
@@ -283,12 +309,13 @@ package View
 			shareButton.visible = false;
 			annotationListButton.enabled = true;
 			commentsButton.enabled = true;
-			peopleButton.enabled = true;
+			viewsButton.enabled = true;
 			
 			trace("- File access permissions:", mediaData.access_modify_content);
 			if(mediaData.access_modify_content) {
 				// We have modify access to the file, so we enable adding annotations
 				addAnnotationButton.enabled = true;
+				downloadButton.enabled = true;
 			}
 			
 			// The delete button should be enabled, provided its been shared via the asset
@@ -336,7 +363,11 @@ package View
 		public function addComments(commentsArray:Array):void {
 			trace("Adding Comments...");
 			myCommentsPanel.addComments(commentsArray);
-			commentsButton.label = "Comments (" + commentsArray.length + ")";
+			setCommentCount(commentsArray.length);
+		}
+		private function setCommentCount(count:Number):void {
+			this.commentCount = count;
+			commentsButton.label = "Comments (" + count + ")";
 		}
 		
 		public function addAnnotations(annotationsArray:Array):void {
@@ -345,7 +376,7 @@ package View
 			myAnnotationListPanel.addAnnotations(annotationsArray);
 			annotationListButton.label = "Annotation List (" + annotationsArray.length + ")";
 			// Add annotation to viewer
-			if(mediaViewer) {
+			if(mediaViewer && BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
 				mediaViewer.addAnnotations(annotationsArray);
 			}
 		}
@@ -362,6 +393,7 @@ package View
 		 * 
 		 */		
 		public function commentSaved(commentID:Number, commentText:String, newCommentObject:NewComment):void {
+			setCommentCount(commentCount + 1);
 			myCommentsPanel.commentSaved(commentID, commentText, newCommentObject);
 		}
 		
@@ -444,7 +476,7 @@ package View
 					mySharingPanel.width = Panel.DEFAULT_WIDTH;
 					mySharingPanel.visible = true;
 					break;
-				case peopleButton:
+				case viewsButton:
 					myPeoplePanel.width = Panel.DEFAULT_WIDTH;
 					myPeoplePanel.visible = true;
 					break;

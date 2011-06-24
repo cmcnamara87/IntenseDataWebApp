@@ -139,12 +139,12 @@ package Module.AudioViewer
 		private function audioLoaded(e:Event):void {
 			hideLoading();
 			trace("AUDIO LOADED HOORAY!!!");
-			_UIAnnotater.showAnnotationBars();
-			_isLoaded = true;
-			loadWave();
-			if(autoplay) {
+//			_UIAnnotater.showAnnotationBars();
+//			_isLoaded = true;
+//			loadWave();
+//			if(autoplay) {
 				togglePlay(true,true);
-			}
+//			}
 			resizeUI();
 			_UITimeline.resize();
 		}

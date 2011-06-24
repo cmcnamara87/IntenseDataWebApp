@@ -232,6 +232,9 @@ package View.components.MediaViewer.PDFViewer {
 		 * 
 		 */		
 		public function highlightFromCoordinates(startX:Number, startY:Number, finishX:Number, finishY:Number):void {
+			
+			var accuracy:Number = 1;
+			
 			trace("Highlighting start:", startX, startY, "end:", finishX, finishY);
 			
 			// We need to know which page we started highlighting on, and which page we finished on
@@ -254,8 +257,8 @@ package View.components.MediaViewer.PDFViewer {
 				
 				// Convert the x,y to an index number of hte text
 				trace("new x y", startX, startY - (startPage * pdfHeight));
-				var startTextIndex:Number = currentSnapshot.hitTestTextNearPos(startX, startY  - (startPage * pdfHeight), 10);
-				var endTextIndex:Number = currentSnapshot.hitTestTextNearPos(finishX, finishY - (startPage * pdfHeight), 10);
+				var startTextIndex:Number = currentSnapshot.hitTestTextNearPos(startX, startY  - (startPage * pdfHeight), accuracy);
+				var endTextIndex:Number = currentSnapshot.hitTestTextNearPos(finishX, finishY - (startPage * pdfHeight), accuracy);
 				
 				trace("indexes", startTextIndex, endTextIndex);
 				// Make sure we are highlighting the right way (in case people drag backwards etc)

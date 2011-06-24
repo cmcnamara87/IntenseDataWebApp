@@ -47,7 +47,6 @@ package Controller.Utilities {
 		private static var Loadericon:Class;
 		private static var Loadericon_data:BitmapData = (new Loadericon as Bitmap).bitmapData;
 		
-		
 		// Icon for Reply Button
 		[Embed(source="Assets/Template/reply_icon.png")]
 		private static var Buttonicon_reply:Class;
@@ -72,10 +71,11 @@ package Controller.Utilities {
 		private static var imagesSetup:Boolean = false;
 		
 		//File formats that can be uploaded
-		private static var allFilters:FileFilter = new FileFilter("All Accepted File Types", "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;*.mp3;*.wma;*.wavDocument;*.pdf;*.swf;");
+//		private static var allFilters:FileFilter = new FileFilter("All Accepted File Types", "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;*.mp3;*.wma;*.wavDocument;*.pdf;*.swf;");
+		private static var allFilters:FileFilter = new FileFilter("All Accepted File Types", "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;*.mp3;*.pdf;*.swf;");
 		private static var imageFilters:FileFilter = new FileFilter("Images (jpg, gif, png, jpeg)","*.jpg;*.gif;*.png;*.jpeg;*.bmp");
 		private static var videoFilters:FileFilter = new FileFilter("Video (mov, flv, mp4, avi, mpg, mpeg)","*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;");
-		private static var audioFilters:FileFilter = new FileFilter("Audio (mp3, wma, wav)","*.mp3;*.wma;*.wav");
+		private static var audioFilters:FileFilter = new FileFilter("Audio (mp3)","*.mp3;");
 		private static var documentFilters:FileFilter = new FileFilter("Document (pdf, swf)","*.pdf;*.swf");
 		
 		//Types of creative work types and subtypes
@@ -124,6 +124,7 @@ package Controller.Utilities {
 					type = 'video';
 					break;
 				case "audio/wav":
+				case "audio/x-wav":
 				case "audio/wma":
 				case 'audio/mp3':
 				case 'audio/mpeg':

@@ -50,7 +50,7 @@ package View.components.Panels.Sharing
 			super();
 
 			// Set heading on the panel
-			setHeading("Add People");
+			setHeading("Manage Viewers");
 
 			// Add the close button to the panel
 			var closeButton:Button = new Button();

@@ -159,7 +159,7 @@ package View.components.Panels.Comments
 			// get out if it was a reply
 			var isReply:Boolean = newCommentObject.isReply();
 			
-			// create a new comment
+			// create a new comment (not a newcomment lol)
 			addPanelItemAtIndex(new Comment(commentID, Auth.getInstance().getUsername(), commentText, isReply), positionOfComment);
 			
 			// remove the old one.
