@@ -108,7 +108,7 @@ package View.components.CollectionList
 			
 			// Add the 'All Assets' and 'Shared Assets' to the fixed collections part of the list.
 			fixedCollectionListItems.addElement(new CollectionListItemFixed(BrowserController.ALLASSETID, 
-				'Your Files', IDEvent.ASSET_COLLECTION_ALL_MEDIA));
+				'Your Original Files', IDEvent.ASSET_COLLECTION_ALL_MEDIA));
 			
 //			fixedCollectionListItems.addElement(new CollectionListItemFixed(BrowserController.SHAREDID, 
 //				'Shared With Me', IDEvent.ASSET_COLLECTION_SHARED_WITH_ME));

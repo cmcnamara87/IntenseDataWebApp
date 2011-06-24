@@ -44,7 +44,8 @@ package View.components.CollectionList
 			} else {
 				shared = false;
 			}
-			super(shared);
+			super(shared, collectionData.access_modify_content);
+			
 			
 			// List Label
 			setLabel(collectionData.meta_title);

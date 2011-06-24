@@ -111,7 +111,7 @@ package View.components.AssetBrowser
 			
 			// Add the Share Button
 //			shareButton = IDGUI.makeButton('Share ' + , false, false);
-			shareButton = IDGUI.makeButton('Manager Viewers', false, false);
+			shareButton = IDGUI.makeButton('Manage Viewers', false, false);
 			this.addElement(shareButton);
 			
 			// Add the Comments

@@ -9,6 +9,7 @@ package View.components.CollectionList
 	import View.components.PanelElement;
 	
 	import flash.events.MouseEvent;
+	import flash.events.TransformGestureEvent;
 	
 	import flashx.textLayout.formats.TextAlign;
 	
@@ -35,7 +36,7 @@ package View.components.CollectionList
 		/**
 		 * Creates a new collection list item for the collection list (in left sidebar)
 		 */		
-		public function CollectionListItem(shared:Boolean)
+		public function CollectionListItem(shared:Boolean, modify:Boolean)
 		{
 			// Setup the size
 			this.percentWidth = 100;
@@ -61,6 +62,11 @@ package View.components.CollectionList
 			myIcon.width = 21;
 			myIcon.height = 14;
 			this.addElement(myIcon);
+			
+			
+			if(!modify) {
+				myIcon.alpha = 0.5;
+			}
 			
 			// List Label
 			myLabel = new spark.components.Label();
