@@ -1,5 +1,7 @@
 package Model.Transactions
 {
+	import Controller.Utilities.Auth;
+	
 	import Model.AppModel;
 	import Model.Model_Media;
 	import Model.Utilities.Connection;
@@ -71,15 +73,31 @@ package Model.Transactions
 		}
 		
 		private function shareWithUser(e:Event=null):void {
+			
+			var shareUser:String = userShareCounts[currentUserIndex]["username"];
+			var shareAccessLevel:String = userShareCounts[currentUserIndex]["access_level"];
+
+			trace("Transaction_CopyCollectionAccess:shareWithUser - ", shareUser, shareAccessLevel);
+			
+			if(shareUser == Auth.getInstance().getUsername()) {
+				// we are about to remove access to the media, for the current user
+				// Dont remove access just yet
+				// this is because, if they only hve t access to the asset
+				// and then they remove it, they cant remove it for all the other people who have access to the collection as well
+				// and we get errors
+				currentUserIndex++;
+				
+				shareUser = userShareCounts[currentUserIndex]["username"];
+				shareAccessLevel = userShareCounts[currentUserIndex]["access_level"];
+				trace("Transaction_CopyCollectionAccess:shareWithUser Skipping current user - ", shareUser, shareAccessLevel);
+			}
 
 			mediaAssetCount = mediaAssetsIDs.length;
 			
 			for each(var mediaID:Number in mediaAssetsIDs) {
 				// For each media (since we can only be writing to it once, otherwise we get collisions)
 				// share it with a single user, then move onto the next user, when they all have completed
-				var shareUser:String = userShareCounts[currentUserIndex]["username"];
-				var shareViaAsset:Number = userShareCounts[currentUserIndex]["via_asset"];
-				var shareAccessLevel:String = userShareCounts[currentUserIndex]["access_level"];
+				
 				
 				if(removeAccess) {
 					var transaction:Transaction_ChangeAccess = new Transaction_ChangeAccess(connection);
@@ -88,7 +106,7 @@ package Model.Transactions
 					transaction = new Transaction_ChangeAccess(connection);
 					transaction.changeAccess(mediaID, collectionID, shareUser, "system", shareAccessLevel, false, mediaSharedWithUser);
 				}
-			}
+			}			
 		}
 		
 		private function mediaSharedWithUser(e:Event):void {
@@ -100,13 +118,25 @@ package Model.Transactions
 				
 				if(currentUserIndex == userShareCounts.length()) {
 					// we have finished sharing
-					trace("Transaction_CopyCollectionAccess:changeShareCount - Sharing Finished");
-					callback();
+					if(removeAccess) {
+						// now remove access for the current user, sicn all the other users are finished
+						for each(var mediaID:Number in mediaAssetsIDs) {
+							var transaction:Transaction_ChangeAccess = new Transaction_ChangeAccess(connection);
+							transaction.changeAccess(mediaID, collectionID, Auth.getInstance().getUsername(), "system", SharingPanel.NOACCESS, false, copyComplete);
+						}
+					} else {
+						copyComplete();
+					}
 				} else {
 					// Share it again for the enxt user
 					shareWithUser();
 				}
 			}
+		}
+		
+		private function copyComplete(e:Event = null):void {
+			trace("Transaction_CopyCollectionAccess:changeShareCount - Sharing Finished");
+			callback();
 		}
 	}
 }

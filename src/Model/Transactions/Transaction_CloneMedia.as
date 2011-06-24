@@ -1,7 +1,11 @@
 package Model.Transactions
 {
+	import Controller.Utilities.Auth;
+	
 	import Model.AppModel;
 	import Model.Utilities.Connection;
+	
+	import View.components.Panels.Sharing.SharingPanel;
 	
 	import flash.events.Event;
 
@@ -10,6 +14,7 @@ package Model.Transactions
 		private var connection:Connection; // The Mediaflux connection
 		private var mediaID:Number; // THe ID of the media to clone
 		private var callback:Function;
+		private var clonedMediaID:Number;
 		
 		public function Transaction_CloneMedia(connection:Connection)
 		{
@@ -66,25 +71,36 @@ package Model.Transactions
 				callback(-1);
 				return;
 			}
-			
-			var assetID:Number = XML(e.target.data).reply.result.id;
+
+			clonedMediaID = XML(e.target.data).reply.result.id;
 			
 			var args:Object = new Object();
 			var baseXML:XML = connection.packageRequest('asset.class.add',args,true);
 			baseXML.service.args["scheme"] = "recensio";
 			baseXML.service.args["class"] = "base/resource/media";
-			baseXML.service.args["id"] = assetID;
+			baseXML.service.args["id"] = clonedMediaID;
 			
-			connection.sendRequest(baseXML, function(e:Event):void {
+			connection.sendRequest(baseXML, classSet);
+		
+		}
+		
+		private function classSet(e:Event):void {
+			if(!AppModel.getInstance().callSuccessful(e)) {
+				trace("Transaction_CLoneMedia:classSet - Failed to set class", clonedMediaID, e.target.data);
+				callback(-1);
+				return;
+			}
+			
+			AppModel.getInstance().changeAccess(clonedMediaID, Auth.getInstance().getUsername(), "system", SharingPanel.READWRITE, false, function(e:Event):void {
 				if(!AppModel.getInstance().callSuccessful(e)) {
+					trace("Transaction_CLoneMedia:classSet - Failed to set creator access for", clonedMediaID, e.target.data);
 					callback(-1);
 					return;
 				}
-
-				trace("Transaction_CLoneMedia:assetCreated - Successfully Created", assetID);
-				callback(assetID);
+				
+				trace("Transaction_CLoneMedia:classSet - Access set successfully", clonedMediaID, e.target.data);
+				callback(clonedMediaID);
 			});
-		
 		}
 	}
 }

@@ -69,6 +69,7 @@ package Controller {
 			if(layout) {
 				if(layout.header.logoutButton) {
 					if(layout.header.logoutButton.hasEventListener(MouseEvent.MOUSE_UP)) {
+						layout.header.logoutButton.alpha = 0.5;
 						layout.header.logoutButton.removeEventListener(MouseEvent.MOUSE_UP,logoutClicked);
 					}
 				}
@@ -78,6 +79,7 @@ package Controller {
 		protected function addLogoutListener():void {
 			if(layout) {
 				if(layout.header.logoutButton) {
+					layout.header.logoutButton.alpha = 1;
 					layout.header.logoutButton.addEventListener(MouseEvent.MOUSE_UP,logoutClicked);
 				}
 			}

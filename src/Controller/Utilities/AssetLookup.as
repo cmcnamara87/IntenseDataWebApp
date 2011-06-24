@@ -39,7 +39,8 @@ package Controller.Utilities {
 		[Embed(source="Assets/Template/assets/document2.png")] 
 		private static var Asseticon_document:Class;
 		private static var Asseticon_document_data:BitmapData;
-		[Embed(source="Assets/Template/assets/collection.png")] 
+//		[Embed(source="Assets/Template/assets/collection.png")] 
+		[Embed(source="Assets/Template/assets/203.png")]
 		private static var Asseticon_collection:Class;
 		private static var Asseticon_collection_data:BitmapData;
 		

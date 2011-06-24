@@ -62,9 +62,9 @@ package Module.Videoviewer {
 			this.graphics.lineStyle(0,0xFFFFFF,0);
 			this.graphics.beginFill(0x000000,1);
 			this.graphics.drawRoundRect(-200,-140,400,100,8);
-			this.graphics.moveTo(-10,-40);
-			this.graphics.lineTo(0,-20);
-			this.graphics.lineTo(10,-40);
+//			this.graphics.moveTo(-10,-40);
+//			this.graphics.lineTo(0,-20);
+//			this.graphics.lineTo(10,-40);
 			
 			// Set annotation input text box
 			textInput.text = "";

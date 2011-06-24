@@ -1,7 +1,8 @@
 package Module.Videoviewer {
 	
-	import Controller.MediaController;
+	import Controller.BrowserController;
 	import Controller.IDEvent;
+	import Controller.MediaController;
 	
 	import View.MediaView;
 	import View.components.MediaViewer.MediaViewer;
@@ -100,8 +101,11 @@ package Module.Videoviewer {
 			_UI.timeline.delegate = this;
 			
 			// Listening for MouseDown/Up to create annotations
-			_screen.getOverlay().addEventListener(MouseEvent.MOUSE_DOWN,annotationCreationBegin);
-			_screen.getOverlay().addEventListener(MouseEvent.MOUSE_UP,annotationCreationEnd);
+			if(BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
+				// Only listen, if we arent looking at an original asset
+				_screen.getOverlay().addEventListener(MouseEvent.MOUSE_DOWN,annotationCreationBegin);
+				_screen.getOverlay().addEventListener(MouseEvent.MOUSE_UP,annotationCreationEnd);
+			}
 			
 			trace('overlay size ', _screen.getOverlay().width, _screen.getOverlay().height);
 			resizeUI();
