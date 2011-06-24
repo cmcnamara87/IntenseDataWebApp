@@ -133,6 +133,7 @@ package View.components.CollectionList
 			regularCollectionListItems.paddingRight = 10;
 			regularCollectionListItems.paddingTop = 10;
 			regularCollectionListItems.paddingBottom = 10;
+			regularCollectionListItems.gap = 13;
 
 			// Add the content group to the scroller
 			myScroller.viewport = regularCollectionListItems;

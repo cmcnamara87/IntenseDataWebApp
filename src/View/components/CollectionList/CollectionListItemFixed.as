@@ -35,7 +35,7 @@ package View.components.CollectionList
 		 */		
 		public function CollectionListItemFixed(fixedCollectionID:Number, collectionLabel:String, clickEventName:String)
 		{
-			super();
+			super(false);
 			this.fixedCollectionID = fixedCollectionID;
 			this.collectionLabel = collectionLabel;
 			this.clickEventName = clickEventName;

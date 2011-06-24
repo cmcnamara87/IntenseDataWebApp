@@ -2,6 +2,7 @@ package View.components.CollectionList
 {
 	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
+	import Controller.Utilities.Auth;
 	
 	import Model.Model_Collection;
 	
@@ -36,9 +37,14 @@ package View.components.CollectionList
 		 * 
 		 */		
 		public function CollectionListItemRegular(collectionData:Model_Collection) {
-			super();
-			
 			this.collectionData = collectionData;
+			
+			if(collectionData.base_creator_username != Auth.getInstance().getUsername()) {
+				var shared:Boolean = true;
+			} else {
+				shared = false;
+			}
+			super(shared);
 			
 			// List Label
 			setLabel(collectionData.meta_title);

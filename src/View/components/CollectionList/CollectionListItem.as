@@ -35,7 +35,7 @@ package View.components.CollectionList
 		/**
 		 * Creates a new collection list item for the collection list (in left sidebar)
 		 */		
-		public function CollectionListItem()
+		public function CollectionListItem(shared:Boolean)
 		{
 			// Setup the size
 			this.percentWidth = 100;
@@ -53,9 +53,13 @@ package View.components.CollectionList
 
 			// List Icon
 			var myIcon:Image = new Image();
-			myIcon.source = AssetLookup.getCollectionIconClass();
-			myIcon.width = 20;
-			myIcon.height = 20;
+			if(shared) {
+				myIcon.source = AssetLookup.getCollectionSharedIconClass();
+			} else {
+				myIcon.source = AssetLookup.getCollectionIconClass();
+			}
+			myIcon.width = 21;
+			myIcon.height = 14;
 			this.addElement(myIcon);
 			
 			// List Label

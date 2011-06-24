@@ -102,7 +102,7 @@ package View.components.AssetTile
 			overlayLabel.setStyle('color', 'white');
 			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
 				overlayLabel.text = "Add New To " + BrowserController.PORTAL;
-				editingOverlay.backgroundFill = new SolidColor(0x00FF00, 0.7);
+				editingOverlay.backgroundFill = new SolidColor(0x00BB00, 0.7);
 			} else {
 				overlayLabel.text = "Add To " + BrowserController.PORTAL;
 				editingOverlay.backgroundFill = new SolidColor(0x000000, 0.7);

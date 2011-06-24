@@ -44,6 +44,10 @@ package Controller.Utilities {
 		private static var Asseticon_collection:Class;
 		private static var Asseticon_collection_data:BitmapData;
 		
+		[Embed(source="Assets/Template/assets/204.jpg")]
+		private static var Asseticon_collection_shared:Class;
+		private static var Asseticon_collection_shared_data:BitmapData;
+		
 		[Embed(source="Assets/Template/loader.gif")] 
 		private static var Loadericon:Class;
 		private static var Loadericon_data:BitmapData = (new Loadericon as Bitmap).bitmapData;
@@ -177,6 +181,7 @@ package Controller.Utilities {
 				case 'collection':
 					return Asseticon_collection_data;
 					break;
+				
 			}
 			return Asseticon_image_data;
 		}
@@ -215,6 +220,9 @@ package Controller.Utilities {
 			return Asseticon_collection;
 		}
 		
+		public static function getCollectionSharedIconClass():Class {
+			return Asseticon_collection_shared;
+		}
 		public static function getLoadingIconClass():Class {
 			return Loadericon;
 		}
