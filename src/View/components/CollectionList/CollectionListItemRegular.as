@@ -4,6 +4,8 @@ package View.components.CollectionList
 	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
 	
+	import Lib.LoadingAnimation.LoadAnim;
+	
 	import Model.Model_Collection;
 	
 	import View.Element.Collection;

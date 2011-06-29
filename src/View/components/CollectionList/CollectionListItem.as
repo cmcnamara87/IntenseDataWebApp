@@ -3,6 +3,8 @@ package View.components.CollectionList
 	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
+	import Lib.LoadingAnimation.LoadAnim;
+	
 	import Model.Model_Collection;
 	
 	import View.Element.Collection;
@@ -26,13 +28,13 @@ package View.components.CollectionList
 	import spark.layouts.HorizontalLayout;
 	import spark.primitives.Rect;
 
-	public class CollectionListItem extends Group implements PanelElement
+	public class CollectionListItem extends BorderContainer implements PanelElement
 	{
 		private var myLabel:spark.components.Label; // The collection list label
 		private const LABEL_CHARACTER_LENGTH:Number = 28; 	// The number of characters of text the label can dsiplay
 															// Before it is chopped and '...' is appended.
-		
-		
+		private var myIcon:Image;
+		private var loaderIcon:LoadAnim;
 		/**
 		 * Creates a new collection list item for the collection list (in left sidebar)
 		 */		
@@ -40,6 +42,8 @@ package View.components.CollectionList
 		{
 			// Setup the size
 			this.percentWidth = 100;
+			
+			this.backgroundFill = new SolidColor(0xEEEEFF);
 			
 			// Setup the layout
 			var layout:HorizontalLayout = new HorizontalLayout();
@@ -53,26 +57,34 @@ package View.components.CollectionList
 			this.mouseChildren = false;
 
 			// List Icon
-			var myIcon:Image = new Image();
+			myIcon = new Image();
 			if(shared) {
 				myIcon.source = AssetLookup.getCollectionSharedIconClass();
 			} else {
 				myIcon.source = AssetLookup.getCollectionIconClass();
 			}
+			
 			myIcon.width = 21;
 			myIcon.height = 14;
 			this.addElement(myIcon);
 			
-			
 			if(!modify) {
 				myIcon.alpha = 0.5;
 			}
+
+			loaderIcon = new LoadAnim(0x000000);
+			loaderIcon.scaleX = 0.85;
+			loaderIcon.scaleY = 0.85;
+			loaderIcon.visible = false;
+			loaderIcon.includeInLayout = false;
+			this.addElement(loaderIcon);
 			
 			// List Label
 			myLabel = new spark.components.Label();
 			myLabel.setStyle('fontSize', 12);
 			this.addElement(myLabel);
 			// Label text is set in extended classes
+			
 		}
 		
 		// Sets the text for the label for this list item
@@ -82,6 +94,22 @@ package View.components.CollectionList
 				label = label.substr(0, LABEL_CHARACTER_LENGTH) + "...";
 			}
 			this.myLabel.text = label;
+		}
+		
+		public function showLoading():void {
+			myIcon.visible = false;
+			myIcon.includeInLayout = false;
+			loaderIcon.visible = true;
+			loaderIcon.includeInLayout = true;
+			loaderIcon.startAnim();
+		}
+		
+		public function hideLoading():void {
+			myIcon.visible = true;
+			myIcon.includeInLayout = true;
+			loaderIcon.visible = false;
+			loaderIcon.includeInLayout = false;
+			loaderIcon.stopAnim();
 		}
 		
 		public function setSelected():void {

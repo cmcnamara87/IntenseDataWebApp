@@ -112,8 +112,10 @@ package View.components.CollectionList
 			this.addElement(fixedCollectionListItems);
 			
 			// Add the 'All Assets' and 'Shared Assets' to the fixed collections part of the list.
-			fixedCollectionListItems.addElement(new CollectionListItemFixed(BrowserController.ALLASSETID, 
-				'Your Original Files', IDEvent.ASSET_COLLECTION_ALL_MEDIA));
+			var originalFileCollection:CollectionListItemFixed = new CollectionListItemFixed(BrowserController.ALLASSETID, 
+				'Your Original Files', IDEvent.ASSET_COLLECTION_ALL_MEDIA);
+			originalFileCollection.addEventListener(MouseEvent.CLICK, showLoadingOnClick);
+			fixedCollectionListItems.addElement(originalFileCollection);
 			
 //			fixedCollectionListItems.addElement(new CollectionListItemFixed(BrowserController.SHAREDID, 
 //				'Shared With Me', IDEvent.ASSET_COLLECTION_SHARED_WITH_ME));
@@ -186,10 +188,29 @@ package View.components.CollectionList
 //					newCollectionListItem.toolTip = newCollectionListItem.getCollectionName();
 					regularCollectionListItems.addElement(newCollectionListItem);	
 				//} 
+					
+					
+					
+					
+					
+					newCollectionListItem.addEventListener(MouseEvent.CLICK, showLoadingOnClick);
 				
 			}
 		}
 
+		public function hideAllLoadingAnimations():void {
+			for(var i:Number = 0; i < regularCollectionListItems.numElements; i++) {
+				(regularCollectionListItems.getElementAt(i) as CollectionListItem).hideLoading();
+			}
+			for(i = 0; i < fixedCollectionListItems.numElements; i++) {
+				(fixedCollectionListItems.getElementAt(i) as CollectionListItem).hideLoading();
+			}
+		}
+		
+		private function showLoadingOnClick(e:MouseEvent):void {
+			hideAllLoadingAnimations();
+			(e.target as CollectionListItem).showLoading();
+		}
 		
 		public function updateNewCollectionButton():void {
 			mediaCount = BrowserController.getShelfAssets().length;

@@ -147,6 +147,7 @@ package View
 		 * 
 		 */		
 		public function addMediaAssets(assetArray:Array):void {
+			myCollectionList.hideAllLoadingAnimations();
 			myAssetBrowser.addMediaAssets(assetArray);
 		}
 		

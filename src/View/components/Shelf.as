@@ -136,6 +136,7 @@ package View.components
 		public function enableButtons():void {
 			collectionTextInput.enabled = true;
 			saveButton.enabled = true;
+			clearButton.enabled = true;
 			closeButton.enabled = true;
 		}
 		
@@ -160,6 +161,7 @@ package View.components
 				
 				collectionTextInput.enabled = false;
 				saveButton.enabled = false;
+				clearButton.enabled = false;
 				closeButton.enabled = false;
 				
 				this.dispatchEvent(clickEvent);

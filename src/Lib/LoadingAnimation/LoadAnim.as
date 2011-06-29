@@ -25,25 +25,25 @@ package Lib.LoadingAnimation {
 		private var _animColor	:Number;
 		private var _zoom		:Number = 1;
 		
-		public static function show(parent:*,xPos:Number=0,yPos:Number=0,color:Number=0x000000,zoom:Number=0):void {
-			if(_instance) {
-				_instance._animColor = color;
-			} else {
-				_instance = new LoadAnim(color,new SingletonEnforcer());
-			}
-			_parent = parent;
-			_instance._zoom = zoom;
-			_instance.x = xPos;
-			_instance.y = yPos;
-			_parent.addElement(_instance);
-			trace("LoadAnim:show - Adding element");
-//			if(parent.addElement) {
-//				trace("LoadAnim:show - Adding element");
-//				_parent.addElement(_instance);
+//		public static function show(parent:*,xPos:Number=0,yPos:Number=0,color:Number=0x000000,zoom:Number=0):void {
+//			if(_instance) {
+//				_instance._animColor = color;
 //			} else {
-//				_parent.addChild(_instance);
+//				_instance = new LoadAnim(color,new SingletonEnforcer());
 //			}
-		}
+//			_parent = parent;
+//			_instance._zoom = zoom;
+//			_instance.x = xPos;
+//			_instance.y = yPos;
+//			_parent.addElement(_instance);
+//			trace("LoadAnim:show - Adding element");
+////			if(parent.addElement) {
+////				trace("LoadAnim:show - Adding element");
+////				_parent.addElement(_instance);
+////			} else {
+////				_parent.addChild(_instance);
+////			}
+//		}
 		
 		public static function hide():void {
 			if(_instance) {
@@ -58,30 +58,40 @@ package Lib.LoadingAnimation {
 			}
 		}
 		
-		public function LoadAnim(color:Number = 0xFFFFFF,singletonEnforcer:SingletonEnforcer=null) 
+//		public function LoadAnim(color:Number = 0xFFFFFF,singletonEnforcer:SingletonEnforcer=null)
+		public function LoadAnim(color:Number = 0xFFFFFF)
 		{
-			if(!singletonEnforcer) {
-				trace("ERROR BAD SINGLETON ON ANIMATION");
-			} else {
+//			if(!singletonEnforcer) {
+//				trace("ERROR BAD SINGLETON ON ANIMATION");
+//			} else {
 				_animColor = color;
 				_anim = new Sprite();
+//				_anim.height = 30;
+//				_anim.width = 30;
+				this.height = 20;
+				this.width = 20;
+				_anim.x = this.width / 2;
+				_anim.y = this.height / 2;
 				addChild(_anim);
 				makeAnim();
-			}
+//			}
 		}
 		public function stopAnim():void
 		{
-			removeChild(_anim);
+//			this.removeChild(_anim);
 			_animTimer.removeEventListener(TimerEvent.TIMER, rotateMe);
 			_animTimer.stop();
+		}
+		public function startAnim():void {
+			_animTimer = new Timer(70);
+			_animTimer.addEventListener(TimerEvent.TIMER, rotateMe);
+			_animTimer.start();
 		}
 		private function makeAnim():void
 		{
 			renderAnime();
-			
 			_animTimer = new Timer(70);
 			_animTimer.addEventListener(TimerEvent.TIMER, rotateMe);
-			_animTimer.start();
 			
 		}
 		private function rotateMe(evt:TimerEvent):void
@@ -124,4 +134,4 @@ package Lib.LoadingAnimation {
 	}
 }
 
-class SingletonEnforcer { }
+//class SingletonEnforcer { }
