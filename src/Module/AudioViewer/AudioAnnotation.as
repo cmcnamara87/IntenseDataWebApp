@@ -21,6 +21,7 @@ package Module.AudioViewer
 		static private var colourChosen:Number = 0;
 		static private var levelSpace:Number = -8;
 		
+		
 		public static var isBeingMouseOvered:Boolean = false;
 		
 		
@@ -76,7 +77,7 @@ package Module.AudioViewer
 					}
 				}
 				annotationsArray[i].yLevel = yLevel;
-				annotationsArray[i].draw(audioLength,interfaceWidth,xOffset,yOffset+yLevel*levelSpace);
+				annotationsArray[i].draw(audioLength,interfaceWidth,xOffset, yOffset+yLevel*levelSpace);
 				(annotationsArray[i] as DisplayObject).parent.setChildIndex(annotationsArray[i],0);
 				currentAnnotations.push(annotationsArray[i]);
 			}

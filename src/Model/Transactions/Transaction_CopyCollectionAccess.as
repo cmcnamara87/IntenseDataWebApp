@@ -79,13 +79,20 @@ package Model.Transactions
 
 			trace("Transaction_CopyCollectionAccess:shareWithUser - ", shareUser, shareAccessLevel);
 			
-			if(shareUser == Auth.getInstance().getUsername()) {
+			if(removeAccess && shareUser == Auth.getInstance().getUsername()) {
 				// we are about to remove access to the media, for the current user
 				// Dont remove access just yet
 				// this is because, if they only hve t access to the asset
 				// and then they remove it, they cant remove it for all the other people who have access to the collection as well
 				// and we get errors
 				currentUserIndex++;
+				
+				if(currentUserIndex == userShareCounts.length()) {
+					mediaAssetCount = 1;
+					currentUserIndex--;
+					mediaSharedWithUser();
+					return;
+				}
 				
 				shareUser = userShareCounts[currentUserIndex]["username"];
 				shareAccessLevel = userShareCounts[currentUserIndex]["access_level"];
@@ -109,7 +116,7 @@ package Model.Transactions
 			}			
 		}
 		
-		private function mediaSharedWithUser(e:Event):void {
+		private function mediaSharedWithUser(e:Event = null):void {
 			mediaAssetCount--;
 			if(mediaAssetCount == 0) {
 				// All the assets have been successfully shared, and have come back

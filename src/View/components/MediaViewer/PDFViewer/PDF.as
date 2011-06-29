@@ -209,7 +209,7 @@ package View.components.MediaViewer.PDFViewer {
 		
 		/* =============== ANNOTATION STUFF ============ */
 		/**
-		 * Highlights or unhighlights text from text indexes 
+		 * Highlights or unhighlights text from text indexes (NOTE - DOES NOT NOT WORK MULTIPLE PAGES CURRENTLY, EVEN THOUGH IT CAN TAKE THE ARGUMENTS)
 		 * @param page1				The page to start highlighting on (the indexes are per page, not for the whole document, e.g.
 		 * 							page 2 + index 10-30, is 10-30 on that page, not 10-30 on the whole document
 		 * @param startTextIndex	The index where to start highlighting from on the page
@@ -220,6 +220,7 @@ package View.components.MediaViewer.PDFViewer {
 		 */		
 		public function highlightFromIndexes(page1:Number, startTextIndex:Number, finishTextIndex:Number, highlight:Boolean, page2:Number=0):void {
 			var currentSnapshot:TextSnapshot = textSnapshotArray[page1] as TextSnapshot;
+			currentSnapshot.setSelectColor(0xFFE482);
 			currentSnapshot.setSelected(startTextIndex, finishTextIndex, highlight);
 		}
 		

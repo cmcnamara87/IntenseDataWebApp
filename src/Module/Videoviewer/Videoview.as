@@ -312,15 +312,16 @@ package Module.Videoviewer {
 			loadAnnotations(annotations);
 		}
 		
+		override public function highlightAnnotation(assetID:Number):void {
+			VideoAnnotation.highlightAnnotation(assetID);
+		}
+		override public function unhighlightAnnotation(assetID:Number):void {
+			VideoAnnotation.unhighlightAnnotation(assetID);
+		}
+		
 		public function loadAnnotations(data:Array):void {
-			//trace("***");
-			//trace(data);
-			for(var i:Number=0; i<data.length; i++) {
-				//trace(data[i].base_asset_id);
-			}
 			_screen.clearOverlay();
 			_UI.timeline.addAnnotations(data,_screen.getOverlay());
-			//trace("***");
 		}
 		
 		public function setVideoTime(newTime:Number):void {

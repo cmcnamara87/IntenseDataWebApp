@@ -85,9 +85,13 @@ package Module.AudioViewer {
 		}
 		
 		public function setVolume(newVolume:Number):void {
-			_audioTransform = _audioChannel.soundTransform;
-			_audioTransform.volume = newVolume;
-			_audioChannel.soundTransform = _audioTransform;
+			try {
+				_audioTransform = _audioChannel.soundTransform;
+				_audioTransform.volume = newVolume;
+				_audioChannel.soundTransform = _audioTransform;
+			} catch(e:Error) {
+				trace("Cannot change volume");
+			}
 		}
 		
 		

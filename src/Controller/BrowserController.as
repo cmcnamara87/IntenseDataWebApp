@@ -91,7 +91,7 @@ package Controller {
 			editOn = false;
 			shelfOn = false;
 			currentCollectionAssets = new Array();
-			shelfAssets = new Array();
+//			shelfAssets = new Array();
 			editAssets = new Array();
 		}
 		
@@ -103,6 +103,7 @@ package Controller {
 			// Obviously there are none there when we start
 			// but this is for when we come back from viewing an asset etc
 			reAddAssetsToShelf();
+			
 			
 			// Load the collections for the sidebar
 			refreshCollectionList()
@@ -314,7 +315,6 @@ package Controller {
 			var cleanAssets:Array = new Array();
 			
 			for each(var asset:Model_Media in assets) {
-				trace("is asset", asset.base_asset_id, "a clone", asset.meta_clone)
 				if(asset.meta_clone == false && asset.base_creator_username == Auth.getInstance().getUsername()) {
 					cleanAssets.push(asset);
 				} 
@@ -357,6 +357,8 @@ package Controller {
 //			}
 			currentView.addCollections(collections);
 			currentView.highlightCollectionListItem(currentCollectionID);
+			
+			currentView.updateNewCollectionButton();
 			//LoadAnim.hide();
 		}
 		
@@ -710,6 +712,10 @@ package Controller {
 					trace('Adding asset to shelf', assetData.base_asset_id);
 					currentView.addAssetToShelf(assetData);
 				}
+				
+				// Changes the number on the "New Collection" button
+				currentView.updateNewCollectionButton();
+				
 				return;
 			} else if (getEditOn()) {
 				// Edit is on, so lets check if we have already added this item to the editAssets, and its there remove it
@@ -764,6 +770,7 @@ package Controller {
 					trace('Removing asset from shelf', assetData.base_asset_id);
 					currentView.removeAssetFromShelf(assetData.base_asset_id);
 				}
+				currentView.updateNewCollectionButton();
 			}
 			
 		}

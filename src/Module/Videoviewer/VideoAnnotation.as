@@ -1,5 +1,8 @@
 package Module.Videoviewer {
 	
+	import Model.Model_Commentary;
+	import Model.Model_Media;
+	
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
@@ -32,6 +35,39 @@ package Module.Videoviewer {
 		static public function showhide(newPosition:Number):void {
 			for(var i:Number=0; i<annotationsArray.length; i++) {
 				annotationsArray[i].showhide(newPosition);
+			}
+		}
+		
+		/**
+		 * Highlights an annotation in the timeline (Only in the timeline, does not
+		 * display actual annotaiton drawing.)
+		 * 
+		 * Changes the opacity of the fill to be more solid. 
+		 * @param annotatationID	The ID of the annotation to highlight
+		 * 
+		 */		
+		public static function highlightAnnotation(annotatationID:Number):void {
+			for each(var videoAnnotation:VideoAnnotation in annotationsArray) {
+				if ((videoAnnotation._data as Model_Commentary).base_asset_id == annotatationID) {
+					videoAnnotation._timelineGraphicFill.alpha = 0.8;
+					break;
+				}
+			}
+		}
+		
+		/**
+		 * Removes the highlight on an annotation in the timeline
+		 * 
+		 * Changes the opacity of the fill to be more transparent. 
+		 * @param annotatationID	The ID annotation to unhighlight
+		 * 
+		 */		
+		public static function unhighlightAnnotation(annotatationID:Number):void {
+			for each(var videoAnnotation:VideoAnnotation in annotationsArray) {
+				if ((videoAnnotation._data as Model_Commentary).base_asset_id == annotatationID) {
+					videoAnnotation._timelineGraphicFill.alpha = 0.1;
+					break;
+				}
 			}
 		}
 		

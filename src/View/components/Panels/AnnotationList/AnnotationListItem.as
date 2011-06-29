@@ -3,6 +3,7 @@ package View.components.Panels.AnnotationList
 	//	import Model.Model_Annotation;
 	
 	import Controller.IDEvent;
+	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
 	
 	import View.components.PanelElement;
@@ -14,7 +15,7 @@ package View.components.Panels.AnnotationList
 	
 	import mx.containers.Canvas;
 	import mx.controls.Alert;
-	import mx.controls.Label;
+	import mx.controls.Image;
 	import mx.events.CloseEvent;
 	import mx.graphics.SolidColorStroke;
 	
@@ -60,14 +61,32 @@ package View.components.Panels.AnnotationList
 			this.paddingTop = 10;
 			this.paddingBottom = 10;
 			
+			var usernameAndIcon:HGroup = new HGroup();
+			usernameAndIcon.percentWidth = 100;
+			this.addElement(usernameAndIcon);
+			
 			var username:spark.components.Label = new spark.components.Label();
 			// Get the Capitalised first letter of hte username (should be persons name, but whatever)
-			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1) + " (" + annotationType + ")";
+			
+			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1);
 			username.percentWidth = 100;
 			username.setStyle('color', 0x1F65A2);
 			username.setStyle('fontWeight', 'bold');
-			this.addElement(username);
+			usernameAndIcon.addElement(username);
 			
+			if(annotationType == "highlight") {
+				var icon:Image = new Image();
+				icon.source = AssetLookup.getPostItIconClass();
+				icon.height = 15;
+				icon.width = 15;
+				usernameAndIcon.addElement(icon);
+			} else {
+				var annotationTypeLabel:spark.components.Label = new Label();
+				annotationTypeLabel.text = annotationType.substr(0,1).toUpperCase() + annotationType.substr(1);
+				annotationTypeLabel.setStyle('color', 0x1F65A2);
+				annotationTypeLabel.setStyle('fontWeight', 'bold');
+				usernameAndIcon.addElement(annotationTypeLabel);
+			}
 			var comment:spark.components.Label = new spark.components.Label();
 			comment.text = annotationText;
 			comment.percentWidth = 100;

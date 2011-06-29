@@ -1,11 +1,14 @@
 package View.components.Annotation
 {
 	import Controller.IDEvent;
+	import Controller.Utilities.AssetLookup;
 	
 	import View.components.MediaViewer.PDFViewer.PDF;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	
+	import mx.graphics.BitmapFill;
 	
 	import spark.components.BorderContainer;
 
@@ -36,19 +39,23 @@ package View.components.Annotation
 			this.pdf = pdf;
 			
 			// Setup size
-			this.height = 10;
-			this.width = 10
+			this.height = 15;
+			this.width = 15;
 			
 			// Setup position
 			this.x = this.xCoor;
 			this.y = this.yCoor;
 			
 			// Setup color
-			this.setStyle('backgroundColor',0x00AA00);
-			this.setStyle('backgroundAlpha', 0.3); 
-			this.setStyle('borderStyle', 'solid');
-			this.setStyle('borderColor', 0x00AA00);
+			var icon:BitmapFill = new BitmapFill();
+			icon.source = AssetLookup.getPostItIcon();
+			this.backgroundFill = icon;
 			
+//			this.setStyle('backgroundColor',0x00AA00);
+//			this.setStyle('backgroundAlpha', 0.3); 
+//			this.setStyle('borderStyle', 'solid');
+//			this.setStyle('borderColor', 0x00AA00);
+			this.setStyle('borderVisible', false);
 			// This is so the mouse events work correctly
 			// otherwise it picks up the 'bordercontainerskin' class instead of
 			// this Annotation class.

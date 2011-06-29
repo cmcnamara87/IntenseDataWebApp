@@ -41,12 +41,16 @@ package Controller.Utilities {
 		private static var Asseticon_document_data:BitmapData;
 //		[Embed(source="Assets/Template/assets/collection.png")] 
 		[Embed(source="Assets/Template/assets/203.png")]
+		private static var Asseticon_collection_shared:Class;
+		private static var Asseticon_collection_shared_data:BitmapData;
+		
+		[Embed(source="Assets/Template/assets/204.jpg")]
 		private static var Asseticon_collection:Class;
 		private static var Asseticon_collection_data:BitmapData;
 		
-		[Embed(source="Assets/Template/assets/204.jpg")]
-		private static var Asseticon_collection_shared:Class;
-		private static var Asseticon_collection_shared_data:BitmapData;
+		[Embed(source="Assets/Template/postit_icon1.png")]
+		private static var Postit_icon:Class;
+		private static var Postit_icon_data:BitmapData = (new Postit_icon as Bitmap).bitmapData;
 		
 		[Embed(source="Assets/Template/loader.gif")] 
 		private static var Loadericon:Class;
@@ -225,6 +229,13 @@ package Controller.Utilities {
 		}
 		public static function getLoadingIconClass():Class {
 			return Loadericon;
+		}
+		
+		public static function getPostItIconClass():Class {
+			return Postit_icon;
+		}
+		public static function getPostItIcon():BitmapData {
+			return Postit_icon_data;
 		}
 		
 		/**

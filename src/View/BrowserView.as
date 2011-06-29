@@ -196,12 +196,15 @@ package View
 		 */		
 		public function showShelf():void {
 			// Resize the browser/shelf
-			// Make browser and shelf 50-50
+			// Make browser and shelf 50-50 respectively
 			otherVGroup.percentHeight = 55;
+			
 			myAssetBrowser.refreshMediaAssetsDisplay();
 			
 			myAssetBrowser.lockReadOnlyFiles();
 			
+			myAssetBrowserToolbar.disableUpload();
+				
 			myShelf.percentHeight = 45;
 			myShelf.refreshMediaAssetsDisplay();
 			myShelf.enableButtons();
@@ -218,6 +221,8 @@ package View
 			otherVGroup.percentHeight = 100;
 			
 			myAssetBrowser.unlockFiles();
+			
+			myAssetBrowserToolbar.enableUpload();
 			
 			// Pop both the buttons that could be down, up.
 			myCollectionList.unsetCreateCollectionButton();
@@ -268,6 +273,10 @@ package View
 			myShelf.removeMediaAsset(assetID);
 			myAssetBrowser.updateAssetTile(assetID);
 			
+		}
+		
+		public function updateNewCollectionButton():void {
+			myCollectionList.updateNewCollectionButton();
 		}
 		
 		/**

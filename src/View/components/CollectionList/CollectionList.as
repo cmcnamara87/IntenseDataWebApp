@@ -40,6 +40,11 @@ package View.components.CollectionList
 		private var createCollectionButton:ToggleButton // The create collection button
 		private var searchInput:TextInput; // The search input text box for the panel
 		private const PLACEHOLDERTEXT:String = "Search";
+		private const BUTTON_TEXT_REGULAR:String =  "New " + BrowserController.PORTAL;
+		private const BUTTON_TEXT_CLICKED:String = "Hide New " + BrowserController.PORTAL;
+		private var newButtonText:String = BUTTON_TEXT_REGULAR; // Stores the label for the new collection button
+		private var mediaCount:Number = 0; // Stores the number of assets currently on the shelf
+		
 		/**
 		 * The collection list sits on the left side on the main asset browser 
 		 * and shows all the collections the user has.
@@ -80,7 +85,7 @@ package View.components.CollectionList
 			// Add 'Create Collection' Button
 			// Add the Shelf Button
 			createCollectionButton = new ToggleButton();
-			createCollectionButton.label = "New " + BrowserController.PORTAL;
+			setButtonLabel();
 			createCollectionButton.selected = false;
 			createCollectionButton.percentHeight = 100;
 			myToolbar.addElement(createCollectionButton);
@@ -185,6 +190,12 @@ package View.components.CollectionList
 			}
 		}
 
+		
+		public function updateNewCollectionButton():void {
+			mediaCount = BrowserController.getShelfAssets().length;
+			setButtonLabel();
+		}
+		
 		/**
 		 * When we are in edit mode, any collection that is 'read only' should not be able to be accessed
 		 */		
@@ -257,7 +268,8 @@ package View.components.CollectionList
 		 */		
 		public function unsetCreateCollectionButton():void {
 			createCollectionButton.selected = false;
-			createCollectionButton.label = "New " + BrowserController.PORTAL;
+			newButtonText = BUTTON_TEXT_REGULAR;
+			setButtonLabel();
 		}
 		
 		
@@ -273,9 +285,12 @@ package View.components.CollectionList
 			
 			// Change the button label to say 'hide collection' if its selected
 			if(createCollectionButton.selected) {
-				createCollectionButton.label = "Hide New " + BrowserController.PORTAL;
+				newButtonText = BUTTON_TEXT_CLICKED;
+				updateNewCollectionButton();
 			} else {
-				createCollectionButton.label = "New " + BrowserController.PORTAL;
+				trace("button clicked");
+				newButtonText = BUTTON_TEXT_REGULAR;
+				updateNewCollectionButton();
 			}
 			
 			var clickEvent:IDEvent = new IDEvent(IDEvent.SHELF_CLICKED, true);
@@ -284,6 +299,13 @@ package View.components.CollectionList
 			this.dispatchEvent(clickEvent);
 		}
 		
+		private function setButtonLabel():void {
+			trace("setting button label", newButtonText + " (" + mediaCount + ")");
+			createCollectionButton.label = newButtonText;
+			if(mediaCount > 0) {
+				createCollectionButton.label = newButtonText + " (" + mediaCount + ")";
+			}
+		}
 		private function searchInputHasFocus(e:FocusEvent):void {
 			if(searchInput.text == PLACEHOLDERTEXT) {
 				searchInput.text = "";

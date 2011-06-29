@@ -184,6 +184,16 @@ package View.components.AssetBrowser
 			deleteButton.enabled = true;
 		}
 		
+		
+		public function disableUpload():void {
+			uploadNewAssetButton.enabled = false;
+		}
+		
+		public function enableUpload():void {
+			uploadNewAssetButton.enabled = true;
+		}
+		
+		
 		/**
 		 * Shows all buttons on the toolbar. Used for regular collections. 
 		 * 

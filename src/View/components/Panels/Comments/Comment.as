@@ -5,6 +5,7 @@ package View.components.Panels.Comments
 	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
+	import View.Layout;
 	import View.components.PanelElement;
 	
 	import flash.events.MouseEvent;
@@ -15,6 +16,7 @@ package View.components.Panels.Comments
 	import mx.controls.Alert;
 	import mx.core.UIComponent;
 	import mx.events.CloseEvent;
+	import mx.graphics.SolidColor;
 	import mx.graphics.SolidColorStroke;
 	
 	import spark.components.BorderContainer;
@@ -23,6 +25,7 @@ package View.components.Panels.Comments
 	import spark.components.Label;
 	import spark.components.RichText;
 	import spark.components.VGroup;
+	import spark.layouts.VerticalLayout;
 	import spark.primitives.Line;
 
 	public class Comment extends VGroup implements PanelElement
@@ -45,6 +48,7 @@ package View.components.Panels.Comments
 		public function Comment(assetID:Number, creator:String, commentText:String, reply:Boolean)
 		{
 			super();
+
 			this.assetID = assetID;
 			this.reply = reply;
 			this.creator = creator;

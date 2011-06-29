@@ -1,6 +1,11 @@
 package Module.AudioViewer
 {
+	import Controller.BrowserController;
+	
 	import Lib.gfx.Raster;
+	
+	import Module.AudioViewer.AudioNewAnnotation;
+	import Module.AudioViewer.AudioView;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -13,8 +18,6 @@ package Module.AudioViewer
 	
 	import mx.containers.VBox;
 	import mx.core.UIComponent;
-	import Module.AudioViewer.AudioNewAnnotation;
-	import Module.AudioViewer.AudioView;
 
 	public class AudioAnnotateWave extends VBox
 	{
@@ -57,7 +60,10 @@ package Module.AudioViewer
 		public function AudioAnnotateWave()
 		{
 			super();
-			this.addEventListener(MouseEvent.MOUSE_DOWN,startAnnotation);
+			if(BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
+				// If we are looking at the original files, dont listen for drawing annotations
+				this.addEventListener(MouseEvent.MOUSE_DOWN,startAnnotation);
+			}
 			this.addEventListener(Event.ADDED_TO_STAGE,loadView);
 			this.addEventListener(Event.RESIZE,resize);
 		}

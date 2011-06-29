@@ -59,7 +59,7 @@ package View.components.Panels.Sharing
 			
 			// Create the checkbox for  read access
 			readCheckbox = new CheckBox();
-			readCheckbox.label = "View";
+			readCheckbox.label = "Read";
 			readCheckbox.selected = readAccess;
 			this.addElement(readCheckbox);
 			

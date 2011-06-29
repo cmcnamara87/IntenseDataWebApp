@@ -81,6 +81,7 @@ package View.components.AssetBrowser
 		public function unlockFiles():void {
 			myAssetDisplayer.unlockFiles();
 		}
+		
 		/**
 		 * Updates a specific asset tile. This is called when we want to display
 		 * either the 'Add' or 'Remove' when using the shelf. Calling 'update'
