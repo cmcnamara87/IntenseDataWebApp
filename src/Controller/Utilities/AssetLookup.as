@@ -44,7 +44,7 @@ package Controller.Utilities {
 		private static var Asseticon_collection_shared:Class;
 		private static var Asseticon_collection_shared_data:BitmapData;
 		
-		[Embed(source="Assets/Template/assets/204.jpg")]
+		[Embed(source="Assets/Template/assets/204.png")]
 		private static var Asseticon_collection:Class;
 		private static var Asseticon_collection_data:BitmapData;
 		

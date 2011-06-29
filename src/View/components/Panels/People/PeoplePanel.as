@@ -45,7 +45,7 @@ package View.components.Panels.People
 				if(assetID == collectionID) {
 //					content.addElement(new CollectionHeading(collectionName, "File"));
 				} else {
-					content.addElement(new CollectionHeading(collectionName));
+					content.addElement(new CollectionHeading(collectionID, collectionName));
 					
 					for(var i:Number = 0; i < collection[2].length; i++) {
 						var usernameAndAccess:String = collection[2][i];

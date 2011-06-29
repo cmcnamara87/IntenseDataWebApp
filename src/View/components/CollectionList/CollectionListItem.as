@@ -1,5 +1,6 @@
 package View.components.CollectionList
 {
+	import Controller.BrowserController;
 	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
@@ -8,6 +9,7 @@ package View.components.CollectionList
 	import Model.Model_Collection;
 	
 	import View.Element.Collection;
+	import View.components.GoodBorderContainer;
 	import View.components.PanelElement;
 	
 	import flash.events.MouseEvent;
@@ -28,10 +30,10 @@ package View.components.CollectionList
 	import spark.layouts.HorizontalLayout;
 	import spark.primitives.Rect;
 
-	public class CollectionListItem extends BorderContainer implements PanelElement
+	public class CollectionListItem extends GoodBorderContainer implements PanelElement
 	{
 		private var myLabel:spark.components.Label; // The collection list label
-		private const LABEL_CHARACTER_LENGTH:Number = 28; 	// The number of characters of text the label can dsiplay
+		private const LABEL_CHARACTER_LENGTH:Number = 27; 	// The number of characters of text the label can dsiplay
 															// Before it is chopped and '...' is appended.
 		private var myIcon:Image;
 		private var loaderIcon:LoadAnim;
@@ -40,15 +42,18 @@ package View.components.CollectionList
 		 */		
 		public function CollectionListItem(shared:Boolean, modify:Boolean)
 		{
+			super(0xFFFFFF, 1);
 			// Setup the size
 			this.percentWidth = 100;
-			
-			this.backgroundFill = new SolidColor(0xEEEEFF);
 			
 			// Setup the layout
 			var layout:HorizontalLayout = new HorizontalLayout();
 			layout.verticalAlign = "middle";
 			layout.gap = 10;
+			layout.paddingBottom = 10;
+			layout.paddingLeft = 10;
+			layout.paddingRight = 10;
+			layout.paddingTop = 10;
 			this.layout = layout;
 			
 			// Setup hand cursor
@@ -76,6 +81,7 @@ package View.components.CollectionList
 			loaderIcon.scaleX = 0.85;
 			loaderIcon.scaleY = 0.85;
 			loaderIcon.visible = false;
+			loaderIcon.toolTip = "Grabbing the latest version from the database";
 			loaderIcon.includeInLayout = false;
 			this.addElement(loaderIcon);
 			
@@ -114,11 +120,13 @@ package View.components.CollectionList
 		
 		public function setSelected():void {
 			// Make this collection bold
-			this.setStyle('fontWeight', 'bold');
+			super.setBackground(0xF2F9FF, 1);
+//			this.setStyle('fontWeight', 'bold');
 		}
 		
 		public function unSelect():void {
-			this.setStyle('fontWeight', 'normal');
+			super.setBackground(0xFFFFFF, 1);
+//			this.setStyle('fontWeight', 'normal');
 		}
 		
 		public function getCollectionID():Number {

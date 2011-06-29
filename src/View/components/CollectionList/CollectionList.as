@@ -105,15 +105,18 @@ package View.components.CollectionList
 			
 			// Create the space for the fixed collections (these wont scroll)
 			fixedCollectionListItems = new VGroup();
-			fixedCollectionListItems.paddingLeft = 10;
-			fixedCollectionListItems.paddingRight = 10;
-			fixedCollectionListItems.paddingTop = 10;
-			fixedCollectionListItems.paddingBottom = 10;
+			fixedCollectionListItems.percentWidth = 100;
+			fixedCollectionListItems.gap = 0;
+//			fixedCollectionListItems.paddingLeft = 10;
+//			fixedCollectionListItems.paddingRight = 10;
+//			fixedCollectionListItems.paddingTop = 10;
+//			fixedCollectionListItems.paddingBottom = 10;
 			this.addElement(fixedCollectionListItems);
 			
 			// Add the 'All Assets' and 'Shared Assets' to the fixed collections part of the list.
 			var originalFileCollection:CollectionListItemFixed = new CollectionListItemFixed(BrowserController.ALLASSETID, 
 				'Your Original Files', IDEvent.ASSET_COLLECTION_ALL_MEDIA);
+			originalFileCollection.percentWidth = 100;
 			originalFileCollection.addEventListener(MouseEvent.CLICK, showLoadingOnClick);
 			fixedCollectionListItems.addElement(originalFileCollection);
 			
@@ -136,12 +139,8 @@ package View.components.CollectionList
 			
 			// create a content group so we can put it inside the scroll
 			regularCollectionListItems = new VGroup(); 
-			regularCollectionListItems.paddingLeft = 10;
-			regularCollectionListItems.paddingRight = 10;
-			regularCollectionListItems.paddingTop = 10;
-			regularCollectionListItems.paddingBottom = 10;
-			regularCollectionListItems.gap = 13;
 
+			regularCollectionListItems.gap = 0;
 			// Add the content group to the scroller
 			myScroller.viewport = regularCollectionListItems;
 			

@@ -112,12 +112,30 @@ package Controller {
 		private function loadMediaAsset():void {
 			trace("Loading Media Asset...");
 			
+			// the browser controller knows which asset was clicked
+			// get the asset data from the browser, and use that to load this asset
+			this.currentMediaData = BrowserController.currentMediaData;
+			
+			if(currentMediaData == null) {
+				// For some reason, the browser doesnt have to data, so we will have to load it here
+				AppModel.getInstance().getThisMediasData(currentAssetID, mediasDataLoaded);
+				return;
+			}
+			
+			
+			mediaView.addMediaData(currentMediaData);
+			
+			// Get the data for the panels
+			loadPanelData();
+			
+			
 			// Load the Media Asset Data
 			// Gets out the Media Meta-data
-			AppModel.getInstance().getThisMediasData(currentAssetID, mediasDataLoaded);
+//			AppModel.getInstance().getThisMediasData(currentAssetID, mediasDataLoaded);
 			
 			// Don't get out the comments etc here, we need to know the medias type,
 			// before we can add them.
+			// because we need to know what kind of ... view to make i think
 			
 		}
 		
@@ -360,17 +378,17 @@ package Controller {
 				
 			// Load the Sharing Data
 			AppModel.getInstance().getAccess(currentAssetID, sharingDataLoaded);
+		}
+		
+		private function loadPanelData():void {
+			// Gets out the Commentary Data for hte asset (that is, comments and annotations
+			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
 			
-
-//			// Add all of the assets inside this collection
-//			currentView.addMediaAssets(mediaInCollection);
-//			
-//			// Add all the comments for this collection
-//			// Send the collection ID, and all the comments
-//			currentView.addComments(annotationsInCollection);
-//			
-//			// Change to the Fixed toolbar
-//			currentView.setToolbarToRegularCollectionMode();
+			// Get out the People data
+			AppModel.getInstance().getPeople(currentMediaData.meta_users_access, peopleCollectionLoaded);
+			
+			// Load the Sharing Data
+			AppModel.getInstance().getAccess(currentAssetID, sharingDataLoaded);
 		}
 		
 		/**

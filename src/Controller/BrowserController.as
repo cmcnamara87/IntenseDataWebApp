@@ -62,6 +62,8 @@ package Controller {
 		
 		private var collectionListRefreshTimer:Timer;
 		
+		public static var currentMediaData:Model_Media = null;
+		
 		//Calls the superclass
 		public function BrowserController() {
 			trace("--- Creating Browser Controller ---");
@@ -693,6 +695,8 @@ package Controller {
 			// Get out the clicked assets data
 			var assetData:Model_Media = e.data.assetData;
 			
+			currentMediaData = assetData;
+			
 //			// We are going to make the asset ID negative, if we are making a clean copy
 //			// otherwise, we leave it as positive (its just an easy flag to do)
 //			if(currentCollectionID == ALLASSETID) {
@@ -791,10 +795,10 @@ package Controller {
 			// Empty whatever shelf we are looking at
 			if(BrowserController.getEditOn()) {
 				editAssets = new Array();
-				currentView.clearShelf();
+				currentView.removeShelfMedia();
 			} else if (BrowserController.getShelfOn()) {
 				shelfAssets = new Array();
-				currentView.clearShelf();
+				currentView.removeShelfMedia();
 			}
 			// Update the New Collection button to show it has 0 assets in it
 			currentView.updateNewCollectionButton();

@@ -1,5 +1,6 @@
 package View.components.CollectionList
 {
+	import Controller.BrowserController;
 	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
@@ -47,7 +48,6 @@ package View.components.CollectionList
 				shared = false;
 			}
 			super(shared, collectionData.access_modify_content);
-			
 			
 			// List Label
 			setLabel(collectionData.meta_title);

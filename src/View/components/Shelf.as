@@ -120,9 +120,11 @@ package View.components
 		/**
 		 * Removes the current Assets being displayed 
 		 */		
-		public function clearMediaAssets():void {
+		public function clearMediaAssets(keepTitle:Boolean=false):void {
 			myAssetDisplayer.clearMediaAssets();
-			collectionTextInput.text = "";
+			if(!keepTitle) {
+				collectionTextInput.text = "";
+			}
 		}
 		
 		public function setCollectionName(name:String):void {

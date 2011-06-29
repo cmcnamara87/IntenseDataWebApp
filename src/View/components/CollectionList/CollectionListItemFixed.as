@@ -36,12 +36,24 @@ package View.components.CollectionList
 		public function CollectionListItemFixed(fixedCollectionID:Number, collectionLabel:String, clickEventName:String)
 		{
 			super(false, true);
+			
+			// We are creating this collection, and its the one we are loading, showi t as loading
+			if(BrowserController.currentCollectionID == fixedCollectionID) {
+				showLoading();
+			}
+			
 			this.fixedCollectionID = fixedCollectionID;
 			this.collectionLabel = collectionLabel;
 			this.clickEventName = clickEventName;
 			
 			// List Label
 			setLabel(collectionLabel);
+			
+			var itemCountLabel:spark.components.Label = new spark.components.Label();
+			itemCountLabel.text = "";
+			itemCountLabel.percentWidth = 100;
+			itemCountLabel.setStyle('textAlign', TextAlign.RIGHT); 
+			this.addElement(itemCountLabel);
 
 			this.addEventListener(MouseEvent.CLICK, collectionItemClicked);
 		}

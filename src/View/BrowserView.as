@@ -245,7 +245,15 @@ package View
 //		}
 		
 		/**
-		 * Removes all elements from the shelf 
+		 * Removes media from the shelf (not Titlte) 
+		 * 
+		 */		
+		public function removeShelfMedia():void {
+			myAssetBrowser.refreshMediaAssetsDisplay();
+			myShelf.clearMediaAssets(true);
+		}
+		/**
+		 * Removes all media AND title from the shelf
 		 */		
 		public function clearShelf():void {
 			// Removes the overlays (it does this based on the values in the browser controller
