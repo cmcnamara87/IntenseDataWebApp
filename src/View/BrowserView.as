@@ -244,9 +244,12 @@ package View
 //		}
 		
 		/**
-		 * Hides shelf and removes all elements from display 
+		 * Removes all elements from the shelf 
 		 */		
 		public function clearShelf():void {
+			// Removes the overlays (it does this based on the values in the browser controller
+			// so you have to make sure the edit and collection creation are set to false)
+			myAssetBrowser.refreshMediaAssetsDisplay();
 			myShelf.clearMediaAssets();
 		}
 		

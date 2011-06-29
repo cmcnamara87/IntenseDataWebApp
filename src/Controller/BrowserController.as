@@ -161,6 +161,8 @@ package Controller {
 			// Listen for Media Asset being clicked inside the Shelf
 			currentView.addEventListener(IDEvent.SHELF_MEDIA_CLICKED, shelfMediaClicked);
 			
+			// Listen for shelf clear being clicked
+			currentView.addEventListener(IDEvent.SHELF_CLEAR_BUTTON_CLICKED, shelfClearClicked);
 			// Listen for Collection Asset being clicked
 			currentView.addEventListener(IDEvent.ASSET_COLLECTION_CLICKED, assetCollectionClicked);
 			
@@ -773,6 +775,30 @@ package Controller {
 				currentView.updateNewCollectionButton();
 			}
 			
+		}
+		
+		/**
+		 * Removes all the current assets from the shelf. Either the collection creation or the
+		 * edit shelf. 
+		 * @param e
+		 * 
+		 */		
+		private function shelfClearClicked(e:IDEvent):void {
+			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			
+			// Get out the clicked assets data
+			var assetData:Model_Media = e.data.assetData;
+			
+			// Empty whatever shelf we are looking at
+			if(BrowserController.getEditOn()) {
+				editAssets = new Array();
+				currentView.clearShelf();
+			} else if (BrowserController.getShelfOn()) {
+				shelfAssets = new Array();
+				currentView.clearShelf();
+			}
+			// Update the New Collection button to show it has 0 assets in it
+			currentView.updateNewCollectionButton();
 		}
 		
 		/**

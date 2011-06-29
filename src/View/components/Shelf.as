@@ -28,6 +28,8 @@ package View.components
 		
 		private var saveButton:IDButton;
 		private var closeButton:IDButton;
+		private var clearButton:IDButton;
+		
 		/**
 		 * The shelf is where items can be temporarily stored, and makes collections.
 		 * Scrolls up from the bottom of the page. 
@@ -80,6 +82,9 @@ package View.components
 			saveButton = new IDButton('Save ' + BrowserController.PORTAL);
 			collectionTitleBox.addElement(saveButton);
 			
+			clearButton = new IDButton('Clear');
+			collectionTitleBox.addElement(clearButton);
+			
 			closeButton = new IDButton('X');
 			closeButton.width = 30;
 			collectionTitleBox.addElement(closeButton);
@@ -93,7 +98,9 @@ package View.components
 			
 			// Listen for Save Button clicked
 			saveButton.addEventListener(MouseEvent.CLICK, saveButtonClicked);
-				
+			
+			// Listen for clear butotn clicked
+			clearButton.addEventListener(MouseEvent.CLICK, clearShelfButtonClicked);
 			closeButton.addEventListener(MouseEvent.CLICK, closeShelfButtonClicked);
 		}
 
@@ -160,6 +167,11 @@ package View.components
 				// Collection name is empty
 				Alert.show("Please enter a name for the " + BrowserController.PORTAL);
 			}
+		}
+		
+		private function clearShelfButtonClicked(e:MouseEvent):void {
+			trace("Shelf:clearShelfButtonClicked");
+			this.dispatchEvent(new IDEvent(IDEvent.SHELF_CLEAR_BUTTON_CLICKED, true));
 		}
 		
 		private function closeShelfButtonClicked(e:MouseEvent):void {
