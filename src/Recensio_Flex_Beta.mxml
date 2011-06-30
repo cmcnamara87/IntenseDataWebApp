@@ -12,7 +12,8 @@
 			
 			//The mediaflux server address
 			//private var serverAddress:String = "localhost";
-			private var serverAddress:String = "recensio.dyndns.org";
+//			private var serverAddress:String = "recensio.dyndns.org";
+			public static var serverAddress:String = "123.100.147.12";
 			//The mediaflux server port
 			private var serverPort:Number = 8082;
 			//Shows frames per second monitor

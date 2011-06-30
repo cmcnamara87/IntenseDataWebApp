@@ -149,7 +149,7 @@ package Model {
 				trace("Media Media URI:", meta_media_uri);
 				return meta_media_uri
 			} else if(type == "document") {
-				return "http://recensio.dyndns.org/" + meta_media_uri;
+				return "http://"+Recensio_Flex_Beta.serverAddress+"/" + meta_media_uri;
 			} else {
 				var mediaURL:String = "http://"+Dispatcher.getServerDetails()+"/mflux/content.mfjp?";
 				mediaURL = mediaURL + "_skey=" + Auth.getInstance().getSessionID();

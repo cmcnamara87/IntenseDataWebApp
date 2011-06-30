@@ -695,8 +695,6 @@ package Controller {
 			// Get out the clicked assets data
 			var assetData:Model_Media = e.data.assetData;
 			
-			currentMediaData = assetData;
-			
 //			// We are going to make the asset ID negative, if we are making a clean copy
 //			// otherwise, we leave it as positive (its just an easy flag to do)
 //			if(currentCollectionID == ALLASSETID) {
@@ -744,6 +742,8 @@ package Controller {
 			
 			// TODO REMOVE THIS
 			var viewURL:String = "";
+			currentMediaData = assetData;
+			currentMediaData.base_asset_id = Math.abs(currentMediaData.base_asset_id);
 			//if(assetData.type == "image" || assetData.type == "video" || assetData.type == "audio") {
 			// Show the asset view
 				viewURL = 'view/' + Math.abs(assetData.base_asset_id);

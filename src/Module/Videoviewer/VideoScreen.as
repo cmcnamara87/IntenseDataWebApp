@@ -50,7 +50,8 @@ package Module.Videoviewer {
 		
 		private var _video:*;
 		//private var _rtmpUri:String = "rtmp://demo.recensio.com.au/oflaDemo";
-		private var _rtmpUri:String = "rtmp://recensio.dyndns.org/vod/";
+//		private var _rtmpUri:String = "rtmp://recensio.dyndns.org/vod/";
+		private var _rtmpUri:String = "rtmp://" + Recensio_Flex_Beta.serverAddress + "/vod/";
 		private var _fileName:String = "";
 		private var _metaData:Object = { duration:0, width: 0, height: 0 ,videoKeyFrameFrequence:.5};
 		
@@ -172,6 +173,7 @@ package Module.Videoviewer {
 			_netConnection.objectEncoding = ObjectEncoding.AMF3;
 			_netConnection.client = this;
 			
+			trace("RTMP********", _rtmpUri);
 			_netConnection.connect( _rtmpUri, "model.logedinUser.username");
 		}
 		
@@ -207,6 +209,7 @@ package Module.Videoviewer {
 				_netStream.client = this;
 				_videoPlayer.attachNetStream(_netStream);
 				_videoPlayer.visible = true;
+				trace("Playing***********", _fileName);
 				_netStream.play(_fileName,0);
 				if(!autoplay) {
 					//pause();

@@ -122,7 +122,6 @@ package Controller {
 				return;
 			}
 			
-			
 			mediaView.addMediaData(currentMediaData);
 			
 			// Get the data for the panels
