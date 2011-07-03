@@ -11,6 +11,7 @@ package Model.Transactions
 	import flash.events.Event;
 	
 	import mx.controls.Alert;
+	import Model.Transactions.Access.Transaction_CopyAccess;
 
 	public class Transaction_SaveNewComment
 	{

@@ -3,11 +3,11 @@ package Model {
 	import Controller.Dispatcher;
 	import Controller.Utilities.Auth;
 	
-	import Model.Transactions.Transaction_ChangeAccess;
+	import Model.Transactions.Access.Transaction_ChangeAccess;
+	import Model.Transactions.Access.Transaction_CopyAccess;
+	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
 	import Model.Transactions.Transaction_ChangePassword;
 	import Model.Transactions.Transaction_CloneMedia;
-	import Model.Transactions.Transaction_CopyAccess;
-	import Model.Transactions.Transaction_CopyCollectionAccess;
 	import Model.Transactions.Transaction_CreateCollection;
 	import Model.Transactions.Transaction_CreateUser;
 	import Model.Transactions.Transaction_DeleteMediaFromUser;
@@ -815,11 +815,20 @@ package Model {
 			var args:Object = new Object();
 			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
 			baseXML.service.args["id"] = assetID;
-			if(_connection.sendRequest(baseXML, callback)) {
-				//All good
-			} else {
-				Alert.show("Could not destroy asset");
-			}
+		
+			_connection.sendRequest(baseXML, function(e:Event):void {
+				trace("Deleting clones of", assetID);
+				var args:Object = new Object();
+				args.where = "r_resource/clone_of_id=" + assetID;
+				args.action = "pipe";
+				args.size = "infinity";
+				var baseXML:XML = _connection.packageRequest('asset.query',args,true);
+				baseXML.service.args.service.@name = "asset.destroy";
+				
+				_connection.sendRequest(baseXML, function(e:Event):void {
+					callback(e);
+				});
+			});
 		}
 		
 		// Deletes an annotation
@@ -1229,6 +1238,22 @@ package Model {
 			}
 		}
 		
+		/**
+		 * Generates a thumbnail for a given image medias ID.
+		 * @require the ID is for an image asset, not video etc
+		 * @param imageID the Asset ID of the image asset
+		 * 
+		 */		
+		public function generateThumbnail(imageID:Number):void {
+			var args:Object = new Object();
+			args.id = imageID;
+//			args.out = imageID + ".jpg";
+			args.size = 112;
+			var baseXML:XML = _connection.packageRequest('asset.icon.get',args,true);
+			_connection.sendRequest(baseXML, function(e:Event):void {
+				trace("AppModel:generateThumbnail - thumbnail generated", e.target.data);
+			})
+		}
 		/* ====================== USER FUNCTIONS =========================== */
 		
 		/**

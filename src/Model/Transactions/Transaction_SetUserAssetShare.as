@@ -96,18 +96,23 @@ package Model.Transactions
 					}
 				}
 
-				baseXML.service.args["meta"]["id_sharing"].appendChild(XML(
-					'<user_share_count>' +
-						'<username>' + shareUser + '</username>' +
-						'<via_asset>'+ shareViaAsset +'</via_asset>' +
-						'<access_level>'+ shareAccessLevel +'</access_level>' +
-					'</user_share_count>'
-				));		
+				// we have finished setting up what the new access level is going to be
+				// so now, provided its not 'no-access' (cause we just wont include those)
+				// we create our new share list
+				if(shareAccessLevel != SharingPanel.NOACCESS) {
+					baseXML.service.args["meta"]["id_sharing"].appendChild(XML(
+						'<user_share_count>' +
+							'<username>' + shareUser + '</username>' +
+							'<via_asset>'+ shareViaAsset +'</via_asset>' +
+							'<access_level>'+ shareAccessLevel +'</access_level>' +
+						'</user_share_count>'
+					));		
+				}
 				
 				trace("Transaction_SetUserAssetShareCount: Sharing", assetID, "with", shareUser, "via", shareViaAsset, "level", shareAccessLevel);
 			}
 			
-			if(!alreadySharedWithUser) {
+			if(!alreadySharedWithUser && accessLevel != SharingPanel.NOACCESS) {
 				// We havent already shared it, so we can just set its share acces slevel to be whatever it should be
 				baseXML.service.args["meta"]["id_sharing"].appendChild(XML(
 					'<user_share_count>' +

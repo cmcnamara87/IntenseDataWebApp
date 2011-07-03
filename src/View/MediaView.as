@@ -70,7 +70,7 @@ package View
 		private var downloadButton:Button;
 		private var addAnnotationButton:Button;
 		private var hideShowAnnotationButton:Button;
-		private var deleteAssetButton:Button;
+		private var deleteAssetButton:IDButton;
 		private var editDetailsButton:Button;
 		private var shareButton:Button;
 		private var viewsButton:IDButton;
@@ -141,9 +141,10 @@ package View
 			var addAnnotationEditDetailsLine:Line = IDGUI.makeLine()
 			myToolbar.addElement(addAnnotationEditDetailsLine);
 			
-			deleteAssetButton = IDGUI.makeButton("Delete File")
-//			deleteAssetButton.enabled = false;
-//			myToolbar.addElement(deleteAssetButton);
+			deleteAssetButton = new IDButton("Delete File", false, false);
+			deleteAssetButton.enabled = false;
+			
+			myToolbar.addElement(deleteAssetButton);
 			
 			var deleteAddLine:Line = IDGUI.makeLine();
 //			myToolbar.addElement(deleteAddLine);
@@ -289,7 +290,7 @@ package View
 			hideShowAnnotationButton.visible = false;
 			hideShowAnnotationButton.includeInLayout = false;
 			editDetailsButton.visible = false;
-			editDetailsButton.includeInLayout = false;
+			editDetailsButton.includeInLayout = false;			
 			shareButton.visible = false;
 			shareButton.includeInLayout = false;
 			annotationListButton.visible = false;
@@ -298,6 +299,10 @@ package View
 			commentsButton.includeInLayout = false;
 			viewsButton.visible = false;
 			viewsButton.includeInLayout = false;
+			
+			deleteAssetButton.visible = true;
+			deleteAssetButton.includeInLayout = true;
+			deleteAssetButton.enabled = true;
 		}
 		
 		private function setupButtonsAccess():void {

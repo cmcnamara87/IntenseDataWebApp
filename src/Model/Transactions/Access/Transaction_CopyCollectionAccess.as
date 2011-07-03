@@ -1,4 +1,4 @@
-package Model.Transactions
+package Model.Transactions.Access
 {
 	import Controller.Utilities.Auth;
 	

@@ -49,7 +49,7 @@ package Module.AudioViewer
 		public var file:String = 'null';
 		public var visualisation:String = 'line';
 		//public var autoplay:Boolean = false;
-		public var autoplay:Boolean = true;
+		public var autoplay:Boolean = false; // true;
 		public var annotationSave:Function = MediaView.saveAnnotationFunction;
 		public var annotationDelete:Function;
 		
@@ -145,6 +145,9 @@ package Module.AudioViewer
 			loadWave();
 			if(autoplay) {
 				togglePlay(true,true);
+//				togglePlay(true,false);
+			} else {
+				togglePlay(true,false);
 			}
 			resizeUI();
 			_UITimeline.resize();

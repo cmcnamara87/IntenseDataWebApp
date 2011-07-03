@@ -1,4 +1,4 @@
-package Model.Transactions
+package Model.Transactions.Access
 {
 	import Model.AppModel;
 	import Model.Utilities.Connection;

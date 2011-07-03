@@ -7,6 +7,7 @@ package Model.Transactions {
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
 	
 	public class Transaction_SaveCollection {
 		

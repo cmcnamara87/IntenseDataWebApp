@@ -202,8 +202,10 @@ package Module.AudioViewer
 			this.graphics.lineTo(this.width-_padding,_channel2Y+_channelSize);
 			_bars.graphics.clear();
 			_bars.graphics.beginFill(0xFF0000);
-			_bars.graphics.drawRect(0,_channel1Y,1,_channelSize);
-			_bars.graphics.drawRect(0,_channel2Y,1,_channelSize);
+//			_bars.graphics.drawRect(0, _channel1Y, 1, _channelSize);
+//			_bars.graphics.drawRect(0, _channel2Y, 1, _channelSize);
+			_bars.graphics.drawRect(20, _channel1Y, 1, _channelSize);
+			_bars.graphics.drawRect(20, _channel2Y, 1, _channelSize);
 		}
 		
 		public function loadSoundWave(file:Sound):void {

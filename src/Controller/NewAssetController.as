@@ -5,7 +5,7 @@ package Controller {
 	
 	import Model.AppModel;
 	import Model.Model_Media;
-	import Model.Transactions.Transaction_CopyAccess;
+	import Model.Transactions.Access.Transaction_CopyAccess;
 	
 	import View.NewAsset;
 	import View.components.Panels.Sharing.SharingPanel;
@@ -83,7 +83,11 @@ package Controller {
 			uploadFile.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 			uploadFile.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, responseHandler);
 			uploadFile.addEventListener(Event.SELECT, fileSelected);
-			uploadFile.browse(AssetLookup.getFileTypes());
+			try {
+				uploadFile.browse(AssetLookup.getFileTypes());
+			} catch (e:Error) {
+				
+			}
 		}
 		
 		// Called as the file upload occurs 
@@ -95,6 +99,7 @@ package Controller {
 		
 		// Called when the file is selected
 		private function fileSelected(event:Event):void {
+			(view as NewAsset).uploadForm.enabled = true;
 			file = FileReference(event.target);
 			chosenFile = true;
 			(view as NewAsset).uploadForm.setProgress(file.name,"ready");
@@ -116,8 +121,13 @@ package Controller {
 				// sets it as a 'media' type
 				// and set this user to be the owner
 				AppModel.getInstance().setMediaClass(e);
+				
+				
 				// Get out the new assets ID
 				assetID = xml.reply.result.id;
+				
+//				AppModel.getInstance().generateThumbnail(assetID);
+				
 				
 				trace("NewAssetController:uploadComplete - New Asset created", assetID);
 				
@@ -216,6 +226,8 @@ package Controller {
 		// After the file is uploaded successfully, switches the view
 		public function assetSaved():void {
 			trace("NewAssetController:assetSaved - Asset Saved Successfully");
+			// So we dont show the old collection, we reload it, with the new asset
+			BrowserController.clearCurrentCollectionMedia();
 			Dispatcher.call("browse");
 		}
 	}

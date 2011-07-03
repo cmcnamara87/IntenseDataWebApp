@@ -320,7 +320,7 @@ package View.components.CollectionList
 		}
 		
 		private function setButtonLabel():void {
-			trace("setting button label", newButtonText + " (" + mediaCount + ")");
+//			trace("setting button label", newButtonText + " (" + mediaCount + ")");
 			createCollectionButton.label = newButtonText;
 			if(mediaCount > 0) {
 				createCollectionButton.label = newButtonText + " (" + mediaCount + ")";

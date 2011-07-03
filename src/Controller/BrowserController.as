@@ -908,7 +908,7 @@ package Controller {
 					AppModel.getInstance().createCollection(collectionTitle, shelfAssets, collectionCreated);
 					
 					// Clear the collection cache, since we are going to be updating it
-					this.clearCachedCollections();
+					clearCachedCollections();
 				} else {
 					return;
 				}
@@ -923,7 +923,7 @@ package Controller {
 				AppModel.getInstance().saveCollection(collectionBeingEditedID, collectionTitle, editAssets, collectionUpdated);
 				
 				// Clear the collection cache, since are going to be updating it
-				this.clearCachedCollections();
+				clearCachedCollections();
 				this.clearCachedCollectionMedia(collectionBeingEditedID);
 			}
 		}
@@ -1085,6 +1085,19 @@ package Controller {
 			cachedCollectionMedia.push(cacheCollection);
 		}
 		
+		public static function clearCurrentCollectionMedia():void {
+			trace("clearCachedCollectionMedia -", BrowserController.currentCollectionID);
+			for (var i:Number = 0; i < cachedCollectionMedia.length; i++) {
+				var cacheCollection:Array = cachedCollectionMedia[i];
+				var cacheCollectionID:Number = cacheCollection[0];
+				if(cacheCollectionID == BrowserController.currentCollectionID) {
+					trace("Found collection to remove", BrowserController.currentCollectionID, "- now removing", cachedCollectionMedia.length);
+					cachedCollectionMedia.splice(i, 1);		
+					trace("Found collection to remove", BrowserController.currentCollectionID ,"- removed", cachedCollectionMedia.length);
+				}
+			}
+		}
+
 		private function loadCachedCollectionMedia(collectionID:Number):void {
 			// Check if we dont have this collection cached
 			for each(var cacheCollection:Array in cachedCollectionMedia) {
