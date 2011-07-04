@@ -32,24 +32,55 @@ package Model.Transactions
 			
 			//deleteUserObjectFromSystem();
 			
-			deleteUserObjectFromSystem();
+//			deleteUserObjectFromSystem();
+			
+			removeUsersACLsOnAssets();
 				
-			// 1. delete the user from the system
-			// 2. remove any acls that user had on the system
+			
 			// 3. delete all assets uploaded by that user (where they are the creator of)
 			// 4. remove share access in share object for the user
+			// 2. remove any acls that user had on the system
+			// 1. delete the user from the system
+			
 		}
+		
+		/**
+		 * Finds all instances where the actor for an ACL is invalid
+		 * and removes the ACL (doesnt just do it for this user, but works on all invalids acls) 
+		 * 
+		 */		
+		private function removeUsersACLsOnAssets():void {
+			var args:Object = new Object();
+			var baseXML:XML = connection.packageRequest("asset.query", args, true);
+			var argsXML:XMLList = baseXML.service.args;			
+			argsXML.where = "id_sharing/user_share_count/username='" + this.username + "'";
+			argsXML.action = "pipe";
+			argsXML.service.@name = "asset.acl.revoke";
+			argsXML.service.acl.actor = domain + ":" + username;
+			argsXML.service.acl.@type = "user";
+			if(connection.sendRequest(baseXML, deleteUserObjectFromSystem)) {
+				//All good
+			} else {
+				Alert.show("Could not remove user acls");
+				trace("Could not remove user acls");
+			}
+		}
+		
 		
 		/**
 		 * Deletes a user from the system. 
 		 * 
 		 */		
-		private function deleteUserObjectFromSystem():void {
+		private function deleteUserObjectFromSystem(e:Event):void {
+			if(AppModel.getInstance().callFailed("removeUsersACLsOnAssets", e)) {
+				callback(e);
+				return;
+			}
 			var args:Object = new Object();
 			var baseXML:XML = connection.packageRequest('user.destroy',args,true);
 			baseXML.service.args["user"] =  this.username;
 			baseXML.service.args["domain"] = this.domain;
-			if(connection.sendRequest(baseXML, removeUsersACLsOnAssets)) {
+			if(connection.sendRequest(baseXML, deleteAllUsersAssets)) {
 				//All good
 			} else {
 				Alert.show("Could not delete user");
@@ -62,24 +93,24 @@ package Model.Transactions
 		 * and removes the ACL (doesnt just do it for this user, but works on all invalids acls) 
 		 * 
 		 */		
-		private function removeUsersACLsOnAssets(e:Event):void {
-			if(AppModel.getInstance().callFailed("deleteUserObjectFromSystem", e)) {
-				callback(e);
-				return;
-			}
-			
-			var args:Object = new Object();
-			args.where = "acl actor invalid";
-			args.action = "pipe";
-			var baseXML:XML = connection.packageRequest("asset.query", args, true);
-			baseXML.service.args.service.@name = "asset.acl.invalid.remove";
-			if(connection.sendRequest(baseXML, deleteAllUsersAssets)) {
-				//All good
-			} else {
-				Alert.show("Could not remove user acls");
-				trace("Could not remove user acls");
-			}
-		}
+//		private function removeUsersACLsOnAssets(e:Event):void {
+////			if(AppModel.getInstance().callFailed("deleteUserObjectFromSystem", e)) {
+////				callback(e);
+////				return;
+////			}
+//			
+//			var args:Object = new Object();
+//			args.where = "acl actor invalid";
+//			args.action = "pipe";
+//			var baseXML:XML = connection.packageRequest("asset.query", args, true);
+//			baseXML.service.args.service.@name = "asset.acl.invalid.remove";
+//			if(connection.sendRequest(baseXML, deleteAllUsersAssets)) {
+//				//All good
+//			} else {
+//				Alert.show("Could not remove user acls");
+//				trace("Could not remove user acls");
+//			}
+//		}
 		
 		/**
 		 * Deletes all the assets that were created by this user 
