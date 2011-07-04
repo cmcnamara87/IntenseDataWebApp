@@ -6,11 +6,13 @@ package Model {
 	import Model.Transactions.Access.Transaction_ChangeAccess;
 	import Model.Transactions.Access.Transaction_CopyAccess;
 	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
+	import Model.Transactions.Share.Transaction_SetUserAssetShare;
 	import Model.Transactions.Transaction_ChangePassword;
 	import Model.Transactions.Transaction_CloneMedia;
 	import Model.Transactions.Transaction_CreateCollection;
 	import Model.Transactions.Transaction_CreateUser;
 	import Model.Transactions.Transaction_DeleteMediaFromUser;
+	import Model.Transactions.Transaction_DeleteUserFromSystem;
 	import Model.Transactions.Transaction_GetAccess;
 	import Model.Transactions.Transaction_GetCollections;
 	import Model.Transactions.Transaction_GetPeopleAndCollectionNames;
@@ -18,7 +20,6 @@ package Model {
 	import Model.Transactions.Transaction_SaveCollection;
 	import Model.Transactions.Transaction_SaveNewComment;
 	import Model.Transactions.Transaction_SetAccess;
-	import Model.Transactions.Transaction_SetUserAssetShare;
 	import Model.Transactions.Transaction_SuspendUser;
 	import Model.Transactions.Transaction_UnsuspendUser;
 	import Model.Utilities.Connection;
@@ -1290,18 +1291,21 @@ package Model {
 		 * 
 		 */		
 		public function deleteUser(username:String, domain:String, callback:Function):void {
+			
+			var transaction:Transaction_DeleteUserFromSystem = new Transaction_DeleteUserFromSystem(username, domain, callback, _connection);
+			
 			// user.destroy :domain system :user g
-			trace("- Deleting user database call", username, domain);
-			var args:Object = new Object();
-			var baseXML:XML = _connection.packageRequest('user.destroy',args,true);
-			baseXML.service.args["user"] = username;
-			baseXML.service.args["domain"] = domain;
-			if(_connection.sendRequest(baseXML,callback)) {
-				//All good
-			} else {
-				Alert.show("Could not delete user");
-				trace("Could not delete user");
-			}
+//			trace("- Deleting user database call", username, domain);
+//			var args:Object = new Object();
+//			var baseXML:XML = _connection.packageRequest('user.destroy',args,true);
+//			baseXML.service.args["user"] = username;
+//			baseXML.service.args["domain"] = domain;
+//			if(_connection.sendRequest(baseXML,callback)) {
+//				//All good
+//			} else {
+//				Alert.show("Could not delete user");
+//				trace("Could not delete user");
+//			}
 		}
 			
 		/**

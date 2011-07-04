@@ -99,6 +99,9 @@ package Controller.Utilities {
 			
 			if(!isUser) {
 				// The user does not have the user role
+				// Delete their session id, since they shouldnt be able to log in
+				_sessionID = "";
+				
 				response = new IDEvent(IDEvent.LOGIN_RESPONSE);
 				response.data.success = false;
 				response.data.message = "Account suspended.";

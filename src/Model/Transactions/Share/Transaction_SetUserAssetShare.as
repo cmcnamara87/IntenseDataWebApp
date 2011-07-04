@@ -1,4 +1,4 @@
-package Model.Transactions
+package Model.Transactions.Share
 {
 	import Controller.Utilities.Auth;
 	
