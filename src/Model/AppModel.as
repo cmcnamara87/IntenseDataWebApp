@@ -1414,6 +1414,15 @@ package Model {
 			var dataXML:XML = XML(e.target.data);
 			return (dataXML.reply.@type == "result");
 		}
+		public function callFailed(functionName:String, e:Event):Boolean {
+			var dataXML:XML = XML(e.target.data);
+			if(dataXML.reply.@type == "result") {
+				trace(functionName + ": SUCCESS", e.target.data);
+			} else {
+				trace(functionName + ": FAILED", e.target.data);
+			}
+			return (dataXML.reply.@type != "result");
+		}
 	}
 		
 }

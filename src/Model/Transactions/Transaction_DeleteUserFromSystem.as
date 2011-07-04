@@ -30,7 +30,9 @@ package Model.Transactions
 			this.connection = connection;
 			this.callback = callback;
 			
-			findAssetsWithSharing();
+			//deleteUserObjectFromSystem();
+			
+			deleteUserObjectFromSystem();
 				
 			// 1. delete the user from the system
 			// 2. remove any acls that user had on the system
@@ -38,12 +40,16 @@ package Model.Transactions
 			// 4. remove share access in share object for the user
 		}
 		
+		/**
+		 * Deletes a user from the system. 
+		 * 
+		 */		
 		private function deleteUserObjectFromSystem():void {
 			var args:Object = new Object();
 			var baseXML:XML = connection.packageRequest('user.destroy',args,true);
 			baseXML.service.args["user"] =  this.username;
 			baseXML.service.args["domain"] = this.domain;
-			if(connection.sendRequest(baseXML,callback)) {
+			if(connection.sendRequest(baseXML, removeUsersACLsOnAssets)) {
 				//All good
 			} else {
 				Alert.show("Could not delete user");
@@ -53,16 +59,21 @@ package Model.Transactions
 		
 		/**
 		 * Finds all instances where the actor for an ACL is invalid
-		 * and removes the ACL (doesnt just do it for this user, but works regardless) 
+		 * and removes the ACL (doesnt just do it for this user, but works on all invalids acls) 
 		 * 
 		 */		
-		private function removeUsersACLsOnAssets():void {
+		private function removeUsersACLsOnAssets(e:Event):void {
+			if(AppModel.getInstance().callFailed("deleteUserObjectFromSystem", e)) {
+				callback(e);
+				return;
+			}
+			
 			var args:Object = new Object();
-			args.where = '"acl actor invalid"';
+			args.where = "acl actor invalid";
 			args.action = "pipe";
 			var baseXML:XML = connection.packageRequest("asset.query", args, true);
 			baseXML.service.args.service.@name = "asset.acl.invalid.remove";
-			if(connection.sendRequest(baseXML,callback)) {
+			if(connection.sendRequest(baseXML, deleteAllUsersAssets)) {
 				//All good
 			} else {
 				Alert.show("Could not remove user acls");
@@ -74,11 +85,26 @@ package Model.Transactions
 		 * Deletes all the assets that were created by this user 
 		 * 
 		 */		
-		private function deleteAllUsersAssets():void {
-			// doesnt work at the moment!!! RAARRR!!!!
+		private function deleteAllUsersAssets(e:Event):void {
+			if(AppModel.getInstance().callFailed("removeUsersACLsOnAssets", e)) {
+				callback(e);
+				return;
+			}
+			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			argsXML.where = "r_base/creator='" + username + "'";
+			argsXML.action = "pipe";
+			argsXML.service.@name = "asset.destroy";
+			if(!connection.sendRequest(baseXML, findAssetsWithSharing)) {
+				Alert.show("Failed to delete all user assets");
+			}	
 		}
 		
-		private function findAssetsWithSharing():void {
+		private function findAssetsWithSharing(e:Event = null):void {
+			if(AppModel.getInstance().callFailed("deleteAllUsersAssets", e)) {
+				callback(e);
+				return;
+			}
 			//asset.query :where id_sharing/user_share_count/username='andrewb'
 			var args:Object = new Object();
 			args.where = "id_sharing/user_share_count/username='" + this.username + "'";
@@ -92,16 +118,23 @@ package Model.Transactions
 		}
 		
 		private function removeSharing(e:Event):void {
-			if(!AppModel.getInstance().callSuccessful(e)) {
+			if(AppModel.getInstance().callFailed("findAssetsWithSharing", e)) {
 				callback(e);
 				return;
-			}
-			trace("removeSharing:", e.target.data);
+			} 
 			
+			// Get out the list of asset IDs that have sharing infp
 			var dataXML:XML = XML(e.target.data);
 			var assets:Array = new Array();
 			var assetsXML:XMLList = dataXML.reply.result.id;
+			// Store how many asest we have to remove the sharing on, so we can count down
+			// to them all being down
 			assetsWithSharingCount = assetsXML.length();
+			
+			if(assetsWithSharingCount == 0) {
+				// Don't need to change access to anything
+				callback(e);
+			}
 			
 			for each(var id:Number in assetsXML) {
 				// Remove the users access to this asset
@@ -111,8 +144,9 @@ package Model.Transactions
 		}
 		
 		private function sharingRemoved(e:Event):void {
-			if(!AppModel.getInstance().callSuccessful(e)) {
-				
+			if(AppModel.getInstance().callFailed("removeSharing", e)) {
+				callback(e);
+				return;
 			}
 			assetsWithSharingCount--;
 			if(assetsWithSharingCount == 0) {

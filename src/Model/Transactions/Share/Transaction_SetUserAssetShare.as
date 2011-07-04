@@ -23,6 +23,8 @@ package Model.Transactions.Share
 		private var callback:Function;
 		private var highestAccessLevel:String = SharingPanel.NOACCESS;
 		
+		private var userShareCounts:XMLList;
+		
 		public function Transaction_SetUserAssetShare(username:String, assetID:Number, viaAsset:Number, accessLevel:String, connection:Connection, callback:Function = null)
 		{
 			this.username = username;
@@ -41,30 +43,40 @@ package Model.Transactions.Share
 			var args:Object = new Object();
 			args.id = assetID;
 
-			if(connection.sendRequest(connection.packageRequest('asset.get',args,true), changeShareCount)) {
+			if(connection.sendRequest(connection.packageRequest('asset.get',args,true), removeIDSharingMeta)) {
 				//All good
 			} else {
 				Alert.show("Could not get share count");
 			}
 		}
 		
-		private function changeShareCount(e:Event):void {
+		private function removeIDSharingMeta(e:Event):void {
+			if(AppModel.getInstance().callFailed("getShare", e)) {
+				callback(e);
+				return;
+			}	
 			
-			if(!AppModel.getInstance().callSuccessful(e)) {
-				// We failed to get the assets meta-data, so we should throw an error.
-				trace("Transaction_SetUserAssetShareCount: Failed to get asset meta-data", e.target.data);
+			// save the user share counts
+			userShareCounts = XML(e.target.data).reply.result.asset.meta.id_sharing.user_share_count;
+			
+			var args:Object = new Object();
+			var baseXML:XML = connection.packageRequest('asset.set', new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			argsXML.id = assetID;
+			argsXML.meta.id_sharing = "";	
+			argsXML.meta.@action = "remove";
+			
+			connection.sendRequest(baseXML, changeShareCount);
+		}
+		
+		private function changeShareCount(e:Event):void {
+			if(AppModel.getInstance().callFailed("removeIDSharingMeta " + assetID, e)) {
 				callback(e);
 				return;
 			}
-						
-			var data:XML = XML(e.target.data);
-			
-			// Get out the current asset count for this user
-			var userShareCounts:XMLList = data.reply.result.asset.meta.id_sharing.user_share_count;
 
 			var args:Object = new Object();
-			
-			
+
 			var baseXML:XML = connection.packageRequest('asset.set', new Object(), true);
 			baseXML.service.args.id = assetID;
 
@@ -106,7 +118,7 @@ package Model.Transactions.Share
 							'<via_asset>'+ shareViaAsset +'</via_asset>' +
 							'<access_level>'+ shareAccessLevel +'</access_level>' +
 						'</user_share_count>'
-					));		
+					));
 				}
 				
 				trace("Transaction_SetUserAssetShareCount: Sharing", assetID, "with", shareUser, "via", shareViaAsset, "level", shareAccessLevel);

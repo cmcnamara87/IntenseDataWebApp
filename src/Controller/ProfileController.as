@@ -14,6 +14,7 @@ package Controller {
 	
 	import mx.collections.ArrayCollection;
 	import mx.collections.ArrayList;
+	import mx.controls.Alert;
 	
 	public class ProfileController extends AppController {
 		
@@ -176,6 +177,13 @@ package Controller {
 		}
 		
 		private function userDeleted(e:Event):void {
+			if(AppModel.getInstance().callFailed("deleteUserClicked", e)) {
+				Alert.show("Failed to delete user");
+				AppModel.getInstance().getUserList(userListReceived);
+				AppModel.getInstance().getUserDetails(selectedusername, "system", userDetailsReceived);
+				return;
+			}
+
 			trace("- User Deleted: ", selectedusername);
 			trace("**************");
 			// Set the selected user as the current logged in username
