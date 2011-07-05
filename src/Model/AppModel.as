@@ -1179,11 +1179,12 @@ package Model {
 			args.namespace = "recensio";
 //			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
 //			if(useID) {
-				var baseXML:XML = _connection.packageRequest('id.asset.create',args,true);
+			var baseXML:XML = _connection.packageRequest('id.asset.create',args,true);
+			var argsXML:XMLList = baseXML.service.args;
 //			}
-			baseXML.service.args["meta"]["r_base"].@id = "2";
-			baseXML.service.args["meta"]["r_base"]["obtype"] = "7";
-			baseXML.service.args["meta"]["r_base"]["active"] = "true";
+			argsXML["meta"]["r_base"].@id = "2";
+			argsXML["meta"]["r_base"]["obtype"] = "7";
+			argsXML["meta"]["r_base"]["active"] = "true";
 			
 			if(data.meta_subjects != "" ||
 				data.meta_keywords != "" ||
@@ -1194,41 +1195,42 @@ package Model {
 				data.meta_creativeworktype != "" ||
 				data.meta_BLBK != "") {
 				
-				baseXML.service.args["meta"]["r_base"]["properties"] = "";
+				argsXML["meta"]["r_base"]["properties"] = "";
 				
 			}
 			if(data.meta_subject != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Subject">'+data.meta_subject+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="Subject">'+data.meta_subject+'</property>'));
 			}
 			if(data.meta_keywords != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+data.meta_keywords+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+data.meta_keywords+'</property>'));
 			}
 			if(data.meta_datepublished != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+data.meta_datepublished+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+data.meta_datepublished+'</property>'));
 			}
 			if(data.meta_othercontrib != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+data.meta_othercontrib+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+data.meta_othercontrib+'</property>'));
 			}
 			if(data.meta_sponsorfunder != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+data.meta_sponsorfunder+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+data.meta_sponsorfunder+'</property>'));
 			}
 			if(data.meta_creativeworksubtype != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+data.meta_creativeworksubtype+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+data.meta_creativeworksubtype+'</property>'));
 			}
 			if(data.meta_creativeworktype != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+data.meta_creativeworktype+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+data.meta_creativeworktype+'</property>'));
 			}
 			if(data.meta_BLBK != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="AuthorCreator">'+data.meta_BLBK+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="AuthorCreator">'+data.meta_BLBK+'</property>'));
 			}
-			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
-			baseXML.service.args["meta"]["r_resource"].@id = "3";
-			baseXML.service.args["meta"]["r_resource"]["title"] = data.meta_title;
+			argsXML["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
+			argsXML["meta"]["r_resource"].@id = "3";
+			argsXML["meta"]["r_resource"]["title"] = data.meta_file_title;
 			if(data.meta_description) {
-				baseXML.service.args["meta"]["r_resource"]["description"] = data.meta_description;
+				argsXML["meta"]["r_resource"]["description"] = data.meta_description;
 			}
-			baseXML.service.args["meta"]["r_media"].@id = "4";
-			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
+			argsXML.meta.r_media.file_title = data.meta_file_title;
+			argsXML.meta.r_media.@id = "4";
+			argsXML.meta.r_media.transcoded = "false";
 			trace(baseXML);
 			if(_connection.uploadFile(data.file,baseXML, function(e:Event):void {
 				trace("Upload complete", e.target.data);

@@ -19,6 +19,7 @@ package View
 	
 	import mx.collections.ArrayList;
 	import mx.controls.Alert;
+	import mx.events.CloseEvent;
 	import mx.graphics.SolidColorStroke;
 	
 	import spark.components.BorderContainer;
@@ -371,12 +372,24 @@ package View
 		 * 
 		 */		
 		private function deleteUserButtonClicked(e:MouseEvent):void {
-			trace("Delete User Button Clicked");
-			var myEvent:IDEvent = new IDEvent(IDEvent.DELETE_USER_BUTTON_CLICKED);
-			this.dispatchEvent(myEvent);
+			var myAlert:Alert = Alert.show("Are you sure you wish to delete this user?\n\nDeleting the user will remove all of their files. If you wish to keep their files, click the 'suspend user' button instead.", "Delete User", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
+				if (e.detail==Alert.OK) {
+					trace("Delete User Button Clicked");
+					var myEvent:IDEvent = new IDEvent(IDEvent.DELETE_USER_BUTTON_CLICKED);
+					dispatchEvent(myEvent);
+				
+					// Disable user details while we load knew details
+					disableUserDetailsView();
+					
+					addUserButton.enabled = false;
+					userListComboBox.enabled = false;
+					suspendUserButton.enabled = false;
+					deleteUserButton.enabled = false;
+				} 
+			}, null, Alert.CANCEL);	
 			
-			// Disable user details while we load knew details
-			this.disableUserDetailsView();
+			myAlert.height = 180;
+			myAlert.width = 300;
 			
 		}
 		

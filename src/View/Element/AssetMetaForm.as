@@ -33,7 +33,7 @@ package View.Element {
 		
 		// Listens for changes in the form
 		private function setupFormEventListeners():void {
-			optionsArea.meta_title.addEventListener(Event.CHANGE,check); 
+			optionsArea.meta_file_title.addEventListener(Event.CHANGE,check); 
 			optionsArea.meta_description.addEventListener(Event.CHANGE,check); 
 			optionsArea.meta_datepublished.addEventListener(Event.CHANGE,check); 
 			optionsArea.meta_subject.addEventListener(Event.CHANGE,check); 
@@ -69,7 +69,7 @@ package View.Element {
 		// Checks whether valid information has been entered into the form (required fields only)
 		public function validate():Boolean {
 			if(
-				optionsArea.meta_title.text != "" //&& 
+				optionsArea.meta_file_title.text != "" //&& 
 //				optionsArea.meta_description.text != "" && 
 //				optionsArea.meta_datepublished.text != "" && 
 //				optionsArea.meta_subject.text != "" && 
@@ -87,7 +87,7 @@ package View.Element {
 		
 		// Locks the form from editing
 		public function lock():void {
-			optionsArea.meta_title.enabled = false; 
+			optionsArea.meta_file_title.enabled = false; 
 			optionsArea.meta_description.enabled = false; 
 			optionsArea.meta_datepublished.enabled = false; 
 			optionsArea.meta_subject.enabled = false; 
@@ -101,7 +101,7 @@ package View.Element {
 		// Gets all data from the form
 		public function getData():Object {
 			var data:Object = new Object();
-			data.meta_title = optionsArea.meta_title.text; 
+			data.meta_file_title = optionsArea.meta_file_title.text; 
 			data.meta_description = optionsArea.meta_description.text; 
 			data.meta_datepublished = optionsArea.meta_datepublished.text; 
 			data.meta_subject = optionsArea.meta_subject.text; 

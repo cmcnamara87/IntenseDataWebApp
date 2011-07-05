@@ -19,6 +19,7 @@ package View.components.Panels.EditDetails
 	public class EditDetailsPanel extends Panel
 	{
 		private var assetID:Number;
+		private var metaFileTitle:DetailListItemFixed;
 		private var metaTitle:DetailListItem;
 		private var metaDescription:DetailListItem;
 		private var metaDatePublished:DetailListItem;
@@ -87,6 +88,9 @@ package View.components.Panels.EditDetails
 				trace("EditDetailsPanel:addDetails removing now!");
 				content.removeAllElements();	
 
+				metaFileTitle = new DetailListItemFixed("File Title", mediaData.meta_file_title);
+				addPanelItem(metaFileTitle);
+				
 				trace("Adding Details to Edit Details Panel");
 				metaTitle = new DetailListItem("Title", mediaData.meta_title);
 				addPanelItem(metaTitle);

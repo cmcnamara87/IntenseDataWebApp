@@ -52,8 +52,8 @@ package Model.Transactions.Share
 			}	
 			
 			// save the user share counts
-		 	userShareCounts = XML(e.target.data).reply.result.asset.meta.id_sharing.user_share_count;
-		
+			userShareCounts = XML(e.target.data).reply.result.asset.meta.id_sharing.user_share_count;
+			
 			var args:Object = new Object();
 			var baseXML:XML = connection.packageRequest('asset.set', new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
@@ -101,7 +101,7 @@ package Model.Transactions.Share
 					trace("Transaction_RemoveShare:changeShareCount -", assetID, "Not including stuff for user", shareUser);
 				}
 			}
-
+			
 			connection.sendRequest(baseXML, function(e:Event):void {
 				if(AppModel.getInstance().callFailed("removingAccess " + assetID, e)) {
 				}

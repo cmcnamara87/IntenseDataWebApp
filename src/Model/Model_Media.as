@@ -50,9 +50,11 @@ package Model {
 		/* RELATIONSHIPS */
 		public var hasChild:Array;
 		public var belongsTo:Array;
-		
-		
+				
 		public var annotationsAndComments:Array = new Array(); // Type: Model_Annotation
+		
+		public var meta_file_title:String; // The file title is the unmodifiable title of the file (similar to a filename)
+											// the meta_title is modifiable for individual collections etc
 		
 		public function Model_Media() {
 			super();
@@ -91,7 +93,8 @@ package Model {
 //				
 				
 			meta_title = rawData.meta.r_resource.title;
-			
+			meta_file_title = rawData.meta.r_media.file_title;
+				
 			meta_media_id = rawData.meta.r_media.@id;
 			meta_media_trancoded = stringToBool(rawData.meta.r_media.transcoded);
 			meta_media_uri = rawData.meta.r_media.uri;
