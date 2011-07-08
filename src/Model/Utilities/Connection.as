@@ -1,4 +1,5 @@
 package Model.Utilities {
+	import Controller.Dispatcher;
 	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
 	
@@ -116,6 +117,7 @@ package Model.Utilities {
 		// If a load error occurs
 		private function loadError(e:*):void {
 			Alert.show("Please check your internet settings","Connection Error");
+			Dispatcher.logout();
 		}
 		
 		// Sets the server paths to mediaflux and its content

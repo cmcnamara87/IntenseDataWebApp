@@ -220,7 +220,7 @@ package View.components.MediaViewer.PDFViewer {
 		 */		
 		public function highlightFromIndexes(page1:Number, startTextIndex:Number, finishTextIndex:Number, highlight:Boolean, page2:Number=0):void {
 			var currentSnapshot:TextSnapshot = textSnapshotArray[page1] as TextSnapshot;
-			currentSnapshot.setSelectColor(0xFFE482);
+			currentSnapshot.setSelectColor(0xfceb6d);
 			currentSnapshot.setSelected(startTextIndex, finishTextIndex, highlight);
 		}
 		

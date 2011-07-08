@@ -411,6 +411,13 @@ package View
 				this.dispatchEvent(myEvent);
 			}
 			
+			
+			addUserButton.enabled = false;
+			userListComboBox.enabled = false;
+			suspendUserButton.enabled = false;
+			deleteUserButton.enabled = false;
+			
+			
 			// Disable user details while we suspend users, and go back to the current users page
 			this.disableUserDetailsView();
 			
