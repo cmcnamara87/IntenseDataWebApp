@@ -227,7 +227,7 @@ package View.components.MediaViewer
 			media.addEventListener(IDEvent.PAGE_LOADED, function(e:IDEvent):void {
 				loadingLabel.visible = true;
 				loadingLabel.includeInLayout = true;
-				loadingLabel.text = "Loading Page " + e.data.page + " of " + e.data.totalPages;
+				loadingLabel.text = "Loading Page " + e.data.page;// + " of " + e.data.totalPages;
 				if(e.data.page == e.data.totalPages) {
 					loadingLabel.visible = false;
 					loadingLabel.includeInLayout = false;
