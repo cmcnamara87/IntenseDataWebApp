@@ -57,7 +57,7 @@ package View.components.AssetBrowser
 			// 2) the context senstive buttons (share, delete, comment etc)
 			
 			// Create Upload New Asset Button
-			uploadNewAssetButton = IDGUI.makeButton("Upload Asset");
+			uploadNewAssetButton = IDGUI.makeButton("Upload File");
 			this.addElement(uploadNewAssetButton);				
 			
 			uploadSearchLine = new Line();

@@ -54,22 +54,22 @@ package Controller {
 		
 		// Setup the navigation bar
 		private function setupNavbar():void {
-			(view as NewAsset).navbar.addHeading("New Media Asset");
-			(view as NewAsset).navbar.addButton("back","right");
-			(view as NewAsset).navbar.addButton("save asset","right");
-			(view as NewAsset).navbar.setButtonColour("save asset","yellow");
+			(view as NewAsset).navbar.addHeading("  New Media File");
+			(view as NewAsset).navbar.addButton("Back","left");
+			(view as NewAsset).navbar.addButton("Save File","right");
+			(view as NewAsset).navbar.setButtonColour("Save File","yellow");
 		}
 		
 		// Called when a button on the navigation bar is clicked
 		private function navBarClicked(e:IDEvent):void {
 			switch(e.data.buttonName) {
-				case 'back':
+				case 'Back':
 					Dispatcher.call("browse");
 					break;
-				case 'save asset':
+				case 'Save File':
 					saveAsset();
 					break;
-				case 'cancel':
+				case 'Cancel':
 					uploadFile.cancel();
 					Dispatcher.call("browse");
 					break;
@@ -190,10 +190,10 @@ package Controller {
 			_validMeta = (view as NewAsset).metaForm.validate();
 			var valid:Boolean = true;
 			if(_validUpload && _validMeta) {
-				(view as NewAsset).navbar.setButtonColour("save asset","green");
+				(view as NewAsset).navbar.setButtonColour("Save File","green");
 				valid = true;
 			} else {
-				(view as NewAsset).navbar.setButtonColour("save asset","yellow");
+				(view as NewAsset).navbar.setButtonColour("Save File","yellow");
 				valid = false;
 			}
 			return valid;
@@ -203,9 +203,9 @@ package Controller {
 		private function lock():void {
 			(view as NewAsset).metaForm.lock();
 			(view as NewAsset).uploadForm.lock();
-			(view as NewAsset).navbar.removeButton("back");
-			(view as NewAsset).navbar.addButton("cancel","right");
-			(view as NewAsset).navbar.changeButtonName("save asset","saving");
+			(view as NewAsset).navbar.removeButton("Back");
+			(view as NewAsset).navbar.addButton("Cancel","right");
+			(view as NewAsset).navbar.changeButtonName("Save File","Saving");
 		}
 		
 		// Gets all the data together and sends the information to the model for upload

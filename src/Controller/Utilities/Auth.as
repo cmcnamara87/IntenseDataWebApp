@@ -65,7 +65,11 @@ package Controller.Utilities {
 			} else {			
 				var response:IDEvent = new IDEvent(IDEvent.LOGIN_RESPONSE);
 				response.data.success = false;
-				response.data.message = dataXML.reply.message;
+				if(dataXML.reply.message == "authentication failure") {
+					response.data.message = "Username or password\n incorrect";
+				} else {
+					response.data.message = dataXML.reply.message;
+				}
 				this.dispatchEvent(response);
 			}
 		

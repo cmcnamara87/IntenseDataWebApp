@@ -26,7 +26,7 @@ package View.Element {
 		// Sets up the progress bar text
 		private function setupText():void {
 			progressText.y = 10;
-			progressText.text = "choose media asset";
+			progressText.text = "Click here to select a media file";
 			progressText.selectable = false;
 			progressText.embedFonts = true;
 			progressText.mouseEnabled = false;

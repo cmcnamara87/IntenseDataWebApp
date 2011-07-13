@@ -345,11 +345,14 @@ package View.components.CollectionList
 		 */		
 		private function searchTermEntered(e:Event):void {
 			trace('Searching for: ', (e.target as TextInput).text);
-			
+			search((e.target as TextInput).text)
+		}
+		
+		private function search(searchTerm:String):void {
 			// Searches the fixed Collection List for matches
 			for(var i:Number = 0; i < fixedCollectionListItems.numElements; i++) {
 				var element:PanelElement = fixedCollectionListItems.getElementAt(i) as PanelElement;
-				if(!element.searchMatches((e.target as TextInput).text)) {
+				if(!element.searchMatches(searchTerm)) {
 					fixedCollectionListItems.getElementAt(i).visible = false;
 					fixedCollectionListItems.getElementAt(i).includeInLayout = false;
 				} else {
@@ -361,7 +364,7 @@ package View.components.CollectionList
 			// Searches the regular collection list for matches
 			for(i = 0; i < regularCollectionListItems.numElements; i++) {
 				element = regularCollectionListItems.getElementAt(i) as PanelElement;
-				if(!element.searchMatches((e.target as TextInput).text)) {
+				if(!element.searchMatches(searchTerm)) {
 					regularCollectionListItems.getElementAt(i).visible = false;
 					regularCollectionListItems.getElementAt(i).includeInLayout = false;
 				} else {
@@ -369,7 +372,7 @@ package View.components.CollectionList
 					regularCollectionListItems.getElementAt(i).includeInLayout = true;
 				}
 			}
-		}
+		} 
 		
 	}
 }

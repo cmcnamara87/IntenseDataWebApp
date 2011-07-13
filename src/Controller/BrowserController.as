@@ -19,10 +19,12 @@ package Controller {
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
+	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
+	import mx.events.FlexEvent;
 	
 	public class BrowserController extends AppController {
 		
@@ -60,7 +62,7 @@ package Controller {
 		private static var cachedCollectionMedia:Array = new Array(); 
 		private static var cachedCollections:Event;
 		
-		private var collectionListRefreshTimer:Timer;
+		private static var collectionTimer:Timer = new Timer(5000);
 		
 		public static var currentMediaData:Model_Media = null;
 		
@@ -71,12 +73,22 @@ package Controller {
 			resetShelf();
 			super();
 			
+			
+			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			currentView.addEventListener(Event.REMOVED_FROM_STAGE, stopTimerPlease);
+			currentView.addEventListener(FlexEvent.HIDE, stopTimerPlease );
+		}
+
+		public function stopTimerPlease(e:Event):void {
+			trace("Stoping view refresh timer");
+			collectionTimer.removeEventListener(TimerEvent.TIMER, refreshCollectionList);
 		}
 		
 		/**
 		 * Resets the browser's variables. Used when a user logs out. 
 		 */				
 		public static function resetBrowserController():void {
+			collectionTimer.stop();
 			editOn = false;
 			shelfOn = false;
 			currentCollectionAssets = new Array();
@@ -86,6 +98,7 @@ package Controller {
 			currentCollectionID = ALLASSETID;
 			cachedCollectionMedia = new Array();
 			cachedCollections = null;
+			
 		}
 		
 		
@@ -109,7 +122,10 @@ package Controller {
 			
 			
 			// Load the collections for the sidebar
-			refreshCollectionList();
+			loadAllMyCollections();
+			collectionTimer.addEventListener(TimerEvent.TIMER, refreshCollectionList);
+			collectionTimer.start();
+//			refreshCollectionList();
 			
 			// Load the appropriate assets for whatever
 			// collection we have selected when this runs (not just All Assets
@@ -127,10 +143,9 @@ package Controller {
 			}
 		}
 		
-		private function refreshCollectionList():void {
+		private function refreshCollectionList(e:TimerEvent):void {
 			trace("Refreshing collection list");
 			loadAllMyCollections();
-			setTimeout(refreshCollectionList, 60000);
 		}
 		
 		// Sets up all the event listeners

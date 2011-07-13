@@ -1237,7 +1237,7 @@ package Model {
 			})) {
 				//All good
 			} else {
-				Alert.show("Could not save asset");
+				Alert.show("Sorry, an error occured and we couldn't upload the file.");
 			}
 		}
 		
