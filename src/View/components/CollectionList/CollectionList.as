@@ -195,6 +195,10 @@ package View.components.CollectionList
 					newCollectionListItem.addEventListener(MouseEvent.CLICK, showLoadingOnClick);
 				
 			}
+			
+			if(searchInput.text != "Search") {
+				search(searchInput.text);
+			}
 		}
 
 		public function hideAllLoadingAnimations():void {
@@ -345,7 +349,7 @@ package View.components.CollectionList
 		 */		
 		private function searchTermEntered(e:Event):void {
 			trace('Searching for: ', (e.target as TextInput).text);
-			search((e.target as TextInput).text)
+			search((e.target as TextInput).text);
 		}
 		
 		private function search(searchTerm:String):void {

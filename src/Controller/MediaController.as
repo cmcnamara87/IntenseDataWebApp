@@ -145,7 +145,7 @@ package Controller {
 		 */	
 		private function deleteAssetButtonClicked(e:IDEvent):void {
 			//(view as AssetView).navbar.deselectButtons();
-			var myAlert:Alert = Alert.show("Are you sure you wish to delete this asset?", "Delete Asset", Alert.OK | Alert.CANCEL, null, deleteAsset, null, Alert.CANCEL);
+			var myAlert:Alert = Alert.show("Are you sure you wish to delete this file?", "Delete File", Alert.OK | Alert.CANCEL, null, deleteAsset, null, Alert.CANCEL);
 			myAlert.height=100;
 			myAlert.width=300;
 		}

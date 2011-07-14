@@ -369,13 +369,15 @@ package View.components.MediaViewer.PDFViewer {
 				trace("indexes", startTextIndex, endTextIndex);
 				// Make sure we are highlighting the right way (in case people drag backwards etc)
 				if(startTextIndex < endTextIndex) {
-					currentSnapshot.setSelected(startTextIndex, endTextIndex, true);
+					// dragged left to right
+					currentSnapshot.setSelected(startTextIndex, endTextIndex + 1, true);
 					this.startTextIndex = startTextIndex;
-					this.endTextIndex = endTextIndex;
+					this.endTextIndex = endTextIndex + 1;
 				} else {
-					currentSnapshot.setSelected(endTextIndex, startTextIndex, true);
+					// dragged right to left
+					currentSnapshot.setSelected(endTextIndex, startTextIndex + 1, true);
 					this.startTextIndex = endTextIndex;
-					this.endTextIndex = startTextIndex;
+					this.endTextIndex = startTextIndex + 1;
 				}	
 			
 //			} else if (startPage < finishPage) {

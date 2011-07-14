@@ -98,7 +98,6 @@ package Controller {
 			currentCollectionID = ALLASSETID;
 			cachedCollectionMedia = new Array();
 			cachedCollections = null;
-			
 		}
 		
 		
