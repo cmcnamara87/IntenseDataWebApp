@@ -90,7 +90,11 @@ package Controller {
 		
 		// Called on logout
 		public static function logout():void {
-			Auth.getInstance().logout();
+			Auth.getInstance().logout(true);
+			call(Router.getInstance().getURL());
+		}
+		public static function dumpOut():void {
+			Auth.getInstance().logout(false);
 			call(Router.getInstance().getURL());
 		}
 		

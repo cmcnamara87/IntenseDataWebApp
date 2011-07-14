@@ -13,6 +13,7 @@ package Model.Utilities {
 	import flash.net.URLVariables;
 	
 	import mx.controls.Alert;
+	import mx.events.CloseEvent;
 	
 	public class Connection extends Object {
 		
@@ -24,6 +25,8 @@ package Model.Utilities {
 		private var _mfNamespace:String = "";
 		
 		private static var _req:String = "";
+		
+		private static var connectionErrorShown:Boolean = false;
 		
 		// Initialise the collection
 		public function Connection(serverAddress:String,serverPort:Number) {
@@ -114,10 +117,22 @@ package Model.Utilities {
 			return result;
 		} 
 		
+		
 		// If a load error occurs
 		private function loadError(e:*):void {
-			Alert.show("Please check your internet settings","Connection Error");
-			Dispatcher.logout();
+			if(!connectionErrorShown) {
+				// Only show the connection error message, if one already isnt showing
+				connectionErrorShown = true;
+				
+				var myAlert:Alert = Alert.show("Please check your internet settings", "Connection Error", Alert.OK, null, function(e:CloseEvent):void {
+					if(e.detail == Alert.OK) {
+						// They clicked okay, now we can show it again if needback
+						connectionErrorShown = false;
+						Dispatcher.dumpOut();
+					}
+				}, null, Alert.OK);	
+			}
+					
 		}
 		
 		// Sets the server paths to mediaflux and its content

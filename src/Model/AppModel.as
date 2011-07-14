@@ -70,6 +70,7 @@ package Model {
 			args.password = password;
 			args.domain = domain;
 			var loginPackage:XML = _connection.packageRequest("system.logon",args,false);
+			trace("trying to login");
 			_connection.sendRequest(loginPackage, handler);
 		}
 		
