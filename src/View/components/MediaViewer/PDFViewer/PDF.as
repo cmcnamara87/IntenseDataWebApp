@@ -29,6 +29,7 @@ package View.components.MediaViewer.PDFViewer {
 	
 	import mx.controls.Alert;
 	import mx.core.UIComponent;
+	import mx.events.FlexEvent;
 	
 	/**
 	 * Holds a PDF (read from a swf file created when the pdf was uploaded) 
@@ -86,6 +87,7 @@ package View.components.MediaViewer.PDFViewer {
 		
 		
 		// CRAIGS VARIABLES
+		private var pageLoader:Loader;
 		private var pageNumberBeingLoaded:Number = 1; // The page of the pdf we are currently loading. Starts at 1
 		private var textSnapshotArray:Array = new Array(); // Stores the text snapshot for each page we have. We need to store the text
 															// snapshots otherwise they get garbage collected and the highlighting
@@ -106,6 +108,13 @@ package View.components.MediaViewer.PDFViewer {
 			this.swfURL = newURL;
 			this.addChild(pdfContainer);
 			loadSWF();
+			
+			this.addEventListener(Event.REMOVED_FROM_STAGE, unloadPDF);
+			this.addEventListener(FlexEvent.HIDE, unloadPDF);
+		}
+		
+		private function unloadPDF(e:Event):void {
+			pageLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, savePage);
 		}
 		
 		/**
@@ -113,7 +122,7 @@ package View.components.MediaViewer.PDFViewer {
 		 * 
 		 */		
 		private function loadSWF():void {
-			var pageLoader:Loader = new Loader();
+			pageLoader = new Loader();
 			var pageRequest:URLRequest = new URLRequest(this.swfURL + pageNumberBeingLoaded + ".swf");
 			pageLoader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
 				// The loading has progressed. 

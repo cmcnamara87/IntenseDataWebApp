@@ -124,7 +124,7 @@ package Model.Utilities {
 				// Only show the connection error message, if one already isnt showing
 				connectionErrorShown = true;
 				
-				var myAlert:Alert = Alert.show("Please check your internet settings", "Connection Error", Alert.OK, null, function(e:CloseEvent):void {
+				var myAlert:Alert = Alert.show("We were unable to contact the database. Please check your internet settings.", "Connection Error - Automatically Logging Off", Alert.OK, null, function(e:CloseEvent):void {
 					if(e.detail == Alert.OK) {
 						// They clicked okay, now we can show it again if needback
 						connectionErrorShown = false;
