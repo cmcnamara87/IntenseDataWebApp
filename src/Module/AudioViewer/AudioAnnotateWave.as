@@ -240,10 +240,19 @@ package Module.AudioViewer
 			trace("File Length", file.length, "Sample rate", _sampleRate);
 
 			// lets work out how many hours long the audio file is
-			var lengthInHours:Number = Math.floor(file.length / 1000 / 60 / 60); // its in useconds to minutes to hours
+			var lengthInMinutes:Number = Math.floor(file.length / 1000 / 60); // its in useconds to minutes
 			// for every hour, lets break it up into 300 segments (so for < 1hr, it just does it all in 1 go)
-			numberOfSections = Math.max(lengthInHours * 200, 1); //minumum of 1 section
-			trace("File is", lengthInHours, "segments", numberOfSections);
+			if(lengthInMinutes < 30) {
+				numberOfSections = 1;
+			} else if (lengthInMinutes < 60) { // for 30-60 minutes
+				numberOfSections = 150;
+			} else if (lengthInMinutes < 150) {
+				numberOfSections = 300; // not the same as doing it ever 30, as this would be 450 for 1hr50mins
+			} else {
+				numberOfSections = lengthInMinutes / 60 * 300; //minumum of 1 section
+			}
+//			numberOfSections = Math.max(lengthInHours * 300, 1); //minumum of 1 section
+			trace("File is", lengthInMinutes, "segments", numberOfSections);
 			
 			// lets try extracting a numberOfSections-th of a file, at a time
 			extractLength = file.length * _sampleRate / numberOfSections;
