@@ -66,7 +66,7 @@ package View.components.Panels.Sharing
 			// Create the checkbox for write access
 			//var readWriteCheckbox:CheckBox = new Checkbox();
 			readWriteCheckbox = new CheckBox();
-			readWriteCheckbox.label = "Full Access";
+			readWriteCheckbox.label = "Contribute";
 			readWriteCheckbox.selected = readWriteAccess;
 			this.addElement(readWriteCheckbox);
 			

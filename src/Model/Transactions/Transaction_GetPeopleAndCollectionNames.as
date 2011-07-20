@@ -53,9 +53,9 @@ package Model.Transactions
 							if(share.via_asset == assetID) {
 //								trace("Adding user", share.username);
 								if(share.access_level == SharingPanel.READWRITE) {
-									userArray.push(share.username + " - Full Access");
+									userArray.push(share.username + " - Contribute");
 								} else {
-									userArray.push(share.username + " - View Access Only");
+									userArray.push(share.username + " - Read");
 								}
 							}
 						}
