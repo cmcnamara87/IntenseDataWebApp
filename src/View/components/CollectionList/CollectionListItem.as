@@ -120,7 +120,7 @@ package View.components.CollectionList
 		
 		public function setSelected():void {
 			// Make this collection bold
-			super.setBackground(0x437AC6, 1);
+			super.setBackground(0xC3D3E6, 1);
 //			this.setStyle('fontWeight', 'bold');
 		}
 		

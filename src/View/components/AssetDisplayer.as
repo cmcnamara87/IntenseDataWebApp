@@ -165,7 +165,6 @@ package View.components
 		 * 
 		 */		
 		public function addMediaAssets(assetArray:Array):void {
-			
 			// Remove any loading message thats being displayed
 			loadingContentComplete();
 			

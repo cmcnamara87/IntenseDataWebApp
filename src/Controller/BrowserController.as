@@ -66,6 +66,8 @@ package Controller {
 		
 		public static var currentMediaData:Model_Media = null;
 		
+		public static var USERS_MANUAL_ASSET_ID:Number = 3411;
+		
 		//Calls the superclass
 		public function BrowserController() {
 			trace("--- Creating Browser Controller ---");
@@ -305,7 +307,6 @@ package Controller {
 		 */		
 		public function fixedCollectionAssetsLoaded(e:Event):void {
 			// TODO need to add in another transaction for this similar to the regular collections
-			
 			this.cacheCollectionMedia(ALLASSETID, e);
 			
 			if(currentCollectionID != ALLASSETID && currentCollectionID != SHAREDID) {
@@ -323,22 +324,25 @@ package Controller {
 			
 			// Convert XML return to Model_Media classes
 			var assets:Array = AppModel.getInstance().extractAssetsFromXML(XML(data), Model_Media);
-				
+			
 			// Since this is the list of the 'original files'
 			// we want to remove all duplicates (that is, assets that point to the same file type)
 			var files:Array = new Array();
 			var cleanAssets:Array = new Array();
 			
 			for each(var asset:Model_Media in assets) {
-				if(asset.meta_clone == false && asset.base_creator_username == Auth.getInstance().getUsername()) {
+				if(asset.meta_clone == false && (asset.base_creator_username == Auth.getInstance().getUsername() || asset.base_asset_id == USERS_MANUAL_ASSET_ID)) {
 					cleanAssets.push(asset);
 				} 
+				// set the ID to be negative, so we know if we put this asset in a collection
+				// its come from an original, not another view
 				asset.base_asset_id *= -1;
 			}
 
 			// Sort Alphabetically
 			cleanAssets.sortOn(["meta_title"],[Array.CASEINSENSITIVE]);
 			// Add the assets to the view
+			trace("assets being added");
 			currentView.addMediaAssets(cleanAssets);
 			
 			// Change to the Fixed toolbar
