@@ -716,6 +716,7 @@ package Controller {
 			assetData.base_asset_id = e.data.assetData.base_asset_id;
 			assetData.base_creator_username = e.data.assetData.base_creator_username;
 			assetData.meta_title = e.data.assetData.meta_title;
+			assetData.type = e.data.assetData.type;
 			assetData.meta_description = e.data.assetData.meta_description
 			
 			// Are we editing or creating a new discussion?
@@ -729,9 +730,14 @@ package Controller {
 				// just copying new or with discussion
 				if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
 					trace("dont copy annotations");
-					shelfAssets.push(assetData);
-					trace('Adding asset to shelf', assetData.base_asset_id);
-					currentView.addAssetToShelf(assetData);	
+					if(getShelfOn()) {
+						shelfAssets.push(assetData);
+						trace('Adding asset to shelf', assetData.base_asset_id);
+					} else {
+						editAssets.push(assetData);
+						trace('Adding asset to shelf', assetData.base_asset_id);
+					}
+					currentView.addAssetToShelf(assetData);
 					
 				} else {
 					var myAlert:Alert = Alert.show("Copy with Comments and Annotations?", "Add File", Alert.YES | Alert.NO, null,

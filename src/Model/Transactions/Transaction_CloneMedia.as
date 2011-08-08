@@ -15,6 +15,7 @@ package Model.Transactions
 		private var mediaID:Number; // THe ID of the media to clone
 		private var callback:Function;
 		private var clonedMediaID:Number;
+		private var cloneRelated:Boolean;
 		
 		public function Transaction_CloneMedia(connection:Connection)
 		{
@@ -30,6 +31,7 @@ package Model.Transactions
 		public function cloneMedia(mediaID:Number, cloneRelated:Boolean, callback:Function):void {
 			this.mediaID = mediaID;
 			this.callback = callback;
+			this.cloneRelated = cloneRelated;
 			
 			var args:Object = new Object();
 			args.id = mediaID;
@@ -55,7 +57,16 @@ package Model.Transactions
 			baseXML.service.args.clone.@version = 0;
 			baseXML.service.args.clone.@meta = false;
 			baseXML.service.args.clone.@content = true;
-			baseXML.service.args.clone.@related = true;
+			if(cloneRelated) {
+				trace("Transaction_CloneMedia:copyMeta - Copying related stuff");
+				baseXML.service.args["related"] = "";
+				
+				for each(var annotationID:String in dataXML.reply.result.asset.related.(@type=="has_child").to) {
+					baseXML.service.args["related"].appendChild(XML('<to relationship="has_child">' + annotationID + '</to>'));
+					trace("Transaction_CloneMedia:copyMeta - Adding stuff", annotationID);
+				}
+			
+			}
 			baseXML.service.args.clone = mediaID;
 			baseXML.service.args.namespace = dataXML.reply.result.asset.namespace;
 			baseXML.service.args.type = dataXML.reply.result.asset.type;
