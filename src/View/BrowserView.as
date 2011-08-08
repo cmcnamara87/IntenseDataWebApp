@@ -281,9 +281,9 @@ package View
 		 * @param assetID	The ID of the asset to remove from the shelf.
 		 * 
 		 */		
-		public function removeAssetFromShelf(assetID:Number):void {
-			myShelf.removeMediaAsset(assetID);
-			myAssetBrowser.updateAssetTile(assetID);
+		public function removeAssetFromShelf(assetID:Number, mtime:String):void {
+			myShelf.removeMediaAsset(assetID, mtime);
+			//myAssetBrowser.updateAssetTile(assetID);
 			
 		}
 		

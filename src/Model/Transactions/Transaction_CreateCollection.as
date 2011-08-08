@@ -49,11 +49,13 @@ package Model.Transactions
 		private function createNewClonesIfNeeded():void {
 			for(var i:Number = 0; i < shelfAssets.length; i++) {
 				var currentAssetID:Number = (shelfAssets[i] as Model_Media).base_asset_id;
+				var transaction:Transaction_CloneMedia = new Transaction_CloneMedia(connection);
 				if(currentAssetID < 0) {
-					var transaction:Transaction_CloneMedia = new Transaction_CloneMedia(connection);
-					transaction.cloneMedia(Math.abs(currentAssetID), mediaCloned);
+					// if its < 0, it tells us to copy the related (so all the comments etc)
+					transaction.cloneMedia(Math.abs(currentAssetID), true, mediaCloned);
 				} else {
-					newCollectionAssets.push(currentAssetID);
+					transaction.cloneMedia(Math.abs(currentAssetID), false, mediaCloned);
+//					newCollectionAssets.push(currentAssetID);
 				}
 			}
 			

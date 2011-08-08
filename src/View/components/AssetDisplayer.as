@@ -196,17 +196,19 @@ package View.components
 			content.addElement(new AssetTile(asset, eventToThrowWhenAssetClicked));	
 		}
 		
-		public function removeMediaAsset(assetID:Number):void {
+		public function removeMediaAsset(assetID:Number, mtime:String):void {
 			// Find the asset in the collection data
 			for(var i:Number = 0; i < assetsInCollection.length; i++) {
-				if((assetsInCollection[i] as Model_Media).base_asset_id == assetID) {
+				if((assetsInCollection[i] as Model_Media).base_asset_id == assetID && 
+					(assetsInCollection[i] as Model_Media).base_mtime == mtime) {
 					assetsInCollection.splice(i, i);
 				}
 			}
 			
 			// Find the asset in the visual data
 			for(i = 0; i < content.numElements; i++) {
-				if((content.getElementAt(i) as AssetTile).getAssetID() == assetID) {
+				if((content.getElementAt(i) as AssetTile).getAssetID() == assetID &&
+					(content.getElementAt(i) as AssetTile).getModTime() == mtime) {
 					content.removeElementAt(i);	
 				}
 			}

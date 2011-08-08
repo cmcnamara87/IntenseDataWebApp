@@ -18,6 +18,8 @@ package Controller {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
+	import flash.net.registerClassAlias;
+	import flash.utils.ByteArray;
 	import flash.utils.Timer;
 	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
@@ -29,7 +31,7 @@ package Controller {
 	public class BrowserController extends AppController {
 		
 		
-		public static const PORTAL:String = "View";
+		public static const PORTAL:String = "Discussion";
 		
 		private var collectionToDelete:Number = 0;
 		//private var addButton:SmallButton;
@@ -333,7 +335,7 @@ package Controller {
 				if(asset.meta_clone == false && asset.base_creator_username == Auth.getInstance().getUsername()) {
 					cleanAssets.push(asset);
 				} 
-				asset.base_asset_id *= -1;
+//				asset.base_asset_id *= -1;
 			}
 
 			// Sort Alphabetically
@@ -709,47 +711,66 @@ package Controller {
 		 */		
 		private function assetBrowserMediaClicked(e:IDEvent):void {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
+
+			var assetData:Model_Media = new Model_Media();
+			assetData.base_asset_id = e.data.assetData.base_asset_id;
+			assetData.base_creator_username = e.data.assetData.base_creator_username;
+			assetData.meta_title = e.data.assetData.meta_title;
+			assetData.meta_description = e.data.assetData.meta_description
 			
-			// Get out the clicked assets data
-			var assetData:Model_Media = e.data.assetData;
-			
-//			// We are going to make the asset ID negative, if we are making a clean copy
-//			// otherwise, we leave it as positive (its just an easy flag to do)
-//			if(currentCollectionID == ALLASSETID) {
-//				assetData.base_asset_id = assetData.base_asset_id * -1;
-//			}
-//			
-			// CHeck if the shelf is on
-			if(getShelfOn()) {
-				// The shelf is on, so lets check if we have already added this item to the shelfAssets, and its there remove it
-				if(findAndRemoveAssetFromShelf(assetData.base_asset_id, BrowserController.shelfAssets)) {
-					// we found and removed it,
-					// so its already on the shelf, lets tell the view to remove it.
-					trace('Removing asset from shelf', assetData.base_asset_id);
-					currentView.removeAssetFromShelf(assetData.base_asset_id);
-				} else {
-					// Isn't in the shelf, so lets add it.
+			// Are we editing or creating a new discussion?
+			if(getEditOn() || getShelfOn()) {
+				
+				// Set the modify time, so we can identify this asset
+				assetData.base_mtime = (new Date()).getTime() + "";
+				
+				// We are editng/creating
+				// so lets show a dialog that asks people to choose between
+				// just copying new or with discussion
+				if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
+					trace("dont copy annotations");
 					shelfAssets.push(assetData);
 					trace('Adding asset to shelf', assetData.base_asset_id);
-					currentView.addAssetToShelf(assetData);
-				}
-				
-				// Changes the number on the "New Collection" button
-				currentView.updateNewCollectionButton();
-				
-				return;
-			} else if (getEditOn()) {
-				// Edit is on, so lets check if we have already added this item to the editAssets, and its there remove it
-				if(findAndRemoveAssetFromShelf(assetData.base_asset_id, BrowserController.editAssets)) {
-					// we found and removed it,
-					// so its already on the shelf, lets tell the view to remove it.
-					trace('Removing asset from shelf', assetData.base_asset_id);
-					currentView.removeAssetFromShelf(assetData.base_asset_id);
+					currentView.addAssetToShelf(assetData);	
+					
 				} else {
-					// Isn't in the shelf, so lets add it.
-					editAssets.push(assetData);
-					trace('Adding asset to shelf', assetData.base_asset_id);
-					currentView.addAssetToShelf(assetData);
+					var myAlert:Alert = Alert.show("Copy with Comments and Annotations?", "Add File", Alert.YES | Alert.NO, null,
+						
+						function(e:CloseEvent):void {
+							if (e.detail==Alert.YES) {
+								// Copy annotations to new file
+								trace("should copy annotations here");
+								// add to either edit or creation list
+								trace('Adding asset to shelf', assetData.base_asset_id);
+								
+								// we change the base_asset_id to be a negative number
+								// to signify we want to copy the annotations as well, when we create the discussion
+								assetData.base_asset_id = assetData.base_asset_id * -1;
+								
+								if(getShelfOn()) {
+									shelfAssets.push(assetData);
+									trace('Adding asset to shelf', assetData.base_asset_id);
+								} else {
+									editAssets.push(assetData);
+								}
+								currentView.addAssetToShelf(assetData);	
+							} else {
+								// Dont copy annotations to the new file
+								trace("dont copy annotations");
+								if(getShelfOn()) {
+									shelfAssets.push(assetData);
+									trace('Adding asset to shelf', assetData.base_asset_id);
+								} else {
+									editAssets.push(assetData);
+								}
+								currentView.addAssetToShelf(assetData);	
+							}
+						}, 
+						
+						null, Alert.CANCEL);
+					myAlert.height = 100;
+					myAlert.width = 300;
+					
 				}
 				return;
 			}
@@ -760,42 +781,53 @@ package Controller {
 			
 			// TODO REMOVE THIS
 			var viewURL:String = "";
-			currentMediaData = assetData;
-			currentMediaData.base_asset_id = Math.abs(currentMediaData.base_asset_id);
-			//if(assetData.type == "image" || assetData.type == "video" || assetData.type == "audio") {
-			// Show the asset view
-				viewURL = 'view/' + Math.abs(assetData.base_asset_id);
-			//} else {
-		//		viewURL = 'view_old/' + assetData.base_asset_id;
-		//	}
+			currentMediaData = e.data.assetData;
+			viewURL = 'view/' + e.data.assetData.base_asset_id;
 			Dispatcher.call(viewURL);
 		}
 		
+		/**
+		 * Removes clicked file from the current discussion 
+		 * @param e
+		 * 
+		 */		
 		private function shelfMediaClicked(e:IDEvent):void {
+			trace("Shelf media clicked", e.data.assetData.base_asset_id, e.data.assetData.base_mtime);
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			// Get out the clicked assets data
 			var assetData:Model_Media = e.data.assetData;
 			
+			var arrayToSearch:Array;
 			if(BrowserController.getEditOn()) {
-				// The shelf must be on, otherwose, how did we clicked it
-				if(findAndRemoveAssetFromShelf(assetData.base_asset_id, BrowserController.editAssets)) {
-					// we found and removed it,
-					// so its already on the shelf, lets tell the view to remove it.
-					trace('Removing asset from shelf', assetData.base_asset_id);
-					currentView.removeAssetFromShelf(assetData.base_asset_id);
-				}
+				arrayToSearch = BrowserController.editAssets;
 			} else if (BrowserController.getShelfOn()) {
-				// The shelf must be on, otherwose, how did we clicked it
-				if(findAndRemoveAssetFromShelf(assetData.base_asset_id, BrowserController.shelfAssets)) {
-					// we found and removed it,
-					// so its already on the shelf, lets tell the view to remove it.
-					trace('Removing asset from shelf', assetData.base_asset_id);
-					currentView.removeAssetFromShelf(assetData.base_asset_id);
-				}
-				currentView.updateNewCollectionButton();
+				arrayToSearch = BrowserController.shelfAssets;
 			}
 			
+			
+			var newShelfAssetsArray:Array = new Array();
+			
+			for(var i:Number = 0; i < arrayToSearch.length; i++) {
+				trace("BrowserController:shelfMediaClicked - Checking to remove", (arrayToSearch[i] as Model_Media).base_asset_id, (arrayToSearch[i] as Model_Media).base_mtime);
+				// The asset does not match the given asset id to remove
+				if(!(assetData.base_asset_id == (arrayToSearch[i] as Model_Media).base_asset_id &&
+					assetData.base_mtime == (arrayToSearch[i] as Model_Media).base_mtime)) {
+					newShelfAssetsArray.push((arrayToSearch[i] as Model_Media));
+				} else {
+					trace("asset removed", (arrayToSearch[i] as Model_Media).base_asset_id);
+				}
+			}
+
+			if(arrayToSearch == BrowserController.editAssets) {
+				BrowserController.editAssets = newShelfAssetsArray;
+			} else if (arrayToSearch == BrowserController.shelfAssets) {
+				BrowserController.shelfAssets = newShelfAssetsArray;
+			}
+			
+			currentView.removeAssetFromShelf(assetData.base_asset_id, assetData.base_mtime);
+			// only really used for the shelf, but can do it regardless even if its editing not the shelf
+			currentView.updateNewCollectionButton();	
 		}
 		
 		/**
@@ -1033,14 +1065,15 @@ package Controller {
 		 * @return true if the asset is on the shelf or false if its not.
 		 * 
 		 */				
-		private function findAndRemoveAssetFromShelf(assetID:Number, arrayToSearch:Array):Boolean {
+		private function findAndRemoveAssetFromShelf(asset:Model_Media, arrayToSearch:Array):Boolean {
 			var returnValue:Boolean = false;
 			
 			var newShelfAssetsArray:Array = new Array();
 			
 			for(var i:Number = 0; i < arrayToSearch.length; i++) {
 				// The asset does not match the given asset id to remove
-				if(assetID != (arrayToSearch[i] as Model_Media).base_asset_id) {
+				
+				if(asset.base_asset_id != (arrayToSearch[i] as Model_Media).base_asset_id) {
 					// Add it to the new shelf assets array
 					newShelfAssetsArray.push((arrayToSearch[i] as Model_Media));
 				} else {

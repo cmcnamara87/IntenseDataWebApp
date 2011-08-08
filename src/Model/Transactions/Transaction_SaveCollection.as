@@ -169,9 +169,11 @@ package Model.Transactions {
 				var currentAssetID:Number = addMediaAssetsIDs[i];
 				if(currentAssetID < 0) {
 					var transaction:Transaction_CloneMedia = new Transaction_CloneMedia(_connection);
-					transaction.cloneMedia(Math.abs(currentAssetID), mediaCloned);
+					transaction.cloneMedia(Math.abs(currentAssetID), true, mediaCloned);
 				} else {
-					addMediaAssetsClonedIDs.push(currentAssetID);
+					var transaction:Transaction_CloneMedia = new Transaction_CloneMedia(_connection);
+					transaction.cloneMedia(Math.abs(currentAssetID), false, mediaCloned);
+//					addMediaAssetsClonedIDs.push(currentAssetID);
 				}
 			}
 			

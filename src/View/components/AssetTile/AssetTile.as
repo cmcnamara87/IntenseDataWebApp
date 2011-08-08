@@ -136,13 +136,12 @@ package View.components.AssetTile
 				// instead of add.
 				for(var i:Number = 0; i < assetsToMatch.length; i++) {
 					
-					// Math.abs as the asset id is set to negative one if its copied from 'your files'
 					var assetID:Number = (assetsToMatch[i] as Model_Media).base_asset_id;
 					trace("Asset In Edit", assetID);
 					if(assetID == this.assetData.base_asset_id) {
 						// If we are making a new copy of the asset, we set it to say 'remove new'
 						// otherwise, it just says 'remove'
-						if(assetID < 0) {
+						if(assetID >= 0) {
 							image.setRemoveOverlay(true);
 						} else {
 							image.setRemoveOverlay(false);
@@ -225,7 +224,7 @@ package View.components.AssetTile
 //			myAlert.width = 300;
 			
 			image.showRegularIcon();
-			showOverlay();
+//			showOverlay();
 		}
 		
 		private function mouseDown(e:MouseEvent):void {
@@ -248,6 +247,10 @@ package View.components.AssetTile
 		 */		
 		public function getAssetID():Number {
 			return assetData.base_asset_id;
+		}
+		
+		public function getModTime():String {
+			return assetData.base_mtime;
 		}
 		
 		public function getTitle():String {

@@ -113,8 +113,8 @@ package View.components
 			myAssetDisplayer.addMediaAsset(asset);
 		}
 		
-		public function removeMediaAsset(assetID:Number):void {
-			myAssetDisplayer.removeMediaAsset(assetID);
+		public function removeMediaAsset(assetID:Number, mtime:String):void {
+			myAssetDisplayer.removeMediaAsset(assetID, mtime);
 		}
 		
 		/**

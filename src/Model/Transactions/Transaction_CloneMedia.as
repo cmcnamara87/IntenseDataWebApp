@@ -27,7 +27,7 @@ package Model.Transactions
 		 * @param callback	The function to call when completed - callback(newMediaID:Number);
 		 * 
 		 */		
-		public function cloneMedia(mediaID:Number, callback:Function):void {
+		public function cloneMedia(mediaID:Number, cloneRelated:Boolean, callback:Function):void {
 			this.mediaID = mediaID;
 			this.callback = callback;
 			
@@ -55,6 +55,7 @@ package Model.Transactions
 			baseXML.service.args.clone.@version = 0;
 			baseXML.service.args.clone.@meta = false;
 			baseXML.service.args.clone.@content = true;
+			baseXML.service.args.clone.@related = true;
 			baseXML.service.args.clone = mediaID;
 			baseXML.service.args.namespace = dataXML.reply.result.asset.namespace;
 			baseXML.service.args.type = dataXML.reply.result.asset.type;

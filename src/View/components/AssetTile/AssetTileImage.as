@@ -124,7 +124,7 @@ package View.components.AssetTile
 			if(makingCopy) {
 				overlayLabel.text = "Remove New";
 			} else {
-				overlayLabel.text = "Remove";
+				overlayLabel.text = "Remove Copy";
 			}
 			// Fade it out
 			Lib.it.transitions.Tweener.addTween(editingOverlay,{transition:"easeInOutCubic",time:0.2,alpha:1});
