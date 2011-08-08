@@ -66,6 +66,8 @@ package Controller {
 		
 		public static var currentMediaData:Model_Media = null;
 		
+		public static var USERS_MANUAL_ASSET_ID:Number = 3453;
+		
 		//Calls the superclass
 		public function BrowserController() {
 			trace("--- Creating Browser Controller ---");
@@ -330,7 +332,7 @@ package Controller {
 			var cleanAssets:Array = new Array();
 			
 			for each(var asset:Model_Media in assets) {
-				if(asset.meta_clone == false && asset.base_creator_username == Auth.getInstance().getUsername()) {
+				if(asset.meta_clone == false && (asset.base_creator_username == Auth.getInstance().getUsername() || asset.base_asset_id == USERS_MANUAL_ASSET_ID)) {
 					cleanAssets.push(asset);
 				} 
 				asset.base_asset_id *= -1;

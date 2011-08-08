@@ -303,7 +303,13 @@ package View
 			deleteAssetButton.visible = true;
 			deleteAssetButton.includeInLayout = true;
 			deleteAssetButton.enabled = true;
+			
+			if(mediaData && mediaData.base_asset_id == BrowserController.USERS_MANUAL_ASSET_ID) {
+				deleteAssetButton.visible = false;
+				deleteAssetButton.includeInLayout = false;
+			}
 		}
+		
 		
 		private function setupButtonsAccess():void {
 			// Enable all the buttons since we have loaded the data now
