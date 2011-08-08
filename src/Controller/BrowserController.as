@@ -66,6 +66,7 @@ package Controller {
 		
 		public static var currentMediaData:Model_Media = null;
 		
+		
 		public static var USERS_MANUAL_ASSET_ID:Number = 3453;
 		
 		//Calls the superclass
