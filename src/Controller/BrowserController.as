@@ -29,7 +29,7 @@ package Controller {
 	public class BrowserController extends AppController {
 		
 		
-		public static const PORTAL:String = "Discussion";
+		public static const PORTAL:String = "View";
 		
 		private var collectionToDelete:Number = 0;
 		//private var addButton:SmallButton;
