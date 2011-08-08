@@ -50,9 +50,17 @@ package Model {
 			if(rawData.meta.r_resource.description == "") {
 				// Because we werent setting this intially, we can just echo out the number of children
 				// this isnt accurate, as it includes comments etc in the children count
-				meta_description = numberOfChildren()  + " assets."
+				if(numberOfChildren() == 1) {
+					meta_description = numberOfChildren()  + " file."
+				} else {
+					meta_description = numberOfChildren()  + " files."
+				}
 			} else {
-				meta_description = rawData.meta.r_resource.description + " assets."
+				if(rawData.meta.r_resource.description == 1) {
+					meta_description = rawData.meta.r_resource.description + " file."
+				} else {
+					meta_description = rawData.meta.r_resource.description + " files."
+				}
 			}
 		}
 		

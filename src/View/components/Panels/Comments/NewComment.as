@@ -1,7 +1,9 @@
-package View.components.Comments
+package View.components.Panels.Comments
 {
 	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
+	
+	import Lib.LoadingAnimation.LoadAnim;
 	
 	import flash.events.MouseEvent;
 	
@@ -132,6 +134,8 @@ package View.components.Comments
 			
 			// Send the ID of the comment its replying to, 0 if not a reply.
 			clickEvent.data.replyingToID = replyingToID;
+			
+			this.enabled = false;
 			
 			clickEvent.data.newCommentObject = this;
 			this.dispatchEvent(clickEvent);

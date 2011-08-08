@@ -166,7 +166,7 @@ package Module.AudioViewer {
 				var newBubble:AnnotationBubble = new AnnotationBubble(annotation,this);
 				_annotaterView.annotations.addChild(newBubble);
 				newBubble.x = Math.floor(annotation.x)+_timeline.x+this.x;
-				newBubble.y =  _annotaterView.getYLevelHeight(annotation.yLevel,_maxLevel)+10;
+				newBubble.y =  _annotaterView.getYLevelHeight(annotation.yLevel,_maxLevel)+30;
 			}
 		}
 		

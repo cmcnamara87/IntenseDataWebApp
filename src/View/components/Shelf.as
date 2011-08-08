@@ -1,5 +1,6 @@
 package View.components
 {
+	import Controller.BrowserController;
 	import Controller.IDEvent;
 	
 	import Model.Model_Collection;
@@ -7,6 +8,7 @@ package View.components
 	
 	import flash.events.MouseEvent;
 	
+	import mx.controls.Alert;
 	import mx.controls.Button;
 	import mx.controls.TextInput;
 	import mx.graphics.GradientEntry;
@@ -23,6 +25,11 @@ package View.components
 	{
 		private var myAssetDisplayer:AssetDisplayer; // Displays the assets as tiles
 		private var collectionTextInput:TextInput; // the collection name input
+		
+		private var saveButton:IDButton;
+		private var closeButton:IDButton;
+		private var clearButton:IDButton;
+		
 		/**
 		 * The shelf is where items can be temporarily stored, and makes collections.
 		 * Scrolls up from the bottom of the page. 
@@ -72,10 +79,15 @@ package View.components
 			collectionTitleBox.addElement(collectionTextInput);
 			
 			// Add 'Save' Button
-			var saveButton:Button = new Button();
-			saveButton.label = "Save Collection";
-			saveButton.percentHeight = 100;
+			saveButton = new IDButton('Save ' + BrowserController.PORTAL);
 			collectionTitleBox.addElement(saveButton);
+			
+			clearButton = new IDButton('Clear');
+			collectionTitleBox.addElement(clearButton);
+			
+			closeButton = new IDButton('X');
+			closeButton.width = 30;
+			collectionTitleBox.addElement(closeButton);
 			
 			// Add the Asset Displayer
 			myAssetDisplayer = new AssetDisplayer(IDEvent.SHELF_MEDIA_CLICKED, true);
@@ -86,10 +98,12 @@ package View.components
 			
 			// Listen for Save Button clicked
 			saveButton.addEventListener(MouseEvent.CLICK, saveButtonClicked);
-				
 			
+			// Listen for clear butotn clicked
+			clearButton.addEventListener(MouseEvent.CLICK, clearShelfButtonClicked);
+			closeButton.addEventListener(MouseEvent.CLICK, closeShelfButtonClicked);
 		}
-		
+
 		/**
 		 * Add a media tile to the display 
 		 * @param 	asset	A media object
@@ -106,9 +120,11 @@ package View.components
 		/**
 		 * Removes the current Assets being displayed 
 		 */		
-		public function clearMediaAssets():void {
+		public function clearMediaAssets(keepTitle:Boolean=false):void {
 			myAssetDisplayer.clearMediaAssets();
-			collectionTextInput.text = "";
+			if(!keepTitle) {
+				collectionTextInput.text = "";
+			}
 		}
 		
 		public function setCollectionName(name:String):void {
@@ -117,6 +133,13 @@ package View.components
 		
 		public function refreshMediaAssetsDisplay():void {
 			myAssetDisplayer.refreshMediaAssetsDisplay();
+		}
+		
+		public function enableButtons():void {
+			collectionTextInput.enabled = true;
+			saveButton.enabled = true;
+			clearButton.enabled = true;
+			closeButton.enabled = true;
 		}
 		
 		/* ======================================== EVENT LISTENERS ======================================== */
@@ -137,9 +160,27 @@ package View.components
 					
 				// Clear the 'collection name' entered (so its clear for next time :)
 				collectionTextInput.text = "";
+				
+				collectionTextInput.enabled = false;
+				saveButton.enabled = false;
+				clearButton.enabled = false;
+				closeButton.enabled = false;
+				
 				this.dispatchEvent(clickEvent);
+			} else {
+				// Collection name is empty
+				Alert.show("Please enter a name for the " + BrowserController.PORTAL);
 			}
-			
+		}
+		
+		private function clearShelfButtonClicked(e:MouseEvent):void {
+			trace("Shelf:clearShelfButtonClicked");
+			this.dispatchEvent(new IDEvent(IDEvent.SHELF_CLEAR_BUTTON_CLICKED, true));
+		}
+		
+		private function closeShelfButtonClicked(e:MouseEvent):void {
+			trace("Shelf:closeShelfButtonClicked");
+			this.dispatchEvent(new IDEvent(IDEvent.SHELF_CLOSE_BUTTON_CLICKED, true));
 		}
 		
 		

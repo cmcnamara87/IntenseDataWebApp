@@ -1,7 +1,9 @@
 package View
 {
+	import Controller.BrowserController;
 	import Controller.Dispatcher;
 	import Controller.IDEvent;
+	import Controller.Utilities.Auth;
 	
 	import Model.Model_Media;
 	
@@ -10,10 +12,7 @@ package View
 	import Module.PDFViewer.PDFViewer;
 	import Module.Videoviewer.Videoview;
 	
-	import View.components.AnnotationList.AnnotationListPanel;
-	import View.components.Comments.CommentsPanel;
-	import View.components.Comments.NewComment;
-	import View.components.EditDetails.EditDetailsPanel;
+	import View.components.IDButton;
 	import View.components.IDGUI;
 	import View.components.MediaViewer.AudioViewer;
 	import View.components.MediaViewer.ImageViewer.ImageViewerOLD;
@@ -21,8 +20,13 @@ package View
 	import View.components.MediaViewer.MediaViewer;
 	import View.components.MediaViewer.VideoViewer.VideoViewer;
 	import View.components.MediaViewer.Viewer;
-	import View.components.Panel;
-	import View.components.Sharing.SharingPanel;
+	import View.components.Panels.AnnotationList.AnnotationListPanel;
+	import View.components.Panels.Comments.CommentsPanel;
+	import View.components.Panels.Comments.NewComment;
+	import View.components.Panels.EditDetails.EditDetailsPanel;
+	import View.components.Panels.Panel;
+	import View.components.Panels.People.PeoplePanel;
+	import View.components.Panels.Sharing.SharingPanel;
 	import View.components.Toolbar;
 	
 	import flash.events.MouseEvent;
@@ -56,6 +60,7 @@ package View
 		private var mySharingPanel:SharingPanel;	// The sharing panel
 		private var myEditPanel:EditDetailsPanel; // The temporary edit panel
 		private var myAnnotationListPanel:AnnotationListPanel;
+		private var myPeoplePanel:PeoplePanel;
 		
 		private var mediaViewer:MediaViewer;
 		private var mediaData:Model_Media;	// The Media's Meta-data
@@ -65,15 +70,18 @@ package View
 		private var downloadButton:Button;
 		private var addAnnotationButton:Button;
 		private var hideShowAnnotationButton:Button;
-		private var deleteAssetButton:Button;
+		private var deleteAssetButton:IDButton;
 		private var editDetailsButton:Button;
 		private var shareButton:Button;
+		private var viewsButton:IDButton;
 		private var annotationListButton:Button;
 		private var commentsButton:Button;
 		
 		private var viewerAndPanels:HGroup;
 		
 		public static var saveAnnotationFunction:Function;
+		
+		private var commentCount:Number = 0;
 		
 		// Can remove the save annotation function after redoing the modules, only there for dekkers code
 		public function MediaView(saveAnnotationFunction:Function)
@@ -133,13 +141,15 @@ package View
 			var addAnnotationEditDetailsLine:Line = IDGUI.makeLine()
 			myToolbar.addElement(addAnnotationEditDetailsLine);
 			
-			deleteAssetButton = IDGUI.makeButton("Delete File")
+			deleteAssetButton = new IDButton("Delete File", false, false);
 			deleteAssetButton.enabled = false;
+			
 			myToolbar.addElement(deleteAssetButton);
 			
 			var deleteAddLine:Line = IDGUI.makeLine();
-			myToolbar.addElement(deleteAddLine);
+//			myToolbar.addElement(deleteAddLine);
 			
+			// ADD THE PANELS
 			// Add Edit Details button
 			editDetailsButton = IDGUI.makeButton('Edit Details');
 			editDetailsButton.enabled = false;
@@ -147,8 +157,12 @@ package View
 			
 			// Add Share buttons
 			shareButton = IDGUI.makeButton('Share');
-			shareButton.enabled = false;
-			myToolbar.addElement(shareButton);
+//			shareButton.enabled = false;
+//			myToolbar.addElement(shareButton);
+			
+			viewsButton = new IDButton(BrowserController.PORTAL + 's');
+			viewsButton.enabled = false;
+			myToolbar.addElement(viewsButton);
 			
 			// Add annotations button
 			annotationListButton = IDGUI.makeButton('Annotation List');
@@ -179,6 +193,9 @@ package View
 			// Create the Panels
 			this.addPanels(viewerAndPanels);
 			
+			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
+				this.hideButtonsForPureAssetView();	
+			}
 			// Add Event Listeners
 			deleteAssetButton.addEventListener(MouseEvent.CLICK, deleteAssetButtonClicked);
 			addAnnotationButton.addEventListener(MouseEvent.CLICK, addAnnotationButtonClicked);
@@ -193,19 +210,22 @@ package View
 			
 			backButton.addEventListener(MouseEvent.CLICK, backButtonClicked);
 			downloadButton.addEventListener(MouseEvent.CLICK, downloadButtonClicked);
+			
+			viewsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
 		}
 		
 		
 		
 		/* ============== INPUT FUNCTIONS CALLED BY CONTROLLER ================ */
 		public function addMediaData(mediaData:Model_Media):void {
+			trace("MediaView:addMediaData Adding data", mediaData);
 			trace("Media Data Loaded");
 			this.mediaData = mediaData;
 			
 			setHeading(mediaData.meta_title);
 			
 			myEditPanel.addDetails(mediaData);
-			
+				
 			// Check what kind of media it is
 			trace("Media Type:", mediaData.type);
 			trace("Media Title:", mediaData.meta_title);
@@ -247,17 +267,77 @@ package View
 			
 			// Enable the back button 
 			backButton.enabled = true;
-			downloadButton.enabled = true;
-			trace("- File access permissions:", mediaData.access_modify);
-			if(mediaData.access_modify) {
-				deleteAssetButton.enabled = true;
-				addAnnotationButton.enabled = true;
-				editDetailsButton.enabled = true;
-				hideShowAnnotationButton.enabled = true;
-				shareButton.enabled = true;
-				annotationListButton.enabled = true;
-				commentsButton.enabled = true;
+			
+			// If we are the author, then the button should say 'delete'
+			// otherwise it will say remove
+			if(mediaData.base_creator_username == Auth.getInstance().getUsername()) {
+				deleteAssetButton.label = "Delete File";
+			} else {
+				deleteAssetButton.label = "Remove File";
 			}
+			
+			setupButtonsAccess();
+			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
+				this.hideButtonsForPureAssetView();	
+			}
+		}
+		
+		private function hideButtonsForPureAssetView():void {
+			// If we are looking through the 'your files' in the browser controller
+			// we only show the asset, no features, like annoattions etc
+			addAnnotationButton.visible = false;
+			addAnnotationButton.includeInLayout = false;
+			hideShowAnnotationButton.visible = false;
+			hideShowAnnotationButton.includeInLayout = false;
+			editDetailsButton.visible = false;
+			editDetailsButton.includeInLayout = false;			
+			shareButton.visible = false;
+			shareButton.includeInLayout = false;
+			annotationListButton.visible = false;
+			annotationListButton.includeInLayout = false;
+			commentsButton.visible = false;
+			commentsButton.includeInLayout = false;
+			viewsButton.visible = false;
+			viewsButton.includeInLayout = false;
+			
+			deleteAssetButton.visible = true;
+			deleteAssetButton.includeInLayout = true;
+			deleteAssetButton.enabled = true;
+		}
+		
+		private function setupButtonsAccess():void {
+			// Enable all the buttons since we have loaded the data now
+			editDetailsButton.enabled = true;
+			hideShowAnnotationButton.enabled = true;
+//			shareButton.enabled = true;
+			shareButton.includeInLayout = false;
+			shareButton.visible = false;
+			annotationListButton.enabled = true;
+			commentsButton.enabled = true;
+			viewsButton.enabled = true;
+			
+			trace("- File access permissions:", mediaData.access_modify_content);
+			if(mediaData.access_modify_content) {
+				// We have modify access to the file, so we enable adding annotations
+				addAnnotationButton.enabled = true;
+				downloadButton.enabled = true;
+			}
+			
+			// The delete button should be enabled, provided its been shared via the asset
+			// and not via the collection 
+			if(mediaData.meta_media_access_level == SharingPanel.READWRITE || 
+				mediaData.meta_media_access_level == SharingPanel.READ) {
+				// We have read-write or read access to the file itself
+				// not through a collection
+				deleteAssetButton.enabled = true;
+			} 
+			
+			//			}
+			
+			mySharingPanel.setUserAccess(mediaData.access_modify_content);
+			myAnnotationListPanel.setUserAccess(mediaData.access_modify_content);
+			myEditPanel.setUserAccess(mediaData.access_modify_content);
+			myCommentsPanel.setUserAccess(mediaData.access_modify_content);
 		}
 		
 		/**
@@ -265,10 +345,13 @@ package View
 		 * Passes the data to the sharing panel. 
 		 * @param	sharingData	An array of data with user+access information.
 		 */		
-		public function setupAssetsSharingInformation(sharingData:Array):void {
-			mySharingPanel.setupAssetsSharingInformation(sharingData);
+		public function setupAssetsSharingInformation(sharingData:Array, assetCreatorUsername:String):void {
+			mySharingPanel.setupAssetsSharingInformation(sharingData, assetCreatorUsername);
 		}
 		
+		public function addPeople(peopleCollection:Array):void {
+			myPeoplePanel.addPeople(peopleCollection, mediaData.base_asset_id);	
+		}
 		
 		public function setHeading(text:String):void {
 			// Set heading
@@ -285,7 +368,11 @@ package View
 		public function addComments(commentsArray:Array):void {
 			trace("Adding Comments...");
 			myCommentsPanel.addComments(commentsArray);
-			commentsButton.label = "Comments (" + commentsArray.length + ")";
+			setCommentCount(commentsArray.length);
+		}
+		private function setCommentCount(count:Number):void {
+			this.commentCount = count;
+			commentsButton.label = "Comments (" + count + ")";
 		}
 		
 		public function addAnnotations(annotationsArray:Array):void {
@@ -294,9 +381,13 @@ package View
 			myAnnotationListPanel.addAnnotations(annotationsArray);
 			annotationListButton.label = "Annotation List (" + annotationsArray.length + ")";
 			// Add annotation to viewer
-			if(mediaViewer) {
+			if(mediaViewer && BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
 				mediaViewer.addAnnotations(annotationsArray);
 			}
+		}
+		
+		public function unlockSharingPanelUsers():void {
+			mySharingPanel.unlockUsers();
 		}
 		
 		/* ============== UPDATE FUNCTIONS CALLED BY CONTROLLER ================= */
@@ -307,6 +398,7 @@ package View
 		 * 
 		 */		
 		public function commentSaved(commentID:Number, commentText:String, newCommentObject:NewComment):void {
+			setCommentCount(commentCount + 1);
 			myCommentsPanel.commentSaved(commentID, commentText, newCommentObject);
 		}
 		
@@ -389,6 +481,10 @@ package View
 					mySharingPanel.width = Panel.DEFAULT_WIDTH;
 					mySharingPanel.visible = true;
 					break;
+				case viewsButton:
+					myPeoplePanel.width = Panel.DEFAULT_WIDTH;
+					myPeoplePanel.visible = true;
+					break;
 				case annotationListButton:
 					trace("annotation list button clicked");
 					myAnnotationListPanel.width = Panel.DEFAULT_WIDTH;
@@ -458,6 +554,11 @@ package View
 			mySharingPanel.visible = false;
 			viewerAndPanels.addElement(mySharingPanel);
 			
+			myPeoplePanel = new PeoplePanel();
+			myPeoplePanel.width = 0;
+			myPeoplePanel.visible = false;
+			viewerAndPanels.addElement(myPeoplePanel);
+			
 			// Lets add the Comments Panel
 			myCommentsPanel = new CommentsPanel();
 			myCommentsPanel.width = 0;
@@ -480,6 +581,8 @@ package View
 			mySharingPanel.width = 0;
 			myAnnotationListPanel.width = 0;
 			myAnnotationListPanel.visible = false;
+			myPeoplePanel.width = 0;
+			myPeoplePanel.visible = false;
 		}
 		
 	}

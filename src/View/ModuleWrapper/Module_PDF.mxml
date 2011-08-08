@@ -6,7 +6,8 @@
 		<![CDATA[
 			public var external:Boolean = true;
 			public function formatURI(dataURI:String):String {
-				return "http://recensio.dyndns.org/"+dataURI;
+//				return "http://recensio.dyndns.org/"+dataURI;
+				return Recensio_Flex_Beta.serverAddress + "/" + dataURI;
 			}
 		]]>
 	</fx:Script>

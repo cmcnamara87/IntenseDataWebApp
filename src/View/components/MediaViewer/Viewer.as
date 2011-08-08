@@ -217,7 +217,7 @@ package View.components.MediaViewer
 			this.addEventListener(IDEvent.ANNOTATION_MOUSE_OUT, annotationMouseOut);
 			
 			media.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
-				trace("got a progress event");
+//				trace("got a progress event");
 				loadingLabel.text = "Loading " + Math.round((e.bytesLoaded / e.bytesTotal * 100)) + "%";
 				if(e.bytesLoaded == e.bytesTotal) {
 					loadingLabel.visible = false;
@@ -227,7 +227,7 @@ package View.components.MediaViewer
 			media.addEventListener(IDEvent.PAGE_LOADED, function(e:IDEvent):void {
 				loadingLabel.visible = true;
 				loadingLabel.includeInLayout = true;
-				loadingLabel.text = "Loading Page " + e.data.page + " of " + e.data.totalPages;
+				loadingLabel.text = "Loading Page " + e.data.page;// + " of " + e.data.totalPages;
 				if(e.data.page == e.data.totalPages) {
 					loadingLabel.visible = false;
 					loadingLabel.includeInLayout = false;
@@ -300,7 +300,7 @@ package View.components.MediaViewer
 			var scrollX:Number = myScroller.horizontalScrollBar.value  / media.scaleX;
 			var scrollY:Number = myScroller.verticalScrollBar.value / media.scaleY;
 			Tweener.addTween(media, {'scaleX': scaleX, 'scaleY': scaleY, 'time': 1, 'onUpdate': function():void {
-				trace("scaling is currently", scaleX, scaleY);
+//				trace("scaling is currently", scaleX, scaleY);
 				myScroller.horizontalScrollBar.value = scrollX * media.scaleX;
 				myScroller.verticalScrollBar.value = scrollY * media.scaleY;
 			}});

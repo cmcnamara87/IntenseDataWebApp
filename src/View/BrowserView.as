@@ -8,10 +8,10 @@ package View
 	import View.components.AssetBrowser.AssetBrowser;
 	import View.components.AssetBrowser.AssetBrowserToolbar;
 	import View.components.CollectionList.CollectionList;
-	import View.components.Comments.CommentsPanel;
-	import View.components.Comments.NewComment;
-	import View.components.Panel;
-	import View.components.Sharing.SharingPanel;
+	import View.components.Panels.Comments.CommentsPanel;
+	import View.components.Panels.Comments.NewComment;
+	import View.components.Panels.Panel;
+	import View.components.Panels.Sharing.SharingPanel;
 	import View.components.Shelf;
 	
 	import mx.effects.Effect;
@@ -36,6 +36,8 @@ package View
 		private var myCommentsPanel:CommentsPanel;	// The Comments panel
 		private var mySharingPanel:SharingPanel;	// The sharing panel
 		private var myAssetBrowserToolbar:AssetBrowserToolbar;
+		private var otherVGroup:VGroup;
+		private var commentCount:Number = 0;
 		
 		public function BrowserView()
 		{
@@ -64,48 +66,61 @@ package View
 			test.gap = 0;
 			this.addElement(test);
 			
-			// Add the Search Toolbar
-			myAssetBrowserToolbar = new AssetBrowserToolbar();
-			test.addElement(myAssetBrowserToolbar);
-
-			var myAssetBrowserAndPanels:HGroup = new HGroup();
-			myAssetBrowserAndPanels.percentHeight = 100;
-			myAssetBrowserAndPanels.percentWidth = 100;
-			myAssetBrowserAndPanels.gap = 0;
-			test.addElement(myAssetBrowserAndPanels);
-			
-			// Now lets create a VGroup for the AssetBrowser and the Shelf/Edit box
-			var myVGroup:VGroup = new VGroup();
-			myVGroup.percentHeight = 100;
-			myVGroup.percentWidth = 100;
-			myVGroup.gap = 0;
-			myAssetBrowserAndPanels.addElement(myVGroup);
-			
 			// Add the Shelf
 			myShelf = new Shelf();
 			myShelf.height = 0; // set at 0 at first, cause its not displayed
 			myShelf.percentWidth = 100;
 			myShelf.visible = true;
 			myShelf.setStyle("resizeEffect", new mx.effects.Resize());
-			myVGroup.addElement(myShelf);
+			test.addElement(myShelf);
+			
+			otherVGroup = new VGroup();
+			otherVGroup.gap = 0;
+			otherVGroup.percentWidth = 100;
+			otherVGroup.percentHeight = 100;
+			test.addElement(otherVGroup);
+			
+			// Add the Search Toolbar
+			myAssetBrowserToolbar = new AssetBrowserToolbar();
+			otherVGroup.addElement(myAssetBrowserToolbar);
+
+			var myAssetBrowserAndPanels:HGroup = new HGroup();
+			myAssetBrowserAndPanels.percentHeight = 100;
+			myAssetBrowserAndPanels.percentWidth = 100;
+			myAssetBrowserAndPanels.gap = 0;
+			otherVGroup.addElement(myAssetBrowserAndPanels);
+			
+			// Now lets create a VGroup for the AssetBrowser and the Shelf/Edit box
+//			var myVGroup:VGroup = new VGroup();
+//			myVGroup.percentHeight = 100;
+//			myVGroup.percentWidth = 100;
+//			myVGroup.gap = 0;
+//			myAssetBrowserAndPanels.addElement(myVGroup);
+			
+//			// Add the Shelf
+//			myShelf = new Shelf();
+//			myShelf.height = 0; // set at 0 at first, cause its not displayed
+//			myShelf.percentWidth = 100;
+//			myShelf.visible = true;
+//			myShelf.setStyle("resizeEffect", new mx.effects.Resize());
+//			myVGroup.addElement(myShelf);
 			
 			// And add the Asset Browser (includes the asset tiles, search box etc)
 			myAssetBrowser = new AssetBrowser();
 			myAssetBrowser.percentWidth = 100; // set externally as it changes (with shelf/comments shown etc)
 			myAssetBrowser.percentHeight = 100;
 			//myAssetBrowser.setStyle("resizeEffect", new mx.effects.Resize());
-			myVGroup.addElement(myAssetBrowser);
+			myAssetBrowserAndPanels.addElement(myAssetBrowser);
 			
-			
-			
+	
 			// Lets add the Comments Panel
 			myCommentsPanel = new CommentsPanel();
-			myCommentsPanel.width = 0;
+			myCommentsPanel.hide();
 			myAssetBrowserAndPanels.addElement(myCommentsPanel);
 			
 			// Lets add the Sharing Panel
 			mySharingPanel = new SharingPanel();
-			mySharingPanel.width = 0;
+			mySharingPanel.hide();
 			myAssetBrowserAndPanels.addElement(mySharingPanel);
 			
 			// Listen for Comments Button being clicked (done in here, 
@@ -132,6 +147,7 @@ package View
 		 * 
 		 */		
 		public function addMediaAssets(assetArray:Array):void {
+			myCollectionList.hideAllLoadingAnimations();
 			myAssetBrowser.addMediaAssets(assetArray);
 		}
 		
@@ -181,14 +197,21 @@ package View
 		 */		
 		public function showShelf():void {
 			// Resize the browser/shelf
-			// Make browser and shelf 50-50
-			myAssetBrowser.percentHeight = 50;
+			// Make browser and shelf 50-50 respectively
+			otherVGroup.percentHeight = 55;
+			
 			myAssetBrowser.refreshMediaAssetsDisplay();
 			
-			myShelf.percentHeight = 50;
+			myAssetBrowser.lockReadOnlyFiles();
+			
+			myAssetBrowserToolbar.disableUpload();
+				
+			myShelf.percentHeight = 45;
 			myShelf.refreshMediaAssetsDisplay();
+			myShelf.enableButtons();
 			this.myShelf.visible = true;
 			
+			myCollectionList.enterEditMode();
 			// Set all the tiles into edit mode
 			//myAssetBrowser.setEditMode(assetsInShelf);
 		}
@@ -196,15 +219,21 @@ package View
 		public function hideShelf():void {
 			// Make browser fullsize, and shelf 0
 			myShelf.height = 0;
-			myAssetBrowser.percentHeight = 100;
+			otherVGroup.percentHeight = 100;
+			
+			myAssetBrowser.unlockFiles();
+			
+			myAssetBrowserToolbar.enableUpload();
 			
 			// Pop both the buttons that could be down, up.
 			myCollectionList.unsetCreateCollectionButton();
 			this.unsetEditButton();
 			
+			// Removes the overlays (it does this based on the values in the browser controller
+			// so you have to make sure the edit and collection creation are set to false)
 			myAssetBrowser.refreshMediaAssetsDisplay();
 			
-			//this.myShelf.visible = false;
+//			myCollectionList.exitEditMode();
 		}
 		
 		public function unsetCreateCollectionButton():void {
@@ -216,9 +245,20 @@ package View
 //		}
 		
 		/**
-		 * Hides shelf and removes all elements from display 
+		 * Removes media from the shelf (not Titlte) 
+		 * 
+		 */		
+		public function removeShelfMedia():void {
+			myAssetBrowser.refreshMediaAssetsDisplay();
+			myShelf.clearMediaAssets(true);
+		}
+		/**
+		 * Removes all media AND title from the shelf
 		 */		
 		public function clearShelf():void {
+			// Removes the overlays (it does this based on the values in the browser controller
+			// so you have to make sure the edit and collection creation are set to false)
+			myAssetBrowser.refreshMediaAssetsDisplay();
 			myShelf.clearMediaAssets();
 		}
 		
@@ -226,23 +266,7 @@ package View
 			trace("Self collection name set as:", name);
 			myShelf.setCollectionName(name);
 		}
-		
-//		/**
-//		 * Sets the Toolbar to 'Fixed Collection' mode. Means no 'share or comments' 
-//		 * 
-//		 */		
-//		public function setToolbarToFixedCollectionMode():void {
-//			myAssetBrowser.setToolbarToFixedCollectionMode();
-//		}
-		
-//		/**
-//		 * Sets the Toolbar to 'Regular' mode. This means showing 'share and comments' 
-//		 * 
-//		 */		
-//		public function setToolbarToRegularCollectionMode():void {
-//			myAssetBrowser.setToolbarToRegularCollectionMode();
-//		}
-		
+
 		/**
 		 * Adds a single asset to the shelf view 
 		 * @param asset the model_media of the asset to be added
@@ -263,13 +287,17 @@ package View
 			
 		}
 		
+		public function updateNewCollectionButton():void {
+			myCollectionList.updateNewCollectionButton();
+		}
+		
 		/**
 		 * Called by Controller when the sharing info for the asset has been loaded.
 		 * Passes the data to the sharing panel. 
 		 * @param	sharingData	An array of data with user+access information.
 		 */		
-		public function setupAssetsSharingInformation(sharingData:Array):void {
-			mySharingPanel.setupAssetsSharingInformation(sharingData);
+		public function setupAssetsSharingInformation(sharingData:Array, assetCreatorUsername:String):void {
+			mySharingPanel.setupAssetsSharingInformation(sharingData, assetCreatorUsername);
 		}
 		
 		/**
@@ -289,6 +317,7 @@ package View
 		 * 
 		 */		
 		public function commentSaved(commentID:Number, commentText:String, newCommentObject:NewComment):void {
+			this.setCommentCount(commentCount + 1);
 			myCommentsPanel.commentSaved(commentID, commentText, newCommentObject);
 		}
 		
@@ -306,28 +335,43 @@ package View
 		}
 		
 		public function setToolbarToRegularCollectionMode(modifyAccess:Boolean):void {
+			myCommentsPanel.setUserAccess(modifyAccess);
+			mySharingPanel.setUserAccess(modifyAccess);
 			myAssetBrowserToolbar.setToolbarToRegularCollectionMode(modifyAccess);
 		}
 		
 		/**
 		 * Comment button says 'Comments (0)'. We have to set that number,
-		 * to be the number of comments. 
+		 * to be the number of comments. We save this number.
 		 * @param commentCount	The numbero f comments.
 		 * 
 		 */		
 		public function setCommentCount(commentCount:Number):void {
+			this.commentCount = commentCount;
 			myAssetBrowserToolbar.setCommentCount(commentCount);
 		}
 		
-		
+		public function unlockSharingPanelUsers():void {
+			mySharingPanel.unlockUsers();
+		}
+		/**
+		 * Hides all the panels being displayed.
+		 * 
+		 * Used when we switch to a fixed collection, like All Assets, or Shared with Me 
+		 * 
+		 */		
+		public function hideAllPanels():void {
+			myCommentsPanel.hide();
+			mySharingPanel.hide();
+		}
 		
 		
 		/* ============== EVENT LISTENER FUNCTIONS ==================== */
 		private function commentsButtonClicked(e:IDEvent):void {
 //			if(e.data.buttonState) {
-				mySharingPanel.width = 0;
+				mySharingPanel.hide();
 				
-				myCommentsPanel.width = Panel.DEFAULT_WIDTH;
+				myCommentsPanel.show();
 //			} else {
 //				myCommentsPanel.width = 0;
 //			}
@@ -335,9 +379,9 @@ package View
 		
 		private function shareButtonClicked(e:IDEvent):void {
 //			if(e.data.buttonState) {
-				myCommentsPanel.width = 0;
+				myCommentsPanel.hide();
 				
-				mySharingPanel.width = Panel.DEFAULT_WIDTH;
+				mySharingPanel.show();
 //			} else {
 //				mySharingPanel.width = 0;
 //			}

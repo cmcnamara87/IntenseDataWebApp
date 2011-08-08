@@ -6,11 +6,12 @@ package Model.Transactions
 	import Model.Model_Commentary;
 	import Model.Utilities.Connection;
 	
-	import View.components.Comments.NewComment;
+	import View.components.Panels.Comments.NewComment;
 	
 	import flash.events.Event;
 	
 	import mx.controls.Alert;
+	import Model.Transactions.Access.Transaction_CopyAccess;
 
 	public class Transaction_SaveNewComment
 	{

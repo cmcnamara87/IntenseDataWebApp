@@ -39,9 +39,22 @@ package Controller.Utilities {
 		[Embed(source="Assets/Template/assets/document2.png")] 
 		private static var Asseticon_document:Class;
 		private static var Asseticon_document_data:BitmapData;
-		[Embed(source="Assets/Template/assets/collection.png")] 
+//		[Embed(source="Assets/Template/assets/collection.png")] 
+		[Embed(source="Assets/Template/assets/203.png")]
+		private static var Asseticon_collection_shared:Class;
+		private static var Asseticon_collection_shared_data:BitmapData;
+		
+		[Embed(source="Assets/Template/assets/204.png")]
 		private static var Asseticon_collection:Class;
 		private static var Asseticon_collection_data:BitmapData;
+		
+		[Embed(source="Assets/Template/postit_icon1.png")]
+		private static var Postit_icon:Class;
+		private static var Postit_icon_data:BitmapData = (new Postit_icon as Bitmap).bitmapData;
+		
+		[Embed(source="Assets/Template/loader.gif")] 
+		private static var Loadericon:Class;
+		private static var Loadericon_data:BitmapData = (new Loadericon as Bitmap).bitmapData;
 		
 		// Icon for Reply Button
 		[Embed(source="Assets/Template/reply_icon.png")]
@@ -67,11 +80,12 @@ package Controller.Utilities {
 		private static var imagesSetup:Boolean = false;
 		
 		//File formats that can be uploaded
-		private static var allFilters:FileFilter = new FileFilter("All Accepted File Types", "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;*.mp3;*.wma;*.wavDocument;*.pdf;*.swf;");
+//		private static var allFilters:FileFilter = new FileFilter("All Accepted File Types", "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;*.mp3;*.wma;*.wavDocument;*.pdf;*.swf;");
+		private static var allFilters:FileFilter = new FileFilter("All Accepted File Types", "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;*.mp3;*.pdf;");//*.swf;");
 		private static var imageFilters:FileFilter = new FileFilter("Images (jpg, gif, png, jpeg)","*.jpg;*.gif;*.png;*.jpeg;*.bmp");
 		private static var videoFilters:FileFilter = new FileFilter("Video (mov, flv, mp4, avi, mpg, mpeg)","*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;");
-		private static var audioFilters:FileFilter = new FileFilter("Audio (mp3, wma, wav)","*.mp3;*.wma;*.wav");
-		private static var documentFilters:FileFilter = new FileFilter("Document (pdf, swf)","*.pdf;*.swf");
+		private static var audioFilters:FileFilter = new FileFilter("Audio (mp3)","*.mp3;");
+		private static var documentFilters:FileFilter = new FileFilter("Document (pdf, swf)","*.pdf;");//*.swf");
 		
 		//Types of creative work types and subtypes
 		public static var creativeworktypeLookup:ArrayCollection = new ArrayCollection(
@@ -119,8 +133,10 @@ package Controller.Utilities {
 					type = 'video';
 					break;
 				case "audio/wav":
+				case "audio/x-wav":
 				case "audio/wma":
 				case 'audio/mp3':
+				case 'audio/mpeg':
 					type = 'audio';
 					break;
 				case "image/gif":
@@ -169,6 +185,7 @@ package Controller.Utilities {
 				case 'collection':
 					return Asseticon_collection_data;
 					break;
+				
 			}
 			return Asseticon_image_data;
 		}
@@ -205,6 +222,20 @@ package Controller.Utilities {
 		
 		public static function getCollectionIconClass():Class {
 			return Asseticon_collection;
+		}
+		
+		public static function getCollectionSharedIconClass():Class {
+			return Asseticon_collection_shared;
+		}
+		public static function getLoadingIconClass():Class {
+			return Loadericon;
+		}
+		
+		public static function getPostItIconClass():Class {
+			return Postit_icon;
+		}
+		public static function getPostItIcon():BitmapData {
+			return Postit_icon_data;
 		}
 		
 		/**

@@ -32,8 +32,8 @@ package Controller {
 		private static var layout:Layout;
 		private static var stage:Recensio_Flex_Beta;
 		private static var useFPSMonitor:Boolean = false;
-		private static var _serverAddress:String = "127.0.0.1";
-		private static var _serverPort:Number = 8082;
+		public static var _serverAddress:String = "127.0.0.1";
+		public static var _serverPort:Number = 8082;
 		private static var _autoLogin:Boolean = false;
 		
 		// Setup the URL controller listener
@@ -90,7 +90,11 @@ package Controller {
 		
 		// Called on logout
 		public static function logout():void {
-			Auth.getInstance().logout();
+			Auth.getInstance().logout(true);
+			call(Router.getInstance().getURL());
+		}
+		public static function dumpOut():void {
+			Auth.getInstance().logout(false);
 			call(Router.getInstance().getURL());
 		}
 		

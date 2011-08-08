@@ -1,6 +1,11 @@
 package Module.AudioViewer
 {
+	import Controller.BrowserController;
+	
 	import Lib.gfx.Raster;
+	
+	import Module.AudioViewer.AudioNewAnnotation;
+	import Module.AudioViewer.AudioView;
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -11,10 +16,10 @@ package Module.AudioViewer
 	import flash.media.Sound;
 	import flash.utils.*;
 	
+	import mx.charts.chartClasses.NumericAxis;
 	import mx.containers.VBox;
 	import mx.core.UIComponent;
-	import Module.AudioViewer.AudioNewAnnotation;
-	import Module.AudioViewer.AudioView;
+	import mx.events.FlexEvent;
 
 	public class AudioAnnotateWave extends VBox
 	{
@@ -51,22 +56,38 @@ package Module.AudioViewer
 		private var _firstAnnotateX:Number = 0;
 		private var _lastAnnotateX:Number = 0;
 		
-		private var _bars:Sprite = new Sprite();
+		private var _bars:Sprite = new Sprite(); // I think this is the playhead bar for the waveform
 		private var _newAnnotation:AudioNewAnnotation;
+		
+		// craigs variables
+		private var numberOfSections:Number = 20;
+		// lets try extracting a numberOfSections-th of a file, at a time
+		private var extractLength:Number;
+		private var currentExtractSegment:Number = 0;
+		private var timeoutSegment:Number; 
 		
 		public function AudioAnnotateWave()
 		{
 			super();
-			this.addEventListener(MouseEvent.MOUSE_DOWN,startAnnotation);
+			if(BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
+				// If we are looking at the original files, dont listen for drawing annotations
+				this.addEventListener(MouseEvent.MOUSE_DOWN,startAnnotation);
+			}
 			this.addEventListener(Event.ADDED_TO_STAGE,loadView);
 			this.addEventListener(Event.RESIZE,resize);
+			
+			this.addEventListener(Event.REMOVED_FROM_STAGE, stopExtracting);
+			this.addEventListener(FlexEvent.HIDE, stopExtracting );
 		}
 		
-		
+		private function stopExtracting(e:Event = null):void {
+			clearTimeout(timeoutSegment);
+		}
 		
 		public function updateBarPosition(newPosition:Number):void {
 			//trace(newPosition);
-			_bars.x = newPosition*(this.width-44)+20;
+			//_bars.x = newPosition*(this.width-44)+20;
+			_bars.x = newPosition*(this.width-44);
 		}
 		
 		private function resize(e:Event):void {
@@ -77,9 +98,9 @@ package Module.AudioViewer
 		private function loadView(e:Event):void {
 			this.addChild(soundWave);
 			this.addChild(annotations);
-			soundWave.addChild(_bars);
+			//soundWave.addChild(_bars);
 			annotations.alpha = 0;
-			_bars.alpha = 0;
+			//_bars.alpha = 0;
 			drawChannelBackground();
 			soundWave.mouseEnabled = false;
 		}
@@ -195,22 +216,78 @@ package Module.AudioViewer
 			this.graphics.moveTo(_padding,_channel2Y+_channelSize);
 			this.graphics.lineTo(this.width-_padding,_channel2Y+_channelSize);
 			_bars.graphics.clear();
+			//_bars.graphics.beginFill(0xFF0000);
 			_bars.graphics.beginFill(0xFF0000);
-			_bars.graphics.drawRect(0,_channel1Y,1,_channelSize);
-			_bars.graphics.drawRect(0,_channel2Y,1,_channelSize);
+//			_bars.graphics.drawRect(0, _channel1Y, 1, _channelSize);
+//			_bars.graphics.drawRect(0, _channel2Y, 1, _channelSize);
+			_bars.graphics.drawRect(20, _channel1Y, 1, _channelSize);
+			_bars.graphics.drawRect(20, _channel2Y, 1, _channelSize);
 		}
 		
 		public function loadSoundWave(file:Sound):void {
+			trace("AudioAnnotateWave:loadSoundWave", file);
 			_audioBuffer.position = 0;
 			_lBitmap.bitmapData = new BitmapData(_defaultWidth-_waveOffset*2, _channelSize-_channelPadding*2, true, 0x00000000);
 			_rBitmap.bitmapData = new BitmapData(_defaultWidth-_waveOffset*2, _channelSize-_channelPadding*2, true, 0x00000000);
 			soundWave.addChild(_lBitmap);
 			soundWave.addChild(_rBitmap);
+			
+			soundWave.addChild(_bars);
+			//_bars.alpha = 0;
+			
 			_lBitmap.x = _waveOffset+2;
 			_rBitmap.x = _waveOffset+2;
-			file.extract(_audioBuffer,file.length*_sampleRate,0);
-			drawWave();
+			trace("File Length", file.length, "Sample rate", _sampleRate);
+
+			// lets work out how many hours long the audio file is
+			var lengthInHours:Number = Math.floor(file.length / 1000 / 60 / 60); // its in useconds to minutes to hours
+			// for every hour, lets break it up into 300 segments (so for < 1hr, it just does it all in 1 go)
+			numberOfSections = Math.max(lengthInHours * 200, 1); //minumum of 1 section
+			trace("File is", lengthInHours, "segments", numberOfSections);
+			
+			// lets try extracting a numberOfSections-th of a file, at a time
+			extractLength = file.length * _sampleRate / numberOfSections;
+
+//			for(var i:Number = 0; i < numberOfSections; i++) {
+//				trace("getting out", i, "extracting from", i * extractLength, "to", i * extractLength + extractLength, "in seconds:", i * extractLength / _sampleRate / 1000, i * (extractLength / 1000 / _sampleRate) + (extractLength / 1000 / _sampleRate));
+//				var myBuffer:ByteArray = new ByteArray();
+//				file.extract(myBuffer, extractLength, i * extractLength);
+//				if(i == numberOfSections - 1) {
+//					_audioBuffer = myBuffer;
+//				}
+//			} 
+			//file.extract(_audioBuffer, file.length*_sampleRate, 0);
+			//file.extract(_audioBuffer, (file.length / 2) * _sampleRate, 0);
+//			file.extract(_audioBuffer, extractLength, 0);
 			updateWavePosition();
+			extractAudioSegment(file);
+		}
+		
+		private function extractAudioSegment(file:Sound):void {
+			trace("getting out", currentExtractSegment, "extracting from", currentExtractSegment * extractLength, "to", currentExtractSegment * extractLength + extractLength, "in seconds:", currentExtractSegment * extractLength / _sampleRate / 1000, currentExtractSegment * (extractLength / 1000 / _sampleRate) + (extractLength / 1000 / _sampleRate));
+			var myBuffer:ByteArray = new ByteArray();
+
+			file.extract(myBuffer, extractLength, currentExtractSegment * extractLength);
+
+			
+			// Draw the wave for this segment
+			//setTimeout(drawWave, 1, myBuffer, currentExtractSegment);
+			drawWave(myBuffer, currentExtractSegment);
+			
+			if(currentExtractSegment == numberOfSections - 1) {
+				// we are on the last segment
+				trace("last segment, updating wave position");
+				
+				return;
+			}
+			
+			// We have to use this instead of a for loop, otherwise flash complains
+			// about the loop taking more than 15 seconds to exec
+			// because 'Sound.extract' takes so bloody long to work.
+			// - so Move onto the next segment
+			//currentExtractSegment++;
+			currentExtractSegment++;
+			timeoutSegment = setTimeout(extractAudioSegment, 2000, file);
 		}
 		
 		private function updateWavePosition():void {
@@ -224,44 +301,59 @@ package Module.AudioViewer
 			_rBitmap.scaleX = (this.width-42)/_defaultWidth;
 		}
 		
-		private function drawWave():void {
-			var w:int = _lBitmap.bitmapData.width;
-			var h:int = _lBitmap.bitmapData.height;
-			var channelLength:Number = _audioBuffer.length/8;
+		private function drawWave(audioBufferSegment:ByteArray, currentSegmentNumber:Number):void {
+			var w:int = _lBitmap.bitmapData.width / numberOfSections;
+			var h:int = _lBitmap.bitmapData.height / numberOfSections;
+			var channelLength:Number = audioBufferSegment.length/8;
+			trace("AudioAnnotateWave:drawWave", audioBufferSegment.length, channelLength);
 			_numCondense = channelLength/w;
 			_lBitmap.bitmapData.lock();
 			_rBitmap.bitmapData.lock();
-			_audioBuffer.position = 0;
-			setTimeout(drawWavePart,1);
+			audioBufferSegment.position = 0;
+			
+			setTimeout(drawWavePart, 1, audioBufferSegment, 0, currentSegmentNumber * _lBitmap.bitmapData.width / numberOfSections, new Point(0.5, -0.5), new Point(0.5, -0.5));
+//			drawWavePart(audioBufferSegment, 0, currentSegmentNumber * _lBitmap.bitmapData.width / numberOfSections, new Point(1, -1), new Point(1, -1));
+//			setTimeout(drawWavePart, 1, audioBufferSegment, );
 			_lBitmap.bitmapData.unlock();
 			_rBitmap.bitmapData.unlock();
 		}
 		
-		private function drawWavePart():void {
-			var startWavPost:int = _wavePositionI;
-			for (var i:int =startWavPost; i < startWavPost+_loadSpeed; i++) {
+		// we take in a bit of the audio clip, in an audio buffer byte array
+		// we need to know what area we are drawing
+		// and we need to know, where on the actual stage, we should be drawing it
+		private function drawWavePart(audioBufferSegment:ByteArray, bufferPos:Number, xPos:Number, leftPoints:Point, rightPoints:Point):void {
+//			var startWavPost:int = bufferPos;
+			var test:Number = bufferPos;
+			
+			for (var i:int = bufferPos; i < test + _loadSpeed; i++) {
 				if(i%_numCondense == 0) {
-					Raster.line(_lBitmap.bitmapData, _x, _lBitmap.height*(_leftPoints.x+1)/2, _x, _lBitmap.height*(_leftPoints.y+1)/2, _leftChan);
-					Raster.line(_rBitmap.bitmapData, _x, _rBitmap.height*(_rightPoints.x+1)/2, _x, _rBitmap.height*(_rightPoints.y+1)/2, _rightChan);
-					_leftPoints = new Point(1, -1);
-					_rightPoints = new Point(1, -1);
-					_x++;
+					
+					Raster.line(_lBitmap.bitmapData, xPos, _lBitmap.height*(leftPoints.x+1)/2, xPos, _lBitmap.height*(leftPoints.y+1)/2, _leftChan);
+					Raster.line(_rBitmap.bitmapData, xPos, _rBitmap.height*(rightPoints.x+1)/2, xPos, _rBitmap.height*(rightPoints.y+1)/2, _rightChan);
+					leftPoints = new Point(1, -1);
+					rightPoints = new Point(1, -1);
+					xPos ++;
 				}
-				if(_audioBuffer.bytesAvailable) {
-					var leftN:Number = _audioBuffer.readFloat();
-					var rightN:Number = _audioBuffer.readFloat();
-					_leftPoints.x = _leftPoints.x < leftN ? _leftPoints.x : leftN;
-					_leftPoints.y = _leftPoints.y > leftN ? _leftPoints.y : leftN;
-					_rightPoints.x = _rightPoints.x < rightN ? _rightPoints.x : leftN;
-					_rightPoints.y = _rightPoints.y > rightN ? _rightPoints.y : leftN;
+				if(audioBufferSegment.bytesAvailable) {
+					var leftN:Number = audioBufferSegment.readFloat();
+					var rightN:Number = audioBufferSegment.readFloat();
+					leftPoints.x = leftPoints.x < leftN ? leftPoints.x : leftN;
+					leftPoints.y = leftPoints.y > leftN ? leftPoints.y : leftN;
+					rightPoints.x = rightPoints.x < rightN ? rightPoints.x : leftN;
+					rightPoints.y = rightPoints.y > rightN ? rightPoints.y : leftN;
 				}
-				_wavePositionI++;
-				if(_wavePositionI == _audioBuffer.length/8) {
+				bufferPos++;
+				if(bufferPos == audioBufferSegment.length/8) {
 					break;
 				}
+//				trace("buffer pos", bufferPos, audioBufferSegment.length/8, _loadSpeed, bufferPos + _loadSpeed);
 			}
-			if(_wavePositionI < _audioBuffer.length/8) {
-				setTimeout(drawWavePart,1);
+			if(bufferPos < audioBufferSegment.length/8) {
+//				drawWavePart(audioBufferSegment, bufferPos, xPos, new Point(1, -1), new Point(1, -1));
+//				trace("running again");
+				setTimeout(drawWavePart, 1, audioBufferSegment, bufferPos, xPos, leftPoints, rightPoints); 
+//				drawWavePart(audioBufferSegment, xPos);
+				//setTimeout(drawWavePart,1, xPos);
 			}
 		}
 	}

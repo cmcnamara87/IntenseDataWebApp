@@ -2,8 +2,8 @@ package Controller.Utilities {
 	
 	import Controller.AppController;
 	import Controller.BrowserController;
-	import Controller.LoginController;
 	import Controller.IDEvent;
+	import Controller.LoginController;
 	
 	import Model.AppModel;
 	
@@ -53,6 +53,7 @@ package Controller.Utilities {
 		//Returned from the login mediaflux call.  Returns a Session ID if successful
 		public function loginCallback(e:Event):void {
 			var dataXML:XML = XML(e.target.data);
+			trace("login callback", e.target.data);
 			if (dataXML.reply.@type == "result") {
 				// Successfully logged in
 				
@@ -65,7 +66,11 @@ package Controller.Utilities {
 			} else {			
 				var response:IDEvent = new IDEvent(IDEvent.LOGIN_RESPONSE);
 				response.data.success = false;
-				response.data.message = dataXML.reply.message;
+				if(dataXML.reply.message == "authentication failure") {
+					response.data.message = "Username or password\n incorrect";
+				} else {
+					response.data.message = dataXML.reply.message;
+				}
 				this.dispatchEvent(response);
 			}
 		
@@ -99,6 +104,9 @@ package Controller.Utilities {
 			
 			if(!isUser) {
 				// The user does not have the user role
+				// Delete their session id, since they shouldnt be able to log in
+				_sessionID = "";
+				
 				response = new IDEvent(IDEvent.LOGIN_RESPONSE);
 				response.data.success = false;
 				response.data.message = "Account suspended.";
@@ -115,13 +123,18 @@ package Controller.Utilities {
 		}
 		
 		//Resets all login information
-		public function logout():void {
+		public function logout(useConnection:Boolean):void {
 			// TODO this is a bug fix, since it seems to be logging in multipe times at once
 			// so when we log out, we need to reset this
 			LoginController.loginAlreadyReceived = false;
 			this.isSystemAdministrator = false;
 			this.isUser = false;
-			AppModel.getInstance().logout();
+			
+			// In case we are just forcing a logout, because the internet connection has been lossed
+			// we only actually try to log out, if we have a connection
+			if(useConnection) {
+				AppModel.getInstance().logout();
+			}
 			
 			BrowserController.resetBrowserController();
 			

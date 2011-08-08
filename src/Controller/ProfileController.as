@@ -14,6 +14,7 @@ package Controller {
 	
 	import mx.collections.ArrayCollection;
 	import mx.collections.ArrayList;
+	import mx.controls.Alert;
 	
 	public class ProfileController extends AppController {
 		
@@ -120,7 +121,8 @@ package Controller {
 			trace("Change password button clicked");
 			//user.password.set :domain system :user coke :old-password test :password test2
 			var newPassword:String = e.data.newPassword;
-			AppModel.getInstance().changePassword("system", newPassword, passwordChanged);
+			var username:String = e.data.username;
+			AppModel.getInstance().changePassword("system", username, newPassword, passwordChanged);
 
 		}		
 		
@@ -175,6 +177,13 @@ package Controller {
 		}
 		
 		private function userDeleted(e:Event):void {
+			if(AppModel.getInstance().callFailed("deleteUserClicked", e)) {
+				Alert.show("Failed to delete user");
+				AppModel.getInstance().getUserList(userListReceived);
+				AppModel.getInstance().getUserDetails(selectedusername, "system", userDetailsReceived);
+				return;
+			}
+
 			trace("- User Deleted: ", selectedusername);
 			trace("**************");
 			// Set the selected user as the current logged in username
@@ -220,7 +229,7 @@ package Controller {
 			var data:XML = XML(e.target.data);
 			
 			for each(var _user:XML in data.reply.result.user) {
-				if(_user.@user != selectedusername) {
+				if(!(_user.@user == selectedusername || _user.@user == Recensio_Flex_Beta.ID_ADMIN_USERNAME)) {
 					// If they aren't the logged in user
 					// Add the users name to the user list
 					var userstring:String = _user.@user;
@@ -287,7 +296,7 @@ package Controller {
 				//(view as Profile).profilevalidation.setStyle("color","0x00930a");
 				//(view as Profile).profilevalidation.text = "Profile Updated";
 			} else {
-				trace("Failed to save");
+				trace("ProfileController:profileSaved - Failed to save", e.target.data);
 				trace("*****************");
 				profileView.changeFailed("Error: "+dataXML.reply.message);
 				//				(view as Profile).profilevalidation.setStyle("color","0xFF000");

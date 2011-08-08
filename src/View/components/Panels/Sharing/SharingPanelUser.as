@@ -1,4 +1,4 @@
-package View.components.Sharing
+package View.components.Panels.Sharing
 {
 	import Controller.IDEvent;
 	
@@ -59,14 +59,14 @@ package View.components.Sharing
 			
 			// Create the checkbox for  read access
 			readCheckbox = new CheckBox();
-			readCheckbox.label = "View";
+			readCheckbox.label = "Read";
 			readCheckbox.selected = readAccess;
 			this.addElement(readCheckbox);
 			
 			// Create the checkbox for write access
 			//var readWriteCheckbox:CheckBox = new Checkbox();
 			readWriteCheckbox = new CheckBox();
-			readWriteCheckbox.label = "Annotate";
+			readWriteCheckbox.label = "Full Access";
 			readWriteCheckbox.selected = readWriteAccess;
 			this.addElement(readWriteCheckbox);
 			

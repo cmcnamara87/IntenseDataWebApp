@@ -18,7 +18,7 @@ package Controller {
 	import View.Element.AssetOptionsForm;
 	import View.MediaView;
 	import View.ModuleWrapper.*;
-	import View.components.Comments.NewComment;
+	import View.components.Panels.Comments.NewComment;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -34,7 +34,7 @@ package Controller {
 	public class MediaController extends AppController {
 		
 		
-		private var assetData:Model_Media;
+//		private var assetData:Model_Media;
 		private var comments:Array = new Array();
 		private var annotations:Array = new Array();
 		private var module:UIComponent;
@@ -112,12 +112,29 @@ package Controller {
 		private function loadMediaAsset():void {
 			trace("Loading Media Asset...");
 			
+			// the browser controller knows which asset was clicked
+			// get the asset data from the browser, and use that to load this asset
+			this.currentMediaData = BrowserController.currentMediaData;
+			
+			if(currentMediaData == null) {
+				// For some reason, the browser doesnt have to data, so we will have to load it here
+				AppModel.getInstance().getThisMediasData(currentAssetID, mediasDataLoaded);
+				return;
+			}
+			
+			mediaView.addMediaData(currentMediaData);
+			
+			// Get the data for the panels
+			loadPanelData();
+			
+			
 			// Load the Media Asset Data
 			// Gets out the Media Meta-data
-			AppModel.getInstance().getThisMediasData(currentAssetID, mediasDataLoaded);
+//			AppModel.getInstance().getThisMediasData(currentAssetID, mediasDataLoaded);
 			
 			// Don't get out the comments etc here, we need to know the medias type,
 			// before we can add them.
+			// because we need to know what kind of ... view to make i think
 			
 		}
 		
@@ -128,7 +145,7 @@ package Controller {
 		 */	
 		private function deleteAssetButtonClicked(e:IDEvent):void {
 			//(view as AssetView).navbar.deselectButtons();
-			var myAlert:Alert = Alert.show("Are you sure you wish to delete this asset?", "Delete Asset", Alert.OK | Alert.CANCEL, null, deleteAsset, null, Alert.CANCEL);
+			var myAlert:Alert = Alert.show("Are you sure you wish to delete this file?", "Delete File", Alert.OK | Alert.CANCEL, null, deleteAsset, null, Alert.CANCEL);
 			myAlert.height=100;
 			myAlert.width=300;
 		}
@@ -140,7 +157,9 @@ package Controller {
 		 */		
 		private function deleteAsset(e:CloseEvent):void {
 			if (e.detail==Alert.OK) {
-				AppModel.getInstance().deleteAsset(currentAssetID, currentMediaData.meta_username);
+				//AppModel.getInstance().deleteAsset(currentAssetID, currentMediaData.meta_username);
+				BrowserController.clearCurrentCollectionMedia();
+				AppModel.getInstance().deleteMedia(currentAssetID, currentMediaData.base_creator_username);
 			}
 		}
 		
@@ -179,6 +198,9 @@ package Controller {
 		 * 
 		 */				
 		private function sharingInfoChanged(e:IDEvent):void {
+			
+			super.removeLogoutListener();
+			
 			var username:String = e.data.username;
 			var access:String = e.data.access;
 			AppModel.getInstance().changeAccess(currentAssetID, username, "system", access, false, sharingInfoUpdated);
@@ -305,9 +327,18 @@ package Controller {
 		private function sharingDataLoaded(userData:Array):void {
 			// Send the data to view
 			trace("Permissions Retrieved");
-			mediaView.setupAssetsSharingInformation(userData);
+			trace("MediaController:SharingDataLoaded - Looking at this asset in collection", BrowserController.currentCollectionID);
+			
+			if(currentMediaData != null) {
+				mediaView.setupAssetsSharingInformation(userData, currentMediaData.base_creator_username);
+			} else {
+				mediaView.setupAssetsSharingInformation(userData, "");
+			}
 		}
 		
+		private function peopleCollectionLoaded(peopleCollection:Array):void {
+			mediaView.addPeople(peopleCollection);
+		}
 		
 		private function mediasCommentaryLoaded(e:Event):void {
 			// Get out the returned data
@@ -341,19 +372,23 @@ package Controller {
 			// Gets out the Commentary Data for hte asset (that is, comments and annotations
 			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
 			
+			
+			// Get out the People data
+			AppModel.getInstance().getPeople(media.meta_users_access, peopleCollectionLoaded);
+				
 			// Load the Sharing Data
 			AppModel.getInstance().getAccess(currentAssetID, sharingDataLoaded);
+		}
+		
+		private function loadPanelData():void {
+			// Gets out the Commentary Data for hte asset (that is, comments and annotations
+			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
 			
-
-//			// Add all of the assets inside this collection
-//			currentView.addMediaAssets(mediaInCollection);
-//			
-//			// Add all the comments for this collection
-//			// Send the collection ID, and all the comments
-//			currentView.addComments(annotationsInCollection);
-//			
-//			// Change to the Fixed toolbar
-//			currentView.setToolbarToRegularCollectionMode();
+			// Get out the People data
+			AppModel.getInstance().getPeople(currentMediaData.meta_users_access, peopleCollectionLoaded);
+			
+			// Load the Sharing Data
+			AppModel.getInstance().getAccess(currentAssetID, sharingDataLoaded);
 		}
 		
 		/**
@@ -420,6 +455,7 @@ package Controller {
 		 * 
 		 */		
 		private function sharingInfoUpdated(e:Event):void {
+			super.addLogoutListener();
 			// Get out the returned data
 			var data:XML = XML(e.target.data);
 			
@@ -427,6 +463,7 @@ package Controller {
 			if(data.reply.@type == "result") {
 				// Sharing update successfully
 				trace("Sharing Updated Successfully", e.target.data);
+				mediaView.unlockSharingPanelUsers();
 				trace("-------------------------");
 			} else {
 				Alert.show("Sharing Update Failed");

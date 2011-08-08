@@ -74,6 +74,7 @@ package Model.Transactions
 			// Create a request
 			var baseXML:XML = connection.packageRequest('user.create', args, true);
 			
+			trace("Transaction_CreateUser:createUser - Telephone is", r_user.meta_tel_home);
 			// Assemble the Meta Data
 			// For some reason, the meta data has the username, password and email in it, even though
 			// the user already has that data, but whatever.
@@ -81,40 +82,31 @@ package Model.Transactions
 			baseXML.service.args["meta"]["r_user"]["password"] = password;
 			baseXML.service.args["meta"]["r_user"]["email"] = r_user.email;
 			// These are all optional, so we check that they arent blank
-			if(r_user.meta_firstname != "") {
-				baseXML.service.args["meta"]["r_user"]["firstname"] = r_user.meta_firstname;
-			}
-			if(r_user.meta_lastname != "") {
-				baseXML.service.args["meta"]["r_user"]["lastname"] = r_user.meta_lastname;
-			}
 			
-			if(r_user.meta_initial != "") {
-				baseXML.service.args["meta"]["r_user"]["initial"] = r_user.meta_initial;
-			}
-			if(r_user.meta_organisation != "") {
-				baseXML.service.args["meta"]["r_user"]["organisation"] = r_user.meta_organisation;
-			}
-			if(r_user.meta_url != "") {
-				baseXML.service.args["meta"]["r_user"]["url"] = r_user.meta_url;
-			}
-			if(r_user.meta_tel_business != "") {
-				baseXML.service.args["meta"]["r_user"]["tel_business"] = r_user.meta_tel_business;
-			}
-			if(r_user.meta_tel_home != "") {
-				baseXML.service.args["meta"]["r_user"]["tel_home"] = r_user.meta_tel_home;
-			}
-			if(r_user.meta_tel_mobile != "") {
-				baseXML.service.args["meta"]["r_user"]["tel_mobile"] = r_user.meta_tel_mobile;
-			}
-			if(r_user.meta_Address_1 != "") {
-				baseXML.service.args["meta"]["r_user"]["Address_1"] = r_user.meta_Address_1;
-			}
-			if(r_user.meta_Address_2 != "") {
-				baseXML.service.args["meta"]["r_user"]["Address_2"] = r_user.meta_Address_2;
-			}
-			if(r_user.meta_Address_3 != "") {
-				baseXML.service.args["meta"]["r_user"]["Address_3"] = r_user.meta_Address_3;
-			}
+			if(r_user.meta_firstname == "") 	r_user.meta_firstname = " ";
+			if(r_user.meta_lastname == "") 		r_user.meta_lastname = " ";
+			if(r_user.meta_email == "") 			r_user.meta_email = " ";
+			if(r_user.meta_initial == "") 		r_user.meta_initial = " ";
+			if(r_user.meta_organisation == "") 	r_user.meta_organisation = " ";
+			if(r_user.meta_url == "") 			r_user.meta_url = " ";
+			if(r_user.meta_tel_business == "") 	r_user.meta_tel_business = " ";
+			if(r_user.meta_tel_home == "") 		r_user.meta_tel_home = " ";
+			if(r_user.meta_tel_mobile == "") 	r_user.meta_tel_mobile = " ";
+			if(r_user.meta_Address_1 == "") 	r_user.meta_Address_1 = " ";
+			if(r_user.meta_Address_2 == "") 	r_user.meta_Address_2 = " ";
+			if(r_user.meta_Address_3 == "") 	r_user.meta_Address_3 = " ";
+			
+			baseXML.service.args["meta"]["r_user"]["firstname"] = r_user.meta_firstname;
+			baseXML.service.args["meta"]["r_user"]["lastname"] = r_user.meta_lastname;
+			baseXML.service.args["meta"]["r_user"]["initial"] = r_user.meta_initial;
+			baseXML.service.args["meta"]["r_user"]["organisation"] = r_user.meta_organisation;
+			baseXML.service.args["meta"]["r_user"]["url"] = r_user.meta_url;
+			baseXML.service.args["meta"]["r_user"]["tel_business"] = r_user.meta_tel_business;
+			baseXML.service.args["meta"]["r_user"]["tel_home"] = r_user.meta_tel_home;
+			baseXML.service.args["meta"]["r_user"]["tel_mobile"] = r_user.meta_tel_mobile;
+			baseXML.service.args["meta"]["r_user"]["Address_1"] = r_user.meta_Address_1;
+			baseXML.service.args["meta"]["r_user"]["Address_2"] = r_user.meta_Address_2;
+			baseXML.service.args["meta"]["r_user"]["Address_3"] = r_user.meta_Address_3;
 			
 			if(connection.sendRequest(baseXML, grantUserRole)) {
 				//All good

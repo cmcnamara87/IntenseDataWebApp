@@ -1,24 +1,25 @@
-package View.components.EditDetails
+package View.components.Panels.EditDetails
 {
 	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
 	import Model.Model_Media;
 	
-	import View.components.Panel;
+	import View.components.Panels.Panel;
 	import View.components.SubToolbar;
 	
 	import flash.events.MouseEvent;
 	import flash.utils.setTimeout;
 	
 	import mx.controls.Button;
-	import mx.controls.Label;
 	
 	import spark.components.Group;
+	import spark.components.Label;
 
 	public class EditDetailsPanel extends Panel
 	{
 		private var assetID:Number;
+		private var metaFileTitle:DetailListItemFixed;
 		private var metaTitle:DetailListItem;
 		private var metaDescription:DetailListItem;
 		private var metaDatePublished:DetailListItem;
@@ -29,7 +30,7 @@ package View.components.EditDetails
 		private var metaCreativeWorkSubType:DetailListItem;
 		private var metaSponsorFunder:DetailListItem;
 		
-		
+		private var saveDetailsButton:Button;
 		private var subToolbarLabel:Label;
 	
 		public function EditDetailsPanel()
@@ -40,7 +41,7 @@ package View.components.EditDetails
 			setHeading("Edit Details");
 			
 			// Add 'Add Comment' Button to toolbar
-			var saveDetailsButton:Button = new Button();
+			saveDetailsButton = new Button();
 			saveDetailsButton.label = "Save";
 			saveDetailsButton.percentHeight = 100;
 			toolbar.addElement(saveDetailsButton);
@@ -69,6 +70,11 @@ package View.components.EditDetails
 			closeButton.addEventListener(MouseEvent.CLICK, closeButtonClicked);
 		}
 		
+		override public function setUserAccess(modify:Boolean):void {
+			super.setUserAccess(modify);
+			saveDetailsButton.enabled = modify;
+		}
+		
 		
 		/* ===================== PUBLIC FUNCTIONS USED BY CONTROLER ========================== */
 		
@@ -76,34 +82,49 @@ package View.components.EditDetails
 			
 			assetID = mediaData.base_asset_id;
 			
-			trace("Adding Details to Edit Details Panel");
-			metaTitle = new DetailListItem("Title", mediaData.meta_title);
-			content.addElement(metaTitle);
+			trace("EditDetailsPanel:addDetails", mediaData, mediaData.meta_title, mediaData.meta_description);
 			
-			metaDescription = new DetailListItem("Description", mediaData.meta_description);
-			content.addElement(metaDescription);
-			
-			metaDatePublished = new DetailListItem("Date Published", mediaData.meta_datepublished,"date");
-			content.addElement(metaDatePublished);
-			
-			metaSubject = new DetailListItem("Subject", mediaData.meta_subject);
-			content.addElement(metaSubject);
+			setTimeout(function():void {
+				trace("EditDetailsPanel:addDetails removing now!");
+				content.removeAllElements();	
 
-			metaKeywords = new DetailListItem("Keywords", mediaData.meta_keywords);
-			content.addElement(metaKeywords);
-			
-			metaOtherContrib = new DetailListItem("Other Contributors", mediaData.meta_othercontrib);
-			content.addElement(metaOtherContrib);
-			
-			metaCreativeWorkType = new DetailListItem("Creative Work Type", mediaData.meta_creativeworktype,"dropdown",AssetLookup.creativeworktypeLookup);
-			content.addElement(metaCreativeWorkType);
-			
-			metaCreativeWorkSubType = new DetailListItem("Creative Work Subtype", mediaData.meta_creativeworksubtype,"dropdown",AssetLookup.creativeworksubtypeLookup);
-			content.addElement(metaCreativeWorkSubType);
+				metaFileTitle = new DetailListItemFixed("File Title", mediaData.meta_file_title);
+				addPanelItem(metaFileTitle);
+				
+				trace("Adding Details to Edit Details Panel");
+				metaTitle = new DetailListItem("Title", mediaData.meta_title);
+				addPanelItem(metaTitle);
+				
+				metaDescription = new DetailListItem("Description", mediaData.meta_description);
+				addPanelItem(metaDescription);
+				
+				metaDatePublished = new DetailListItem("Date Published", mediaData.meta_datepublished,"date");
+				addPanelItem(metaDatePublished);
+				
+				metaSubject = new DetailListItem("Subject", mediaData.meta_subject);
+				addPanelItem(metaSubject);
+	
+				metaKeywords = new DetailListItem("Keywords", mediaData.meta_keywords);
+				addPanelItem(metaKeywords);
+				
+				metaOtherContrib = new DetailListItem("Other Contributors", mediaData.meta_othercontrib);
+				addPanelItem(metaOtherContrib);
+				
+				metaCreativeWorkType = new DetailListItem("Creative Work Type", mediaData.meta_creativeworktype,"dropdown",AssetLookup.creativeworktypeLookup);
+				addPanelItem(metaCreativeWorkType);
+				
+				metaCreativeWorkSubType = new DetailListItem("Creative Work Subtype", mediaData.meta_creativeworksubtype,"dropdown",AssetLookup.creativeworksubtypeLookup);
+				addPanelItem(metaCreativeWorkSubType);
+	
+				metaSponsorFunder = new DetailListItem("Sponsor/Funder", mediaData.meta_sponsorfunder);
+				addPanelItem(metaSponsorFunder);
+				
+			}, 5000);
 
-			metaSponsorFunder = new DetailListItem("Sponsor/Funder", mediaData.meta_sponsorfunder);
-			content.addElement(metaSponsorFunder);
 		}
+		
+		
+
 		
 		public function detailsSaved(success:Boolean, msg:String=""):void {
 			if(success) {

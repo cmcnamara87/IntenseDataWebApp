@@ -1,8 +1,9 @@
-package View.components.AnnotationList
+package View.components.Panels.AnnotationList
 {
 	//	import Model.Model_Annotation;
 	
 	import Controller.IDEvent;
+	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
 	
 	import View.components.PanelElement;
@@ -13,7 +14,9 @@ package View.components.AnnotationList
 	import flashx.textLayout.elements.TextFlow;
 	
 	import mx.containers.Canvas;
-	import mx.controls.Label;
+	import mx.controls.Alert;
+	import mx.controls.Image;
+	import mx.events.CloseEvent;
 	import mx.graphics.SolidColorStroke;
 	
 	import spark.components.Button;
@@ -58,14 +61,32 @@ package View.components.AnnotationList
 			this.paddingTop = 10;
 			this.paddingBottom = 10;
 			
+			var usernameAndIcon:HGroup = new HGroup();
+			usernameAndIcon.percentWidth = 100;
+			this.addElement(usernameAndIcon);
+			
 			var username:spark.components.Label = new spark.components.Label();
 			// Get the Capitalised first letter of hte username (should be persons name, but whatever)
-			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1) + " (" + annotationType + ")";
+			
+			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1);
 			username.percentWidth = 100;
 			username.setStyle('color', 0x1F65A2);
 			username.setStyle('fontWeight', 'bold');
-			this.addElement(username);
+			usernameAndIcon.addElement(username);
 			
+			if(annotationType == "highlight") {
+				var icon:Image = new Image();
+				icon.source = AssetLookup.getPostItIconClass();
+				icon.height = 15;
+				icon.width = 15;
+				usernameAndIcon.addElement(icon);
+			} else {
+				var annotationTypeLabel:spark.components.Label = new Label();
+				annotationTypeLabel.text = annotationType.substr(0,1).toUpperCase() + annotationType.substr(1);
+				annotationTypeLabel.setStyle('color', 0x1F65A2);
+				annotationTypeLabel.setStyle('fontWeight', 'bold');
+				usernameAndIcon.addElement(annotationTypeLabel);
+			}
 			var comment:spark.components.Label = new spark.components.Label();
 			comment.text = annotationText;
 			comment.percentWidth = 100;
@@ -133,12 +154,23 @@ package View.components.AnnotationList
 		}
 		
 		private function deleteButtonClicked(e:MouseEvent):void {
-			trace("Annotation Deletion Clicked", assetID);
-			this.height = 0;
-			this.visible = false;
-			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_DELETED, true);
-			myEvent.data.assetID = assetID;
-			this.dispatchEvent(myEvent);
+			trace("Delete Button Clicked");
+			//(view as AssetView).navbar.deselectButtons();
+			var myAlert:Alert = Alert.show("Are you sure you want to delete this annotation?", "Delete Annotation", Alert.OK | Alert.CANCEL, null, 
+				deleteButtonOkay, null, Alert.CANCEL);
+			myAlert.height=100;
+			myAlert.width=300;
+		}
+		
+		private function deleteButtonOkay(e:CloseEvent):void {
+			if (e.detail == Alert.OK) {
+				trace("Annotation Deletion Clicked", assetID);
+				this.height = 0;
+				this.visible = false;
+				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_DELETED, true);
+				myEvent.data.assetID = assetID;
+				this.dispatchEvent(myEvent);
+			}
 		}
 		
 		/* GETTERS/SETTERS */

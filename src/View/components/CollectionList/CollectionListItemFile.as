@@ -7,6 +7,7 @@ package View.components.CollectionList
 	import Model.Model_Collection;
 	
 	import View.Element.Collection;
+	import View.components.PanelElement;
 	
 	import flash.events.MouseEvent;
 	
@@ -14,36 +15,55 @@ package View.components.CollectionList
 	
 	import mx.controls.Image;
 	import mx.controls.Label;
+	import mx.core.UIComponent;
 	import mx.graphics.SolidColor;
 	
 	import spark.components.BorderContainer;
 	import spark.components.Group;
 	import spark.components.Label;
+	import spark.components.VGroup;
 	import spark.layouts.HorizontalLayout;
 	import spark.primitives.Rect;
 	
-	public class CollectionListItemFixed extends CollectionListItem
+	public class CollectionListItemFile extends VGroup implements PanelElement
 	{
 		private var collectionLabel:String; // The label for this fixed collection
 		private var fixedCollectionID:Number; // the label for this fixed collection
 		private var clickEventName:String; // the name of the event to call when this collection is clicked
 											// @see RecensioEvent (probably RecensioEvent.ASSET_COLLECTION_ALL_MEDIA etc)
-		
+		private var fileLabel:CollectionListItemButton;
 		/**
 		 * Creates a new collection list item for Fixed collections (e.g. All Assets, Shared, and Shelf)
 		 * 
 		 */		
-		public function CollectionListItemFixed(fixedCollectionID:Number, collectionLabel:String, clickEventName:String)
+		public function CollectionListItemFile(fixedCollectionID:Number, collectionLabel:String, clickEventName:String)
 		{
-			super();
+			this.percentWidth = 100;
+			
+			// Create the button
+			fileLabel = new CollectionListItemButton(false, true);
+			
+			// We are creating this collection, and its the one we are loading, showi t as loading
+			if(BrowserController.currentCollectionID == fixedCollectionID) {
+				fileLabel.showLoading();
+			}
+			
 			this.fixedCollectionID = fixedCollectionID;
 			this.collectionLabel = collectionLabel;
 			this.clickEventName = clickEventName;
 			
 			// List Label
-			setLabel(collectionLabel);
+			fileLabel.setLabel(collectionLabel);
+			
+			var itemCountLabel:spark.components.Label = new spark.components.Label();
+			itemCountLabel.text = "";
+			itemCountLabel.percentWidth = 100;
+			itemCountLabel.setStyle('textAlign', TextAlign.RIGHT); 
+			fileLabel.addElement(itemCountLabel);
 
-			this.addEventListener(MouseEvent.CLICK, collectionItemClicked);
+			this.addElement(fileLabel);
+			
+			fileLabel.addEventListener(MouseEvent.CLICK, collectionItemClicked);
 		}
 		
 		/**
@@ -59,8 +79,26 @@ package View.components.CollectionList
 			this.dispatchEvent(clickEvent);
 		}
 		
-		override public function getCollectionID():Number {
+		public function getCollectionID():Number {
 			return fixedCollectionID;
 		}
+		
+		public function setSelected():void {
+			fileLabel.setSelected();
+		}
+		public function unSelect():void {
+			fileLabel.unSelect();
+		}
+		public function showLoading():void {
+			fileLabel.showLoading();
+		}
+		public function hideLoading():void {
+			fileLabel.hideLoading();
+		}
+		
+		public function searchMatches(search:String):Boolean {
+			return fileLabel.searchMatches(search);
+		}
+			
 	}
 }

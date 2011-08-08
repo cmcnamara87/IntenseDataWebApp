@@ -17,6 +17,7 @@ package Model {
 		public var base_namespace:String;
 		public var base_path:String;
 		public var base_creator_id:Number;  //domain, user
+		public var base_creator_username:String;
 		public var base_ctime:String;
 		public var base_ctimestring:String;
 		public var base_mtime:String;
@@ -35,6 +36,8 @@ package Model {
 		public var meta_title:String; // The title of the asset
 		public var meta_description:String; // The description of the asset
 		public var meta_username:String;
+		
+		public var meta_clone:Boolean = false; // Whether this is an original asset, or a clone
 		
 		public function Model_Base() {
 			super();
@@ -55,6 +58,7 @@ package Model {
 			base_namespace = rawData.namespace;
 			base_path = rawData.path;
 			base_creator_id = rawData.creator.@id;
+			base_creator_username = rawData.creator.user;
 			base_ctime = rawData.ctime.@millisec;
 			base_mtime = rawData.mtime.@millisec;
 			base_ctimestring = rawData.ctime;
@@ -72,6 +76,12 @@ package Model {
 			meta_title = rawData.meta.r_resource.title;
 			meta_description = rawData.meta.r_resource.description;
 			meta_username = rawData.meta["mf-revision-history"].user.name;
+			
+			// Store if the asset is an original or not
+			// This may not be set, so if its not set, we set it to 'false'
+			if(rawData.meta.r_resource.clone == true || rawData.meta.r_resource.clone == false) {
+				meta_clone = rawData.meta.r_resource.clone;
+			}
 		}
 		
 		// Gets the creation date of an asset

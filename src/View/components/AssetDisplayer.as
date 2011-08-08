@@ -1,5 +1,6 @@
 package View.components
 {
+	import Controller.BrowserController;
 	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	
@@ -16,6 +17,7 @@ package View.components
 	import flash.display.BitmapData;
 	import flash.events.Event;
 	
+	import mx.controls.Image;
 	import mx.controls.Label;
 	import mx.events.SliderEvent;
 	import mx.graphics.BitmapFill;
@@ -31,6 +33,7 @@ package View.components
 	import spark.components.Scroller;
 	import spark.components.TileGroup;
 	import spark.components.VGroup;
+	import spark.layouts.HorizontalAlign;
 	import spark.layouts.TileLayout;
 	import spark.layouts.VerticalLayout;
 	import spark.layouts.supportClasses.LayoutBase;
@@ -65,7 +68,8 @@ package View.components
 				hello.fillMode = BitmapFillMode.REPEAT;
 				this.backgroundFill = hello;
 			} else {
-				this.backgroundFill = new SolidColor(0xCCCCCC, 1);
+//				this.backgroundFill = new SolidColor(0xCCCCCC, 1);
+				this.backgroundFill = new SolidColor(0xFFFFDD, 1);
 			}
 			// Setup the border
 			//this.borderStroke = new SolidColorStroke(0x000000,1,0);
@@ -84,9 +88,20 @@ package View.components
 			loadingLabel.setStyle('fontSize', 30);
 			loadingLabel.setStyle('fontWeight', 'bold');
 			loadingLabel.setStyle('textAlign', 'center');
+			loadingLabel.setStyle('color', 0x999999);
 			loadingLabel.visible = false;
 			loadingLabel.percentWidth = 100;
 			loadingGroup.addElement(loadingLabel);
+			
+			// List Icon
+//			LoadAnim.show(loadingGroup,0,0,0x000000,1);
+			
+//			var myIcon:Image = new Image();
+//			myIcon.source = AssetLookup.getLoadingIconClass();
+//			myIcon.width = 126;
+//			myIcon.height = 22;
+//			loadingGroup.addElement(myIcon);
+			
 			
 			// Add a VGroup inside this broder container.
 			// That way we can add the 'Loading' to the AssetDisplayer,
@@ -160,6 +175,10 @@ package View.components
 			// Add the elements to the display
 			for(var i:Number = 0; i < assetArray.length; i++) {
 				content.addElement(new AssetTile(assetArray[i], eventToThrowWhenAssetClicked));	
+			}
+			
+			if(BrowserController.getEditOn() || BrowserController.getShelfOn()) {
+				lockReadOnlyFiles();
 			}
 		}
 		
@@ -297,11 +316,41 @@ package View.components
 			}
 		}
 		
+		/**
+		 * Disables all tiles for files that are read-only.
+		 * 
+		 * Used when we are editing/creating a new collection, we need to disable
+		 * all tiles that we dont have the rights to access // RIGHTS MANAGEMENT 
+		 * 
+		 */		
+		public function lockReadOnlyFiles():void {
+			for(var i:Number = 0; i < content.numElements; i++) {
+				var assetTile:AssetTile = content.getElementAt(i) as AssetTile;
+				
+				if(!assetTile.getAccess()) {
+					assetTile.enabled = false;
+				}
+			}
+		}
 		
+		/**
+		 * Enables all tiles. 
+		 * 
+		 */		
+		public function unlockFiles():void {
+			for(var i:Number = 0; i < content.numElements; i++) {
+				(content.getElementAt(i) as AssetTile).enabled = true;
+			}
+		}
 		
 		/* ============== LOADABLE CONTENT INTERFACE FUNCTIONS ================ */
+		/**
+		 * Disables the tiles and shows the loading message. 
+		 * 
+		 */		
 		public function loadingContent():void {
 			for(var i:Number = 0; i < content.numElements; i++) {
+				(content.getElementAt(i) as AssetTile).enabled = true;
 				(content.getElementAt(i) as AssetTile).alpha = 0.1;
 				(content.getElementAt(i) as AssetTile).removeClickListener();
 			}

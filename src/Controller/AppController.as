@@ -65,12 +65,36 @@ package Controller {
 			}
 		}
 		
+		protected function removeLogoutListener():void {
+			if(layout) {
+				if(layout.header.logoutButton) {
+					if(layout.header.logoutButton.hasEventListener(MouseEvent.MOUSE_UP)) {
+						layout.header.logoutButton.alpha = 0.5;
+						layout.header.logoutButton.removeEventListener(MouseEvent.MOUSE_UP,logoutClicked);
+					}
+				}
+			}
+		}
+		
+		protected function addLogoutListener():void {
+			if(layout) {
+				if(layout.header.logoutButton) {
+					layout.header.logoutButton.alpha = 1;
+					layout.header.logoutButton.addEventListener(MouseEvent.MOUSE_UP,logoutClicked);
+				}
+			}
+		}
+		
+		
 		//When the controller is destroyed/switched
 		public function dealloc():void {
 			if(layout) {
 				if(layout.header.logoutButton) {
 					if(layout.header.logoutButton.hasEventListener(MouseEvent.MOUSE_UP)) {
 						layout.header.logoutButton.removeEventListener(MouseEvent.MOUSE_UP,logoutClicked);
+					}
+					if(layout.header.profileButton.hasEventListener(MouseEvent.MOUSE_UP)) {
+						layout.header.profileButton.removeEventListener(MouseEvent.MOUSE_UP, profileClicked);
 					}
 				}
 				layout.content.removeAllElements();

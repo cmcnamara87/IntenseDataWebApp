@@ -22,6 +22,10 @@ package Module.Videoviewer {
 		private var _timelineBufferMask:Sprite = new Sprite();
 		private var loadedAnnotations:Boolean = false;
 		
+
+		// are we scrubbing on the timeline
+		private var isScrubbing:Boolean = false;
+		
 		private var colours:Array = new Array(
 			0xFF0000,0x0000FF,0x226666,0xC71585,0x009A9A,0xFF8C00,0x4B0082
 		);
@@ -63,8 +67,14 @@ package Module.Videoviewer {
 			redrawAnnotations();
 		}
 		
+		/**
+		 * Update the length of the blue buffer bar 
+		 * @param newTime	The amount of time buffered, ahead of the current playhead position
+		 * 
+		 */		
 		public function buffered(newTime:Number):void {
 			try {
+				// work out the percentage loaded (ahead of the playhead)
 				var percentLoaded:Number = newTime/delegate.getDuration();
 				if(percentLoaded*(this.width-20) > 0) {
 					_timelineBuffer.graphics.clear();
@@ -95,16 +105,64 @@ package Module.Videoviewer {
 			return _timelineHead.x;
 		}
 		
+		/**
+		 * Mouse down on the timeline.  
+		 * @param e
+		 * 
+		 */		
 		private function startMovePosition(e:MouseEvent):void {
-			_timeline.addEventListener(MouseEvent.MOUSE_UP,stopMovePosition);
-			_timeline.addEventListener(MouseEvent.MOUSE_OUT,stopMovePosition);
+			//mouseMoveX = this.mouseX;
+			
+			_timeline.addEventListener(MouseEvent.MOUSE_UP, stopMovePosition);
+			
+			_timeline.addEventListener(MouseEvent.MOUSE_MOVE, scrubbing);
+			
+			// Listen for the mouse to stop scrubbing
+			_timeline.addEventListener(MouseEvent.MOUSE_OUT, stopMovePosition);
 		}
 		
+		/**
+		 * Mouse moved on timeline while scrubbing. 
+		 * Scrub to a position in the timeline (based on mouse movement on the timeline) 
+		 * @param e
+		 * 
+		 */		
+		private function scrubbing(e:MouseEvent):void {
+			// We are scrubbing on the timeline
+
+			if(!isScrubbing) {
+				// we just started to scrub
+				// Tell the video to pause while we scrub	
+				delegate.pauseVideo();
+				isScrubbing = true;
+			}
+			
+			scrubTo((this.mouseX-10)/(this.width-10));				
+			
+		}
+		
+		/**
+		 * Mouse is released on timeline. Scrub to a position in the timeline when mouse is released. 
+		 * @param e
+		 * 
+		 */		
 		private function stopMovePosition(e:MouseEvent):void {
+			// Scrub to time on timeline
 			scrubTo((this.mouseX-10)/(this.width-10));
+			
+			// Resume video
+			delegate.playVideo();
+			// say we stopped scrubbing
+			isScrubbing = false;
+			
 			if(_timeline.hasEventListener(MouseEvent.MOUSE_UP)) {
 				_timeline.removeEventListener(MouseEvent.MOUSE_UP,stopMovePosition);
 			}
+			
+			if(_timeline.hasEventListener(MouseEvent.MOUSE_MOVE)) {
+				_timeline.removeEventListener(MouseEvent.MOUSE_MOVE,scrubbing);
+			}
+			
 			if(_timeline.hasEventListener(MouseEvent.MOUSE_OUT)) {
 				_timeline.removeEventListener(MouseEvent.MOUSE_OUT,stopMovePosition);
 			}

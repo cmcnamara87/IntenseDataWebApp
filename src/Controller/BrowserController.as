@@ -1,4 +1,5 @@
 package Controller {
+	import Controller.Utilities.Auth;
 	import Controller.Utilities.Router;
 	
 	import Lib.LoadingAnimation.LoadAnim;
@@ -11,16 +12,24 @@ package Controller {
 	import View.Browser;
 	import View.BrowserView;
 	import View.Element.SmallButton;
-	import View.components.Comments.NewComment;
+	import View.components.Panels.Comments.NewComment;
+	import View.components.Panels.Sharing.SharingPanel;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
+	import mx.events.FlexEvent;
 	
 	public class BrowserController extends AppController {
+		
+		
+		public static const PORTAL:String = "Discussion";
 		
 		private var collectionToDelete:Number = 0;
 		//private var addButton:SmallButton;
@@ -38,6 +47,9 @@ package Controller {
 		private static var collectionBeingEditedID:Number; 	// The ID of the collection being edited.
 		
 		private var modifyAccess:Boolean = true;
+		
+		public static var collectionData:Model_Collection;
+		
 		public static var currentCollectionID:Number = ALLASSETID; //1576; //ALLASSETID; //1492; //ALLASSETID;	// Stores the ID for the current collection we are viewing
 		public static var currentCollectionTitle:String = ""; // The title of the current collection we are looking at
 		public static var editCollectionName:String = ""; // The title of the current collection we are editing
@@ -47,17 +59,36 @@ package Controller {
 		public static const SHELFID:Number = -3;
 		
 		
+		private static var cachedCollectionMedia:Array = new Array(); 
+		private static var cachedCollections:Event;
+		
+		private static var collectionTimer:Timer = new Timer(20000);
+		
+		public static var currentMediaData:Model_Media = null;
+		
 		//Calls the superclass
 		public function BrowserController() {
 			trace("--- Creating Browser Controller ---");
 			view = new Browser();
+			resetShelf();
 			super();
+			
+			
+			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			currentView.addEventListener(Event.REMOVED_FROM_STAGE, stopTimerPlease);
+			currentView.addEventListener(FlexEvent.HIDE, stopTimerPlease );
+		}
+
+		public function stopTimerPlease(e:Event):void {
+			trace("Stoping view refresh timer");
+			collectionTimer.removeEventListener(TimerEvent.TIMER, refreshCollectionList);
 		}
 		
 		/**
 		 * Resets the browser's variables. Used when a user logs out. 
 		 */				
 		public static function resetBrowserController():void {
+			collectionTimer.stop();
 			editOn = false;
 			shelfOn = false;
 			currentCollectionAssets = new Array();
@@ -65,6 +96,18 @@ package Controller {
 			editAssets = new Array();
 			collectionBeingEditedID = -1;
 			currentCollectionID = ALLASSETID;
+			cachedCollectionMedia = new Array();
+			cachedCollections = null;
+		}
+		
+		
+		private function resetShelf():void {
+			// Turn editing and collection creation off
+			editOn = false;
+			shelfOn = false;
+			// Clear anything we might have saved
+			currentCollectionAssets = new Array();
+			editAssets = new Array();
 		}
 		
 		//INIT
@@ -76,8 +119,12 @@ package Controller {
 			// but this is for when we come back from viewing an asset etc
 			reAddAssetsToShelf();
 			
+			
 			// Load the collections for the sidebar
 			loadAllMyCollections();
+			collectionTimer.addEventListener(TimerEvent.TIMER, refreshCollectionList);
+			collectionTimer.start();
+//			refreshCollectionList();
 			
 			// Load the appropriate assets for whatever
 			// collection we have selected when this runs (not just All Assets
@@ -93,7 +140,11 @@ package Controller {
 				default:
 					loadAssetsInCollection(currentCollectionID);
 			}
-			
+		}
+		
+		private function refreshCollectionList(e:TimerEvent):void {
+			trace("Refreshing collection list");
+			//loadAllMyCollections();
 		}
 		
 		// Sets up all the event listeners
@@ -110,12 +161,17 @@ package Controller {
 			// Listen for Delete Collection button being clicked
 			currentView.addEventListener(IDEvent.COLLECTION_DELETE_BUTTON_CLICKED, deleteButtonClicked);
 			
+			// Listen for Shelf Being closed (clicking the X button on the shelf);
+			currentView.addEventListener(IDEvent.SHELF_CLOSE_BUTTON_CLICKED, closeShelfButtonClicked);
+			
 			// Listen for Media Asset being clicked inside the Asset Browser
 			currentView.addEventListener(IDEvent.ASSET_BROWSER_MEDIA_CLICKED, assetBrowserMediaClicked);
 			
 			// Listen for Media Asset being clicked inside the Shelf
 			currentView.addEventListener(IDEvent.SHELF_MEDIA_CLICKED, shelfMediaClicked);
 			
+			// Listen for shelf clear being clicked
+			currentView.addEventListener(IDEvent.SHELF_CLEAR_BUTTON_CLICKED, shelfClearClicked);
 			// Listen for Collection Asset being clicked
 			currentView.addEventListener(IDEvent.ASSET_COLLECTION_CLICKED, assetCollectionClicked);
 			
@@ -162,9 +218,10 @@ package Controller {
 		 * shared with the user. 
 		 */		
 		private function loadAllMyMedia():void {
-			
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
+			currentView.setToolbarToFixedCollectionMode();
+			currentView.hideAllPanels();
 			currentView.showMediaLoading();
 			//LoadAnim.show((view as Browser), 0, 0, 0x999999,2);
 //			LoadAnim.show((view as Browser),(view as Browser).width/2,(view as Browser).height/2+(view as Browser).navbar.height,0x999999,2);
@@ -176,6 +233,11 @@ package Controller {
 			//addButton.setText("New Media Asset");
 			//addButton.toolTip = "Upload and create a new media asset";
 			// Get all the assets! weeeeeee
+//			this.quickAddCachedMedia(ALLASSETID);
+			
+			// Load any media we might already have cached
+			this.loadCachedCollectionMedia(ALLASSETID);
+			
 			Model.AppModel.getInstance().getAllMediaAssets(fixedCollectionAssetsLoaded);
 		}
 		
@@ -184,7 +246,10 @@ package Controller {
 		 */		
 		private function loadAllMyCollections():void {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
-			//LoadAnim.show(currentView, 0, 0, 0x999999,2);
+			
+			// Load any cached collections
+			this.loadCachedCollections();
+			// Load the full colleciton list in the background (and we update the collection list when this comes throuhg)
 			Model.AppModel.getInstance().getCollections(collectionAssetsLoaded);
 		}
 		
@@ -199,6 +264,13 @@ package Controller {
 			currentView.highlightCollectionListItem(collectionID);
 			
 			currentView.showMediaLoading();
+			
+			
+			// Change to the Regular toolbar
+			currentView.setToolbarToRegularCollectionMode(modifyAccess);
+			
+			// Load any media we might already have cached
+			this.loadCachedCollectionMedia(collectionID);
 			
 			// Get the Media inside/ this collection
 			AppModel.getInstance().getThisCollectionsMediaAssets(collectionID, collectionMediaLoaded);
@@ -215,8 +287,10 @@ package Controller {
 		 */		
 		private function loadShared():void {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			
+			currentView.setToolbarToFixedCollectionMode();
+			currentView.hideAllPanels();
 			currentView.showMediaLoading();
-			//LoadAnim.show(currentView, currentView.width / 2, currentView.height/2, 0x999999,2);
 			Model.AppModel.getInstance().getSharedAssets(fixedCollectionAssetsLoaded);
 		}
 		
@@ -231,6 +305,8 @@ package Controller {
 		 */		
 		public function fixedCollectionAssetsLoaded(e:Event):void {
 			// TODO need to add in another transaction for this similar to the regular collections
+			
+			this.cacheCollectionMedia(ALLASSETID, e);
 			
 			if(currentCollectionID != ALLASSETID && currentCollectionID != SHAREDID) {
 				trace("returned a fixed collection, but we arent looking at one currently," +
@@ -248,10 +324,22 @@ package Controller {
 			// Convert XML return to Model_Media classes
 			var assets:Array = AppModel.getInstance().extractAssetsFromXML(XML(data), Model_Media);
 				
+			// Since this is the list of the 'original files'
+			// we want to remove all duplicates (that is, assets that point to the same file type)
+			var files:Array = new Array();
+			var cleanAssets:Array = new Array();
+			
+			for each(var asset:Model_Media in assets) {
+				if(asset.meta_clone == false && asset.base_creator_username == Auth.getInstance().getUsername()) {
+					cleanAssets.push(asset);
+				} 
+				asset.base_asset_id *= -1;
+			}
+
 			// Sort Alphabetically
-			assets.sortOn(["meta_title"],[Array.CASEINSENSITIVE]);
+			cleanAssets.sortOn(["meta_title"],[Array.CASEINSENSITIVE]);
 			// Add the assets to the view
-			currentView.addMediaAssets(assets);
+			currentView.addMediaAssets(cleanAssets);
 			
 			// Change to the Fixed toolbar
 			currentView.setToolbarToFixedCollectionMode();
@@ -264,21 +352,33 @@ package Controller {
 		 * 
 		 */		
 		public function collectionAssetsLoaded(e:Event):void {
+			
+			// Save the collections away in a cache, so they can be easily retrieved next time
+			this.cacheCollections(e);
+			
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			// Remove current collections
 			currentView.clearCollections();
 		
-			var collections:Array = AppModel.getInstance().parseResults(XML(e.target.data),Model_Collection);
+			//var collections:Array = AppModel.getInstance().parseResults(XML(e.target.data),Model_Collection);
 			// Add the collections to the sidebar
 			
-			for(var i:Number = 0; i < collections.length; i++) {
-				//if((collections[i] as Model_Collection).numberOfChildren()) {
-					trace("found collection " + (collections[i] as Model_Collection).meta_title);
-				//}
-			}
-			currentView.addCollections(collections);
+			var collectionsAndFiles:Array = AppModel.getInstance().convertXMLtoCollectionObjectsWithMedia(XML(e.target.data).reply.result.asset);
+//			files.sortOn(["meta_title"], [Array.CASEINSENSITIVE]);
+//			trace("BrowserController:collectionAssetsLoaded - Files in collection", files.length);
+			
+//			collections.sortOn(["meta_title"],[Array.CASEINSENSITIVE]);
+			
+//			for(var i:Number = 0; i < collections.length; i++) {
+//				//if((collections[i] as Model_Collection).numberOfChildren()) {
+//					trace("found collection " + (collections[i] as Model_Collection).meta_title);
+//				//}
+//			}
+			currentView.addCollections(collectionsAndFiles);
 			currentView.highlightCollectionListItem(currentCollectionID);
+			
+			currentView.updateNewCollectionButton();
 			//LoadAnim.hide();
 		}
 		
@@ -288,12 +388,17 @@ package Controller {
 		 */		
 		// 
 		public function collectionMediaLoaded(collectionID:Number, e:Event):void {
+			
+			// Cache this media in this collection
+			this.cacheCollectionMedia(collectionID, e);
+				
 			// If we have just got data back from a collection we are no longer looking at
 			// ignore it.
 			trace("got data for", collectionID, "we are looking at", currentCollectionID);
 			if(collectionID != currentCollectionID) {
 				return;
 			}
+			
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			// Remove current tiles
@@ -318,11 +423,6 @@ package Controller {
 			
 			// Add all of the assets inside this collection
 			currentView.addMediaAssets(BrowserController.currentCollectionAssets);
-			
-			// Change to the Regular toolbar
-			currentView.setToolbarToRegularCollectionMode(modifyAccess);
-
-			
 		}
 		
 		/**
@@ -345,21 +445,24 @@ package Controller {
 			
 		}
 		
-		public function collectionCreated(e:Event):void {
+		public function collectionCreated(collectionID:Number):void {
 			// The collection has been created.
 			
 			// Get out ID of new collection.
-			var dataXML:XML = XML(e.target.data);
-			var newCollectionID:Number = dataXML.reply.result.id;
+			if(collectionID == -1) {
+				trace("cllection failed");
+				Alert.show("Failed to create collection");
+				return;
+			}
+			
 			// Set the current collection being view, to the net collection
-			BrowserController.currentCollectionID = newCollectionID;
+			BrowserController.currentCollectionID = collectionID;
 			
-			
-			trace("- Collection Created:", e);
-			// Update the Collection Class so it is a 'collection'
-			AppModel.getInstance().setCollectionClass(e);
-			AppModel.getInstance().setOwnerACL(newCollectionID);
-
+//			// Update the Collection Class so it is a 'collection'
+//			AppModel.getInstance().setCollectionClass(e);
+//			// Set this user as the owner of the collection
+//			AppModel.getInstance().changeAccess(newCollectionID, Auth.getInstance().getUsername(), "system", SharingPanel.READWRITE, true);
+//			
 			// Remove all teh current items from the shelf
 			shelfAssets.length = 0;
 			
@@ -377,7 +480,7 @@ package Controller {
 			loadAllMyCollections();
 			
 			// Now lets load the assets for this specific collection
-			loadAssetsInCollection(newCollectionID);
+			loadAssetsInCollection(currentCollectionID);
 		}
 		
 		public function collectionUpdated(collectionID:Number):void {
@@ -429,7 +532,11 @@ package Controller {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			
 			// Send the data to view
-			currentView.setupAssetsSharingInformation(userData);
+			if(collectionData != null) {
+				currentView.setupAssetsSharingInformation(userData, collectionData.base_creator_username);
+			} else {
+				currentView.setupAssetsSharingInformation(userData, "");
+			}
 		}
 		
 		/**
@@ -438,6 +545,12 @@ package Controller {
 		 * 
 		 */		
 		private function sharingInfoUpdated(e:Event):void {
+			
+			// Sharing complete,
+			// enable the logout button
+//			layout.header.logoutButton.enabled = true;
+			super.addLogoutListener();
+			
 			// Get out the returned data
 			var data:XML = XML(e.target.data);
 			
@@ -445,6 +558,8 @@ package Controller {
 			if(data.reply.@type == "result") {
 				// Sharing update successfully
 				trace("Sharing Updated Successfully", e.target.data);
+				var currentView:BrowserView = (view as Browser).craigsbrowser;
+				currentView.unlockSharingPanelUsers();
 				trace("-------------------------");
 			} else {
 				//Alert.show("Sharing Update Failed");
@@ -534,13 +649,25 @@ package Controller {
 			}
 		}
 
+		private function closeShelfButtonClicked(e:IDEvent):void {
+			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			this.setEdit(false);
+			this.setCollectionCreationMode(false);
+			currentView.hideShelf();
+		}
+		
 		/**
 		 * Called when the delete button is clicked in the browser.
 		 * Asks if the user is sure 
 		 * 
 		 */		
 		private function deleteButtonClicked(e:IDEvent):void {
-			var myAlert:Alert = Alert.show("Are you sure you wish to delete this collection?", "Delete Collection", Alert.OK | Alert.CANCEL, null, deleteCollection, null, Alert.CANCEL);
+			if(collectionData.base_creator_username == Auth.getInstance().getUsername()) {
+				// We are the creator of the collection
+				var myAlert:Alert = Alert.show("Are you sure you wish to delete this " + BrowserController.PORTAL + "?", "Delete " + BrowserController.PORTAL, Alert.OK | Alert.CANCEL, null, deleteCollection, null, Alert.CANCEL);	
+			} else {
+				myAlert = Alert.show("Are you sure you wish to remove this " + BrowserController.PORTAL + "?", "Remove " + BrowserController.PORTAL, Alert.OK | Alert.CANCEL, null, deleteCollection, null, Alert.CANCEL);	
+			}
 			myAlert.height = 100;
 			myAlert.width = 300;
 		}
@@ -552,16 +679,16 @@ package Controller {
 		 */		
 		private function deleteCollection(e:CloseEvent):void {
 			if (e.detail==Alert.OK) {
-				AppModel.getInstance().deleteCollection(currentCollectionID, collectionDeleted);
+				AppModel.getInstance().deleteCollection(currentCollectionID, collectionData.base_creator_username, collectionDeleted);
 				
 				var currentView:BrowserView = (view as Browser).craigsbrowser;
-				
+
 				// The collection was deleted, so lets re-load the 
-				// all assets collection
+				// all assets colletion
 				this.saveCurrentCollectionID(ALLASSETID);
+				loadAllMyCollections();
 				loadAllMyMedia();				
 				//currentView.setToolbarToFixedCollectionMode();
-				
 			}
 		}
 		
@@ -586,6 +713,12 @@ package Controller {
 			// Get out the clicked assets data
 			var assetData:Model_Media = e.data.assetData;
 			
+//			// We are going to make the asset ID negative, if we are making a clean copy
+//			// otherwise, we leave it as positive (its just an easy flag to do)
+//			if(currentCollectionID == ALLASSETID) {
+//				assetData.base_asset_id = assetData.base_asset_id * -1;
+//			}
+//			
 			// CHeck if the shelf is on
 			if(getShelfOn()) {
 				// The shelf is on, so lets check if we have already added this item to the shelfAssets, and its there remove it
@@ -600,6 +733,10 @@ package Controller {
 					trace('Adding asset to shelf', assetData.base_asset_id);
 					currentView.addAssetToShelf(assetData);
 				}
+				
+				// Changes the number on the "New Collection" button
+				currentView.updateNewCollectionButton();
+				
 				return;
 			} else if (getEditOn()) {
 				// Edit is on, so lets check if we have already added this item to the editAssets, and its there remove it
@@ -623,9 +760,11 @@ package Controller {
 			
 			// TODO REMOVE THIS
 			var viewURL:String = "";
+			currentMediaData = assetData;
+			currentMediaData.base_asset_id = Math.abs(currentMediaData.base_asset_id);
 			//if(assetData.type == "image" || assetData.type == "video" || assetData.type == "audio") {
 			// Show the asset view
-				viewURL = 'view/' + assetData.base_asset_id;
+				viewURL = 'view/' + Math.abs(assetData.base_asset_id);
 			//} else {
 		//		viewURL = 'view_old/' + assetData.base_asset_id;
 		//	}
@@ -654,8 +793,33 @@ package Controller {
 					trace('Removing asset from shelf', assetData.base_asset_id);
 					currentView.removeAssetFromShelf(assetData.base_asset_id);
 				}
+				currentView.updateNewCollectionButton();
 			}
 			
+		}
+		
+		/**
+		 * Removes all the current assets from the shelf. Either the collection creation or the
+		 * edit shelf. 
+		 * @param e
+		 * 
+		 */		
+		private function shelfClearClicked(e:IDEvent):void {
+			var currentView:BrowserView = (view as Browser).craigsbrowser;
+			
+			// Get out the clicked assets data
+			var assetData:Model_Media = e.data.assetData;
+			
+			// Empty whatever shelf we are looking at
+			if(BrowserController.getEditOn()) {
+				editAssets = new Array();
+				currentView.removeShelfMedia();
+			} else if (BrowserController.getShelfOn()) {
+				shelfAssets = new Array();
+				currentView.removeShelfMedia();
+			}
+			// Update the New Collection button to show it has 0 assets in it
+			currentView.updateNewCollectionButton();
 		}
 		
 		/**
@@ -672,8 +836,7 @@ package Controller {
 			this.saveCurrentCollectionID(e.data.assetID);
 				
 			currentView.highlightCollectionListItem(currentCollectionID);
-			
-			//currentView.setToolbarToFixedCollectionMode();
+		
 			loadAllMyMedia();
 		}
 		
@@ -689,7 +852,7 @@ package Controller {
 			this.saveCurrentCollectionID(e.data.assetID);
 			// Highlight this collection (to show we clicked it);
 			currentView.highlightCollectionListItem(currentCollectionID);
-				
+
 			//currentView.setToolbarToFixedCollectionMode();
 			loadShared();
 		}
@@ -724,6 +887,8 @@ package Controller {
 			// Save the Collections ID
 			this.saveCurrentCollectionID(e.data.assetID);
 			this.modifyAccess = e.data.access;
+			collectionData = e.data.collectionData;
+			
 			trace("Saving current collection name", e.data.collectionName);
 			this.saveCurrentCollectionName(e.data.collectionName);
 			
@@ -759,6 +924,9 @@ package Controller {
 					trace("The current collection name is set as", BrowserController.currentCollectionTitle);
 					this.saveCurrentCollectionName(collectionTitle);
 					AppModel.getInstance().createCollection(collectionTitle, shelfAssets, collectionCreated);
+					
+					// Clear the collection cache, since we are going to be updating it
+					clearCachedCollections();
 				} else {
 					return;
 				}
@@ -771,15 +939,11 @@ package Controller {
 				trace("The current collection name is set as", BrowserController.currentCollectionTitle, " - ", collectionTitle);
 				this.saveCurrentCollectionName(collectionTitle);
 				AppModel.getInstance().saveCollection(collectionBeingEditedID, collectionTitle, editAssets, collectionUpdated);
-			}
-			//if(e.data.assetID == -1) {
 				
-			/*} else {
-				AppModel.getInstance().saveCollection(e.data,collectionSaved);
-				if(e.data.hasChild.length == 0) {
-					(view as Browser).collectionbrowser.removeCollectionById(e.data.assetID);
-				}
-			}*/
+				// Clear the collection cache, since are going to be updating it
+				clearCachedCollections();
+				this.clearCachedCollectionMedia(collectionBeingEditedID);
+			}
 		}
 		
 		/**
@@ -818,6 +982,10 @@ package Controller {
 			var username:String = e.data.username;
 			var access:String = e.data.access;
 			AppModel.getInstance().changeAccess(currentCollectionID, username, "system", access, true, sharingInfoUpdated);
+			
+			// DIsable the logout button, until the sharing is complete.
+			super.removeLogoutListener();
+//			trace("********** LOGOUT BUTTON IS", layout.header.logoutButton.enabled);
 		}
 		
 		
@@ -901,8 +1069,85 @@ package Controller {
 			}
 		}
 		
-
+		/* ====== CACHING FUNCTIONS ======== */
+		/**
+		 * Stores the collections in a cache. 
+		 * @param e	The event returned when all collections are retrieved
+		 * 
+		 */		
+		private function cacheCollections(e:Event):void {
+			cachedCollections = e
+		}
+		/**
+		 * Clears the cache of collections 
+		 * 
+		 */		
+		private function clearCachedCollections():void {
+			cachedCollections = null;
+		}
+		/**
+		 * Loads the cache of collections and displays them. 
+		 * 
+		 */		
+		private function loadCachedCollections():void {
+			if(cachedCollections && cachedCollections != null) {
+				collectionAssetsLoaded(cachedCollections);
+			}
+		}
+		private function cacheCollectionMedia(collectionID:Number, e:Event):void {
+			// Save the collection media
+			clearCachedCollectionMedia(collectionID);
+			var cacheCollection:Array = new Array();
+			cacheCollection.push(collectionID);
+			cacheCollection.push(e);
+			cachedCollectionMedia.push(cacheCollection);
+		}
 		
+		public static function clearCurrentCollectionMedia():void {
+			trace("clearCachedCollectionMedia -", BrowserController.currentCollectionID);
+			for (var i:Number = 0; i < cachedCollectionMedia.length; i++) {
+				var cacheCollection:Array = cachedCollectionMedia[i];
+				var cacheCollectionID:Number = cacheCollection[0];
+				if(cacheCollectionID == BrowserController.currentCollectionID) {
+					trace("Found collection to remove", BrowserController.currentCollectionID, "- now removing", cachedCollectionMedia.length);
+					cachedCollectionMedia.splice(i, 1);		
+					trace("Found collection to remove", BrowserController.currentCollectionID ,"- removed", cachedCollectionMedia.length);
+				}
+			}
+		}
+
+		private function loadCachedCollectionMedia(collectionID:Number):void {
+			// Check if we dont have this collection cached
+			for each(var cacheCollection:Array in cachedCollectionMedia) {
+				var cacheCollectionID:Number = cacheCollection[0];
+				var cacheCollectionEvent:Event = cacheCollection[1];
+				if(cacheCollectionEvent != null) {
+					if(cacheCollectionID == collectionID) {
+						if(collectionID == ALLASSETID) {
+							fixedCollectionAssetsLoaded(cacheCollectionEvent);
+						} else {
+							collectionMediaLoaded(cacheCollectionID, cacheCollectionEvent);
+						}
+						break;
+					}
+				}
+			}
+		}
+		
+		private function clearCachedCollectionMedia(collectionID:Number):void {
+			trace("clearCachedCollectionMedia -", collectionID);
+			for (var i:Number = 0; i < cachedCollectionMedia.length; i++) {
+				var cacheCollection:Array = cachedCollectionMedia[i];
+				var cacheCollectionID:Number = cacheCollection[0];
+				if(cacheCollectionID == collectionID) {
+					trace("Found collection to remove", collectionID, "- now removing", cachedCollectionMedia.length);
+					cachedCollectionMedia.splice(i, 1);		
+					trace("Found collection to remove", collectionID ,"- removed", cachedCollectionMedia.length);
+				}
+			}
+		}
+
+
 
 		
 		// Called when the collections are loaded 

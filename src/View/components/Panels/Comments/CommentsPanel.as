@@ -1,4 +1,4 @@
-package View.components.Comments
+package View.components.Panels.Comments
 {
 	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
@@ -6,7 +6,7 @@ package View.components.Comments
 	import Model.Model_Commentary;
 	
 	import View.BrowserView;
-	import View.components.Panel;
+	import View.components.Panels.Panel;
 	import View.components.Toolbar;
 	
 	import flash.events.MouseEvent;
@@ -31,7 +31,7 @@ package View.components.Comments
 		
 		private var expanded:Boolean = false; // Whether or not the panel is expanded.
 		private var maxMinButton:Button;
-		
+		private var addCommentButton:Button;
 		/**
 		 * The Comments Panel sits on the right side on the main asset browser 
 		 * and shows all the comments a specific collection has.
@@ -46,7 +46,7 @@ package View.components.Comments
 			
 			
 			// Add 'Add Comment' Button
-			var addCommentButton:Button = new Button();
+			addCommentButton = new Button();
 			addCommentButton.label = "Add Comment";
 			addCommentButton.percentHeight = 100;
 			toolbar.addElement(addCommentButton);
@@ -70,12 +70,6 @@ package View.components.Comments
 			closeButton.width = 30;
 			toolbar.addElement(closeButton);
 			
-			
-			
-			
-			
-			
-						
 			// Event Listenrs
 			addCommentButton.addEventListener(MouseEvent.CLICK, addCommentButtonClicked);
 			
@@ -88,6 +82,12 @@ package View.components.Comments
 			// Testing this out TODO remove this
 			maxMinButton.addEventListener(MouseEvent.CLICK, maxMinButtonClicked);
 			closeButton.addEventListener(MouseEvent.CLICK, closeButtonClicked);
+		}
+		
+		
+		override public function setUserAccess(modify:Boolean):void {
+			super.setUserAccess(modify);
+			addCommentButton.enabled = modify;
 		}
 		
 		/**
@@ -110,7 +110,6 @@ package View.components.Comments
 			for(var i:Number = 0; i < commentArray.length; i++) {
 				var commentData:Model_Commentary = commentArray[i] as Model_Commentary;
 				
-//				trace("Adding a comment?", commentData.text);
 				// Check if this comment is a reply
 				if(commentData.annotation_start > 0) {
 //					trace("Found a reply comment, in reply to", commentData.annotation_start);
@@ -126,16 +125,16 @@ package View.components.Comments
 						// So we can put the comment, at the end of all the other replies that are already there
 						var nonReplyIndex:Number = this.getNonReplyCommentIndexAfter(commentIndex);
 						
-						content.addElementAt(	new Comment(commentData.base_asset_id, commentData.meta_creator, 
+						addPanelItemAtIndex(	new Comment(commentData.base_asset_id, commentData.meta_creator, 
 												commentData.text, true),
 												nonReplyIndex);
 					} else {
 						// We didnt find the comment, that this one is replying to.
 						// Lets just insert it at the bottom, as not a reply
-						content.addElement(new Comment(commentData.base_asset_id, commentData.meta_creator, commentData.text, false));
+						addPanelItem(new Comment(commentData.base_asset_id, commentData.meta_creator, commentData.text, false));
 					}
 				} else {
-					content.addElement(new Comment(commentData.base_asset_id, commentData.meta_creator, commentData.text, false));
+					addPanelItem(new Comment(commentData.base_asset_id, commentData.meta_creator, commentData.text, false));
 				}
 			}
 		}
@@ -160,8 +159,8 @@ package View.components.Comments
 			// get out if it was a reply
 			var isReply:Boolean = newCommentObject.isReply();
 			
-			// create a new comment
-			content.addElementAt(new Comment(commentID, Auth.getInstance().getUsername(), commentText, isReply), positionOfComment);
+			// create a new comment (not a newcomment lol)
+			addPanelItemAtIndex(new Comment(commentID, Auth.getInstance().getUsername(), commentText, isReply), positionOfComment);
 			
 			// remove the old one.
 			content.removeElement(newCommentObject);
@@ -176,7 +175,7 @@ package View.components.Comments
 			trace('vertical' + myScroller.verticalScrollBar.maximum);
 			
 			var newComment:NewComment = new NewComment();
-			content.addElement(newComment);
+			addPanelItem(newComment);
 			
 			trace('vertical' + myScroller.verticalScrollBar.maximum);
 			
@@ -220,7 +219,7 @@ package View.components.Comments
 			var placeToPutComment:Number = getNonReplyCommentIndexAfter(positionOfReplyingToComment);
 			
 			/// Put the new comment, at the end of all the replies for the comment we are replying to
-			content.addElementAt(newComment, placeToPutComment);
+			addPanelItemAtIndex(newComment, placeToPutComment);
 		}
 		
 		
@@ -243,13 +242,19 @@ package View.components.Comments
 				// Get out class name of comment (so we can see if its a new comment)
 				var commentClassName:String = flash.utils.getQualifiedClassName(content.getElementAt(i));
 				// If the class of the element displayed is a 'New comment', remove it
-				if(commentClassName == "View.components.Comments::NewComment") {
+				if(commentClassName == "View.components.Panels.Comments::NewComment") {
 					content.removeElementAt(i);
 				}
 				
 			}
 		}
 		
+		/**
+		 * Finds the Index of the Comment object being displayed, that matches a given ID. -1 if not found. 
+		 * @param assetID
+		 * @return 
+		 * 
+		 */
 		private function getCommentIndexFromAssetID(assetID:Number):Number {
 			
 			for(var i:Number = content.numElements - 1; i >= 0; i--) { // Not sure why this isbackwards lol

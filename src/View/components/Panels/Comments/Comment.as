@@ -1,10 +1,11 @@
-package View.components.Comments
+package View.components.Panels.Comments
 {
 //	import Model.Model_Annotation;
 	
 	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
 	
+	import View.Layout;
 	import View.components.PanelElement;
 	
 	import flash.events.MouseEvent;
@@ -12,8 +13,10 @@ package View.components.Comments
 	import flashx.textLayout.elements.TextFlow;
 	
 	import mx.containers.Canvas;
-	import mx.controls.Label;
+	import mx.controls.Alert;
 	import mx.core.UIComponent;
+	import mx.events.CloseEvent;
+	import mx.graphics.SolidColor;
 	import mx.graphics.SolidColorStroke;
 	
 	import spark.components.BorderContainer;
@@ -22,6 +25,7 @@ package View.components.Comments
 	import spark.components.Label;
 	import spark.components.RichText;
 	import spark.components.VGroup;
+	import spark.layouts.VerticalLayout;
 	import spark.primitives.Line;
 
 	public class Comment extends VGroup implements PanelElement
@@ -30,7 +34,9 @@ package View.components.Comments
 		private var reply:Boolean;
 		private var creator:String;
 		private var commentText:String;
+		private var deleteButton:Button;	
 		
+		private var comment:Label;
 		/**
 		 * Creates a comment 
 		 * @param assetID		The ID of the comment in the database
@@ -42,6 +48,7 @@ package View.components.Comments
 		public function Comment(assetID:Number, creator:String, commentText:String, reply:Boolean)
 		{
 			super();
+
 			this.assetID = assetID;
 			this.reply = reply;
 			this.creator = creator;
@@ -88,10 +95,13 @@ package View.components.Comments
 			username.setStyle('fontWeight', 'bold');
 			usernameAndComment.addElement(username);
 			
-			var comment:spark.components.Label = new spark.components.Label();
+			comment = new spark.components.Label();
 			comment.text = commentText;
 			comment.percentWidth = 100;
 			usernameAndComment.addElement(comment);
+			if(commentText == "Comment Removed") {
+				comment.setStyle("fontStyle", "italic");
+			}
 			
 			// Create a HGroup for the buttons
 			var buttonHGroup:HGroup 	= new HGroup();
@@ -126,11 +136,14 @@ package View.components.Comments
 				editButton.includeInLayout = false;
 				
 				// Create a Delete button
-				var deleteButton:Button		= new Button();
-				deleteButton.percentHeight 	= 100;
-				deleteButton.percentWidth	= 100;
-				deleteButton.label			= "Delete";
-				buttonHGroup.addElement(deleteButton);
+				trace("Is sys-admin?", Auth.getInstance().isSysAdmin());
+				if(commentText != "Comment Removed" || Auth.getInstance().isSysAdmin()) {
+					deleteButton		= new Button();
+					deleteButton.percentHeight 	= 100;
+					deleteButton.percentWidth	= 100;
+					deleteButton.label			= "Delete";
+					buttonHGroup.addElement(deleteButton);
+				}
 			}
 			
 			// Add a horizontal rule at the bottom of the comment
@@ -165,12 +178,27 @@ package View.components.Comments
 		
 		private function deleteButtonClicked(e:MouseEvent):void {
 			trace("Delete Button Clicked");
-			var myEvent:IDEvent = new IDEvent(IDEvent.COMMENT_DELETE, true);
-			myEvent.data.assetID = this.assetID;
-			this.dispatchEvent(myEvent);
-			this.visible = false;
-			this.height = 0;
-			//(this.parent as spark.components.BorderContainer).removeElement(this);
+			//(view as AssetView).navbar.deselectButtons();
+			var myAlert:Alert = Alert.show("Are you sure you want to delete this comment?", "Delete Comment", Alert.OK | Alert.CANCEL, null, 
+				deleteButtonOkay, null, Alert.CANCEL);
+			
+			myAlert.height=100;
+			myAlert.width=300;
+		}
+		
+		private function deleteButtonOkay(e:CloseEvent):void {
+			if (e.detail == Alert.OK) {
+				var myEvent:IDEvent = new IDEvent(IDEvent.COMMENT_DELETE, true);
+				myEvent.data.assetID = this.assetID;
+				this.dispatchEvent(myEvent);
+				
+				comment.text = "Comment Removed";
+				comment.setStyle("fontStyle", "italic");
+				deleteButton.includeInLayout = false;
+				deleteButton.visible = false;
+//				this.visible = false;
+//				this.height = 0;
+			}
 		}
 		
 		/* GETTERS/SETTERS */

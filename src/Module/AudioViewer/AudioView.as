@@ -49,7 +49,7 @@ package Module.AudioViewer
 		public var file:String = 'null';
 		public var visualisation:String = 'line';
 		//public var autoplay:Boolean = false;
-		public var autoplay:Boolean = true;
+		public var autoplay:Boolean = false; // true;
 		public var annotationSave:Function = MediaView.saveAnnotationFunction;
 		public var annotationDelete:Function;
 		
@@ -111,6 +111,7 @@ package Module.AudioViewer
 //		}
 		
 		public function removeAudio(e:Event = null):void {
+			trace("DEALLOCING AUDIO************");
 			if(_isLoaded) {
 				togglePlay(true,false);
 			} else {
@@ -144,6 +145,9 @@ package Module.AudioViewer
 			loadWave();
 			if(autoplay) {
 				togglePlay(true,true);
+//				togglePlay(true,false);
+			} else {
+				togglePlay(true,false);
 			}
 			resizeUI();
 			_UITimeline.resize();
@@ -226,24 +230,24 @@ package Module.AudioViewer
 		}
 
 		
+//		
+//		private function annotationListMouseOver(e:MouseEvent):void {
+//			AudioAnnotation.isBeingMouseOvered = true;
+//			for(var i:Number = 0; i < _UITimeline._annotationArea.numChildren; i++) {
+//				var audioAnnotation:AudioAnnotation = _UITimeline._annotationArea.getChildAt(i) as AudioAnnotation;
+//				if(audioAnnotation.getID() == e.target.id) {
+//					audioAnnotation.showAnnotationBubble();
+//				}
+//			}
+//		}
 		
-		private function annotationListMouseOver(e:MouseEvent):void {
-			AudioAnnotation.isBeingMouseOvered = true;
-			for(var i:Number = 0; i < _UITimeline._annotationArea.numChildren; i++) {
-				var audioAnnotation:AudioAnnotation = _UITimeline._annotationArea.getChildAt(i) as AudioAnnotation;
-				if(audioAnnotation.getID() == e.target.id) {
-					audioAnnotation.showAnnotationBubble();
-				}
-			}
-		}
-		
-		private function annotationListMouseOut(e:MouseEvent):void {
-			AudioAnnotation.isBeingMouseOvered = false;
-			for(var i:Number = 0; i < _UITimeline._annotationArea.numChildren; i++) {
-				var audioAnnotation:AudioAnnotation = _UITimeline._annotationArea.getChildAt(i) as AudioAnnotation;
-				audioAnnotation.hideAnnotationBubble();
-			}
-		}
+//		private function annotationListMouseOut(e:MouseEvent):void {
+//			AudioAnnotation.isBeingMouseOvered = false;
+//			for(var i:Number = 0; i < _UITimeline._annotationArea.numChildren; i++) {
+//				var audioAnnotation:AudioAnnotation = _UITimeline._annotationArea.getChildAt(i) as AudioAnnotation;
+//				audioAnnotation.hideAnnotationBubble();
+//			}
+//		}
 		
 		public function setupLoading():void {
 			_loadingScreen.backgroundFill = new SolidColor(0x333333,0.8);
@@ -361,6 +365,24 @@ package Module.AudioViewer
 			_UITimeline.addAnnotations(annotations);
 			resizeUI();
 			_UITimeline.resize();
+		}
+		
+		override public function highlightAnnotation(assetID:Number):void {
+			AudioAnnotation.isBeingMouseOvered = true;
+			for(var i:Number = 0; i < _UITimeline._annotationArea.numChildren; i++) {
+				var audioAnnotation:AudioAnnotation = _UITimeline._annotationArea.getChildAt(i) as AudioAnnotation;
+				if(audioAnnotation.getID() == assetID) {
+					audioAnnotation.showAnnotationBubble();
+				}
+			}
+		}
+		
+		override public function unhighlightAnnotation(assetID:Number):void {
+			AudioAnnotation.isBeingMouseOvered = false;
+			for(var i:Number = 0; i < _UITimeline._annotationArea.numChildren; i++) {
+				var audioAnnotation:AudioAnnotation = _UITimeline._annotationArea.getChildAt(i) as AudioAnnotation;
+				audioAnnotation.hideAnnotationBubble();
+			}
 		}
 		
 		public function getDuration():Number {

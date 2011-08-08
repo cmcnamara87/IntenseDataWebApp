@@ -3,13 +3,19 @@ package Model {
 	import Controller.Dispatcher;
 	import Controller.Utilities.Auth;
 	
-	import Model.Transactions.Transaction_ChangeAccess;
+	import Model.Transactions.Access.Transaction_ChangeAccess;
+	import Model.Transactions.Access.Transaction_CopyAccess;
+	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
+	import Model.Transactions.Share.Transaction_SetUserAssetShare;
 	import Model.Transactions.Transaction_ChangePassword;
-	import Model.Transactions.Transaction_CopyAccess;
+	import Model.Transactions.Transaction_CloneMedia;
+	import Model.Transactions.Transaction_CreateCollection;
 	import Model.Transactions.Transaction_CreateUser;
 	import Model.Transactions.Transaction_DeleteMediaFromUser;
+	import Model.Transactions.Transaction_DeleteUserFromSystem;
 	import Model.Transactions.Transaction_GetAccess;
 	import Model.Transactions.Transaction_GetCollections;
+	import Model.Transactions.Transaction_GetPeopleAndCollectionNames;
 	import Model.Transactions.Transaction_GetThisCollectionsMediaAssets;
 	import Model.Transactions.Transaction_SaveCollection;
 	import Model.Transactions.Transaction_SaveNewComment;
@@ -19,8 +25,8 @@ package Model {
 	import Model.Utilities.Connection;
 	
 	import View.Element.Comment;
-	import View.components.Comments.NewComment;
-	import View.components.Sharing.SharingPanel;
+	import View.components.Panels.Comments.NewComment;
+	import View.components.Panels.Sharing.SharingPanel;
 	
 	import flash.events.DataEvent;
 	import flash.events.Event;
@@ -64,6 +70,7 @@ package Model {
 			args.password = password;
 			args.domain = domain;
 			var loginPackage:XML = _connection.packageRequest("system.logon",args,false);
+			trace("trying to login");
 			_connection.sendRequest(loginPackage, handler);
 		}
 		
@@ -107,6 +114,8 @@ package Model {
 			args.size = "infinity";
 			
 			args.action = "get-meta";
+			
+			//args['get-related-meta'] = true;
 			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
 				//All good
 			} else {
@@ -182,6 +191,8 @@ package Model {
 		 * 
 		 */		
 		public function getThisAssetsCommentary(assetID:Number, callback:Function):void {
+			trace("AppModel getThisAssetsCommentary: Getting Commentary for Asset", assetID);
+			
 			var args:Object = new Object();
 			
 			args.where = "namespace = recensio and r_base/active = true and class >= 'recensio:base/resource/annotation' " +
@@ -197,8 +208,8 @@ package Model {
 			} else {
 				Alert.show("Could not load annotations");
 			}
-			
 		}
+		
 		//Gets all assets owned by the user
 		/*public function getAllAssets(callback:Function):void {
 			var args:Object = new Object();
@@ -296,44 +307,24 @@ package Model {
 			var transaction:Transaction_SetAccess = new Transaction_SetAccess(_connection,assetID,access,callback);
 		}
 		
-		public function changeAccess(collectionID:Number, username:String, domain:String, access:String, related:Boolean, callback:Function=null):void {
+		public function getPeople(people:XMLList, callback:Function):void {
+			var transaction:Transaction_GetPeopleAndCollectionNames = new Transaction_GetPeopleAndCollectionNames(_connection);
+			transaction.getPeopleAndCollectionNames(people, callback);
+		}
+		
+		/**
+		 * Changes access to an asset 
+		 * @param assetID		The Asset ID
+		 * @param username		The username to change access for
+		 * @param domain		The domain of the user
+		 * @param access		The access level
+		 * @param isCollection	Whether the asset is a collection or not
+		 * @param callback		Function to call when complete
+		 * 
+		 */		
+		public function changeAccess(assetID:Number, username:String, domain:String, access:String, isCollection:Boolean, callback:Function=null):void {
 			var transaction:Transaction_ChangeAccess = new Transaction_ChangeAccess(_connection);
-			transaction.changeAccess(collectionID, username, domain, access, related, callback);
-			
-//			var args:Object = new Object();
-//			
-//			trace("Changing access on collection", collectionID);
-//			trace("Access for", domain, username, access);
-//			var baseXML:XML;
-//			
-//			if(access == SharingPanel.NOACCESS) {
-//				trace("Should be revoking access");
-//				// We want to revoke a users access to this asset
-//				baseXML = _connection.packageRequest('asset.acl.revoke', args, true);
-//				baseXML.service.args.acl.id = collectionID;
-//				baseXML.service.args.acl.actor = domain + ":" + username;
-//				baseXML.service.args.acl.actor.@type = "user";
-//				// Update all the related assets
-//				baseXML.service.args.related = true;
-//			} else {
-//				trace("Should be granting access");
-//				// We are granting access to the asset for a user
-//				// Example mediaflux statement asset.acl.grant :acl < :id 1718 :actor system:coke -type user :access read-write >
-//				baseXML = _connection.packageRequest('asset.acl.grant', args, true);
-//				baseXML.service.args.acl.id = collectionID;
-//				baseXML.service.args.acl.actor = domain + ":" + username;
-//				baseXML.service.args.acl.actor.@type = "user";
-//				baseXML.service.args.acl.access = access;
-//				// Update all the related assets
-//				baseXML.service.args.related = true;
-//			}
-//			
-//			// Send the connection
-//			if(_connection.sendRequest(baseXML, callback)) {
-//				//All good
-//			} else {
-//				Alert.show("Could not change access properties");
-//			}
+			transaction.changeAccess(assetID, assetID, username, domain, access, isCollection, callback);
 		}
 		/**
 		 * Saves a new comment, either a reply or a new comment
@@ -587,7 +578,16 @@ package Model {
 			baseXML.service.args["meta"]["r_annotation"]["annotationType"] = "2";
 			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
 			trace(baseXML);
-			if(_connection.sendRequest(baseXML,setAnnotationClass)) {
+			if(_connection.sendRequest(baseXML,function(e:Event):void {
+				trace(e.target.data);
+				var dataXML:XML = XML(e.target.data);
+				if (dataXML.reply.@type == "result") {
+					
+					var new_id:Number = dataXML.reply.result.id;
+					AppModel.getInstance().setAnnotationClassForID(new_id);
+					AppModel.getInstance().copyAccess(assetData.parentID, new_id);
+				}
+			})) {
 				trace("ALL GOOD");
 				//All good
 			} else {
@@ -702,7 +702,7 @@ package Model {
 //		}
 		
 		// Sets a saved collection to have the correct class
-		public function setCollectionClass(e:Event):void {
+		public function setCollectionClass(e:Event, callback:Function):void {
 			var dataXML:XML = XML(e.target.data);
 			if (dataXML.reply.@type == "result") {
 				trace("DONG DONG");
@@ -712,7 +712,7 @@ package Model {
 				baseXML.service.args["scheme"] = "recensio";
 				baseXML.service.args["class"] = "base/resource/collection";
 				baseXML.service.args["id"] = dataXML.reply.result.id;
-				_connection.sendRequest(baseXML,null);
+				_connection.sendRequest(baseXML, callback);
 			} else {
 				Alert.show("Could not set collection type");
 			}
@@ -730,41 +730,36 @@ package Model {
 			// The title is compulsory, so if its not there, it should error.
 			baseXMLUpdate.service.args["meta"]["r_resource"]["title"] = assetData.meta_title;
 			
-			
-			if(assetData.meta_description != "") {
-				baseXMLUpdate.service.args.meta.r_resource.description = assetData.meta_description;	
-			}
+			// Cause for some fucking reason
+			// mediaflux doesnt let you delete a entry
+			// it also doesnt allow you to set it to be "" or even " ";
+			if(assetData.meta_description == "") assetData.meta_description = "*";
+			if(assetData.meta_subject == "") assetData.meta_subject = "*";
+			if(assetData.meta_keywords == "") assetData.meta_keywords = "*";
+			if(assetData.meta_datepublished == "") assetData.meta_datepublished = "*";
+			if(assetData.meta_othercontrib == "") assetData.meta_othercontrib = "*";
+			if(assetData.meta_sponsorfunder == "") assetData.meta_sponsorfunder = "*";
+			if(assetData.meta_creativeworksubtype == "") assetData.meta_creativeworksubtype = "*";
+			if(assetData.meta_creativeworktype == "") assetData.meta_creativeworktype = "*";
+		
+			baseXMLUpdate.service.args.meta.r_resource.description = assetData.meta_description;	
 			
 			baseXMLUpdate.service.args.meta.r_base.properties = "";
 			
-			if(assetData.meta_subject != "") {
-				baseXMLUpdate.service.args.meta.r_base.properties.appendChild(XML('<property name="Subject">'+assetData.meta_subject+'</property>'));
-			}
+			baseXMLUpdate.service.args.meta.r_base.properties.appendChild(XML('<property name="Subject">'+assetData.meta_subject+'</property>'));
 			
-			if(assetData.meta_keywords != "") {
-				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+assetData.meta_keywords+'</property>'));
-			}
+			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+assetData.meta_keywords+'</property>'));
+				
+			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+assetData.meta_datepublished+'</property>'));
+				
+			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+assetData.meta_othercontrib+'</property>'));
+						
+			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+assetData.meta_sponsorfunder+'</property>'));
 			
-			if(assetData.meta_datepublished != "") {
-				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+assetData.meta_datepublished+'</property>'));
-			}
+			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+assetData.meta_creativeworksubtype+'</property>'));
 			
-			if(assetData.meta_othercontrib != "") {
-				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+assetData.meta_othercontrib+'</property>'));
-			}
-			
-			if(assetData.meta_sponsorfunder != "") {
-				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+assetData.meta_sponsorfunder+'</property>'));
-			}
-			
-			if(assetData.meta_creativeworksubtype != "") {
-				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+assetData.meta_creativeworksubtype+'</property>'));
-			}
-			
-			if(assetData.meta_creativeworktype != "") {
-				baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+assetData.meta_creativeworktype+'</property>'));
-			}
-			
+			baseXMLUpdate.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+assetData.meta_creativeworktype+'</property>'));
+						
 			if(_connection.sendRequest(baseXMLUpdate, callback)) {
 				//All good
 			} else {
@@ -773,31 +768,80 @@ package Model {
 		}
 		
 		/**
-		 * Removes access to an asset for a user (or deletes the asset, if only 1 pesron has asset, or if
+		 * Removes access to an collection for a user (or deletes the asset, if
 		 * the current user is the creator) 
 		 * @param assetID				The ID of the asset to delete
 		 * @param creator_username		The creator of the asset
 		 * 
-		 */		
-		public function deleteAsset(assetID:Number, creatorUsername:String):void {
-			var transaction:Transaction_DeleteMediaFromUser = new Transaction_DeleteMediaFromUser(
-				assetID,
-				creatorUsername,
-				_connection,
-				assetDeleted
-			);
+		 */	
+		public function deleteCollection(assetID:Number, creatorUsername:String, callback:Function):void {
+			trace("AppModel deleteCollection: Deleting Asset:", assetID, ", creator is: ", creatorUsername);
+			if(Auth.getInstance().isSysAdmin() || creatorUsername == Auth.getInstance().getUsername()) {
+				trace("AppModel deleteCollection: Either the sys admin, or, the current user is the creator of the collection, so delete it");
+				AppModel.getInstance().assetDestroy(assetID, callback);
+			} else {
+				// get the users that have access to this file
+				trace("AppModel deleteCollection: Not the creator, removing access to collection");
+				AppModel.getInstance().changeAccess(assetID, Auth.getInstance().getUsername(), "system", 
+					SharingPanel.NOACCESS, true, callback);
+			}
 		}
 		
+		/**
+		 * Removes access to media for a user (or deletes the asset, if
+		 * the current user is the creator) 
+		 * @param assetID				The ID of the asset to delete
+		 * @param creator_username		The creator of the asset
+		 * 
+		 */	
+		public function deleteMedia(assetID:Number, creatorUsername:String):void {
+			trace("AppModel deleteMedia: Deleting Asset:", assetID, ", creator is: ", creatorUsername);
+			if(Auth.getInstance().isSysAdmin() || creatorUsername == Auth.getInstance().getUsername()) {
+				trace("AppModel deleteMedia: Either the sys admin, or, the current user is the creator of the file, so delete it");
+				AppModel.getInstance().assetDestroy(assetID, assetDeleted);
+			} else {
+				// get the users that have access to this file
+				trace("AppModel deleteCollection: Not the creator, removing access to media");
+				AppModel.getInstance().changeAccess(assetID, Auth.getInstance().getUsername(), "system", 
+					SharingPanel.NOACCESS, false, assetDeleted);
+			}
+		}
+		
+			
+//		public function deleteAsset(assetID:Number, creatorUsername:String):void {
+//			var transaction:Transaction_DeleteMediaFromUser = new Transaction_DeleteMediaFromUser(
+//				assetID,
+//				creatorUsername,
+//				_connection,
+//				assetDeleted
+//			);
+//		}
+		
+		/**
+		 * Deletes an asset from the database. 
+		 * @param assetID
+		 * @param callback
+		 * 
+		 */		
 		public function assetDestroy(assetID:Number, callback:Function):void {
 			trace("Destroying asset", assetID);
 			var args:Object = new Object();
 			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
 			baseXML.service.args["id"] = assetID;
-			if(_connection.sendRequest(baseXML, callback)) {
-				//All good
-			} else {
-				Alert.show("Could not destroy asset");
-			}
+		
+			_connection.sendRequest(baseXML, function(e:Event):void {
+				trace("Deleting clones of", assetID);
+				var args:Object = new Object();
+				args.where = "r_resource/clone_of_id=" + assetID;
+				args.action = "pipe";
+				args.size = "infinity";
+				var baseXML:XML = _connection.packageRequest('asset.query',args,true);
+				baseXML.service.args.service.@name = "asset.destroy";
+				
+				_connection.sendRequest(baseXML, function(e:Event):void {
+					callback(e);
+				});
+			});
 		}
 		
 		// Deletes an annotation
@@ -829,11 +873,26 @@ package Model {
 			Dispatcher.call("browse");
 		}
 		
-		// Deletes a comment
+		/**
+		 * Removes a comment. 
+		 * 
+		 * If the user is the sys-admin, the comment is actually deleted,
+		 * if the user is not a sys-admin, the comment text is replaced with 'comment removed'.
+		 * @param assetID
+		 * 
+		 */		
 		public function deleteComment(assetID:Number):void {
+			
+			if(Auth.getInstance().isSysAdmin()) {
+				AppModel.getInstance().assetDestroy(assetID, null);
+				return;
+			}
+			
 			var args:Object = new Object();
-			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
+			var baseXML:XML = _connection.packageRequest('asset.set', args, true);
 			baseXML.service.args["id"] = assetID;
+			baseXML.service.args["meta"]["r_annotation"]["text"] = "Comment Removed";
+			
 			if(_connection.sendRequest(baseXML,null)) {
 				//All good
 			} else {
@@ -857,36 +916,63 @@ package Model {
 		 */		
 		public function createCollection(collectionTitle:String, shelfAssets:Array, callback:Function):void {
 			trace("Creating collection");
-			// Build up the collection object
-			var args:Object = new Object();
-			args.namespace = "recensio";
-			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
-			baseXML.service.args["meta"]["r_base"]["obtype"] = "10";
-			baseXML.service.args["meta"]["r_base"]["active"] = "true";
-			// Set creator as the current user
-			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
-			baseXML.service.args["meta"]["r_base"].@id = 2;
-			baseXML.service.args["meta"]["r_resource"]["title"] = collectionTitle;
-			
-			baseXML.service.args["meta"]["r_media"].@id = 4;
-			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
-			baseXML.service.args["related"] = "";
-			
-			// Link the collection to all the assets on the shelf.
-			for(var i:Number = 0; i < shelfAssets.length; i++) {
-				trace("Including asset", (shelfAssets[i] as Model_Media).base_asset_id);
-				baseXML.service.args["related"].appendChild(XML('<to relationship="has_child">' + (shelfAssets[i] as Model_Media).base_asset_id + '</to>'));
-			}
-			
-			// Set the description, to be the number of items in the collection
-			baseXML.service.args["meta"]["r_resource"]["description"] = shelfAssets.length;
-			
-			if(_connection.sendRequest(baseXML,callback)) {
-				trace("SENDING NEW COLLECTION");
-				//All good
-			} else {
-				Alert.show("Could not save collection");
-			}
+			var transaction:Transaction_CreateCollection = new Transaction_CreateCollection(_connection);
+			transaction.createCollection(collectionTitle, shelfAssets, callback);
+//			// Build up the collection object
+//			var args:Object = new Object();
+//			args.namespace = "recensio";
+//			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
+//			baseXML.service.args["meta"]["r_base"]["obtype"] = "10";
+//			baseXML.service.args["meta"]["r_base"]["active"] = "true";
+//			// Set creator as the current user
+//			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
+//			baseXML.service.args["meta"]["r_base"].@id = 2;
+//			baseXML.service.args["meta"]["r_resource"]["title"] = collectionTitle;
+//			
+//			baseXML.service.args["meta"]["r_media"].@id = 4;
+//			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
+//			baseXML.service.args["related"] = "";
+//			
+//			// Link the collection to all the assets on the shelf.
+//			for(var i:Number = 0; i < shelfAssets.length; i++) {
+//				trace("Including asset", (shelfAssets[i] as Model_Media).base_asset_id);
+//				baseXML.service.args["related"].appendChild(XML('<to relationship="has_child">' + Math.abs((shelfAssets[i] as Model_Media).base_asset_id) + '</to>'));
+//				var transaction:Transaction_CloneMedia = new Transaction_CloneMedia(_connection);
+//				transaction.cloneMedia(Math.abs((shelfAssets[i] as Model_Media).base_asset_id), function(assetID:Number):void {
+//					trace("WOOOOO!!!! *****************************************", assetID);
+//				});
+//			}
+//			
+//			// Set the description, to be the number of items in the collection
+//			baseXML.service.args["meta"]["r_resource"]["description"] = shelfAssets.length;
+//			
+//			if(_connection.sendRequest(baseXML,function(e:Event):void {
+////				AppModel.getInstance().setUserAssetShareCount(
+//				
+//				if(!callSuccessful(e)) {
+//					trace("AppModel:createCollection - Failed to Create collection", e.target.data);
+//					callback(e);
+//					return;
+//				}
+//				
+//				// Set this user as the owner of the collection
+//				AppModel.getInstance().changeAccess(XML(e.target.data).reply.result.id, Auth.getInstance().getUsername(), 
+//					"system", SharingPanel.READWRITE, true, function(k:Event):void {
+//						trace("**********************************");
+//						trace("AppModel:createCollection - Finished Creating the Collection");
+//						
+//					// Update the Collection Class so it is a 'collection'
+//					AppModel.getInstance().setCollectionClass(e, function(j:Event):void {
+//						callback(e);					
+//					});
+//				});
+//				
+//			})) {
+//				trace("SENDING NEW COLLECTION");
+//				//All good
+//			} else {
+//				Alert.show("Could not save collection");
+//			}
 		}
 		
 		/**
@@ -901,16 +987,16 @@ package Model {
 		}
 		
 		// Deletes a collection
-		public function deleteCollection(assetID:Number, callback:Function):void {
-			var args:Object = new Object();
-			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
-			baseXML.service.args["id"] = assetID;
-			if(_connection.sendRequest(baseXML, callback)) {
-				//All good
-			} else {
-				Alert.show("Could not delete collection");
-			}
-		}
+//		public function deleteCollection(assetID:Number, callback:Function):void {
+//			var args:Object = new Object();
+//			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
+//			baseXML.service.args["id"] = assetID;
+//			if(_connection.sendRequest(baseXML, callback)) {
+//				//All good
+//			} else {
+//				Alert.show("Could not delete collection");
+//			}
+//		}
 		
 		
 		
@@ -969,9 +1055,50 @@ package Model {
 			return asset;
 		}
 		
+		/**
+		 * Takes a list of XML media objects, and converts them to an array of Model_Media 
+		 * @param mediaXMLList	An XML list of media objects
+		 * @return				An array of Model_Media
+		 * 
+		 */		
+		public function convertXMLtoCollectionObjectsWithMedia(collectionXMLList:XMLList):Array {
+			var collectionObjectArray:Array = new Array();
+			
+			//trace("AppModel:convertXMLtoCollectionObjectsWithMedia - Collection count", collectionXMLList.length());
+			
+			for each(var collectionXML:XML in collectionXMLList) {
+				
+				var collectionAndFileArray:Object = new Object();
+				
+				// Get out the asset and add it to our return array
+				var collectionObject:Model_Collection = new Model_Collection();
+				collectionObject.setData(collectionXML);
+				
+				collectionAndFileArray.collection = collectionObject;
+				
+				collectionAndFileArray.files = new Array();
+				
+				//trace("AppModel:convertXMLtoCollectionObjectsWithMedia - File count", collectionXML.related.asset.length());
+				for each(var fileXML:XML in collectionXML.related.asset) {
+					
+					if(fileXML.type.toString()) {
+						// We do this to filter out getting any comments
+						// since (at least for now), comments dont have a file type set
+						// so if there is a filetype, it must be a bit of media
+						var fileObject:Model_Media = new Model_Media();
+						fileObject.setData(fileXML);
+						(collectionAndFileArray.files as Array).push(fileObject);
+					}
+				}
+				
+				collectionObjectArray.push(collectionAndFileArray);
+			}
+			return collectionObjectArray;
+		}
 		
 		/**
-		 * Takes an XML for a collection, and extracts out all the assets and puts them
+		 * Takes an XML for files in a collection (that also have the comment meta attached),
+		 *  and extracts out all the assets and puts them
 		 * into assetType classes. This does not check the asset is that type.
 		 *  
 		 * @param data	an XML for a collection, with all the asset + annotations in the related fields.
@@ -1105,11 +1232,12 @@ package Model {
 			args.namespace = "recensio";
 //			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
 //			if(useID) {
-				var baseXML:XML = _connection.packageRequest('id.asset.create',args,true);
+			var baseXML:XML = _connection.packageRequest('id.asset.create',args,true);
+			var argsXML:XMLList = baseXML.service.args;
 //			}
-			baseXML.service.args["meta"]["r_base"].@id = "2";
-			baseXML.service.args["meta"]["r_base"]["obtype"] = "7";
-			baseXML.service.args["meta"]["r_base"]["active"] = "true";
+			argsXML["meta"]["r_base"].@id = "2";
+			argsXML["meta"]["r_base"]["obtype"] = "7";
+			argsXML["meta"]["r_base"]["active"] = "true";
 			
 			if(data.meta_subjects != "" ||
 				data.meta_keywords != "" ||
@@ -1120,51 +1248,68 @@ package Model {
 				data.meta_creativeworktype != "" ||
 				data.meta_BLBK != "") {
 				
-				baseXML.service.args["meta"]["r_base"]["properties"] = "";
+				argsXML["meta"]["r_base"]["properties"] = "";
 				
 			}
 			if(data.meta_subject != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Subject">'+data.meta_subject+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="Subject">'+data.meta_subject+'</property>'));
 			}
 			if(data.meta_keywords != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+data.meta_keywords+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="Keywords">'+data.meta_keywords+'</property>'));
 			}
 			if(data.meta_datepublished != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+data.meta_datepublished+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="DatePublished">'+data.meta_datepublished+'</property>'));
 			}
 			if(data.meta_othercontrib != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+data.meta_othercontrib+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="OtherContrib">'+data.meta_othercontrib+'</property>'));
 			}
 			if(data.meta_sponsorfunder != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+data.meta_sponsorfunder+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="SponsorFunder">'+data.meta_sponsorfunder+'</property>'));
 			}
 			if(data.meta_creativeworksubtype != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+data.meta_creativeworksubtype+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkSubType">'+data.meta_creativeworksubtype+'</property>'));
 			}
 			if(data.meta_creativeworktype != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+data.meta_creativeworktype+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="CreativeWorkType">'+data.meta_creativeworktype+'</property>'));
 			}
 			if(data.meta_BLBK != "") {
-				baseXML.service.args["meta"]["r_base"]["properties"].appendChild(XML('<property name="AuthorCreator">'+data.meta_BLBK+'</property>'));
+				argsXML["meta"]["r_base"]["properties"].appendChild(XML('<property name="AuthorCreator">'+data.meta_BLBK+'</property>'));
 			}
-			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
-			baseXML.service.args["meta"]["r_resource"].@id = "3";
-			baseXML.service.args["meta"]["r_resource"]["title"] = data.meta_title;
+			argsXML["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
+			argsXML["meta"]["r_resource"].@id = "3";
+			argsXML["meta"]["r_resource"]["title"] = data.meta_file_title;
 			if(data.meta_description) {
-				baseXML.service.args["meta"]["r_resource"]["description"] = data.meta_description;
+				argsXML["meta"]["r_resource"]["description"] = data.meta_description;
 			}
-			baseXML.service.args["meta"]["r_media"].@id = "4";
-			baseXML.service.args["meta"]["r_media"]["transcoded"] = "false";
+			argsXML.meta.r_media.file_title = data.meta_file_title;
+			argsXML.meta.r_media.@id = "4";
+			argsXML.meta.r_media.transcoded = "false";
 			trace(baseXML);
 			if(_connection.uploadFile(data.file,baseXML, function(e:Event):void {
 				trace("Upload complete", e.target.data);
 			})) {
 				//All good
 			} else {
-				Alert.show("Could not save asset");
+				Alert.show("Sorry, an error occured and we couldn't upload the file.");
 			}
 		}
 		
+		/**
+		 * Generates a thumbnail for a given image medias ID.
+		 * @require the ID is for an image asset, not video etc
+		 * @param imageID the Asset ID of the image asset
+		 * 
+		 */		
+		public function generateThumbnail(imageID:Number):void {
+			var args:Object = new Object();
+			args.id = imageID;
+//			args.out = imageID + ".jpg";
+			args.size = 112;
+			var baseXML:XML = _connection.packageRequest('asset.icon.get',args,true);
+			_connection.sendRequest(baseXML, function(e:Event):void {
+				trace("AppModel:generateThumbnail - thumbnail generated", e.target.data);
+			})
+		}
 		/* ====================== USER FUNCTIONS =========================== */
 		
 		/**
@@ -1201,18 +1346,21 @@ package Model {
 		 * 
 		 */		
 		public function deleteUser(username:String, domain:String, callback:Function):void {
+			
+			var transaction:Transaction_DeleteUserFromSystem = new Transaction_DeleteUserFromSystem(username, domain, callback, _connection);
+			
 			// user.destroy :domain system :user g
-			trace("- Deleting user database call", username, domain);
-			var args:Object = new Object();
-			var baseXML:XML = _connection.packageRequest('user.destroy',args,true);
-			baseXML.service.args["user"] = username;
-			baseXML.service.args["domain"] = domain;
-			if(_connection.sendRequest(baseXML,callback)) {
-				//All good
-			} else {
-				Alert.show("Could not delete user");
-				trace("Could not delete user");
-			}
+//			trace("- Deleting user database call", username, domain);
+//			var args:Object = new Object();
+//			var baseXML:XML = _connection.packageRequest('user.destroy',args,true);
+//			baseXML.service.args["user"] = username;
+//			baseXML.service.args["domain"] = domain;
+//			if(_connection.sendRequest(baseXML,callback)) {
+//				//All good
+//			} else {
+//				Alert.show("Could not delete user");
+//				trace("Could not delete user");
+//			}
 		}
 			
 		/**
@@ -1258,6 +1406,20 @@ package Model {
 			baseXML.service.args["user"] = username;
 			baseXML.service.args["domain"] = "system";
 			baseXML.service.args["email"] = details.meta_email;
+			
+			if(details.meta_firstname == "") 	details.meta_firstname = " ";
+			if(details.meta_lastname == "") 	details.meta_lastname = " ";
+			if(details.meta_email == "") 		details.meta_email = " ";
+			if(details.meta_initial == "") 		details.meta_initial = " ";
+			if(details.meta_organisation == "") details.meta_organisation = " ";
+			if(details.meta_url == "") 			details.meta_url = " ";
+			if(details.meta_tel_business == "") details.meta_tel_business = " ";
+			if(details.meta_tel_home == "") 	details.meta_tel_home = " ";
+			if(details.meta_tel_mobile == "") 	details.meta_tel_mobile = " ";
+			if(details.meta_Address_1 == "") 	details.meta_Address_1 = " ";
+			if(details.meta_Address_2 == "") 	details.meta_Address_2 = " ";
+			if(details.meta_Address_3 == "") 	details.meta_Address_3 = " ";
+			
 			baseXML.service.args["meta"]["r_user"]["firstname"] = details.meta_firstname;
 			baseXML.service.args["meta"]["r_user"]["lastname"] = details.meta_lastname;
 			baseXML.service.args["meta"]["r_user"]["email"] = details.meta_email;
@@ -1293,8 +1455,28 @@ package Model {
 		 * @param callback		The function to call when its completed
 		 * 
 		 */		
-		public function changePassword(domain:String, newPassword:String, callback:Function):void {
-			var transaction:Transaction_ChangePassword = new Transaction_ChangePassword(domain, newPassword, callback, _connection);
+		public function changePassword(domain:String, username:String, newPassword:String, callback:Function):void {
+			var transaction:Transaction_ChangePassword = new Transaction_ChangePassword(domain, username, newPassword, callback, _connection);
+		}
+		
+		public function setUserAssetShareCount(username:String, assetID:Number, viaAsset:Number, accessLevel:String, callback:Function):void
+		{
+			var transaction:Transaction_SetUserAssetShare = new Transaction_SetUserAssetShare(username, assetID, viaAsset, accessLevel, _connection, callback);
+			
+		}
+		
+		public function callSuccessful(e:Event):Boolean {
+			var dataXML:XML = XML(e.target.data);
+			return (dataXML.reply.@type == "result");
+		}
+		public function callFailed(functionName:String, e:Event):Boolean {
+			var dataXML:XML = XML(e.target.data);
+			if(dataXML.reply.@type == "result") {
+				trace(functionName + ": SUCCESS", e.target.data);
+			} else {
+				trace(functionName + ": FAILED", e.target.data);
+			}
+			return (dataXML.reply.@type != "result");
 		}
 	}
 		

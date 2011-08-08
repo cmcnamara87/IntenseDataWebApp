@@ -1,4 +1,4 @@
-package View.components.AnnotationList
+package View.components.Panels.AnnotationList
 {
 	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
@@ -6,9 +6,9 @@ package View.components.AnnotationList
 	import Model.Model_Commentary;
 	
 	import View.BrowserView;
-	import View.components.Comments.Comment;
-	import View.components.Comments.NewComment;
-	import View.components.Panel;
+	import View.components.Panels.Comments.Comment;
+	import View.components.Panels.Comments.NewComment;
+	import View.components.Panels.Panel;
 	import View.components.Toolbar;
 	
 	import flash.events.MouseEvent;
@@ -86,11 +86,11 @@ package View.components.AnnotationList
 
 				if(annotationData.annotation_type == Model_Commentary.ANNOTATION_BOX_TYPE_ID) {
 					// Lets make an annotation
-					content.addElement(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator,"box", annotationData.text));
+					addPanelItem(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator,"box", annotationData.text));
 				} else if (annotationData.annotation_type == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
-					content.addElement(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, "free draw", annotationData.text));
+					addPanelItem(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, "free draw", annotationData.text));
 				} else {
-					content.addElement(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, "highlight", annotationData.text));
+					addPanelItem(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, "highlight", annotationData.text));
 				}
 			}
 		}

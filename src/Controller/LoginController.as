@@ -61,8 +61,10 @@ package Controller {
 			loginAlreadyReceived = true;
 			(view as Login).loginbox.setNotification(e.data.message);
 			if(e.data.success) {
+				// The user has successfully logged in
 				loginSuccessful();
 			} else {
+				// The user was suspended or gave an incorrect username/password
 				trace("***"+e.data.message);
 				loginAlreadyReceived = false;
 			}

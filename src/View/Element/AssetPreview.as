@@ -190,7 +190,7 @@ package View.Element {
 			this.graphics.lineStyle(1,0xFFFFFF,1);
 			
 			// Was the asset created by this user?
-			if(_data.meta_username == Auth.getInstance().getUsername()) {
+			if(_data.base_creator_username == Auth.getInstance().getUsername()) {
 				// Yes, give it the normal background
 				this.graphics.beginBitmapFill(backgroundAssetImageData);
 			} else {

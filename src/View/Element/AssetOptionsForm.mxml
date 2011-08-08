@@ -16,8 +16,8 @@
 		<!-- Options Form -->
 		<mx:HBox>
 			<mx:Form>
-				<mx:FormItem label="Title:" required="true">
-					<mx:TextInput id="meta_title"/>
+				<mx:FormItem label="File Title:" required="true">
+					<mx:TextInput id="meta_file_title"/>
 				</mx:FormItem>
 				<mx:FormItem label="Description:" >
 					<mx:TextInput id="meta_description"/>

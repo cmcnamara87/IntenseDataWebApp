@@ -70,6 +70,19 @@ package View.components.AssetBrowser
 		}
 		
 		/**
+		 * Disables any tiles that are read-only. Used when 
+		 * we are in edit mode, as these files cannot be moved/added to collection etc 
+		 * 
+		 */		
+		public function lockReadOnlyFiles():void {
+			myAssetDisplayer.lockReadOnlyFiles();
+		}
+		
+		public function unlockFiles():void {
+			myAssetDisplayer.unlockFiles();
+		}
+		
+		/**
 		 * Updates a specific asset tile. This is called when we want to display
 		 * either the 'Add' or 'Remove' when using the shelf. Calling 'update'
 		 * tells the tile to check if we are in shelf mode, then change its appearance

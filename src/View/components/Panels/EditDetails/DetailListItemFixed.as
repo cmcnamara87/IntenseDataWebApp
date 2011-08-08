@@ -1,33 +1,31 @@
-package View.components.EditDetails
+package View.components.Panels.EditDetails
 {
-	import Controller.Utilities.AssetLookup;
-	
+	import View.components.IDGUI;
 	import View.components.PanelElement;
 	
-	import mx.collections.ArrayCollection;
 	import mx.controls.DateField;
-	import mx.graphics.SolidColorStroke;
+	import mx.controls.TextArea;
 	
 	import spark.components.DropDownList;
-	import spark.components.HGroup;
 	import spark.components.Label;
-	import spark.components.TextArea;
 	import spark.components.VGroup;
 	import spark.primitives.Line;
-
-	public class DetailListItem extends VGroup implements PanelElement
+	
+	public class DetailListItemFixed extends VGroup implements PanelElement
 	{
 		private var detailName:String;
+		private var detailValue:String;
 		private var textArea:TextArea;
 		private var dropdownArea:DropDownList;
 		private var dateArea:DateField;
 		private var type:String;
 		
-		public function DetailListItem(detailName:String, detailValue:String, type:String="text", options:ArrayCollection=null)
+		public function DetailListItemFixed(detailName:String, detailValue:String, type:String="text")
 		{
 			super();
 			this.type = type;
 			this.detailName = detailName;
+			this.detailValue = detailValue;
 			
 			this.percentWidth = 100;
 			
@@ -45,30 +43,13 @@ package View.components.EditDetails
 			fieldName.setStyle('fontWeight', 'bold');
 			this.addElement(fieldName);
 			
-			if(type == "text") {
-				textArea = new TextArea();
-				textArea.percentWidth = 100;
-				textArea.height = 40;
-				textArea.text = detailValue;
-				this.addElement(textArea);
-			} else if (type == "dropdown") {
-				dropdownArea = new DropDownList();
-				dropdownArea.dataProvider = options;
-				dropdownArea.percentWidth = 100;
-				dropdownArea.selectedItem = detailValue;
-				this.addElement(dropdownArea);
-			} else if (type == "date") {
-				dateArea = new DateField();
-				dateArea.percentWidth = 100;
-				dateArea.formatString = "DD/MM/YYYY";
-				dateArea.text = detailValue;
-				this.addElement(dateArea);
-			}
-			
+			var fieldData:Label = new Label();
+			fieldData.percentWidth = 100;
+			fieldData.text = detailValue;
+			this.addElement(fieldData);
+
 			// Add a horizontal rule.
-			var hLine:Line = new Line();
-			hLine.percentWidth = 100;
-			hLine.stroke = new SolidColorStroke(0xEEEEEE,1,1);
+			var hLine:Line = IDGUI.makeLine(0xEEEEEE);
 			this.addElement(hLine);
 			
 		}
@@ -88,8 +69,16 @@ package View.components.EditDetails
 			return "";
 		}
 		
+		/**
+		 * Checks if either the name of the field, or the fields content
+		 * matches a search string 
+		 * @param search	The search string to match
+		 * @return 			True if found, false if not
+		 * 
+		 */		
 		public function searchMatches(search:String):Boolean {
-			if(detailName.toLowerCase().indexOf(search.toLowerCase()) == -1) {
+			// If we cant match either the detailname or the detailvalue, return false, else, we found it
+			if(detailName.toLowerCase().indexOf(search.toLowerCase()) == -1 && detailValue.toLowerCase().indexOf(search.toLowerCase()) == -1) {
 				return false;
 			} else {
 				return true;

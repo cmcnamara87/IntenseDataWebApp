@@ -50,14 +50,16 @@ package Module.Videoviewer {
 		
 		private var _video:*;
 		//private var _rtmpUri:String = "rtmp://demo.recensio.com.au/oflaDemo";
-		private var _rtmpUri:String = "rtmp://recensio.dyndns.org/vod/";
+//		private var _rtmpUri:String = "rtmp://recensio.dyndns.org/vod/";
+		private var _rtmpUri:String = "rtmp://" + Recensio_Flex_Beta.serverAddress + "/vod/";
 		private var _fileName:String = "";
 		private var _metaData:Object = { duration:0, width: 0, height: 0 ,videoKeyFrameFrequence:.5};
 		
 		private var _netConnection:NetConnection;
 		private var _netStream:NetStream;
 		private var _connected:Boolean = false;
-		private var _playing:Boolean = false;
+		//private var _playing:Boolean = false;
+		private var _playing:Boolean = true;
 		private var _buffering:Boolean = false;
 		
 		private var _maxedSize:Boolean = false;
@@ -156,8 +158,12 @@ package Module.Videoviewer {
 		}
 		
 		public function scrubTo(newTime:Number):void {
-			_netStream.bufferTime = 0.5;
-			_netStream.seek(Math.round(newTime));
+			///if(Math.abs(Math.round(newTime) - _netStream.time) > 0.5) {
+			if(Math.abs(Math.round(newTime) - _netStream.time) > 0.25) {
+				// You have to move at least 2 seconds ahead. who cares!!!
+				_netStream.bufferTime = 0.5;
+				_netStream.seek(Math.round(newTime));
+			}
 		}
 		
 		private function loadVideo(contentUri:String):void {
@@ -172,16 +178,44 @@ package Module.Videoviewer {
 			_netConnection.objectEncoding = ObjectEncoding.AMF3;
 			_netConnection.client = this;
 			
+			trace("RTMP********", _rtmpUri);
 			_netConnection.connect( _rtmpUri, "model.logedinUser.username");
 		}
 		
 		public function playpause():void {
 			if(_playing) {
+				trace("VideoScreen:playpause - was playing, now pausing");
+//				_playing = false;
 				pause();
 			} else {
+//				_playing = true;
 				play();
+				trace("VideoScreen:playpause - was paused, now playing");
 			}
 		}
+		
+		/**
+		 * Pause the netstream 
+		 * 
+		 */		
+		public function pause():void {
+			_playing = false;
+			delegate.isPaused(true);
+			trace("VideoScreen:pause - Pausing netstream");
+			_netStream.pause();
+		}
+		
+		/**
+		 * Play the netstream 
+		 * 
+		 */		
+		public function play():void {
+			_playing = true;
+			delegate.isPaused(false);
+			trace("VideoScreen:play - Playing netstream");
+			_netStream.resume();
+		}
+		
 		
 		public function setVolume(newVolume:Number):void {
 			_netStream.soundTransform = new SoundTransform(newVolume);
@@ -198,22 +232,25 @@ package Module.Videoviewer {
 		}
 		
 		private function connectVideoStream():void {
-			_netStream = new NetStream(_netConnection);
-			_netStream.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionStatus);
-			_netStream.bufferTime = 5;
-			_netStream.inBufferSeek = true;
-			_netStream.backBufferTime = 30;
-			_netStream.client = this;
-			_videoPlayer.attachNetStream(_netStream);
-			_videoPlayer.visible = true;
-			_netStream.play(_fileName,0);
-			if(!autoplay) {
-				//pause();
-				delegate.isPaused(true);
-			} else {
-				delegate.isPaused(false);
+			if(_netConnection) {
+				_netStream = new NetStream(_netConnection);
+				_netStream.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionStatus);
+				_netStream.bufferTime = 5;
+				_netStream.inBufferSeek = true;
+				_netStream.backBufferTime = 30;
+				_netStream.client = this;
+				_videoPlayer.attachNetStream(_netStream);
+				_videoPlayer.visible = true;
+				trace("Playing***********", _fileName);
+				_netStream.play(_fileName,0);
+				if(!autoplay) {
+					//pause();
+					delegate.isPaused(true);
+				} else {
+					delegate.isPaused(false);
+				}
+				_connected = true;
 			}
-			_connected = true;
 		}
 		
 		public function stop():void {
@@ -224,15 +261,7 @@ package Module.Videoviewer {
 			}
 		}
 		
-		public function pause():void {
-			delegate.isPaused(true);
-			_netStream.pause();
-		}
-		
-		public function play():void {
-			delegate.isPaused(false);
-			_netStream.resume();
-		}
+
 		
 		public function getVideoDimensions():Rectangle {
 			return new Rectangle(_videoPlayer.x,_videoPlayer.y,_videoPlayer.width,_videoPlayer.height);
@@ -340,35 +369,37 @@ package Module.Videoviewer {
 			_videoWidth = info.width;
 			_videoHeight = info.height;
 			delegate.setDuration(_metaData.duration);
+			_netStream.backBufferTime = _metaData.duration;
 			resize();
 		}
 		
 		private function onNetConnectionStatus(e:NetStatusEvent):void {
 			var code:String = e.info.code;
-			//trace("NETCONNECTION:"+code);
+			trace("NETCONNECTION:"+code);
 			switch(code) {
 				case "NetStream.Play.Start": 
-					_playing = true;
+//					_playing = true;
 					//playing=true;
 					//doCloseSeekPopup();
 					break;
 				case "NetStream.Seek.Notify":
-					_playing = false;
+//					_playing = false;
 					//playing=false;
 					//doCloseSeekPopup();
+//					delegate.isPaused(true);
 					break;
 				case "NetStream.Play.Stop":
-					_playing = false;
+//					_playing = false;
 					//playing	=	false;
 					//isComplete	=	true;
 					//doCloseSeekPopup();
 					break;
 				case "NetStream.Pause.Notify":
-					_playing = false;
+//					_playing = false;
 					//playing	=	false;
 					break;
 				case "NetStream.Unpause.Notify":
-					_playing = true;
+//					_playing = true;
 					//playing	=	true;
 					//doCloseSeekPopup();
 					break;
@@ -383,7 +414,7 @@ package Module.Videoviewer {
 					if(bufferEmpty) {
 						bufferEmpty = false;
 						this.play();
-						_playing = true;
+//						_playing = true;
 					}
 					break;
 				case "NetConnection.Connect.Success":
@@ -440,8 +471,10 @@ package Module.Videoviewer {
 			_tickTimer.removeEventListener(TimerEvent.TIMER,tick);
 			_tickTimer.stop();
 			_tickTimer = null;
-			_netStream.pause();
-			if(_netConnection.connected) {
+			if(_netStream) {
+				_netStream.pause();
+			}
+			if(_netConnection && _netConnection.connected) {
 				_netConnection.close();
 			}
 			_netStream = null;

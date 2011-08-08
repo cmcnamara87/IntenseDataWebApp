@@ -1,7 +1,8 @@
 package Module.Videoviewer {
 	
-	import Controller.MediaController;
+	import Controller.BrowserController;
 	import Controller.IDEvent;
+	import Controller.MediaController;
 	
 	import View.MediaView;
 	import View.components.MediaViewer.MediaViewer;
@@ -100,8 +101,11 @@ package Module.Videoviewer {
 			_UI.timeline.delegate = this;
 			
 			// Listening for MouseDown/Up to create annotations
-			_screen.getOverlay().addEventListener(MouseEvent.MOUSE_DOWN,annotationCreationBegin);
-			_screen.getOverlay().addEventListener(MouseEvent.MOUSE_UP,annotationCreationEnd);
+			if(BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
+				// Only listen, if we arent looking at an original asset
+				_screen.getOverlay().addEventListener(MouseEvent.MOUSE_DOWN,annotationCreationBegin);
+				
+			}
 			
 			trace('overlay size ', _screen.getOverlay().width, _screen.getOverlay().height);
 			resizeUI();
@@ -127,6 +131,7 @@ package Module.Videoviewer {
 			trace("starting at: " + newAnnotationStartingX + ", " + newAnnotationStartingY);
 			
 			// Draw on move.
+			_screen.getOverlay().addEventListener(MouseEvent.MOUSE_UP,annotationCreationEnd);
 			_screen.getDrawableArea().addEventListener(MouseEvent.MOUSE_MOVE,annotationCreationDraw);
 		}
 		
@@ -157,6 +162,7 @@ package Module.Videoviewer {
 			
 			// Stop drawing
 			_screen.getDrawableArea().removeEventListener(MouseEvent.MOUSE_MOVE,annotationCreationDraw);
+			_screen.getOverlay().removeEventListener(MouseEvent.MOUSE_UP,annotationCreationEnd);
 			_screen.clearDrawableArea();
 			//_screen.getOverlay().graphics.clear();
 			
@@ -308,15 +314,16 @@ package Module.Videoviewer {
 			loadAnnotations(annotations);
 		}
 		
+		override public function highlightAnnotation(assetID:Number):void {
+			VideoAnnotation.highlightAnnotation(assetID);
+		}
+		override public function unhighlightAnnotation(assetID:Number):void {
+			VideoAnnotation.unhighlightAnnotation(assetID);
+		}
+		
 		public function loadAnnotations(data:Array):void {
-			//trace("***");
-			//trace(data);
-			for(var i:Number=0; i<data.length; i++) {
-				//trace(data[i].base_asset_id);
-			}
 			_screen.clearOverlay();
 			_UI.timeline.addAnnotations(data,_screen.getOverlay());
-			//trace("***");
 		}
 		
 		public function setVideoTime(newTime:Number):void {
@@ -366,9 +373,32 @@ package Module.Videoviewer {
 			_screen.setVolume(_UI.volumeslider.value/100);
 		}
 		
+		/**
+		 * Play the video 
+		 * 
+		 */		
+		public function playVideo():void {
+			trace("Videoview:playVideo - Playing video");
+			_screen.play();
+		}
+		/**
+		 * Pause the video 
+		 * 
+		 */		
+		public function pauseVideo():void {
+			trace("Videoview:pauseVideo - Pausing video");
+			_screen.pause();
+		}
+		
+		/**
+		 * Toggle between playing and pausing 
+		 * @param e
+		 * 
+		 */		
 		private function playbuttonClick(e:MouseEvent):void {
+			trace("Videoview:playbuttonClick");
 			_screen.playpause();
-			trace("PLAYPAUSE");
+			
 		}
 		
 		private function maxsizebuttonClick(e:MouseEvent):void {
@@ -411,8 +441,10 @@ package Module.Videoviewer {
 		}
 		
 		private function resizeUI(e:Event=null):void {
-			_UI.width = this.width;
-			_UI.height = this.height;
+			try {
+				_UI.width = this.width;
+				_UI.height = this.height;
+			} catch (e:Error) {}
 		}
 		
 		public function updateBuffer(newTime:Number):void {

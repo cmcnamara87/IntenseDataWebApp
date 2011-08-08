@@ -1,7 +1,9 @@
 package View.components.AssetBrowser
 {
+	import Controller.BrowserController;
 	import Controller.Dispatcher;
 	import Controller.IDEvent;
+	import Controller.Utilities.Auth;
 	
 	import View.BrowserView;
 	import View.components.IDGUI;
@@ -55,7 +57,7 @@ package View.components.AssetBrowser
 			// 2) the context senstive buttons (share, delete, comment etc)
 			
 			// Create Upload New Asset Button
-			uploadNewAssetButton = IDGUI.makeButton("Upload Asset");
+			uploadNewAssetButton = IDGUI.makeButton("Upload File");
 			this.addElement(uploadNewAssetButton);				
 			
 			uploadSearchLine = new Line();
@@ -96,11 +98,11 @@ package View.components.AssetBrowser
 			this.addElement(searchEditLine);
 			
 			// Add the Edit Button
-			editButton = IDGUI.makeToggleButton('Edit Collection', false, false, false);
+			editButton = IDGUI.makeToggleButton('Edit ' + BrowserController.PORTAL, false, false, false);
 			this.addElement(editButton);
 			
 			// Add the Delete
-			deleteButton = IDGUI.makeButton('Delete Collection', false, false);
+			deleteButton = IDGUI.makeButton('Delete ' + BrowserController.PORTAL, false, false);
 			this.addElement(deleteButton);
 			
 			// Add a line to separate the delete and share button
@@ -108,7 +110,8 @@ package View.components.AssetBrowser
 			this.addElement(deleteShareLine);
 			
 			// Add the Share Button
-			shareButton = IDGUI.makeButton('Share Collection', false, false);
+//			shareButton = IDGUI.makeButton('Share ' + , false, false);
+			shareButton = IDGUI.makeButton('Manage Viewers', false, false);
 			this.addElement(shareButton);
 			
 			// Add the Comments
@@ -181,6 +184,16 @@ package View.components.AssetBrowser
 			deleteButton.enabled = true;
 		}
 		
+		
+		public function disableUpload():void {
+			uploadNewAssetButton.enabled = false;
+		}
+		
+		public function enableUpload():void {
+			uploadNewAssetButton.enabled = true;
+		}
+		
+		
 		/**
 		 * Shows all buttons on the toolbar. Used for regular collections. 
 		 * 
@@ -188,6 +201,7 @@ package View.components.AssetBrowser
 		public function setToolbarToRegularCollectionMode(modifyAccess:Boolean):void {
 			trace("Setting toolbar to regular collection mode, access type", modifyAccess);
 			if(modifyAccess) {
+				// We have Full access to the collection
 				uploadNewAssetButton.visible = true;
 				uploadNewAssetButton.includeInLayout = true;
 				
@@ -201,6 +215,7 @@ package View.components.AssetBrowser
 				editButton.includeInLayout = true;
 				
 				deleteButton.visible = true;
+//				deleteButton.label = "Delete Collection";
 				deleteButton.includeInLayout = true;
 				
 				deleteShareLine.visible = true;
@@ -212,32 +227,43 @@ package View.components.AssetBrowser
 				commentsButton.visible = true;
 				commentsButton.includeInLayout = true;
 			} else {
+				// We only have view access to the collection
 				uploadNewAssetButton.visible = false;
 				uploadNewAssetButton.includeInLayout = false;
 				
 				uploadSearchLine.visible = false;
 				uploadSearchLine.includeInLayout = false;
 				
-				searchEditLine.visible = false;
-				searchEditLine.includeInLayout = false;
+				searchEditLine.visible = true;
+				searchEditLine.includeInLayout = true;
 				
 				editButton.visible = false;
 				editButton.includeInLayout = false;
 				
-				deleteButton.visible = false;
-				deleteButton.includeInLayout = false;
+				deleteButton.visible = true;
+//				deleteButton.label = "Remove Collection";
+				deleteButton.includeInLayout = true;
 				
-				deleteShareLine.visible = false;
-				deleteShareLine.includeInLayout = false;
+				deleteShareLine.visible = true;
+				deleteShareLine.includeInLayout = true;
 				
-				shareButton.visible = false;
-				shareButton.includeInLayout = false;
+				shareButton.visible = true;
+				shareButton.includeInLayout = true;
 				
-				commentsButton.visible = false;
-				commentsButton.includeInLayout = false;
+				commentsButton.visible = true;
+				commentsButton.includeInLayout = true;
 			}
-
 			
+			// If we arent the author of the collection, make it say 'remove' instead of delete
+			// We need to check if the collectionData is null, cause it could mean we are making a 
+			// collection while on a fixed collection (and there is no data) ... TODO fix this up
+			if((BrowserController.collectionData != null) && (BrowserController.collectionData.base_creator_username != Auth.getInstance().getUsername())) {
+				trace("AssetBrowserToolbar: Collection author is", BrowserController.collectionData.base_creator_username, Auth.getInstance().getUsername());
+				deleteButton.label = "Remove " + BrowserController.PORTAL;
+			} else {
+//				trace("AssetBrowserToolbar: Collection author is", BrowserController.collectionData.meta_username, Auth.getInstance().getUsername());
+				deleteButton.label = "Delete " + BrowserController.PORTAL;
+			}
 		}
 		
 		/**

@@ -20,16 +20,19 @@ package View.components.AssetTile
 	
 	import flashx.textLayout.formats.TextAlign;
 	
+	import mx.controls.Alert;
 	import mx.controls.Image;
 	import mx.controls.Label;
 	import mx.effects.Fade;
 	import mx.effects.Resize;
+	import mx.events.CloseEvent;
 	import mx.graphics.BitmapFill;
 	
 	import spark.components.Label;
 	import spark.components.VGroup;
 	import spark.effects.Fade;
 	import spark.effects.Resize;
+	import spark.layouts.HorizontalAlign;
 	
 	public class AssetTile extends VGroup
 	{
@@ -58,7 +61,20 @@ package View.components.AssetTile
 
 			// Setup Image
 			image = new AssetTileImage(assetData.type);
-			this.addElement(image);
+			var centerImage:VGroup = new VGroup();
+			centerImage.horizontalAlign = HorizontalAlign.CENTER;
+			centerImage.percentWidth = 100;
+			this.addElement(centerImage);
+			
+			centerImage.addElement(image);
+			
+//			image.scaleX = 0.9;
+//			image.scaleY = 0.9;
+		
+			this.toolTip = "Created by: " + assetData.base_creator_username + ".";
+			if(assetData.meta_description != "") {
+				this.toolTip += "\nDescription: " +  assetData.meta_description;
+			};
 			
 			// Are we in Edit/Shelf Mode???
 			showOverlay();
@@ -101,13 +117,13 @@ package View.components.AssetTile
 			
 			if(BrowserController.getEditOn()) {
 				// If we are in Edit Mode
-				trace("In Edit Mode");
+//				trace("In Edit Mode");
 				assetsToMatch = BrowserController.getEditAssets();
 				
 				
 			} else if (BrowserController.getShelfOn()) {
 				// if we are in collection create mode
-				trace("In Creation Mode");
+//				trace("In Creation Mode");
 				assetsToMatch = BrowserController.getShelfAssets();
 			} 
 			
@@ -120,10 +136,17 @@ package View.components.AssetTile
 				// instead of add.
 				for(var i:Number = 0; i < assetsToMatch.length; i++) {
 					
+					// Math.abs as the asset id is set to negative one if its copied from 'your files'
 					var assetID:Number = (assetsToMatch[i] as Model_Media).base_asset_id;
 					trace("Asset In Edit", assetID);
 					if(assetID == this.assetData.base_asset_id) {
-						image.setRemoveOverlay();
+						// If we are making a new copy of the asset, we set it to say 'remove new'
+						// otherwise, it just says 'remove'
+						if(assetID < 0) {
+							image.setRemoveOverlay(true);
+						} else {
+							image.setRemoveOverlay(false);
+						}
 					}
 				}
 			} else {
@@ -180,14 +203,28 @@ package View.components.AssetTile
 		private function assetTileClicked(e:MouseEvent):void {
 			trace('Asset ', assetData.base_asset_id, ' was clicked.');
 			
-			image.showRegularIcon();
-
-			// Make new asset clicked event
-			var clickEvent:IDEvent = new IDEvent(eventToThrowWhenClicked, true);
-			// Include ALL media data (so we can add to shelf/edit with all the data it needs), or, its just ignored if we are going to the asset
-			clickEvent.data.assetData = assetData;
-			this.dispatchEvent(clickEvent);
+//			var myAlert:Alert = Alert.show("Add with Comments and Annotations?", "Add File", Alert.YES | Alert.NO, null, 
+//				function(e:CloseEvent):void {
+//					if (e.detail==Alert.YES) {
+//						trace("should copy annotations here");
+//					} else {
+//						trace("dont copy annotations");
+						// Make new asset clicked event
+						var clickEvent:IDEvent = new IDEvent(eventToThrowWhenClicked, true);
+						clickEvent.data.assetData = assetData;
+//						
+//						if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
+//							clickEvent.data.assetData.base_asset_id = -1 * clickEvent.data.assetData.base_asset_id; 	
+//						}
+						dispatchEvent(clickEvent);
+						
+//					}
+//				}, 
+//			null, Alert.CANCEL);
+//			myAlert.height = 100;
+//			myAlert.width = 300;
 			
+			image.showRegularIcon();
 			showOverlay();
 		}
 		
@@ -228,6 +265,10 @@ package View.components.AssetTile
 				returnString += " " + currentAnnotation.annotation_text.toLowerCase();
 			}
 			return returnString;
+		}
+		
+		public function getAccess():Boolean {
+			return assetData.access_modify_content;
 		}
 	}
 }

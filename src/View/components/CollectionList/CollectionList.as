@@ -7,6 +7,7 @@ package View.components.CollectionList
 	
 	import View.BrowserView;
 	import View.Element.Collection;
+	import View.components.GoodBorderContainer;
 	import View.components.PanelElement;
 	import View.components.SubToolbar;
 	import View.components.Toolbar;
@@ -40,6 +41,11 @@ package View.components.CollectionList
 		private var createCollectionButton:ToggleButton // The create collection button
 		private var searchInput:TextInput; // The search input text box for the panel
 		private const PLACEHOLDERTEXT:String = "Search";
+		private const BUTTON_TEXT_REGULAR:String =  "New " + BrowserController.PORTAL;
+		private const BUTTON_TEXT_CLICKED:String = "Hide New " + BrowserController.PORTAL;
+		private var newButtonText:String = BUTTON_TEXT_REGULAR; // Stores the label for the new collection button
+		private var mediaCount:Number = 0; // Stores the number of assets currently on the shelf
+		
 		/**
 		 * The collection list sits on the left side on the main asset browser 
 		 * and shows all the collections the user has.
@@ -70,7 +76,7 @@ package View.components.CollectionList
 			
 			// Add The panel heading
 			var heading:Label = new Label();
-			heading.text = "Collections";;
+			heading.text = BrowserController.PORTAL + "s";
 			heading.setStyle('textAlign', 'left');
 			heading.setStyle('color', 0x333333);
 			heading.setStyle('fontSize', 16);
@@ -80,7 +86,7 @@ package View.components.CollectionList
 			// Add 'Create Collection' Button
 			// Add the Shelf Button
 			createCollectionButton = new ToggleButton();
-			createCollectionButton.label = "New Collection";
+			setButtonLabel();
 			createCollectionButton.selected = false;
 			createCollectionButton.percentHeight = 100;
 			myToolbar.addElement(createCollectionButton);
@@ -98,21 +104,50 @@ package View.components.CollectionList
 			searchInput.percentHeight = 100;
 			searchToolbar.addElement(searchInput);
 			
+			var fileLabelContainer:GoodBorderContainer = new GoodBorderContainer(0xEEEEEE, 1);
+			fileLabelContainer.percentWidth = 100;
+			var fileLabelLayout:VerticalLayout = new VerticalLayout();
+			fileLabelLayout.paddingLeft = 10;
+			fileLabelLayout.paddingRight = 10;
+			fileLabelLayout.paddingTop = 10;
+			fileLabelLayout.paddingBottom = 10;
+			fileLabelContainer.layout = fileLabelLayout;
+			this.addElement(fileLabelContainer);
+			
+			var filesLabel:Label = new Label();
+			filesLabel.text = "Files";
+			filesLabel.setStyle('fontWeight', 'bold');
+			filesLabel.setStyle('color', '0x444444');
+			filesLabel.percentWidth = 100;
+			fileLabelContainer.addElement(filesLabel);
+			
 			// Create the space for the fixed collections (these wont scroll)
 			fixedCollectionListItems = new VGroup();
-			fixedCollectionListItems.paddingLeft = 10;
-			fixedCollectionListItems.paddingRight = 10;
-			fixedCollectionListItems.paddingTop = 10;
-			fixedCollectionListItems.paddingBottom = 10;
+			fixedCollectionListItems.percentWidth = 100;
+			fixedCollectionListItems.gap = 0;
+//			fixedCollectionListItems.paddingLeft = 10;
+//			fixedCollectionListItems.paddingRight = 10;
+//			fixedCollectionListItems.paddingTop = 10;
+//			fixedCollectionListItems.paddingBottom = 10;
 			this.addElement(fixedCollectionListItems);
 			
 			// Add the 'All Assets' and 'Shared Assets' to the fixed collections part of the list.
-			fixedCollectionListItems.addElement(new CollectionListItemFixed(BrowserController.ALLASSETID, 
-				'All Assets', IDEvent.ASSET_COLLECTION_ALL_MEDIA));
+			var originalFileCollection:CollectionListItemFile = new CollectionListItemFile(BrowserController.ALLASSETID, 
+				'Your Original Files', IDEvent.ASSET_COLLECTION_ALL_MEDIA);
+			originalFileCollection.percentWidth = 100;
+			//originalFileCollection.addEventListener(MouseEvent.CLICK, showLoadingOnClick);
+			fixedCollectionListItems.addElement(originalFileCollection);
 			
-			fixedCollectionListItems.addElement(new CollectionListItemFixed(BrowserController.SHAREDID, 
-				'Shared With Me', IDEvent.ASSET_COLLECTION_SHARED_WITH_ME));
+			// Add the 'All Assets' and 'Shared Assets' to the fixed collections part of the list.
+//			var allFilesCollection:CollectionListItemFixed = new CollectionListItemFixed(BrowserController.SHAREDID, 
+//				'All Files', IDEvent.ASSET_COLLECTION_SHARED_WITH_ME);
+//			allFilesCollection.percentWidth = 100;
+//			allFilesCollection.addEventListener(MouseEvent.CLICK, showLoadingOnClick);
+//			fixedCollectionListItems.addElement(allFilesCollection);
 			
+//			fixedCollectionListItems.addElement(new CollectionListItemFixed(BrowserController.SHAREDID, 
+//				'Shared With Me', IDEvent.ASSET_COLLECTION_SHARED_WITH_ME));
+//			
 			
 			// Add a line to separate the 'smart collections' and the regular collections
 			var hLine:Line = new Line();
@@ -120,7 +155,23 @@ package View.components.CollectionList
 			hLine.stroke = new SolidColorStroke(0xEEEEEE,1,1);
 			this.addElement(hLine);
 			
-
+			// We are going to make the bod that says 'discussions'
+			var discussionLabelContainer:GoodBorderContainer = new GoodBorderContainer(0xEEEEEE, 1);
+			discussionLabelContainer.percentWidth = 100;
+			var discussionLabelLayout:VerticalLayout = new VerticalLayout();
+			discussionLabelLayout.paddingLeft = 10;
+			discussionLabelLayout.paddingRight = 10;
+			discussionLabelLayout.paddingTop = 10;
+			discussionLabelLayout.paddingBottom = 10;
+			discussionLabelContainer.layout = discussionLabelLayout;
+			this.addElement(discussionLabelContainer);
+			
+			var discussionsLabel:Label = new Label();
+			discussionsLabel.text = BrowserController.PORTAL + "s";
+			discussionsLabel.setStyle('fontWeight', 'bold');
+			discussionsLabel.setStyle('color', '0x444444');
+			discussionsLabel.percentWidth = 100;
+			discussionLabelContainer.addElement(discussionsLabel);
 			
 			// lets add a scroller, so it...scrolls lol
 			myScroller = new Scroller();
@@ -129,11 +180,8 @@ package View.components.CollectionList
 			
 			// create a content group so we can put it inside the scroll
 			regularCollectionListItems = new VGroup(); 
-			regularCollectionListItems.paddingLeft = 10;
-			regularCollectionListItems.paddingRight = 10;
-			regularCollectionListItems.paddingTop = 10;
-			regularCollectionListItems.paddingBottom = 10;
 
+			regularCollectionListItems.gap = 0;
 			// Add the content group to the scroller
 			myScroller.viewport = regularCollectionListItems;
 			
@@ -176,13 +224,68 @@ package View.components.CollectionList
 				// TODO REMOVE THIS Check that the collection has some items in it otherwise, ignore it.
 				//if ((collectionArray[i] as Model_Collection).numberOfChildren()) {
 					
-					var newCollectionListItem:CollectionListItem = new CollectionListItemRegular(collectionArray[i]);
-
-					
+					var newCollectionListItem:CollectionListItemDiscussion = 
+						new CollectionListItemDiscussion(	collectionArray[i].collection,
+														collectionArray[i].files);
+//					newCollectionListItem.toolTip = newCollectionListItem.getCollectionName();
 					regularCollectionListItems.addElement(newCollectionListItem);	
 				//} 
+					
+					
+					
+					
+					
+					//newCollectionListItem.addEventListener(MouseEvent.CLICK, showLoadingOnClick);
 				
 			}
+			
+			if(searchInput.text != "Search") {
+				search(searchInput.text);
+			}
+		}
+
+		public function hideAllLoadingAnimations():void {
+			for(var i:Number = 0; i < regularCollectionListItems.numElements; i++) {
+				(regularCollectionListItems.getElementAt(i) as CollectionListItemDiscussion).hideLoading();
+			}
+			for(i = 0; i < fixedCollectionListItems.numElements; i++) {
+				(fixedCollectionListItems.getElementAt(i) as CollectionListItemFile).hideLoading();
+			}
+		}
+		
+		private function showLoadingOnClick(e:MouseEvent):void {
+			hideAllLoadingAnimations();
+//			(e.target as CollectionListItem).showLoading();
+		}
+		
+		public function updateNewCollectionButton():void {
+			mediaCount = BrowserController.getShelfAssets().length;
+			setButtonLabel();
+		}
+		
+		/**
+		 * When we are in edit mode, any collection that is 'read only' should not be able to be accessed
+		 */		
+		public function enterEditMode():void {
+			// DEPRECATED - opted instead just to disable the assets, not hte collections
+			// solves problems when we are in a collection, and hit 'new collection' and the collection should be
+			// disabled.
+			
+//			for(var i:Number = 0; i < regularCollectionListItems.numElements; i++) {
+//				var regularListItem:CollectionListItemRegular = regularCollectionListItems.getElementAt(i) as CollectionListItemRegular;
+//				if(!regularListItem.getAccess()) {
+//					regularListItem.toolTip = "Read Only Access";
+//					regularListItem.enabled = false;
+//				}
+//			}
+		}
+		
+		public function exitEditMode():void {
+//			for(var i:Number = 0; i < regularCollectionListItems.numElements; i++) {
+//				var regularListItem:CollectionListItemRegular = regularCollectionListItems.getElementAt(i) as CollectionListItemRegular;
+//				regularListItem.toolTip = regularListItem.getCollectionName();
+//				regularListItem.enabled = true;
+//			}
 		}
 		
 		/**
@@ -204,7 +307,7 @@ package View.components.CollectionList
 
 			// Highlight the collection if its a fixed one, or, unhighlight them
 			for(var i:Number = 0; i < fixedCollectionListItems.numElements; i++) {
-				var myListItem:CollectionListItemFixed = (fixedCollectionListItems.getElementAt(i) as CollectionListItemFixed);
+				var myListItem:CollectionListItemFile = (fixedCollectionListItems.getElementAt(i) as CollectionListItemFile);
 				if(myListItem.getCollectionID() == collectionID) {
 					myListItem.setSelected();
 				} else {
@@ -214,7 +317,7 @@ package View.components.CollectionList
 			
 			// Do the same for all the other collections
 			for(i = 0; i < regularCollectionListItems.numElements; i++) {
-				var myListItem2:CollectionListItemRegular = (regularCollectionListItems.getElementAt(i) as CollectionListItemRegular);
+				var myListItem2:CollectionListItemDiscussion = (regularCollectionListItems.getElementAt(i) as CollectionListItemDiscussion);
 				if(myListItem2.getCollectionID() == collectionID) {
 					// This was the selected one, so selected it
 					myListItem2.setSelected();
@@ -232,7 +335,8 @@ package View.components.CollectionList
 		 */		
 		public function unsetCreateCollectionButton():void {
 			createCollectionButton.selected = false;
-			createCollectionButton.label = "New Collection";
+			newButtonText = BUTTON_TEXT_REGULAR;
+			setButtonLabel();
 		}
 		
 		
@@ -248,9 +352,12 @@ package View.components.CollectionList
 			
 			// Change the button label to say 'hide collection' if its selected
 			if(createCollectionButton.selected) {
-				createCollectionButton.label = "Hide New Collection";
+				newButtonText = BUTTON_TEXT_CLICKED;
+				updateNewCollectionButton();
 			} else {
-				createCollectionButton.label = "New Collection";
+				trace("button clicked");
+				newButtonText = BUTTON_TEXT_REGULAR;
+				updateNewCollectionButton();
 			}
 			
 			var clickEvent:IDEvent = new IDEvent(IDEvent.SHELF_CLICKED, true);
@@ -259,6 +366,13 @@ package View.components.CollectionList
 			this.dispatchEvent(clickEvent);
 		}
 		
+		private function setButtonLabel():void {
+//			trace("setting button label", newButtonText + " (" + mediaCount + ")");
+			createCollectionButton.label = newButtonText;
+			if(mediaCount > 0) {
+				createCollectionButton.label = newButtonText + " (" + mediaCount + ")";
+			}
+		}
 		private function searchInputHasFocus(e:FocusEvent):void {
 			if(searchInput.text == PLACEHOLDERTEXT) {
 				searchInput.text = "";
@@ -278,11 +392,14 @@ package View.components.CollectionList
 		 */		
 		private function searchTermEntered(e:Event):void {
 			trace('Searching for: ', (e.target as TextInput).text);
-			
+			search((e.target as TextInput).text);
+		}
+		
+		private function search(searchTerm:String):void {
 			// Searches the fixed Collection List for matches
 			for(var i:Number = 0; i < fixedCollectionListItems.numElements; i++) {
 				var element:PanelElement = fixedCollectionListItems.getElementAt(i) as PanelElement;
-				if(!element.searchMatches((e.target as TextInput).text)) {
+				if(!element.searchMatches(searchTerm)) {
 					fixedCollectionListItems.getElementAt(i).visible = false;
 					fixedCollectionListItems.getElementAt(i).includeInLayout = false;
 				} else {
@@ -294,7 +411,7 @@ package View.components.CollectionList
 			// Searches the regular collection list for matches
 			for(i = 0; i < regularCollectionListItems.numElements; i++) {
 				element = regularCollectionListItems.getElementAt(i) as PanelElement;
-				if(!element.searchMatches((e.target as TextInput).text)) {
+				if(!element.searchMatches(searchTerm)) {
 					regularCollectionListItems.getElementAt(i).visible = false;
 					regularCollectionListItems.getElementAt(i).includeInLayout = false;
 				} else {
@@ -302,7 +419,7 @@ package View.components.CollectionList
 					regularCollectionListItems.getElementAt(i).includeInLayout = true;
 				}
 			}
-		}
+		} 
 		
 	}
 }

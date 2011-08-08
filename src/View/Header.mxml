@@ -11,7 +11,7 @@
 		]]>
 	</fx:Script>
 	<mx:HBox id='headerbackground' width="100%" height="88" backgroundColor="0x336699">
-		<Element:BackgroundImage id="background"></Element:BackgroundImage>
+		<!--<Element:BackgroundImage id="background"></Element:BackgroundImage>-->
 		<s:Group>
 			<!-- The logo -->
 			<mx:Image source="{logo}" width="338" height="40" top="33" left="30"></mx:Image>

@@ -1,14 +1,22 @@
-package View.components
+package View.components.Panels
 {
+	
+	import View.components.PanelElement;
+	import View.components.SubToolbar;
+	import View.components.Toolbar;
 	
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	
+	import mx.core.UIComponent;
 	import mx.graphics.SolidColor;
 	import mx.graphics.SolidColorStroke;
 	
+	import org.osmf.layout.AbsoluteLayoutFacet;
+	
 	import spark.components.BorderContainer;
 	import spark.components.Button;
+	import spark.components.Group;
 	import spark.components.Label;
 	import spark.components.Scroller;
 	import spark.components.TextInput;
@@ -30,10 +38,12 @@ package View.components
 		private var heading:Label; // The heading at the top of the panel
 		
 		private var searchInput:TextInput; // The search input text box for the panel
-		
+				
 		protected const PLACEHOLDERTEXT:String = "Search";
 		public static const DEFAULT_WIDTH:Number = 300; // The width of side panels e.g. sharing, comments etc
 		public static const EXPANDED_WIDTH:Number = 500;
+		
+		protected var modifyAccess:Boolean = false;
 		
 		/**
 		 * A Panel sits on the right side of the Browser view.
@@ -54,7 +64,8 @@ package View.components
 			
 			// Set the backgrond colour & border collect
 			this.backgroundFill = new SolidColor(0xFFFFFF);
-			this.borderStroke = new SolidColorStroke(0xAAAAAA,1,1);
+			this.setStyle("borderVisible", false);
+//			this.borderStroke = new SolidColorStroke(0xAAAAAA,1,1);
 			
 			// Add the Toolbar at the top of the panel
 			toolbar = new Toolbar();
@@ -110,7 +121,33 @@ package View.components
 			searchInput.addEventListener(Event.CHANGE, searchTermEntered);
 		}
 		
+		/**
+		 * Adds an item to the panel. The item is enabled if the panel has modify access. 
+		 * @param item	The UI Component to add to the panel
+		 * 
+		 */		
+		protected function addPanelItem(item:UIComponent):void {
+//			item.enabled = modifyAccess;
+			content.addElement(item);
+		}
 		
+		protected function addPanelItemAtIndex(item:UIComponent, index:Number):void {
+//			item.enabled = modifyAccess;
+			content.addElementAt(item, index);
+		}
+		
+		
+		public function hide():void {
+			this.width = 0;
+		}
+		
+		public function show(expanded:Boolean = false):void {
+			if(expanded) {
+				this.width = Panel.EXPANDED_WIDTH;
+			} else {
+				this.width = Panel.DEFAULT_WIDTH;
+			}
+		}
 		/**
 		 * Sets the heading of the panel
 		 * @param heading
@@ -150,5 +187,33 @@ package View.components
 				}
 			}
 		}
+		
+		public function setUserAccess(modify:Boolean):void {
+			trace("Panel setUserAccess:", modify);
+			modifyAccess = modify;
+			
+			content.enabled = modify;
+			
+			content.removeAllElements();
+		
+			var temp:VGroup = new VGroup();
+			temp.percentWidth = 100;
+			temp.paddingLeft = 10;
+			temp.paddingBottom = 10;
+			temp.paddingRight = 10;
+			temp.paddingTop = 10;
+			content.addElement(temp);
+			
+			var loadingLabel:Label = new Label();
+			loadingLabel.text = "Loading...";
+			loadingLabel.percentWidth = 100;
+			temp.addElement(loadingLabel);
+			
+//			for(var i:Number = 0; i < content.numElements; i++) {
+//				var element:UIComponent = content.getElementAt(i) as UIComponent;
+//				element.enabled = modifyAccess;
+//			}
+		}
+		
 	}
 }

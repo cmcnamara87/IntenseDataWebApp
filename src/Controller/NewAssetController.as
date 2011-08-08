@@ -1,12 +1,14 @@
 package Controller {
 	
 	import Controller.Utilities.AssetLookup;
+	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
 	import Model.Model_Media;
-	import Model.Transactions.Transaction_CopyAccess;
+	import Model.Transactions.Access.Transaction_CopyAccess;
 	
 	import View.NewAsset;
+	import View.components.Panels.Sharing.SharingPanel;
 	
 	import flash.events.DataEvent;
 	import flash.events.Event;
@@ -28,6 +30,8 @@ package Controller {
 		private var _validMeta:Boolean = false;
 		private var file:FileReference;
 		
+		private var assetID:Number; // THe ID of the asset after we have finished uploading
+		
 		//Calls the superclass
 		public function NewAssetController() {
 			view = new NewAsset();
@@ -42,7 +46,7 @@ package Controller {
 		
 		// Setup specific event listeners
 		private function setupEventListeners():void {
-			(view as NewAsset).uploadForm.addEventListener(IDEvent.UPLOAD_CLICKED,uploadClicked);
+			(view as NewAsset).uploadForm.addEventListener(IDEvent.UPLOAD_CLICKED, uploadClicked);
 			(view as NewAsset).navbar.addEventListener(IDEvent.NAV_CLICKED,navBarClicked);
 			(view as NewAsset).uploadForm.addEventListener(IDEvent.FORM_CHANGED,validate);
 			(view as NewAsset).metaForm.addEventListener(IDEvent.FORM_CHANGED,validate);
@@ -50,22 +54,22 @@ package Controller {
 		
 		// Setup the navigation bar
 		private function setupNavbar():void {
-			(view as NewAsset).navbar.addHeading("New Media Asset");
-			(view as NewAsset).navbar.addButton("back","right");
-			(view as NewAsset).navbar.addButton("save asset","right");
-			(view as NewAsset).navbar.setButtonColour("save asset","yellow");
+			(view as NewAsset).navbar.addHeading("  New Media File");
+			(view as NewAsset).navbar.addButton("Back","left");
+			(view as NewAsset).navbar.addButton("Save File","right");
+			(view as NewAsset).navbar.setButtonColour("Save File","yellow");
 		}
 		
 		// Called when a button on the navigation bar is clicked
 		private function navBarClicked(e:IDEvent):void {
 			switch(e.data.buttonName) {
-				case 'back':
+				case 'Back':
 					Dispatcher.call("browse");
 					break;
-				case 'save asset':
+				case 'Save File':
 					saveAsset();
 					break;
-				case 'cancel':
+				case 'Cancel':
 					uploadFile.cancel();
 					Dispatcher.call("browse");
 					break;
@@ -79,7 +83,11 @@ package Controller {
 			uploadFile.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 			uploadFile.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, responseHandler);
 			uploadFile.addEventListener(Event.SELECT, fileSelected);
-			uploadFile.browse(AssetLookup.getFileTypes());
+			try {
+				uploadFile.browse(AssetLookup.getFileTypes());
+			} catch (e:Error) {
+				
+			}
 		}
 		
 		// Called as the file upload occurs 
@@ -91,6 +99,7 @@ package Controller {
 		
 		// Called when the file is selected
 		private function fileSelected(event:Event):void {
+			(view as NewAsset).uploadForm.enabled = true;
 			file = FileReference(event.target);
 			chosenFile = true;
 			(view as NewAsset).uploadForm.setProgress(file.name,"ready");
@@ -105,52 +114,70 @@ package Controller {
 		private function responseHandler( e:DataEvent ) :void {
 			// Get out the XML data from the Mediaflux response
 			var xml:XML = XML(e.data);
-			trace("- Upload Finished, response", e);
-			trace("response2 ", xml.reply.@type);
+//			trace("- Upload Finished, response", e);
+//			trace("response2 ", xml.reply.@type);
 			if(xml.reply.@type == "result") {
 				// The file upload correctly,
 				// sets it as a 'media' type
 				// and set this user to be the owner
 				AppModel.getInstance().setMediaClass(e);
-				// Get out the new assets ID
-				var assetID:Number = xml.reply.result.id;
 				
-				trace("New Asset created", assetID);
+				
+				// Get out the new assets ID
+				assetID = xml.reply.result.id;
+				
+//				AppModel.getInstance().generateThumbnail(assetID);
+				
+				
+				trace("NewAssetController:uploadComplete - New Asset created", assetID);
 				
 				// Set the Owner ACLs for the asset
-				AppModel.getInstance().setOwnerACL(xml.reply.result.id);
+				AppModel.getInstance().changeAccess(assetID, Auth.getInstance().getUsername(), "system", SharingPanel.READWRITE, false, creatorAccessSaved);
+			} else {
+				trace("NewAssetController:uploadComplete - Failed to creator asset", e);
+				Alert.show("Failed to upload file");
+				Dispatcher.call('browse');
+			}
+		}
+		
+		/**
+		 * The creator of the asset was saved. Now put it in a collection if needbe. 
+		 * @param e
+		 * 
+		 */		
+		private function creatorAccessSaved(e:Event):void {
+			if(!AppModel.getInstance().callSuccessful(e)) {
+				trace("NewAssetController:creatorAccessSaved - Failed to give creator access", e.target.data);
+			}
+			
+			// Add this new asset, to whatever the current collection is
+			// Provided its not All Assets or Shared Assets, since they are smart collections
+			// And assets appear in them authomatically.
+			if(BrowserController.currentCollectionID != BrowserController.ALLASSETID &&
+				BrowserController.currentCollectionID != BrowserController.SHAREDID) {
 				
-				// Add this new asset, to whatever the current collection is
-				// Provided its not All Assets or Shared Assets, since they are smart collections
-				// And assets appear in them authomatically.
-				if(BrowserController.currentCollectionID != BrowserController.ALLASSETID &&
-					BrowserController.currentCollectionID != BrowserController.SHAREDID) {
-					
-					// Create a shell for the new asset
-					var newAsset:Model_Media = new Model_Media();
-					newAsset.base_asset_id = assetID;
-					// Add it to the current collections assets
-					BrowserController.currentCollectionAssets.push(newAsset);
-					trace("Adding new asset", assetID  ,"to collection", BrowserController.currentCollectionID,
-						BrowserController.currentCollectionTitle, "and saving"); 
-					AppModel.getInstance().saveCollection(
-						BrowserController.currentCollectionID, 
-						BrowserController.currentCollectionTitle, 
-						BrowserController.currentCollectionAssets, 
-						function(collectionID:Number):void {
-							trace("Collection Updated", collectionID);
-							// The asset has been saved
-							// Make sure this asset has the same ACLs as its parent collection
-							AppModel.getInstance().copyAccess(collectionID, assetID);
-							
-							// Display it to the user
-							assetSaved();
-						}
-					);
-					
-				} else {
-					flash.utils.setTimeout(assetSaved,200);
-				}
+				// Create a shell asset for the new asset
+				var newAsset:Model_Media = new Model_Media();
+				newAsset.base_asset_id = assetID * -1;
+				
+				// Add it to the current collections assets
+				BrowserController.currentCollectionAssets.push(newAsset);
+				trace("Adding new asset", assetID  ,"to collection", BrowserController.currentCollectionID,
+					BrowserController.currentCollectionTitle, "and saving"); 
+				
+				// Save it in the collection
+				AppModel.getInstance().saveCollection(
+					BrowserController.currentCollectionID, 
+					BrowserController.currentCollectionTitle, 
+					BrowserController.currentCollectionAssets, 
+					function(collectionID:Number):void {
+						trace("NewAssetController:creatorAccessSaved - Collection Updated", collectionID);
+						assetSaved();
+					}
+				);
+				
+			} else {
+				flash.utils.setTimeout(assetSaved,200);
 			}
 		}
 		
@@ -169,10 +196,10 @@ package Controller {
 			_validMeta = (view as NewAsset).metaForm.validate();
 			var valid:Boolean = true;
 			if(_validUpload && _validMeta) {
-				(view as NewAsset).navbar.setButtonColour("save asset","green");
+				(view as NewAsset).navbar.setButtonColour("Save File","green");
 				valid = true;
 			} else {
-				(view as NewAsset).navbar.setButtonColour("save asset","yellow");
+				(view as NewAsset).navbar.setButtonColour("Save File","yellow");
 				valid = false;
 			}
 			return valid;
@@ -182,9 +209,9 @@ package Controller {
 		private function lock():void {
 			(view as NewAsset).metaForm.lock();
 			(view as NewAsset).uploadForm.lock();
-			(view as NewAsset).navbar.removeButton("back");
-			(view as NewAsset).navbar.addButton("cancel","right");
-			(view as NewAsset).navbar.changeButtonName("save asset","saving");
+			(view as NewAsset).navbar.removeButton("Back");
+			(view as NewAsset).navbar.addButton("Cancel","right");
+			(view as NewAsset).navbar.changeButtonName("Save File","Saving");
 		}
 		
 		// Gets all the data together and sends the information to the model for upload
@@ -204,8 +231,9 @@ package Controller {
 		
 		// After the file is uploaded successfully, switches the view
 		public function assetSaved():void {
-			trace("- Asset Saved");
-			trace("*************************");
+			trace("NewAssetController:assetSaved - Asset Saved Successfully");
+			// So we dont show the old collection, we reload it, with the new asset
+			BrowserController.clearCurrentCollectionMedia();
 			Dispatcher.call("browse");
 		}
 	}

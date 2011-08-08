@@ -36,7 +36,7 @@ package Controller.Utilities {
 			},
 			{
 				url:'newasset',
-				title:'New Media Asset',
+				title:'New Media File',
 				classname:NewAssetController
 			},
 			{

@@ -1,8 +1,11 @@
-package Model.Transactions
+package Model.Transactions.Access
 {
+	import Model.AppModel;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
+	
+	import mx.controls.Alert;
 
 	public class Transaction_CopyAccess
 	{
@@ -19,8 +22,7 @@ package Model.Transactions
 			
 			getFromACLs();
 		}
-		
-		
+
 		private function getFromACLs():void {
 			var args:Object = new Object();
 			args.id = copyFromID;
@@ -31,7 +33,7 @@ package Model.Transactions
 		}
 		
 		private function setToACLs(e:Event):void {
-			trace("users to copy to", e.target.data);
+			trace("Transaction_CopyAccess:setToACLs - users to copy to", e.target.data);
 			
 			// Get out the ACL from the media object in the reply
 			var acls:XMLList = XML(e.target.data).reply.result.asset.acl;
