@@ -63,7 +63,7 @@ package View.components.CollectionList
 			triangle = new GoodBorderContainer(0x000000, 1);
 			triangle.width = 15;
 			triangle.height = 15;
-			//this.addElement(triangle);
+			this.addElement(triangle);
 			
 			// List Icon
 			myIcon = new Image();

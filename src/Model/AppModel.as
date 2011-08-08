@@ -115,7 +115,7 @@ package Model {
 			
 			args.action = "get-meta";
 			
-			//args['get-related-meta'] = true;
+			args['get-related-meta'] = true;
 			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
 				//All good
 			} else {
