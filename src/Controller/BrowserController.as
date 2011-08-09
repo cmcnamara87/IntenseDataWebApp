@@ -46,7 +46,7 @@ package Controller {
 		private static var editAssets:Array = new Array();	// Stores all the assets for the current collection we are viewing
 															// So when we switch into edit mode, they are already there.
 															// It is also where we edit/remove things from, when editing a collection.
-		private static var collectionBeingEditedID:Number; 	// The ID of the collection being edited.
+		public static var collectionBeingEditedID:Number; 	// The ID of the collection being edited.
 		
 		private var modifyAccess:Boolean = true;
 		
@@ -241,7 +241,7 @@ package Controller {
 //			this.quickAddCachedMedia(ALLASSETID);
 			
 			// Load any media we might already have cached
-			this.loadCachedCollectionMedia(ALLASSETID);
+//			this.loadCachedCollectionMedia(ALLASSETID);
 			
 			Model.AppModel.getInstance().getAllMediaAssets(fixedCollectionAssetsLoaded);
 		}
@@ -275,7 +275,7 @@ package Controller {
 			currentView.setToolbarToRegularCollectionMode(modifyAccess);
 			
 			// Load any media we might already have cached
-			this.loadCachedCollectionMedia(collectionID);
+//			this.loadCachedCollectionMedia(collectionID);
 			
 			// Get the Media inside/ this collection
 			AppModel.getInstance().getThisCollectionsMediaAssets(collectionID, collectionMediaLoaded);
@@ -393,10 +393,6 @@ package Controller {
 		 */		
 		// 
 		public function collectionMediaLoaded(collectionID:Number, e:Event):void {
-			
-			// Cache this media in this collection
-			this.cacheCollectionMedia(collectionID, e);
-				
 			// If we have just got data back from a collection we are no longer looking at
 			// ignore it.
 			trace("got data for", collectionID, "we are looking at", currentCollectionID);
@@ -405,10 +401,7 @@ package Controller {
 			}
 			
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
-			
-			// Remove current tiles
-			currentView.clearMediaAssets();
-			
+
 			// Get out the returned data
 			var data:XML = XML(e.target.data);
 			
@@ -426,8 +419,14 @@ package Controller {
 			// Sort Alphabetically
 			BrowserController.currentCollectionAssets.sortOn(["meta_title"],[Array.CASEINSENSITIVE]);
 			
+			// Remove current tiles
+			currentView.clearMediaAssets();
+			
 			// Add all of the assets inside this collection
 			currentView.addMediaAssets(BrowserController.currentCollectionAssets);
+			
+			// Cache this media in this collection
+			this.cacheCollectionMedia(collectionID, e);
 		}
 		
 		/**
@@ -505,7 +504,7 @@ package Controller {
 			
 			// Lets reload the collections and diplay them.
 			trace("- Collection Saved.")
-			trace("******************");
+//			trace("******************");
 			loadAllMyCollections();
 			
 			// Now lets load the assets for this specific collection
@@ -606,6 +605,8 @@ package Controller {
 			} else {
 				currentView.hideShelf();
 			}
+			
+			currentView.removeDiscussionEditIcon();
 		}
 		
 		private function editButtonClicked(e:IDEvent):void {
@@ -649,8 +650,13 @@ package Controller {
 					currentView.addAssetToShelf(editAssets[i]);
 				}
 				currentView.showShelf();
+				
+				currentView.setDiscussionShowEditIcon(BrowserController.collectionBeingEditedID);
+				
 			} else {
 				currentView.hideShelf();
+				
+				currentView.removeDiscussionEditIcon();
 			}
 		}
 
@@ -659,6 +665,7 @@ package Controller {
 			this.setEdit(false);
 			this.setCollectionCreationMode(false);
 			currentView.hideShelf();
+			currentView.removeDiscussionEditIcon();
 		}
 		
 		/**
@@ -743,10 +750,12 @@ package Controller {
 					currentView.addAssetToShelf(assetData);
 					
 				} else {
-					var myAlert:Alert = Alert.show("Copy with Comments and Annotations?", "Add File", Alert.YES | Alert.NO, null,
+					var myAlert:Alert = Alert.show("Copy with Comments and Annotations?", "Add File", Alert.YES | Alert.NO | Alert.CANCEL, null,
 						
 						function(e:CloseEvent):void {
-							if (e.detail==Alert.YES) {
+							if(e.detail == Alert.CANCEL) {
+								return;
+							} else if (e.detail==Alert.YES) {
 								// Copy annotations to new file
 								trace("should copy annotations here");
 								// add to either edit or creation list
@@ -1082,7 +1091,8 @@ package Controller {
 			for(var i:Number = 0; i < arrayToSearch.length; i++) {
 				// The asset does not match the given asset id to remove
 				
-				if(asset.base_asset_id != (arrayToSearch[i] as Model_Media).base_asset_id) {
+				if(!(asset.base_asset_id == (arrayToSearch[i] as Model_Media).base_asset_id && 
+					asset.base_mtime == (arrayToSearch[i] as Model_Media).base_mtime )) {
 					// Add it to the new shelf assets array
 					newShelfAssetsArray.push((arrayToSearch[i] as Model_Media));
 				} else {
