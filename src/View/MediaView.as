@@ -160,7 +160,7 @@ package View
 //			shareButton.enabled = false;
 //			myToolbar.addElement(shareButton);
 			
-			viewsButton = new IDButton(BrowserController.PORTAL + 's');
+			viewsButton = new IDButton('Participants');
 			viewsButton.enabled = false;
 			myToolbar.addElement(viewsButton);
 			

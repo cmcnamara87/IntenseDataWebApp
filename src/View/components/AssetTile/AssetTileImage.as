@@ -118,14 +118,11 @@ package View.components.AssetTile
 		 * Shows the overlay that says 'Remove'. Used when editing/creating a new collection 
 		 * Turned on/off by @see AssetTile
 		 */		
-		public function setRemoveOverlay(makingCopy:Boolean):void {
+		public function setRemoveOverlay(word:String):void {
 			editingOverlay.backgroundFill = new SolidColor(0xFF0000, 0.9);
 			overlayLabel.setStyle('color', 'black');
-			if(makingCopy) {
-				overlayLabel.text = "Remove New";
-			} else {
-				overlayLabel.text = "Remove Copy";
-			}
+		
+			overlayLabel.text = "Remove " + word;
 			// Fade it out
 			Lib.it.transitions.Tweener.addTween(editingOverlay,{transition:"easeInOutCubic",time:0.2,alpha:1});
 		}

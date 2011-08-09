@@ -114,12 +114,14 @@ package View.components.AssetTile
 		public function showOverlay():void {
 			
 			var assetsToMatch:Array;
+			// Listen for the mouse down events (in case it was removed, see a few lines down)
+			this.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+			this.addEventListener(MouseEvent.MOUSE_UP, assetTileClicked);
 			
 			if(BrowserController.getEditOn()) {
 				// If we are in Edit Mode
 //				trace("In Edit Mode");
 				assetsToMatch = BrowserController.getEditAssets();
-				
 				
 			} else if (BrowserController.getShelfOn()) {
 				// if we are in collection create mode
@@ -131,6 +133,8 @@ package View.components.AssetTile
 				// Sets the add overlay to be on
 				image.setAddOverlay();
 				
+				
+				
 				// Check if this tile is in the Collection Creator or Collection Editor,
 				// If it is, then we want to display 'remove' on the image
 				// instead of add.
@@ -139,12 +143,28 @@ package View.components.AssetTile
 					var assetID:Number = (assetsToMatch[i] as Model_Media).base_asset_id;
 					trace("Asset In Edit", assetID);
 					if(assetID == this.assetData.base_asset_id) {
-						// If we are making a new copy of the asset, we set it to say 'remove new'
-						// otherwise, it just says 'remove'
-						if(assetID >= 0) {
-							image.setRemoveOverlay(true);
+						if(eventToThrowWhenClicked != IDEvent.ASSET_BROWSER_MEDIA_CLICKED) { 
+							// If we are making a new copy of the asset, we set it to say 'remove new'
+							// otherwise, it just says 'remove'
+//							if(BrowserController.currentCollectionID == BrowserController.collectionBeingEditedID && BrowserController.getEditOn()) {
+//								image.setRemoveOverlay("");
+//							}
+							if(assetID >= 0) {
+								image.setRemoveOverlay("New");
+							} else {
+								image.setRemoveOverlay("Copy");
+							}
 						} else {
-							image.setRemoveOverlay(false);
+							// the asset is already in the discussion
+							// and this is the button part of the view (so like, its the current discussion, not hte shelf)
+							// we just hide the overlay
+							// and remove the listener for clicking
+							try {
+								this.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+								this.removeEventListener(MouseEvent.MOUSE_UP, assetTileClicked);
+							} catch(e:Error) {}
+							
+							image.hideOverlay();
 						}
 					}
 				}

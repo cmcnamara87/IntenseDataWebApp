@@ -163,6 +163,12 @@ package View.components.CollectionList
 		public function unSelect():void {
 			listItem.unSelect();
 		}
+		public function showEdit():void {
+			listItem.showEditIcon();
+		}
+		public function hideEdit():void {
+			listItem.hideEditIcon();	
+		}
 		public function showLoading():void {
 			listItem.showLoading();
 		}

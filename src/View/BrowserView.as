@@ -240,6 +240,13 @@ package View
 			myCollectionList.unsetCreateCollectionButton();
 		}
 		
+		public function setDiscussionShowEditIcon(discussionID:Number):void {
+			myCollectionList.setDiscussionShowEditIcon(discussionID);
+		}
+		
+		public function removeDiscussionEditIcon():void {
+			myCollectionList.removeDiscussionEditIcon();
+		}
 //		public function unsetEditButton():void {
 //			myAssetBrowser.unsetEditButton();
 //		}
@@ -283,7 +290,7 @@ package View
 		 */		
 		public function removeAssetFromShelf(assetID:Number, mtime:String):void {
 			myShelf.removeMediaAsset(assetID, mtime);
-			//myAssetBrowser.updateAssetTile(assetID);
+			myAssetBrowser.updateAssetTile(assetID);
 			
 		}
 		

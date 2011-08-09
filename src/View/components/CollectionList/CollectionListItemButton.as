@@ -43,6 +43,7 @@ package View.components.CollectionList
 		private var triangle:Image;
 		private var data:Number;
 		private var file:Model_Media;
+		private var shared:Boolean;
 		/**
 		 * The button that shows in the Discussion sidebar.  
 		 * @param shared		Has this Discussion been shared wth the current users?
@@ -56,6 +57,7 @@ package View.components.CollectionList
 			super(0xFFFFFF, 1);
 			this.data = data;
 			this.file = file;
+			this.shared = shared;
 			
 			// Setup the size
 			this.percentWidth = 100;
@@ -98,15 +100,54 @@ package View.components.CollectionList
 			// List Icon
 			myIcon = new Image();
 			if(isFile) {
-				// File
-				if(shared) {
-					myIcon.source = AssetLookup.getGenericFileIconSmallOthers();
-					
+				// Filei
+				if(file != null) {
+//					trace("*****************`", file.type);
+					if(file.type == "video") {
+						if(shared) {
+							myIcon.source = AssetLookup.getVideoFileIconSmallOthers();
+							
+						} else {
+							myIcon.source = AssetLookup.getVideoFileIconSmallYours();
+						}
+						myIcon.width = 15;
+						myIcon.height = 12;
+					} else if (file.type == "image") {
+						if(shared) {
+							myIcon.source = AssetLookup.getImageFileIconSmallOthers();
+							
+						} else {
+							myIcon.source = AssetLookup.getImageFileIconSmallYours();
+						}
+						myIcon.width = 15;
+						myIcon.height = 12;
+					} else if (file.type == "audio") {
+						if(shared) {
+							myIcon.source = AssetLookup.getAudioFileIconSmallOthers();
+							
+						} else {
+							myIcon.source = AssetLookup.getAudioFileIconSmallYours();
+						}
+						myIcon.width = 13;
+						myIcon.height = 13;
+					} else if (file.type == "document") {
+						if(shared) {
+							myIcon.source = AssetLookup.getGenericFileIconSmallOthers();
+							
+						} else {
+							myIcon.source = AssetLookup.getGenericFileIconSmallYours();
+						}
+						myIcon.width = 15;
+						myIcon.height = 12;
+					}
 				} else {
-					myIcon.source = AssetLookup.getGenericFileIconSmallYours();
+//					if(shared) {
+//						myIcon.source = AssetLookup.getGenericFileIconSmallOthers();
+						myIcon.source = AssetLookup.getAllFileIcon();	
+//					} else {
+//						myIcon.source = AssetLookup.getGenericFileIconSmallYours();
+//					}
 				}
-				myIcon.width = 11;
-				myIcon.height = 15;	
 			} else {
 				// Discussion
 				if(shared) {
@@ -218,6 +259,22 @@ package View.components.CollectionList
 			myLabel.setStyle("fontWeight", "normal");
 //			super.setBackground(0xFFFFFF, 1);
 		}	
+		
+		public function showEditIcon():void {
+			myIcon.source = AssetLookup.getEditDiscussionIcon();
+			myLabel.setStyle("color", "0xFF0000");
+			myLabel.setStyle("fontWeight", "bold");
+		}
+		
+		public function hideEditIcon():void {
+			myLabel.setStyle('color', '0x000000');
+			myLabel.setStyle("fontWeight", "normal");
+			if(shared) {
+				myIcon.source = AssetLookup.getCollectionSharedIconClass();
+			} else {
+				myIcon.source = AssetLookup.getCollectionIconClass();
+			}
+		}
 		
 		public function closeTriangle():void {
 //			trace("closing triangle");

@@ -42,11 +42,36 @@ package Controller.Utilities {
 		
 		[Embed(source="Assets/Template/assets/general_file_icon_small_yours.png")]
 		private static var Generic_File_Icon_Small_Yours:Class;
-//		private static var Generic_File_Icon_Small_Yours_Data:BitmapData;
 		
 		[Embed(source="Assets/Template/assets/general_file_icon_small_others.png")]
 		private static var Generic_File_Icon_Small_Others:Class;
-//		private static var Generic_File_Icon_Small_Others_Data:BitmapData;
+		
+		// Video icons
+		[Embed(source="Assets/Template/assets/video_file_icon_small_others.png")]
+		private static var Video_File_Icon_Small_Others:Class;
+		
+		[Embed(source="Assets/Template/assets/video_file_icon_small_yours.png")]
+		private static var Video_File_Icon_Small_Yours:Class;
+
+		// Image icons
+		[Embed(source="Assets/Template/assets/image_file_icon_small_others.png")]
+		private static var Image_File_Icon_Small_Others:Class;
+		
+		[Embed(source="Assets/Template/assets/image_file_icon_small_yours.png")]
+		private static var Image_File_Icon_Small_Yours:Class;
+		
+		// Audio Icons
+		[Embed(source="Assets/Template/assets/audio_file_icon_small_others.png")]
+		private static var Audio_File_Icon_Small_Others:Class;
+		
+		[Embed(source="Assets/Template/assets/audio_file_icon_small_yours.png")]
+		private static var Audio_File_Icon_Small_Yours:Class;
+		
+		[Embed(source="Assets/Template/assets/edit_discussion_icon.png")]
+		private static var Edit_Discussion_Icon:Class;
+		
+		[Embed(source="Assets/Template/assets/all_file_icon.png")]
+		private static var All_File_Icon:Class;
 		
 		[Embed(source="Assets/Template/assets/glyphicons_244_conversation_shared.png")]
 		private static var Asseticon_collection_shared:Class;
@@ -248,9 +273,32 @@ package Controller.Utilities {
 		public static function getGenericFileIconSmallOthers():Class {
 			return Generic_File_Icon_Small_Others;
 		}
-		
+		public static function getVideoFileIconSmallOthers():Class {
+			return Video_File_Icon_Small_Others;
+		}
+		public static function getVideoFileIconSmallYours():Class {
+			return Video_File_Icon_Small_Yours;
+		}
+		public static function getImageFileIconSmallOthers():Class {
+			return Image_File_Icon_Small_Others;
+		}
+		public static function getImageFileIconSmallYours():Class {
+			return Image_File_Icon_Small_Yours;
+		}
+		public static function getAudioFileIconSmallOthers():Class {
+			return Audio_File_Icon_Small_Others;
+		}
+		public static function getAudioFileIconSmallYours():Class {
+			return Audio_File_Icon_Small_Yours;
+		}
+		public static function getAllFileIcon():Class {
+			return All_File_Icon;
+		}
 		public static function getLoadingIconClass():Class {
 			return Loadericon;
+		}
+		public static function getEditDiscussionIcon():Class { 
+			return Edit_Discussion_Icon;
 		}
 		
 		

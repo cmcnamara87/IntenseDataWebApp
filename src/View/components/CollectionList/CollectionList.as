@@ -339,6 +339,27 @@ package View.components.CollectionList
 			setButtonLabel();
 		}
 		
+		public function setDiscussionShowEditIcon(discussionID:Number):void {
+			// Do the same for all the other collections
+			for(var i:Number = 0; i < regularCollectionListItems.numElements; i++) {
+				var myListItem2:CollectionListItemDiscussion = (regularCollectionListItems.getElementAt(i) as CollectionListItemDiscussion);
+				if(myListItem2.getCollectionID() == discussionID) {
+					// This was the selected one, so selected it
+					myListItem2.showEdit();
+				} else {
+					// It wasnt selected, so unselect it (may have been selected the previous time)
+					myListItem2.hideEdit();
+				}
+			}
+		} 
+		public function removeDiscussionEditIcon():void {
+			for(var i:Number = 0; i < regularCollectionListItems.numElements; i++) {
+				var myListItem2:CollectionListItemDiscussion = (regularCollectionListItems.getElementAt(i) as CollectionListItemDiscussion);
+				// It wasnt selected, so unselect it (may have been selected the previous time)
+				myListItem2.hideEdit();
+			}
+		}
+		
 		
 		/* ============= EVENT LISTENER FUNCTIONS ================== */
 		/**
