@@ -39,42 +39,76 @@ package View.components.CollectionList
 		private var myIcon:Image;
 		private var loaderIcon:LoadAnim;
 		private var expanded:Boolean = false; // if the triangle is pointing right or down
-		private var triangle:GoodBorderContainer;
+		private var triangle:Image;
 		/**
 		 * Creates a new collection list item for the collection list (in left sidebar)
 		 */		
-		public function CollectionListItemButton(shared:Boolean, modify:Boolean)
+		public function CollectionListItemButton(shared:Boolean, modify:Boolean, isFile:Boolean, fileCount:Number)
 		{
 			super(0xFFFFFF, 1);
 			// Setup the size
 			this.percentWidth = 100;
 			
-			// Setup the layout
 			var layout:HorizontalLayout = new HorizontalLayout();
 			layout.verticalAlign = "middle";
-			layout.gap = 10;
+			layout.gap = 3;
 			layout.paddingBottom = 10;
 			layout.paddingLeft = 10;
 			layout.paddingRight = 10;
 			layout.paddingTop = 10;
 			this.layout = layout;
 			
-			// Create drowndown triangle
-			triangle = new GoodBorderContainer(0x000000, 1);
-			triangle.width = 15;
-			triangle.height = 15;
-			this.addElement(triangle);
+			if(!isFile) {
+				// Create drowndown triangle
+				triangle = new Image();
+				triangle.source = AssetLookup.getTriangleClass();
+				triangle.width = 15;
+				triangle.height = 15;
+				this.addElement(triangle);
+				triangle.rotation = -90;
+				
+				// set up triangle button
+				triangle.useHandCursor = true;
+				triangle.buttonMode = true;
+				triangle.addEventListener(MouseEvent.CLICK, triangleClicked);
+			}
 			
+			var background:GoodBorderContainer = new GoodBorderContainer(0xFFFFFF, 1);
+			background.percentWidth = 100;
+			this.addElement(background);
+			
+			
+			// Setup the layout
+			var layout2:HorizontalLayout = new HorizontalLayout();
+			layout2.verticalAlign = "middle";
+			layout2.gap = 10;
+			background.layout = layout2;
+
 			// List Icon
 			myIcon = new Image();
-			if(shared) {
-				myIcon.source = AssetLookup.getCollectionSharedIconClass();
+			if(isFile) {
+				// File
+				if(shared) {
+					myIcon.source = AssetLookup.getGenericFileIconSmallOthers();
+					
+				} else {
+					myIcon.source = AssetLookup.getGenericFileIconSmallYours();
+				}
+				myIcon.width = 11;
+				myIcon.height = 15;	
 			} else {
-				myIcon.source = AssetLookup.getCollectionIconClass();
+				// Discussion
+				if(shared) {
+					myIcon.source = AssetLookup.getCollectionSharedIconClass();
+				} else {
+			
+					myIcon.source = AssetLookup.getCollectionIconClass();
+				}
+				myIcon.width = 21;
+				myIcon.height = 14;
 			}
-			myIcon.width = 21;
-			myIcon.height = 14;
-			this.addElement(myIcon);
+			
+			background.addElement(myIcon);
 			
 			if(!modify) {
 				myIcon.alpha = 0.5;
@@ -86,20 +120,23 @@ package View.components.CollectionList
 			loaderIcon.visible = false;
 			loaderIcon.toolTip = "Grabbing the latest version from the database";
 			loaderIcon.includeInLayout = false;
-			this.addElement(loaderIcon);
+			background.addElement(loaderIcon);
 			
 			// List Label
 			myLabel = new spark.components.Label();
 			myLabel.setStyle('fontSize', 12);
-			this.addElement(myLabel);
+			myLabel.percentWidth = 100;
+			background.addElement(myLabel);
 			// Label text is set in extended classes
 			
-			myLabel.addEventListener(MouseEvent.CLICK, labelClicked);
+			if(!isFile) {
+				var itemCountLabel:spark.components.Label = new spark.components.Label();
+				itemCountLabel.text = fileCount + "";
+				itemCountLabel.setStyle('textAlign', TextAlign.RIGHT); 
+				background.addElement(itemCountLabel);
+			}
 			
-			// set up triangle button
-			triangle.useHandCursor = true;
-			triangle.buttonMode = true;
-			triangle.addEventListener(MouseEvent.CLICK, triangleClicked);
+			background.addEventListener(MouseEvent.CLICK, labelClicked);
 		}
 		
 		private function labelClicked(e:MouseEvent):void {
@@ -112,13 +149,15 @@ package View.components.CollectionList
 			if(!expanded) {
 				trace("CollectionListItemButton:triangleClicked - Expanding");
 				expanded = true;
-				triangle.setBackground(0xFF0000, 1);
+				triangle.rotation = 0;
+//				triangle.setBackground(0xFF0000, 1);
 				var expandEvent:Event = new Event(Event.OPEN, true);
 				this.dispatchEvent(expandEvent);
 			} else {
 				trace("CollectionListItemButton:triangleClicked - Closing");
 				expanded = false;
-				triangle.setBackground(0x000000, 1);
+				triangle.rotation = -90;
+//				triangle.setBackground(0x000000, 1);
 				expandEvent = new Event(Event.CLOSE, true);
 				this.dispatchEvent(expandEvent);
 			}
@@ -169,7 +208,8 @@ package View.components.CollectionList
 		
 		public function closeTriangle():void {
 //			trace("closing triangle");
-			triangle.setBackground(0x000000, 1);
+//			triangle.setBackground(0x000000, 1);
+			triangle.rotation = -90;
 			expanded = false;
 		}
 		

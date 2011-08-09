@@ -39,14 +39,26 @@ package Controller.Utilities {
 		[Embed(source="Assets/Template/assets/document2.png")] 
 		private static var Asseticon_document:Class;
 		private static var Asseticon_document_data:BitmapData;
-//		[Embed(source="Assets/Template/assets/collection.png")] 
-		[Embed(source="Assets/Template/assets/203.png")]
+		
+		[Embed(source="Assets/Template/assets/general_file_icon_small_yours.png")]
+		private static var Generic_File_Icon_Small_Yours:Class;
+//		private static var Generic_File_Icon_Small_Yours_Data:BitmapData;
+		
+		[Embed(source="Assets/Template/assets/general_file_icon_small_others.png")]
+		private static var Generic_File_Icon_Small_Others:Class;
+//		private static var Generic_File_Icon_Small_Others_Data:BitmapData;
+		
+		[Embed(source="Assets/Template/assets/glyphicons_244_conversation_shared.png")]
 		private static var Asseticon_collection_shared:Class;
 		private static var Asseticon_collection_shared_data:BitmapData;
 		
-		[Embed(source="Assets/Template/assets/204.png")]
+		[Embed(source="Assets/Template/assets/triangle_dropdown.png")]
+		private static var Triangle_Dropdown:Class;
+		private static var Triangle_Dropdown_Data:BitmapData;
+		
+		[Embed(source="Assets/Template/assets/glyphicons_244_conversation.png")]
 		private static var Asseticon_collection:Class;
-		private static var Asseticon_collection_data:BitmapData;
+//		private static var Asseticon_collection_data:BitmapData;
 		
 		[Embed(source="Assets/Template/postit_icon1.png")]
 		private static var Postit_icon:Class;
@@ -161,7 +173,7 @@ package Controller.Utilities {
 			Asseticon_video_data = (new Asseticon_video as Bitmap).bitmapData;
 			Asseticon_audio_data = (new Asseticon_audio as Bitmap).bitmapData;
 			Asseticon_document_data = (new Asseticon_document as Bitmap).bitmapData;
-			Asseticon_collection_data = (new Asseticon_collection as Bitmap).bitmapData;
+//			Asseticon_collection_data = (new Asseticon_collection as Bitmap).bitmapData;
 			imagesSetup = true;
 		}
 		
@@ -183,7 +195,7 @@ package Controller.Utilities {
 				case 'document':
 					return Asseticon_document_data;
 				case 'collection':
-					return Asseticon_collection_data;
+//					return Asseticon_collection_data;
 					break;
 				
 			}
@@ -213,13 +225,15 @@ package Controller.Utilities {
 				case 'document':
 					return Asseticon_document_data;
 				case 'collection':
-					return Asseticon_collection_data;
+//					return Asseticon_collection_data;
 					break;
 			}
 			return Asseticon_image_data;
 		}
 		
-		
+		public static function getTriangleClass():Class {
+			return Triangle_Dropdown;
+		}
 		public static function getCollectionIconClass():Class {
 			return Asseticon_collection;
 		}
@@ -227,9 +241,18 @@ package Controller.Utilities {
 		public static function getCollectionSharedIconClass():Class {
 			return Asseticon_collection_shared;
 		}
+		
+		public static function getGenericFileIconSmallYours():Class {
+			return Generic_File_Icon_Small_Yours;			
+		}
+		public static function getGenericFileIconSmallOthers():Class {
+			return Generic_File_Icon_Small_Others;
+		}
+		
 		public static function getLoadingIconClass():Class {
 			return Loadericon;
 		}
+		
 		
 		public static function getPostItIconClass():Class {
 			return Postit_icon;

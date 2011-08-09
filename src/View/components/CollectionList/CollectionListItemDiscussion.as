@@ -47,6 +47,7 @@ package View.components.CollectionList
 		 * 
 		 */		
 		public function CollectionListItemDiscussion(collectionData:Model_Collection, files:Array) {
+			this.gap = 0;
 			this.percentWidth = 100;
 			
 			this.collectionData = collectionData;
@@ -57,17 +58,17 @@ package View.components.CollectionList
 				shared = false;
 			}
 
-			listItem = new CollectionListItemButton(shared, collectionData.access_modify_content);		
+			listItem = new CollectionListItemButton(shared, collectionData.access_modify_content, false, files.length);		
 			listItem.percentWidth = 100;
 			
 			// List Label
 			listItem.setLabel(collectionData.meta_title);
 			
-			itemCountLabel = new spark.components.Label();
-			itemCountLabel.text = collectionData.meta_description + "";
-			itemCountLabel.percentWidth = 100;
-			itemCountLabel.setStyle('textAlign', TextAlign.RIGHT); 
-			listItem.addElement(itemCountLabel);
+//			itemCountLabel = new spark.components.Label();
+//			itemCountLabel.text = collectionData.meta_description + "";
+//			itemCountLabel.percentWidth = 100;
+//			itemCountLabel.setStyle('textAlign', TextAlign.RIGHT); 
+//			listItem.addElement(itemCountLabel);
 			
 			listItem.toolTip = collectionData.meta_title + "\nCreated by: " + collectionData.base_creator_username; 
 			
@@ -76,10 +77,11 @@ package View.components.CollectionList
 			// now lets add the files
 			// they are going to go into a Vgroup, so we can hide/show them all
 			fileList = new VGroup();
-			fileList.paddingLeft = 20;
+			fileList.gap = 0;
+			fileList.paddingLeft = 30;
 			fileList.percentWidth = 100;
 			for each(var file:Model_Media in files) {
-				var fileItem:CollectionListItemButton = new CollectionListItemButton(true, true);
+				var fileItem:CollectionListItemButton = new CollectionListItemButton(shared, collectionData.access_modify_content, true, 0);
 				fileItem.setLabel(file.meta_title);
 				fileList.addElement(fileItem);
 				fileItem.addEventListener(IDEvent.COLLECTION_CLICKED, function(e:Event):void {

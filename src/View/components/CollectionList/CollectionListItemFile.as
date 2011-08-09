@@ -41,7 +41,7 @@ package View.components.CollectionList
 			this.percentWidth = 100;
 			
 			// Create the button
-			fileLabel = new CollectionListItemButton(false, true);
+			fileLabel = new CollectionListItemButton(false, true, true, 0);
 			
 			// We are creating this collection, and its the one we are loading, showi t as loading
 			if(BrowserController.currentCollectionID == fixedCollectionID) {
