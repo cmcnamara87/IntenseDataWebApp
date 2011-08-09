@@ -81,12 +81,12 @@ package View.components.CollectionList
 			fileList.paddingLeft = 30;
 			fileList.percentWidth = 100;
 			for each(var file:Model_Media in files) {
-				var fileItem:CollectionListItemButton = new CollectionListItemButton(shared, collectionData.access_modify_content, true, 0);
+				var fileItem:CollectionListItemButton = new CollectionListItemButton(shared, collectionData.access_modify_content, true, file.base_asset_id);
 				fileItem.setLabel(file.meta_title);
 				fileList.addElement(fileItem);
-				fileItem.addEventListener(IDEvent.COLLECTION_CLICKED, function(e:Event):void {
-					trace("got an activate event for file" + file.base_asset_id);
-					Dispatcher.call("view/" + file.base_asset_id);
+				fileItem.addEventListener(IDEvent.COLLECTION_CLICKED, function(e:IDEvent):void {
+					trace("got an activate event for file" + e.data.file_id);
+					Dispatcher.call("view/" + e.data.file_id);
 				});
 			}
 			fileList.visible = false;
