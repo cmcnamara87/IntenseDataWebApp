@@ -117,9 +117,12 @@ package Controller {
 			this.currentMediaData = BrowserController.currentMediaData;
 			
 			if(currentMediaData == null) {
+				trace("MediaController:loadMediaAsset - no media data saved!!! - Looking up currentAssetID" + currentAssetID);
 				// For some reason, the browser doesnt have to data, so we will have to load it here
 				AppModel.getInstance().getThisMediasData(currentAssetID, mediasDataLoaded);
 				return;
+			} else {
+				trace("MediaController:loadMediaAsset - Saved media data " + currentMediaData.base_asset_id);
 			}
 			
 			mediaView.addMediaData(currentMediaData);

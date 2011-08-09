@@ -21,6 +21,7 @@ package View.components.CollectionList
 	import flashx.textLayout.formats.TextAlign;
 	
 	import mx.containers.Canvas;
+	import mx.controls.Alert;
 	import mx.controls.Image;
 	import mx.controls.Label;
 	import mx.effects.Fade;
@@ -80,16 +81,20 @@ package View.components.CollectionList
 			fileList.gap = 0;
 			fileList.paddingLeft = 30;
 			fileList.percentWidth = 100;
+			
 			for each(var file:Model_Media in files) {
-				var fileItem:CollectionListItemButton = new CollectionListItemButton(shared, collectionData.access_modify_content, true, file.base_asset_id);
+				var fileItem:CollectionListItemButton = new CollectionListItemButton(shared, collectionData.access_modify_content, true, file.base_asset_id, file);
 				fileItem.setLabel(file.meta_title);
 				fileList.addElement(fileItem);
 				fileItem.addEventListener(IDEvent.COLLECTION_CLICKED, function(e:IDEvent):void {
-					trace("got an activate event for file" + e.data.file_id);
+					trace("got an activate event for file" + e.data.file.base_asset_id);
+					trace("************* for file" + file.base_asset_id);
 					// Change the browser controller so the current discussion, is whatever the parent
 					// of the file we clicked
+					BrowserController.currentMediaData = null;
 					BrowserController.currentCollectionID = collectionData.base_asset_id;
-					Dispatcher.call("view/" + e.data.file_id);
+					
+					Dispatcher.call("view/" + e.data.file.base_asset_id);
 				});
 			}
 			fileList.visible = false;

@@ -60,6 +60,12 @@ package Model {
 			super();
 		}
 		
+		public function clone():Model_Media {
+			var media:Model_Media = new Model_Media();
+			media.setData(this.rawData);
+			return media;
+		}
+		
 		// Sets the specific data for the media type
 		override protected function setSpecificData():void {
 			base_type = rawData.type;

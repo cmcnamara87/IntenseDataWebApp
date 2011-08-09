@@ -43,6 +43,9 @@ package Model {
 			super();
 		}
 		
+		
+		
+		
 		// Sets the general information, and then sets the specific information for the particular asset type
 		public function setData(data:XML):void {
 			this.rawData = data;

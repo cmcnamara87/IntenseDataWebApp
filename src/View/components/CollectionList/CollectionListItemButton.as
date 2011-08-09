@@ -7,6 +7,7 @@ package View.components.CollectionList
 	import Lib.LoadingAnimation.LoadAnim;
 	
 	import Model.Model_Collection;
+	import Model.Model_Media;
 	
 	import View.Element.Collection;
 	import View.components.GoodBorderContainer;
@@ -41,7 +42,7 @@ package View.components.CollectionList
 		private var expanded:Boolean = false; // if the triangle is pointing right or down
 		private var triangle:Image;
 		private var data:Number;
-		
+		private var file:Model_Media;
 		/**
 		 * The button that shows in the Discussion sidebar.  
 		 * @param shared		Has this Discussion been shared wth the current users?
@@ -50,10 +51,11 @@ package View.components.CollectionList
 		 * @param data			For a file, its the files id, and for a discussion, its the discussion count		
 		 * 
 		 */
-		public function CollectionListItemButton(shared:Boolean, modify:Boolean, isFile:Boolean, data:Number)
+		public function CollectionListItemButton(shared:Boolean, modify:Boolean, isFile:Boolean, data:Number, file:Model_Media=null)
 		{
 			super(0xFFFFFF, 1);
 			this.data = data;
+			this.file = file;
 			
 			// Setup the size
 			this.percentWidth = 100;
@@ -151,7 +153,8 @@ package View.components.CollectionList
 		private function labelClicked(e:MouseEvent):void {
 			trace("CollectionListItemButton:labelClicked");
 			var activate:IDEvent = new IDEvent(IDEvent.COLLECTION_CLICKED, true);
-			activate.data.file_id = data;
+			//activate.data.file_id = data;
+			activate.data.file = file;
 			this.setSelected();
 			this.dispatchEvent(activate);
 		}
