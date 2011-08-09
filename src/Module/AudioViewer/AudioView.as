@@ -63,7 +63,7 @@ package Module.AudioViewer
 		private var _background:AudioVisualiser;
 		private var _musicPlaying:Boolean = false;
 		private var _musicPosition:Number = 0;
-		private var _soundWave:AudioWave;
+//		private var _soundWave:AudioWave;
 		private var _lastHeadPosition:Number = -1;
 		private var _scrollpadding:Number = 20;
 		private var _channelSize:Number = 80;

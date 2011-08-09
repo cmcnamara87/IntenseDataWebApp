@@ -34,6 +34,7 @@ package Module.AudioViewer {
 		public function dealloc():void {
 			try {
 				_audioFile.close();
+				_audioFile = null;
 			} catch (e:Error) {
 				trace("STREAM ALREADY CLOSED"+e.message);
 			}

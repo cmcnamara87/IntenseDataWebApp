@@ -86,6 +86,9 @@ package View.components.CollectionList
 				fileList.addElement(fileItem);
 				fileItem.addEventListener(IDEvent.COLLECTION_CLICKED, function(e:IDEvent):void {
 					trace("got an activate event for file" + e.data.file_id);
+					// Change the browser controller so the current discussion, is whatever the parent
+					// of the file we clicked
+					BrowserController.currentCollectionID = collectionData.base_asset_id;
 					Dispatcher.call("view/" + e.data.file_id);
 				});
 			}

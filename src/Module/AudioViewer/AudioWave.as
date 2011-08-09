@@ -12,7 +12,11 @@ package Module.AudioViewer
 	import flash.utils.*;
 	
 	import mx.core.UIComponent;
-
+	/**
+	 * DEPRECATED (I THINK) 
+	 * @author cmcnamara87
+	 * 
+	 */
 	public class AudioWave extends UIComponent
 	{
 		
@@ -47,6 +51,10 @@ package Module.AudioViewer
 			drawChannelBackground();
 			_audioFile = audioFile;
 			this.addEventListener(Event.RESIZE,resizeWave);
+		}
+		
+		public function dealloc():void {
+//			_audioFile
 		}
 		
 		private function resizeWave(e:Event):void {
