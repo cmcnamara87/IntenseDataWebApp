@@ -179,13 +179,13 @@ package View.components.Panels.Comments
 			var timeSinceCreated:Number = ((new Date()).getTime() - mtime) / 1000;
 			var minutes:Number = Math.floor(timeSinceCreated / 60);
 			
-			if(minutes < 15) {
+			if(minutes <= 14) {
 				var seconds:Number = 60 - Math.floor(timeSinceCreated - (60 * minutes));
 				
 				if(seconds < 10) {
-					deleteButton.label = "Delete (" + (15-minutes) + ":0" + seconds + ")";	
+					deleteButton.label = "Delete (" + (14-minutes) + ":0" + seconds + ")";	
 				} else {
-					deleteButton.label = "Delete (" + (15-minutes) + ":" + seconds + ")";
+					deleteButton.label = "Delete (" + (14-minutes) + ":" + seconds + ")";
 				}
 			} else {
 				deleteButton.includeInLayout = false;
