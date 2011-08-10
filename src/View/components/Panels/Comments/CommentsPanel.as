@@ -105,15 +105,13 @@ package View.components.Panels.Comments
 		 * 
 		 */		
 		public function addComments(commentArray:Array):void {
-//			trace("Adding Comments count:", commentArray.length);
 			clearComments();
+			
 			for(var i:Number = 0; i < commentArray.length; i++) {
 				var commentData:Model_Commentary = commentArray[i] as Model_Commentary;
 				
 				// Check if this comment is a reply
-				if(commentData.annotation_start > 0) {
-//					trace("Found a reply comment, in reply to", commentData.annotation_start);
-					
+				if(commentData.annotation_start > 0) {					
 					// This comment is a reply
 					// We need to find the comment its a reply to, and add this comment
 					// after it.
@@ -125,16 +123,16 @@ package View.components.Panels.Comments
 						// So we can put the comment, at the end of all the other replies that are already there
 						var nonReplyIndex:Number = this.getNonReplyCommentIndexAfter(commentIndex);
 						
-						addPanelItemAtIndex(	new Comment(commentData.base_asset_id, commentData.meta_creator, 
+						addPanelItemAtIndex(	new Comment(commentData.base_asset_id, commentData.meta_creator, Number(commentData.base_mtime), 
 												commentData.text, true),
 												nonReplyIndex);
 					} else {
 						// We didnt find the comment, that this one is replying to.
 						// Lets just insert it at the bottom, as not a reply
-						addPanelItem(new Comment(commentData.base_asset_id, commentData.meta_creator, commentData.text, false));
+						addPanelItem(new Comment(commentData.base_asset_id, commentData.meta_creator, Number(commentData.base_mtime), commentData.text, false));
 					}
 				} else {
-					addPanelItem(new Comment(commentData.base_asset_id, commentData.meta_creator, commentData.text, false));
+					addPanelItem(new Comment(commentData.base_asset_id, commentData.meta_creator, Number(commentData.base_mtime), commentData.text, false));
 				}
 			}
 		}
@@ -160,7 +158,7 @@ package View.components.Panels.Comments
 			var isReply:Boolean = newCommentObject.isReply();
 			
 			// create a new comment (not a newcomment lol)
-			addPanelItemAtIndex(new Comment(commentID, Auth.getInstance().getUsername(), commentText, isReply), positionOfComment);
+			addPanelItemAtIndex(new Comment(commentID, Auth.getInstance().getUsername(), (new Date()).getTime(), commentText, isReply), positionOfComment);
 			
 			// remove the old one.
 			content.removeElement(newCommentObject);

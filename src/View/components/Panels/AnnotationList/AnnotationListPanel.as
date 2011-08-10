@@ -86,11 +86,11 @@ package View.components.Panels.AnnotationList
 
 				if(annotationData.annotation_type == Model_Commentary.ANNOTATION_BOX_TYPE_ID) {
 					// Lets make an annotation
-					addPanelItem(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator,"box", annotationData.text));
+					addPanelItem(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, Number(annotationData.base_mtime), "box", annotationData.text));
 				} else if (annotationData.annotation_type == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
-					addPanelItem(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, "free draw", annotationData.text));
+					addPanelItem(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, Number(annotationData.base_mtime), "free draw", annotationData.text));
 				} else {
-					addPanelItem(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, "highlight", annotationData.text));
+					addPanelItem(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, Number(annotationData.base_mtime), "highlight", annotationData.text));
 				}
 			}
 		}

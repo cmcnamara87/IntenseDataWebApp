@@ -10,6 +10,8 @@ package View.components.Panels.AnnotationList
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 	
 	import flashx.textLayout.elements.TextFlow;
 	
@@ -33,6 +35,9 @@ package View.components.Panels.AnnotationList
 		private var deleteButton:Button; // The delete button on the annotation
 		private var annotationText:String;
 		private var creator:String;
+		private var mTime:Number;
+		private var deleteUpdateTimer:Timer;
+		
 		/**
 		 * Creates a comment 
 		 * @param assetID		The ID of the comment in the database
@@ -41,12 +46,13 @@ package View.components.Panels.AnnotationList
 		 * @param reply			True/false if the comment is a reply or not.
 		 * 
 		 */		
-		public function AnnotationListItem(assetID:Number, creator:String, annotationType:String, annotationText:String)
+		public function AnnotationListItem(assetID:Number, creator:String, mTime:Number, annotationType:String, annotationText:String)
 		{
 			super();
 			this.assetID = assetID;
 			this.annotationText = annotationText;
 			this.creator = creator;
+			this.mTime = mTime;
 			
 			// Setup size
 			this.percentWidth = 100;
@@ -121,6 +127,17 @@ package View.components.Panels.AnnotationList
 				buttonHGroup.addElement(deleteButton);
 				
 				deleteButton.addEventListener(MouseEvent.CLICK, deleteButtonClicked);
+				
+				if(!Auth.getInstance().isSysAdmin()) {
+					// Not the system admin, so put the timer on the delete button
+					deleteButton.visible = false;
+					deleteButton.includeInLayout = false;
+					
+					deleteUpdateTimer = new Timer(1000);
+					deleteUpdateTimer.addEventListener(TimerEvent.TIMER, updateDeleteButtonTime);
+					deleteUpdateTimer.start();
+				}
+				
 			}
 			
 			// Add a horizontal rule at the bottom of the comment
@@ -138,6 +155,27 @@ package View.components.Panels.AnnotationList
 		}
 		
 		/* ============ EVENT LISTENER FUNCTIONS ===================== */
+		private function updateDeleteButtonTime(e:TimerEvent):void {
+			var timeSinceCreated:Number = ((new Date()).getTime() - mTime) / 1000;
+			var minutes:Number = Math.floor(timeSinceCreated / 60);
+			
+			if(minutes < 15) {
+				deleteButton.includeInLayout = true;
+				deleteButton.visible = true;
+				var seconds:Number = 60 - Math.floor(timeSinceCreated - (60 * minutes));
+				
+				if(seconds < 10) {
+					deleteButton.label = "Delete (" + (15-minutes) + ":0" + seconds + ")";	
+				} else {
+					deleteButton.label = "Delete (" + (15-minutes) + ":" + seconds + ")";
+				}
+			} else {
+				deleteButton.includeInLayout = false;
+				deleteButton.visible = false;
+				deleteUpdateTimer.stop();
+			}
+		}
+		
 		private function annotationMouseOver(e:MouseEvent):void {
 			trace("List Item Mouse Over", assetID);
 			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, true);
