@@ -8,7 +8,9 @@
 		<![CDATA[
 			import Controller.Dispatcher;
 			
-			import Model.AppModel; 
+			import Model.AppModel;
+			
+			import mx.controls.Alert; 
 			
 			//The mediaflux server address
 			//private var serverAddress:String = "localhost";
@@ -26,12 +28,21 @@
 			//Automatically logs on as manager
 			private var autoLogin:Boolean = false;
 			
+			public static const TIMEOUT_TIME_MIN = 29;
+			public static var securityLogoutTimer:Timer = new Timer(TIMEOUT_TIME_MIN * 60 * 1000);
+			
 			//Starts up the dispatcher
 			public function init():void {
 				Dispatcher.debug(useFPSMonitor,autoLogin);
 				Dispatcher.setServerDetails(serverAddress,serverPort);
 				Dispatcher.start(this);
 				stage.addEventListener(Event.RESIZE, onStageResize);
+				
+				securityLogoutTimer.addEventListener(TimerEvent.TIMER, function(e:TimerEvent):void {
+					Alert.show("Your session has expired. Please log in again to continue use.", "Expired Session (30 mins inactivity timeout)");
+					securityLogoutTimer.stop();
+					Dispatcher.dumpOut();
+				});
 			}
 			
 			//Fixes resize bugs

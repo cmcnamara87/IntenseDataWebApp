@@ -59,6 +59,14 @@ package Model.Utilities {
 		
 		// Sends a XML request off to mediaflux and catches errors in the process
 		public function sendRequest(req:XML, handler:Function):Object {
+			
+			// Resets the security timeout
+			// times out after 30 minutes (of inactivity)
+//			Recensio_Flex_Beta.securityLogoutTimer.reset();
+			Recensio_Flex_Beta.securityLogoutTimer.delay = Recensio_Flex_Beta.TIMEOUT_TIME_MIN * 60 * 1000;
+			Recensio_Flex_Beta.securityLogoutTimer.start();
+			
+			
 			var result:Object = new Object();
 			var request:URLRequest = new URLRequest(_mfServiceAddress);
 			request.contentType = "text/xml";
