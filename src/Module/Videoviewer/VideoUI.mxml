@@ -57,7 +57,7 @@
 				<mx:Image source="Assets/Template/volume.png" width="13" height="23" top="5"></mx:Image>
 				<s:HSlider id="volumeslider" minimum="0" maximum="100" value="100" width="100" liveDragging="true" height="22" />
 				<mx:Button label="Zoom" id="maxsizebutton" left="30" />
-				<mx:Button label="Fullscreen" id="fullscreenbutton" />
+				<mx:Button label="Fullscreen" id="fullscreenbutton" includeInLayout="false" visible="false"/>
 			</mx:HBox>
 		</mx:HBox>
 	</mx:VBox>

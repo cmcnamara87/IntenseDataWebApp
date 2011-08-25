@@ -305,6 +305,7 @@ package View
 			deleteAssetButton.enabled = true;
 			
 			if(mediaData && mediaData.base_asset_id == BrowserController.USERS_MANUAL_ASSET_ID) {
+				trace("**************************** YOYO", BrowserController.USERS_MANUAL_ASSET_ID);
 				deleteAssetButton.visible = false;
 				deleteAssetButton.includeInLayout = false;
 			}
