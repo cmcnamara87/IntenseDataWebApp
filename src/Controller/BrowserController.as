@@ -71,6 +71,8 @@ package Controller {
 		
 		public static var USERS_MANUAL_ASSET_ID:Number = 3691;
 		
+		public static var mediaIDHistoryArray:Array = new Array();
+		
 		//Calls the superclass
 		public function BrowserController() {
 			trace("--- Creating Browser Controller ---");
@@ -196,8 +198,6 @@ package Controller {
 			currentView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
 			currentView.addEventListener(IDEvent.COMMENT_EDITED, saveEditedComment);
 			currentView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
-			
-			
 			
 			// Listne for 'Sharing Changed' update to be pushed through from the view (in the sharing panel)
 			currentView.addEventListener(IDEvent.SHARING_CHANGED, sharingInfoChanged);
@@ -797,10 +797,12 @@ package Controller {
 			// Disable the shelf so its not on when we come back next time
 			this.setCollectionCreationMode(false);
 			
-			// TODO REMOVE THIS
 			var viewURL:String = "";
 			currentMediaData = e.data.assetData;
 			viewURL = 'view/' + e.data.assetData.base_asset_id;
+			// Start a new history chain
+			mediaIDHistoryArray = new Array();
+			// Go to the view
 			Dispatcher.call(viewURL);
 		}
 		

@@ -46,7 +46,7 @@ package Controller {
 		// My variables
 		private var mediaView:MediaView;	// The current view we are looking at - The Media View
 		private static var currentAssetID:Number = 0;		// The ID of the media asset we are viewing.
-		private var currentMediaData:Model_Media;
+		public static var currentMediaData:Model_Media;
 		
 		//Calls the superclass, sets the AssetID
 		public function MediaController() {
@@ -115,7 +115,7 @@ package Controller {
 			
 			// the browser controller knows which asset was clicked
 			// get the asset data from the browser, and use that to load this asset
-			this.currentMediaData = BrowserController.currentMediaData;
+			currentMediaData = BrowserController.currentMediaData;
 			
 			if(currentMediaData == null) {
 				trace("MediaController:loadMediaAsset - no media data saved!!! - Looking up currentAssetID" + currentAssetID);
@@ -371,7 +371,7 @@ package Controller {
 			
 			var media:Model_Media = AppModel.getInstance().extractMedia(data);
 			
-			this.currentMediaData = media;
+			currentMediaData = media;
 			
 			// Pass this data to the view.
 			mediaView.addMediaData(media);

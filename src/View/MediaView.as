@@ -466,7 +466,13 @@ package View
 				viewerAndPanels.removeElement(mediaViewer);
 				mediaViewer = null;
 			}
-			Dispatcher.call("browse");
+			if(BrowserController.mediaIDHistoryArray.length == 0) {
+				Dispatcher.call("browse");	
+			} else {
+				var previousMediaID:Number = BrowserController.mediaIDHistoryArray.pop();
+				trace("---------- GOING BACK TO", previousMediaID);
+				Dispatcher.call("view/" + previousMediaID);
+			}
 		}
 		
 		/**
