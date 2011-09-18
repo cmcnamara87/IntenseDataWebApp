@@ -4,11 +4,13 @@ package View.components.Panels.Comments
 	import Controller.Utilities.Auth;
 	
 	import Model.Model_Commentary;
+	import Model.Model_Media;
 	
 	import View.BrowserView;
 	import View.components.Panels.Panel;
 	import View.components.Toolbar;
 	
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.sampler.Sample;
 	import flash.utils.getQualifiedClassName;
@@ -32,6 +34,8 @@ package View.components.Panels.Comments
 		private var expanded:Boolean = false; // Whether or not the panel is expanded.
 		private var maxMinButton:Button;
 		private var addCommentButton:Button;
+		
+		private var editingCommentID:Number;
 		/**
 		 * The Comments Panel sits on the right side on the main asset browser 
 		 * and shows all the comments a specific collection has.
@@ -82,8 +86,16 @@ package View.components.Panels.Comments
 			// Testing this out TODO remove this
 			maxMinButton.addEventListener(MouseEvent.CLICK, maxMinButtonClicked);
 			closeButton.addEventListener(MouseEvent.CLICK, closeButtonClicked);
+			
+			// Listen for someone wanting to add a reference to a comment
+			// we have to save the ID of the current comment being edited, so when they give back the
+			// annotation to add, we know who to add it to
+			this.addEventListener(IDEvent.OPEN_REF_PANEL, function(e:IDEvent):void {
+				trace("CAUGHT open ref panel event", e.data.commentID);
+				editingCommentID = e.data.commentID;
+			});
 		}
-		
+//		
 		
 		override public function setUserAccess(modify:Boolean):void {
 			super.setUserAccess(modify);
@@ -164,6 +176,15 @@ package View.components.Panels.Comments
 			content.removeElement(newCommentObject);
 		}
 		
+		public function addReferenceTo(mediaData:Model_Media):void {
+			trace("title of added asset is", mediaData.meta_title);
+			var commentIndex:Number = this.getCommentIndexFromAssetID(editingCommentID);
+			trace("found", editingCommentID, "at", commentIndex); 
+			var comment:Comment = content.getElementAt(commentIndex) as Comment;
+			comment.addReference(mediaData.base_asset_id, mediaData.meta_title);
+			
+		}
+		
 		/* =========== EVENT LISTENER FUNCTIONS =================== */
 		private function addCommentButtonClicked(e:MouseEvent):void {
 			// If there is a current new comment, already being displayed, remove it
@@ -203,6 +224,7 @@ package View.components.Panels.Comments
 
 		
 		private function commentReplyButtonClicked(e:IDEvent):void {
+			trace("okay so this is working");
 //			trace("Caught Reply Button Clicked");
 			// If there is a current new comment, already being displayed, remove it
 			// and add anotehr one (so we dont have like, 3 new comments in a row being displayed)

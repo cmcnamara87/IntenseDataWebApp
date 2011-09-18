@@ -8,6 +8,7 @@ package View
 	import View.components.AssetBrowser.AssetBrowser;
 	import View.components.AssetBrowser.AssetBrowserToolbar;
 	import View.components.CollectionList.CollectionList;
+	import View.components.GoodBorderContainer;
 	import View.components.Panels.Comments.CommentsPanel;
 	import View.components.Panels.Comments.NewComment;
 	import View.components.Panels.Panel;
@@ -22,14 +23,17 @@ package View
 	
 	import spark.components.BorderContainer;
 	import spark.components.HGroup;
+	import spark.components.Label;
+	import spark.components.Scroller;
 	import spark.components.VGroup;
 	import spark.effects.Resize;
+	import spark.layouts.HorizontalAlign;
 	import spark.layouts.HorizontalLayout;
 	import spark.layouts.VerticalLayout;
 	
 	public class BrowserView extends BorderContainer
 	{		
-		public static const TOOLBARHEIGHT:Number = 50; // the height of all toolbars in the browser view
+		public static const TOOLBARHEIGHT:Number = 40; // the height of all toolbars in the browser view
 		private var myCollectionList:CollectionList; // Displays the list of collections
 		private var myAssetBrowser:AssetBrowser; // Displays all the assets for the collection
 		private var myShelf:Shelf; // Is...the shelf where you can put assets
@@ -123,6 +127,38 @@ package View
 			mySharingPanel.hide();
 			myAssetBrowserAndPanels.addElement(mySharingPanel);
 			
+			var myMediaLinkPanel:GoodBorderContainer = new GoodBorderContainer(0xAAAAAA, 1);
+			myMediaLinkPanel.percentWidth = 100;
+			myMediaLinkPanel.height = 160;
+//			myMediaLinkPanel.height = 0;
+			test.addElement(myMediaLinkPanel);
+			
+			var scrollTest:Scroller = new Scroller();
+			scrollTest.percentHeight = 100;
+			scrollTest.percentWidth = 100;
+			myMediaLinkPanel.addElement(scrollTest);
+			
+			var mediaLinkPanelContents:HGroup = new HGroup();
+			mediaLinkPanelContents.gap = 0;
+			scrollTest.viewport = mediaLinkPanelContents;
+			
+			// Lets make a panel so we can stick all the media in it, and keep it centered
+			var somePanel:VGroup = new VGroup();
+			somePanel.horizontalAlign = HorizontalAlign.CENTER;
+			somePanel.percentWidth = 100;
+			mediaLinkPanelContents.addElement(somePanel);
+			
+			var innerHGroup:HGroup = new HGroup();
+			somePanel.addElement(innerHGroup);
+			
+			var label:Label = new Label();
+			label.text = "yo yo yo yo yo yo";
+			innerHGroup.addElement(label);
+//			for each(var something:Model_Media in BrowserController.currentCollectionAssets) {
+//				var tile:AssetTile = new AssetTile(something, IDEvent.ASSET_ADD_AS_REF);
+//				innerHGroup.addElement(tile);
+//			}
+				
 			// Listen for Comments Button being clicked (done in here, 
 			// instead of the controller, cause it doesnt really need to save stuff like it does
 			// with the shelf).

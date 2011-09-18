@@ -12,6 +12,8 @@ package View
 	import Module.PDFViewer.PDFViewer;
 	import Module.Videoviewer.Videoview;
 	
+	import View.components.AssetTile.AssetTile;
+	import View.components.GoodBorderContainer;
 	import View.components.IDButton;
 	import View.components.IDGUI;
 	import View.components.MediaViewer.AudioViewer;
@@ -24,17 +26,21 @@ package View
 	import View.components.Panels.Comments.CommentsPanel;
 	import View.components.Panels.Comments.NewComment;
 	import View.components.Panels.EditDetails.EditDetailsPanel;
+	import View.components.Panels.MediaLinkPanel;
 	import View.components.Panels.Panel;
 	import View.components.Panels.People.PeoplePanel;
 	import View.components.Panels.Sharing.SharingPanel;
 	import View.components.Toolbar;
 	
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
+	import flash.text.TextField;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.controls.Text;
 	import mx.effects.Resize;
 	import mx.events.CloseEvent;
 	import mx.events.ItemClickEvent;
@@ -49,8 +55,11 @@ package View
 	import spark.components.Group;
 	import spark.components.HGroup;
 	import spark.components.Label;
+	import spark.components.Scroller;
 	import spark.components.VGroup;
 	import spark.events.IndexChangeEvent;
+	import spark.layouts.HorizontalAlign;
+	import spark.layouts.HorizontalLayout;
 	import spark.layouts.VerticalLayout;
 	import spark.primitives.Line;
 
@@ -61,6 +70,7 @@ package View
 		private var myEditPanel:EditDetailsPanel; // The temporary edit panel
 		private var myAnnotationListPanel:AnnotationListPanel;
 		private var myPeoplePanel:PeoplePanel;
+		private var myMediaLinkPanel:MediaLinkPanel;
 		
 		private var mediaViewer:MediaViewer;
 		private var mediaData:Model_Media;	// The Media's Meta-data
@@ -193,6 +203,10 @@ package View
 			// Create the Panels
 			this.addPanels(viewerAndPanels);
 			
+			myMediaLinkPanel = new MediaLinkPanel();
+			myMediaLinkPanel.addMedia(BrowserController.currentCollectionAssets);
+			this.addElement(myMediaLinkPanel);
+			
 			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
 				this.hideButtonsForPureAssetView();	
 			}
@@ -212,6 +226,20 @@ package View
 			downloadButton.addEventListener(MouseEvent.CLICK, downloadButtonClicked);
 			
 			viewsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
+			
+			
+			// Asset Ref Code
+			this.addEventListener(IDEvent.OPEN_REF_PANEL, function(e:Event):void {
+				myMediaLinkPanel.show();
+			});
+			
+			this.addEventListener(IDEvent.ASSET_ADD_AS_REF, function(e:IDEvent):void {
+				myCommentsPanel.addReferenceTo(e.data.assetData);
+			})
+			
+			this.addEventListener(IDEvent.COMMENT_EDITED, function(e:IDEvent):void {
+				myMediaLinkPanel.hide();
+			});
 		}
 		
 		
@@ -572,6 +600,7 @@ package View
 			myCommentsPanel.visible = false;
 			viewerAndPanels.addElement(myCommentsPanel);
 		}
+		
 		
 		
 		/**

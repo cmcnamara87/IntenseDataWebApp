@@ -888,16 +888,22 @@ package Model {
 				return;
 			}
 			
+			AppModel.getInstance().editComment(assetID, "Comment Removed");
+			
+		}
+		
+		public function editComment(commentID:Number, commentText:String):void {
 			var args:Object = new Object();
 			var baseXML:XML = _connection.packageRequest('asset.set', args, true);
-			baseXML.service.args["id"] = assetID;
-			baseXML.service.args["meta"]["r_annotation"]["text"] = "Comment Removed";
+			baseXML.service.args["id"] = commentID;
+			baseXML.service.args["meta"]["r_annotation"]["text"] = commentText;
 			
 			if(_connection.sendRequest(baseXML,null)) {
 				//All good
 			} else {
 				Alert.show("Could not delete comment");
 			}
+			
 		}
 		
 		// Debug callback for functions which do not have their own callback

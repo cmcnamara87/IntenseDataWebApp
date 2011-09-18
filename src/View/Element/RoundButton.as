@@ -26,7 +26,7 @@ package View.Element {
 		private var padding:Number = 30;
 		
 		private var buttonIcon:Sprite; // the image for the button icon
-		private var buttonIconSize:Number = 22; // default 10px overwritten in @see drawImage()
+		private var buttonIconSize:Number = 15; // default 10px overwritten in @see drawImage()
 		
 		public function RoundButton() {
 			super();
@@ -42,7 +42,7 @@ package View.Element {
 		override protected function draw():void {
 			drawBackground();
 			buttonTextField.x = 0-this.width/2;
-			buttonTextField.y = 0-13;
+			buttonTextField.y = 0-9;
 			buttonTextField.backgroundColor = 0xFF0000;
 			buttonTextField.width = this.width;
 			buttonTextField.height = this.height;
@@ -59,7 +59,7 @@ package View.Element {
 			buttonTextFormat.color = 0x333333;
 			buttonTextField.selectable = false;
 			buttonTextField.mouseEnabled = false;
-			buttonTextFormat.size = 18;
+			buttonTextFormat.size = 14;
 			buttonTextFormat.bold = true;
 			buttonTextField.defaultTextFormat = buttonTextFormat;
 			buttonTextField.embedFonts = true;
@@ -120,25 +120,25 @@ package View.Element {
 				icon = AssetLookup.getButtonImage('profile'); // chooses the image based on button label
 			}
 			
-			if(icon != null) {
-				// Create new one
-				var buttonIconPadding:Number = 10;
-
-				buttonIcon = new Sprite();
-				//buttonIcon.y = (this.height - buttonIconSize)/2;
-				buttonIcon.x = 0 - (this.width/2) + buttonIconPadding;
-				buttonIcon.y = 0 - (buttonIconSize/2);
-				//buttonIcon.x = 10;
-				
-				buttonIcon.graphics.beginBitmapFill(icon);
-				buttonIcon.graphics.drawRect(0,0,buttonIconSize,buttonIconSize);
-				this.addChild(buttonIcon);
-				
-				// Move the text over
-				var buttonWidthPlusPadding:Number = buttonIconPadding + buttonIconSize; // no padding on the right, since text is centered
-				buttonTextField.x = 0-this.width/2 + buttonWidthPlusPadding;
-				buttonTextField.width = this.width - buttonWidthPlusPadding;
-			}
+//			if(icon != null) {
+//				// Create new one
+//				var buttonIconPadding:Number = 10;
+//
+//				buttonIcon = new Sprite();
+//				//buttonIcon.y = (this.height - buttonIconSize)/2;
+//				buttonIcon.x = 0 - (this.width/2) + buttonIconPadding;
+//				buttonIcon.y = 0 - (buttonIconSize/2);
+//				//buttonIcon.x = 10;
+//				
+//				buttonIcon.graphics.beginBitmapFill(icon);
+//				buttonIcon.graphics.drawRect(0,0,buttonIconSize,buttonIconSize);
+//				this.addChild(buttonIcon);
+//				
+//				// Move the text over
+//				var buttonWidthPlusPadding:Number = buttonIconPadding + buttonIconSize; // no padding on the right, since text is centered
+//				buttonTextField.x = 0-this.width/2 + buttonWidthPlusPadding;
+//				buttonTextField.width = this.width - buttonWidthPlusPadding;
+//			}
 		}
 	}
 }

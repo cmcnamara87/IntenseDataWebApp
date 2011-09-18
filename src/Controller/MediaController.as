@@ -83,6 +83,7 @@ package Controller {
 			// Listen for "Save Comment" button being clicked.
 			mediaView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
 			mediaView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
+			mediaView.addEventListener(IDEvent.COMMENT_EDITED, saveEditedComment);
 			
 			// Listen for 'Save Sharing' autosave
 			mediaView.addEventListener(IDEvent.SHARING_CHANGED, sharingInfoChanged);
@@ -190,6 +191,9 @@ package Controller {
 			AppModel.getInstance().deleteComment(e.data.assetID);
 		}
 		
+		private function saveEditedComment(e:IDEvent):void {
+			AppModel.getInstance().editComment(e.data.commentID, e.data.commentText);
+		}
 		
 		/**
 		 * Changes the Sharing information for a collection.

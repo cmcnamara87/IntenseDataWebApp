@@ -8,6 +8,13 @@ package View.components
 	
 	import spark.components.Group;
 	
+	/**
+	 * So its basically what a border container is, but it can be any size, not just the weird size that the border
+	 * container by default is set to, its like, a min of 112px tall and wide. so this doesnt have that, it just uses
+	 * a group, and redraws it 
+	 * @author cmcnamara87
+	 * 
+	 */
 	public class GoodBorderContainer extends Group
 	{
 		private var backgroundColor:uint;

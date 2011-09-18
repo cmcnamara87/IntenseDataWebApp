@@ -18,6 +18,7 @@ package View.components.Panels.AnnotationList
 	import mx.containers.Canvas;
 	import mx.controls.Alert;
 	import mx.controls.Image;
+	import mx.controls.Text;
 	import mx.events.CloseEvent;
 	import mx.graphics.SolidColorStroke;
 	
@@ -93,7 +94,7 @@ package View.components.Panels.AnnotationList
 				annotationTypeLabel.setStyle('fontWeight', 'bold');
 				usernameAndIcon.addElement(annotationTypeLabel);
 			}
-			var comment:spark.components.Label = new spark.components.Label();
+			var comment:Text = new Text();
 			comment.text = annotationText;
 			comment.percentWidth = 100;
 			this.addElement(comment);

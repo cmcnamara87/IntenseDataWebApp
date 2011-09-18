@@ -106,10 +106,12 @@ package Model.Utilities {
 			var params:URLVariables = new URLVariables();
 			params.request = req;
 			var request:URLRequest = new URLRequest(_mfServiceAddress);
+//			var request:URLRequest = new URLRequest("http://localhost:8888/savepost.php");
 			request.method = URLRequestMethod.POST;
 			request.data = params;
 			try {
 				trace("$$$$$"+req);
+				trace("####" + request);
 				file.addEventListener(IOErrorEvent.IO_ERROR,loadError);
 				file.upload(request);
 				result.success = true;

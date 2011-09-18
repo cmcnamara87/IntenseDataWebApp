@@ -105,7 +105,8 @@ package Controller {
 		
 		// Called when the user manually switches URLs
 		private static function URLChanged(e:IDEvent):void {
-			Dispatcher.call(Router.getInstance().getURL());
+			//Dispatcher.call(Router.getInstance().getURL());
+			Dispatcher.call(Router.getInstance().getURLFragment());
 		}
 		
 		// Loads a new controller
@@ -114,6 +115,13 @@ package Controller {
 				Auth.getInstance().setRedirectURL(url);
 				url = "login";
 			}
+			
+			if(Router.getInstance().getURL() == "go") {
+				BrowserController.currentMediaData = null;
+				var argArray:Array = Router.getInstance().getArgs();
+				url = "view/" + argArray[0];
+			}
+			trace("CALLED WITH URL", url);
 			Router.getInstance().setURL(url);
 			url = Router.getInstance().getURL();
 			loadController(Router.getInstance().getController(url));

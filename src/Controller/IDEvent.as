@@ -4,6 +4,11 @@ package Controller {
 	
 	import mx.messaging.channels.StreamingAMFChannel;
 	
+	/**
+	 * All the custom events
+	 * @author cmcnamara87
+	 * 
+	 */
 	public class IDEvent extends Event {
 		
 		//Stores data being sent with a RecensioEvent
@@ -54,6 +59,9 @@ package Controller {
 			public static var COMMENT_REPLY:String = "recensio_CommentReply";
 			// Comment delete button clicked
 			public static var COMMENT_DELETE:String = "recensio_commentDelete";
+			// Comment was edited and saved
+			public static var COMMENT_EDITED:String = "id_commentEdited";
+			
 			
 			// When the user is changed in user manager section
 			public static var USER_CHANGED:String = 'recensio_userChanged';
@@ -134,6 +142,10 @@ package Controller {
 			// Called when a user sets the end of an annotation
 			public static var ANNOTATION_END_SET:String = "recensio_annotationEndSet";
 		
+			public static var OPEN_REF_PANEL:String = "id_asdfasdadsfopenRefPanel";
+			public static var CLOSE_REF_PANEL:String = "id_closeRefPanel";
+			
+			public static var ASSET_ADD_AS_REF:String = "id_assetAddAsRef";
 			// The PDF has loaded and finished being displayed on screen
 			public static var MEDIA_LOADED:String = "id_pdfLoaded"; 
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {

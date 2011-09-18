@@ -90,6 +90,11 @@ package Controller.Utilities {
 			return theURL;
 		}
 		
+		public function getURLFragment():String {
+			return _bm.fragment;
+		}
+		
+		
 		// Get the Arguments in the URL
 		public function getArgs():Array {
 			var urlArray:Array = _bm.fragment.split("/");

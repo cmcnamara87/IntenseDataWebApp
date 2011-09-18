@@ -148,7 +148,7 @@ package Controller {
 		}
 		
 		private function refreshCollectionList(e:TimerEvent):void {
-			trace("Refreshing collection list");
+//			trace("Refreshing collection list");
 			//loadAllMyCollections();
 		}
 		

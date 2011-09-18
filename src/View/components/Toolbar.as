@@ -21,7 +21,10 @@ package View.components
 			var myFill:LinearGradient = new LinearGradient();
 			myFill.rotation = 90;
 			var myFillColor:GradientEntry = new GradientEntry(0xEEEEEE);
+//			var myFillColor:GradientEntry = new GradientEntry(0x333333);
+//			var myFillColor1:GradientEntry = new GradientEntry(0x111111);
 			var myFillColor1:GradientEntry = new GradientEntry(0xDDDDDD);
+			
 			myFill.entries=[myFillColor, myFillColor1];
 			this.backgroundFill = myFill;
 			
@@ -30,7 +33,7 @@ package View.components
 			
 			// Setup the size
 			this.percentWidth = 100;
-			this.height = BrowserView.TOOLBARHEIGHT;
+			this.height = 45;//BrowserView.TOOLBARHEIGHT;
 			
 			// Setup the layout
 			myLayout = new HorizontalLayout();
@@ -38,8 +41,8 @@ package View.components
 			myLayout.gap = 5;
 			myLayout.paddingLeft = 10;
 			myLayout.paddingRight = 10;
-			myLayout.paddingTop = 10;
-			myLayout.paddingBottom = 10;
+			myLayout.paddingTop = 7;
+			myLayout.paddingBottom = 7;
 			this.layout = myLayout;
 		}
 		

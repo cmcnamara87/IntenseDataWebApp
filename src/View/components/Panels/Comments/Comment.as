@@ -6,8 +6,11 @@ package View.components.Panels.Comments
 	import Controller.Utilities.Auth;
 	
 	import View.Layout;
+	import View.components.IDButton;
+	import View.components.IDGUI;
 	import View.components.PanelElement;
 	
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
@@ -16,7 +19,10 @@ package View.components.Panels.Comments
 	
 	import mx.containers.Canvas;
 	import mx.controls.Alert;
+	import mx.controls.Text;
+	import mx.controls.TextArea;
 	import mx.core.UIComponent;
+	import mx.effects.effectClasses.AddRemoveEffectTargetFilter;
 	import mx.events.CloseEvent;
 	import mx.graphics.SolidColor;
 	import mx.graphics.SolidColorStroke;
@@ -37,9 +43,15 @@ package View.components.Panels.Comments
 		private var creator:String;
 		private var commentText:String;
 		private var deleteButton:Button;
+		private var addReferenceButton:Button;
 		private var mtime:Number;
 		private var deleteUpdateTimer:Timer;
-		private var comment:Label;
+//		private var comment:Label;
+		private var comment:Text;
+		private var newComment:TextArea;
+		private var saveButton:IDButton;
+		
+		private var editMode:Boolean = false;
 		
 		/**
 		 * Creates a comment gui item	 
@@ -55,6 +67,7 @@ package View.components.Panels.Comments
 			super();
 
 			this.assetID = assetID;
+			trace("comment created with asset id", assetID);
 			this.reply = reply;
 			this.creator = creator;
 			this.commentText = commentText;
@@ -65,6 +78,12 @@ package View.components.Panels.Comments
 			
 			// Setup layout
 			this.gap = 0;
+			
+			render();
+		}
+		
+		private function render():void {
+			this.removeAllElements();
 			
 			// Create a new HGroup for the 'reply bump' and the Username+comment
 			var myHGroup:HGroup = new HGroup();
@@ -93,7 +112,7 @@ package View.components.Panels.Comments
 			usernameAndComment.paddingBottom = 10;
 			myHGroup.addElement(usernameAndComment);
 			
-			var username:spark.components.Label = new spark.components.Label();
+			var username:Text = new Text();
 			// Get the Capitalised first letter of hte username (should be persons name, but whatever)
 			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1)
 			username.percentWidth = 100;
@@ -101,14 +120,60 @@ package View.components.Panels.Comments
 			username.setStyle('fontWeight', 'bold');
 			usernameAndComment.addElement(username);
 			
-			comment = new spark.components.Label();
-			comment.text = commentText;
-			comment.percentWidth = 100;
-			usernameAndComment.addElement(comment);
-			if(commentText == "Comment Removed") {
-				comment.setStyle("fontStyle", "italic");
+			if(editMode == true) {
+				trace("rendering in edit mode");
+				newComment = new TextArea();
+				newComment.percentWidth = 100;
+				newComment.height = 100;
+				newComment.text = commentText;
+				usernameAndComment.addElement(newComment);
+			} else {
+				trace("rendering in regular mode");
+	//			comment = new spark.components.Label();
+				comment = new Text();
+				
+				var newCommentText:String = commentText;
+				var startRefLocation:Number = newCommentText.indexOf("{");
+				while(startRefLocation != -1) {
+					trace("{ found at", startRefLocation);
+					var endRefLocation:Number = newCommentText.indexOf("}", startRefLocation);
+						
+					if(endRefLocation == -1) {
+						break;	
+					}
+					
+					trace("} found at", endRefLocation);
+					
+					var colonLocation:Number = newCommentText.indexOf(":", startRefLocation);
+					
+					if(colonLocation == -1) {
+						break;
+					}
+					
+					trace(": found at", colonLocation);
+					
+					// we have everything we need
+					var refAssetID:String = newCommentText.substring(colonLocation + 1, endRefLocation);
+					var mediaTitle:String = newCommentText.substring(startRefLocation + 1, colonLocation);
+					
+					
+					trace("ref ID", refAssetID);
+					trace("mediaTitle", mediaTitle);
+					
+					// for tomorrow, get out the length of the first part, after the </a> is put in, and start seraching from there
+					var replacementString = "<font color='#0000FF'><a href='#go/" + refAssetID + "'>" + mediaTitle + "</a></font>";
+					newCommentText = newCommentText.substring(0, startRefLocation) + replacementString + newCommentText.substring(endRefLocation + 1);
+				
+					startRefLocation = newCommentText.indexOf("{", startRefLocation + replacementString);
+				}
+				comment.htmlText = newCommentText;
+				comment.percentWidth = 100;
+				usernameAndComment.addElement(comment);
+				if(commentText == "Comment Removed") {
+					comment.setStyle("fontStyle", "italic");
+				}
 			}
-			
+				
 			// Create a HGroup for the buttons
 			var buttonHGroup:HGroup 	= new HGroup();
 			buttonHGroup.percentWidth 	= 100;
@@ -118,60 +183,95 @@ package View.components.Panels.Comments
 			buttonHGroup.paddingRight 	= 5;
 			usernameAndComment.addElement(buttonHGroup);
 			
-			// Create the reply button
-			var replyButton:Button 		= new Button();
-			replyButton.percentHeight 	= 100;
-			replyButton.percentWidth 	= 100;
-			replyButton.label 			= "Reply";
-			if(!reply) {
-				// Only add the button, if this isnt a reply
-				// You cant reply to a reply.
-				buttonHGroup.addElement(replyButton);
-			}
-			
-			// If the current user is the author of this comment
-			// then add an Edit and a Delete button
-			if(creator == Auth.getInstance().getUsername() || Auth.getInstance().isSysAdmin()) {
-				// Create the Edit Button
-				// DEPRECATED THE EDIT BUTTON
-				var editButton:Button 		= new Button();
-				editButton.percentHeight	= 100;
-				editButton.percentWidth 	= 100;
-				editButton.label			= "Edit";
-				buttonHGroup.addElement(editButton);
-				editButton.visible = false;
-				editButton.includeInLayout = false;
+			if(editMode == true) {
+				saveButton = new IDButton("Save");
+				saveButton.percentWidth = 100;
+				buttonHGroup.addElement(saveButton);
+
+				saveButton.addEventListener(MouseEvent.CLICK, saveButtonClicked);
 				
-				// Create a Delete button
-				trace("Is sys-admin?", Auth.getInstance().isSysAdmin());
+				var cancelButton:Button = new IDButton("Cancel");
+				cancelButton.percentWidth = 100;
+				buttonHGroup.addElement(cancelButton);
+				cancelButton.addEventListener(MouseEvent.CLICK, function(e:Event) {
+					editMode = false;
+					render();
+				});
 				
-				if(commentText != "Comment Removed" || Auth.getInstance().isSysAdmin()) {
-					deleteButton		= new Button();
-					deleteButton.percentHeight 	= 100;
-					deleteButton.percentWidth	= 100;
-					deleteButton.label			= "Delete";
-					buttonHGroup.addElement(deleteButton);
-					
-					if(!Auth.getInstance().isSysAdmin()) {
-						// Not the sys admin, put the timer on the delete button
-						deleteUpdateTimer = new Timer(1000);
-						deleteUpdateTimer.addEventListener(TimerEvent.TIMER, updateDeleteButtonTime);
-						deleteUpdateTimer.start();
-					}
+			} else {
+				// Create the reply button
+				var replyButton:Button 		= new Button();
+				replyButton.percentHeight 	= 100;
+				replyButton.percentWidth 	= 100;
+				replyButton.label 			= "Reply";
+				if(!reply) {
+					// Only add the button, if this isnt a reply
+					// You cant reply to a reply.
+					buttonHGroup.addElement(replyButton);
 				}
-			}
-			
-			// Add a horizontal rule at the bottom of the comment
-			var hLine:Line = new Line();
-			hLine.percentWidth = 100;
-			hLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
-			this.addElement(hLine);
+				
+				// If the current user is the author of this comment
+				// then add an Edit and a Delete button
+				if(creator == Auth.getInstance().getUsername() || Auth.getInstance().isSysAdmin()) {
+					// Create the Edit Button
+					// DEPRECATED THE EDIT BUTTON
+					var editButton:Button 		= new Button();
+					editButton.percentHeight	= 100;
+					editButton.percentWidth 	= 100;
+					editButton.label			= "Edit";
+					buttonHGroup.addElement(editButton);
+					editButton.visible = false;
+					editButton.includeInLayout = false;
+					
+					// Create a Delete button
+					trace("Is sys-admin?", Auth.getInstance().isSysAdmin());
+					
+					if(commentText != "Comment Removed" || Auth.getInstance().isSysAdmin()) {
+						deleteButton		= new Button();
+						deleteButton.percentHeight 	= 100;
+						deleteButton.percentWidth	= 100;
+						deleteButton.label			= "Delete";
+						buttonHGroup.addElement(deleteButton);
+						
+						if(!Auth.getInstance().isSysAdmin()) {
+							// Not the sys admin, put the timer on the delete button
+							deleteUpdateTimer = new Timer(1000);
+							deleteUpdateTimer.addEventListener(TimerEvent.TIMER, updateDeleteButtonTime);
+							deleteUpdateTimer.start();
+						}
+					}
+					
+					addReferenceButton = new Button();
+					addReferenceButton.percentHeight = 100;
+					addReferenceButton.percentWidth = 100;
+					addReferenceButton.label = "Add Ref";
+					buttonHGroup.addElement(addReferenceButton);
+				}
+				
+				// Add a horizontal rule at the bottom of the comment
+				var hLine:Line = new Line();
+				hLine.percentWidth = 100;
+				hLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
+				this.addElement(hLine);
 			
 			
 			/* ============ EVENT LISTENERS ================= */
-			replyButton.addEventListener(MouseEvent.CLICK, replyButtonClicked);
-			if(deleteButton) {
-				deleteButton.addEventListener(MouseEvent.CLICK, deleteButtonClicked);
+			
+				replyButton.addEventListener(MouseEvent.CLICK, replyButtonClicked);
+				if(addReferenceButton) {
+					addReferenceButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+						var addReferenceEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL, true);
+						addReferenceEvent.data.commentID = assetID;
+						trace("dispatching event with data", assetID);
+						dispatchEvent(addReferenceEvent);
+						
+						editMode = true;
+						render();
+					});
+				}
+				if(deleteButton) {
+					deleteButton.addEventListener(MouseEvent.CLICK, deleteButtonClicked);
+				}
 			}
 		}
 		
@@ -195,6 +295,19 @@ package View.components.Panels.Comments
 		}
 		
 		/* ============ EVENT LISTENER FUNCTIONS ===================== */
+		
+		private function saveButtonClicked(e:MouseEvent):void {
+//			var myEvent:IDEvent = new
+			trace("save button clicked");
+			editMode = false;
+			commentText = newComment.text;
+			render();
+			
+			var myEvent:IDEvent = new IDEvent(IDEvent.COMMENT_EDITED, true);
+			myEvent.data.commentID = assetID;
+			myEvent.data.commentText = commentText;
+			this.dispatchEvent(myEvent);
+		}
 		/**
 		 * Called when reply button is clicked. Stores this comment, and sends it to @see CommentsPanel
 		 * @param e	The click event.
@@ -233,6 +346,10 @@ package View.components.Panels.Comments
 //				this.visible = false;
 //				this.height = 0;
 			}
+		}
+		
+		public function addReference(refAssetID:Number, refMediaTitle:String):void {
+			newComment.text = newComment.text.substring(0, newComment.selectionBeginIndex) + "{" + refMediaTitle + ":" + refAssetID + "}" + newComment.text.substring(newComment.selectionEndIndex); 
 		}
 		
 		/* GETTERS/SETTERS */
