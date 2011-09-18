@@ -104,7 +104,6 @@ package Module.Videoviewer {
 			if(BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
 				// Only listen, if we arent looking at an original asset
 				_screen.getOverlay().addEventListener(MouseEvent.MOUSE_DOWN, annotationCreationBegin);
-				
 			}
 			
 			trace('overlay size ', _screen.getOverlay().width, _screen.getOverlay().height);

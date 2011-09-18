@@ -26,7 +26,7 @@ package Module.AudioViewer
 		private function setupGraphics():void {
 			var padding:int = 6;
 			annotationTextField.htmlText = IDGUI.getLinkHTML(theAnnotation.text);
-			annotationTextField.selectable = false;
+			annotationTextField.selectable = true;
 			annotationTextField.autoSize = TextFieldAutoSize.LEFT;
 			annotationTextFormat.color = theAnnotation._annotationColour;
 			annotationTextFormat.font = "Arial";

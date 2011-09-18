@@ -202,8 +202,10 @@ package Module.Videoviewer {
 		
 		private function setupVideoGraphics():void {
 			_videoGraphic.addChild(_videoGraphicOverlay);
-			_videoGraphic.addChild(_videoGraphicTextContainer);
 			_videoGraphicTextContainer.addChild(_videoGraphicTextField);
+			_videoGraphic.addChild(_videoGraphicTextContainer);
+			
+			
 			_timelineGraphic.addEventListener(MouseEvent.MOUSE_OVER,graphicMouseOver);
 			_timelineGraphic.addEventListener(MouseEvent.MOUSE_OUT,graphicMouseOut);
 			_timelineGraphic.addEventListener(MouseEvent.MOUSE_UP,annotationClick);
@@ -214,7 +216,7 @@ package Module.Videoviewer {
 			_videoGraphicTextFormat.size = 16;
 			_videoGraphicTextFormat.font = "Arial";
 			_videoGraphicTextField.setTextFormat(_videoGraphicTextFormat);
-			_videoGraphicTextField.selectable = false;
+			_videoGraphicTextField.selectable = true;
 			_videoGraphicTextField.autoSize = TextFieldAutoSize.LEFT;
 			_videoGraphicTextField.height = _videoGraphicTextField.textHeight;
 			_videoGraphicTextField.width = _videoGraphicTextField.textWidth + 20;
