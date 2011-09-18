@@ -1,5 +1,6 @@
 package View.components.Annotation
 {
+	import mx.controls.Text;
 	import mx.graphics.SolidColor;
 	
 	import spark.components.BorderContainer;
@@ -10,7 +11,7 @@ package View.components.Annotation
 	public class AnnotationTextOverlayBox extends BorderContainer
 	{
 		private var annotationCreator:Label;
-		private var annotationText:Label;
+		private var annotationText:Text;
 		private var annotationTextInput:TextArea;
 		
 		private var editMode:Boolean = false; 	// When True, the text is not show, and an
@@ -48,7 +49,7 @@ package View.components.Annotation
 			this.addElement(annotationCreator);
 			
 			// Add Content label
-			annotationText = new Label();
+			annotationText = new Text();
 			annotationText.setStyle('color', 0xFFFFFF);
 			annotationText.percentWidth = 100;
 			annotationText.text = "";
@@ -104,7 +105,42 @@ package View.components.Annotation
 		 * 
 		 */		
 		public function setText(text:String):void {
-			annotationText.text = text;
+			var newCommentText:String = text;
+			var startRefLocation:Number = newCommentText.indexOf("{");
+			while(startRefLocation != -1) {
+				trace("{ found at", startRefLocation);
+				var endRefLocation:Number = newCommentText.indexOf("}", startRefLocation);
+				
+				if(endRefLocation == -1) {
+					break;	
+				}
+				
+				trace("} found at", endRefLocation);
+				
+				var colonLocation:Number = newCommentText.indexOf(":", startRefLocation);
+				
+				if(colonLocation == -1) {
+					break;
+				}
+				
+				trace(": found at", colonLocation);
+				
+				// we have everything we need
+				var refAssetID:String = newCommentText.substring(colonLocation + 1, endRefLocation);
+				var mediaTitle:String = newCommentText.substring(startRefLocation + 1, colonLocation);
+				
+				
+				trace("ref ID", refAssetID);
+				trace("mediaTitle", mediaTitle);
+				
+				// for tomorrow, get out the length of the first part, after the </a> is put in, and start seraching from there
+				var replacementString = "(" + mediaTitle + ")";
+				newCommentText = newCommentText.substring(0, startRefLocation) + replacementString + newCommentText.substring(endRefLocation + 1);
+				
+				startRefLocation = newCommentText.indexOf("{", startRefLocation + replacementString);
+			}
+			annotationText.htmlText = newCommentText;
+//			annotationText.text = text;
 		}
 		
 		public function getText():String {

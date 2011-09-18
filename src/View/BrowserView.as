@@ -11,6 +11,7 @@ package View
 	import View.components.GoodBorderContainer;
 	import View.components.Panels.Comments.CommentsPanel;
 	import View.components.Panels.Comments.NewComment;
+	import View.components.Panels.MediaLinkPanel;
 	import View.components.Panels.Panel;
 	import View.components.Panels.Sharing.SharingPanel;
 	import View.components.Shelf;
@@ -42,6 +43,7 @@ package View
 		private var myAssetBrowserToolbar:AssetBrowserToolbar;
 		private var otherVGroup:VGroup;
 		private var commentCount:Number = 0;
+		private var myMediaLinkPanel:MediaLinkPanel;
 		
 		public function BrowserView()
 		{
@@ -55,20 +57,30 @@ package View
 			this.backgroundFill = new SolidColor(0xFFFFFF);
 			this.borderStroke = new SolidColorStroke(0xEEEEEE,1,0);
 			
-			// Set the layout to be a horizontal layout.
-			var myLayout:HorizontalLayout = new HorizontalLayout();
-			myLayout.gap = 0;
-			this.layout = myLayout;
+			var verticalBox:VGroup = new VGroup();
+			verticalBox.percentHeight = 100;
+			verticalBox.percentWidth = 100;
+			verticalBox.gap = 0;
+			this.addElement(verticalBox);
+			
+			var horizontalBox:HGroup = new HGroup();
+			horizontalBox.percentHeight = 100;
+			horizontalBox.percentWidth = 100;
+			horizontalBox.gap = 0;
+			verticalBox.addElement(horizontalBox);
+			
+			myMediaLinkPanel = new MediaLinkPanel();
+			verticalBox.addElement(myMediaLinkPanel);
 
 			// Lets add the Collection List
 			myCollectionList = new CollectionList();
-			this.addElement(myCollectionList);
+			horizontalBox.addElement(myCollectionList);
 			
 			var test:VGroup = new VGroup();
 			test.percentHeight = 100;
 			test.percentWidth = 100;
 			test.gap = 0;
-			this.addElement(test);
+			horizontalBox.addElement(test);
 			
 			// Add the Shelf
 			myShelf = new Shelf();
@@ -126,38 +138,6 @@ package View
 			mySharingPanel = new SharingPanel();
 			mySharingPanel.hide();
 			myAssetBrowserAndPanels.addElement(mySharingPanel);
-			
-			var myMediaLinkPanel:GoodBorderContainer = new GoodBorderContainer(0xAAAAAA, 1);
-			myMediaLinkPanel.percentWidth = 100;
-			myMediaLinkPanel.height = 160;
-//			myMediaLinkPanel.height = 0;
-			test.addElement(myMediaLinkPanel);
-			
-			var scrollTest:Scroller = new Scroller();
-			scrollTest.percentHeight = 100;
-			scrollTest.percentWidth = 100;
-			myMediaLinkPanel.addElement(scrollTest);
-			
-			var mediaLinkPanelContents:HGroup = new HGroup();
-			mediaLinkPanelContents.gap = 0;
-			scrollTest.viewport = mediaLinkPanelContents;
-			
-			// Lets make a panel so we can stick all the media in it, and keep it centered
-			var somePanel:VGroup = new VGroup();
-			somePanel.horizontalAlign = HorizontalAlign.CENTER;
-			somePanel.percentWidth = 100;
-			mediaLinkPanelContents.addElement(somePanel);
-			
-			var innerHGroup:HGroup = new HGroup();
-			somePanel.addElement(innerHGroup);
-			
-			var label:Label = new Label();
-			label.text = "yo yo yo yo yo yo";
-			innerHGroup.addElement(label);
-//			for each(var something:Model_Media in BrowserController.currentCollectionAssets) {
-//				var tile:AssetTile = new AssetTile(something, IDEvent.ASSET_ADD_AS_REF);
-//				innerHGroup.addElement(tile);
-//			}
 				
 			// Listen for Comments Button being clicked (done in here, 
 			// instead of the controller, cause it doesnt really need to save stuff like it does
@@ -166,6 +146,24 @@ package View
 			this.addEventListener(IDEvent.SHARE_BUTTON_CLICKED, shareButtonClicked);
 			// Listen for Search Term Entry
 			this.addEventListener(IDEvent.LIVE_SEARCH, searchTermEntered);
+			
+			// Asset Ref Code
+			this.addEventListener(IDEvent.OPEN_REF_PANEL, function(e:IDEvent):void {
+				myMediaLinkPanel.show();
+			});
+			
+			this.addEventListener(IDEvent.CLOSE_REF_PANEL, function(e:IDEvent):void {
+				myMediaLinkPanel.hide();
+			});
+			
+			this.addEventListener(IDEvent.ASSET_ADD_AS_REF_COMMENT, function(e:IDEvent):void {
+				myCommentsPanel.addReferenceTo(e.data.assetData);
+			})
+			
+			this.addEventListener(IDEvent.COMMENT_EDITED, function(e:IDEvent):void {
+				myMediaLinkPanel.hide();
+			});
+			
 		}
 		
 		/**
@@ -185,6 +183,8 @@ package View
 		public function addMediaAssets(assetArray:Array):void {
 			myCollectionList.hideAllLoadingAnimations();
 			myAssetBrowser.addMediaAssets(assetArray);
+			myMediaLinkPanel.hide();
+			myMediaLinkPanel.addMedia(assetArray);
 		}
 		
 		

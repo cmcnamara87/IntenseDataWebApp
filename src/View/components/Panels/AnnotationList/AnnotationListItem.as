@@ -6,6 +6,7 @@ package View.components.Panels.AnnotationList
 	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
 	
+	import View.components.IDButton;
 	import View.components.PanelElement;
 	
 	import flash.events.Event;
@@ -19,6 +20,7 @@ package View.components.Panels.AnnotationList
 	import mx.controls.Alert;
 	import mx.controls.Image;
 	import mx.controls.Text;
+	import mx.controls.TextArea;
 	import mx.events.CloseEvent;
 	import mx.graphics.SolidColorStroke;
 	
@@ -36,9 +38,11 @@ package View.components.Panels.AnnotationList
 		private var deleteButton:Button; // The delete button on the annotation
 		private var annotationText:String;
 		private var creator:String;
+		private var annotationType:String
 		private var mTime:Number;
 		private var deleteUpdateTimer:Timer;
-		
+		private var editMode:Boolean = false;
+		private var newComment:TextArea;
 		/**
 		 * Creates a comment 
 		 * @param assetID		The ID of the comment in the database
@@ -49,9 +53,11 @@ package View.components.Panels.AnnotationList
 		 */		
 		public function AnnotationListItem(assetID:Number, creator:String, mTime:Number, annotationType:String, annotationText:String)
 		{
+			
 			super();
 			this.assetID = assetID;
 			this.annotationText = annotationText;
+			this.annotationType = annotationType;
 			this.creator = creator;
 			this.mTime = mTime;
 			
@@ -68,13 +74,19 @@ package View.components.Panels.AnnotationList
 			this.paddingTop = 10;
 			this.paddingBottom = 10;
 			
+			render();
+			
+		}
+		
+		private function render() {
+			this.removeAllElements();
+			
 			var usernameAndIcon:HGroup = new HGroup();
 			usernameAndIcon.percentWidth = 100;
 			this.addElement(usernameAndIcon);
 			
 			var username:spark.components.Label = new spark.components.Label();
 			// Get the Capitalised first letter of hte username (should be persons name, but whatever)
-			
 			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1);
 			username.percentWidth = 100;
 			username.setStyle('color', 0x1F65A2);
@@ -94,10 +106,57 @@ package View.components.Panels.AnnotationList
 				annotationTypeLabel.setStyle('fontWeight', 'bold');
 				usernameAndIcon.addElement(annotationTypeLabel);
 			}
-			var comment:Text = new Text();
-			comment.text = annotationText;
-			comment.percentWidth = 100;
-			this.addElement(comment);
+			
+			if(editMode) {
+				trace("edit mode is on");
+				newComment = new TextArea();
+				newComment.percentWidth = 100;
+				newComment.height = 100;
+				newComment.text = annotationText;
+				this.addElement(newComment);
+			} else {
+				trace('edit mode is off');
+				var comment:Text = new Text();
+				
+				var newCommentText:String = annotationText;
+				var startRefLocation:Number = newCommentText.indexOf("{");
+				while(startRefLocation != -1) {
+					trace("{ found at", startRefLocation);
+					var endRefLocation:Number = newCommentText.indexOf("}", startRefLocation);
+					
+					if(endRefLocation == -1) {
+						break;	
+					}
+					
+					trace("} found at", endRefLocation);
+					
+					var colonLocation:Number = newCommentText.indexOf(":", startRefLocation);
+					
+					if(colonLocation == -1) {
+						break;
+					}
+					
+					trace(": found at", colonLocation);
+					
+					// we have everything we need
+					var refAssetID:String = newCommentText.substring(colonLocation + 1, endRefLocation);
+					var mediaTitle:String = newCommentText.substring(startRefLocation + 1, colonLocation);
+					
+					
+					trace("ref ID", refAssetID);
+					trace("mediaTitle", mediaTitle);
+					
+					// for tomorrow, get out the length of the first part, after the </a> is put in, and start seraching from there
+					var replacementString = "(<font color='#0000FF'><a href='#go/" + refAssetID + "'>" + mediaTitle + "</a></font>)";
+					newCommentText = newCommentText.substring(0, startRefLocation) + replacementString + newCommentText.substring(endRefLocation + 1);
+					
+					startRefLocation = newCommentText.indexOf("{", startRefLocation + replacementString);
+				}
+			
+				comment.htmlText = newCommentText;
+				comment.percentWidth = 100;
+				this.addElement(comment);
+			}
 			
 			// Create a HGroup for the buttons
 			var buttonHGroup:HGroup 	= new HGroup();
@@ -108,37 +167,74 @@ package View.components.Panels.AnnotationList
 			buttonHGroup.paddingRight 	= 5;
 			this.addElement(buttonHGroup);
 			
-			// If the current user is the author of this annotation
-			// Or if the current user is a sys-admin
-			// then add an Edit and a Delete button
-			if(creator == Auth.getInstance().getUsername() || Auth.getInstance().isSysAdmin()) {
-//				// Create the Edit Button
-//				var editButton:Button 		= new Button();
-//				editButton.percentHeight	= 100;
-//				editButton.percentWidth 	= 100;
-//				editButton.label			= "Edit";
-//				buttonHGroup.addElement(editButton);
-//				
-//				// Create a Delete button
-				trace("Creating delete button");
-				deleteButton		= new Button();
-				deleteButton.percentHeight 	= 100;
-				deleteButton.percentWidth	= 100;
-				deleteButton.label			= "Delete";
-				buttonHGroup.addElement(deleteButton);
-				
-				deleteButton.addEventListener(MouseEvent.CLICK, deleteButtonClicked);
-				
-				if(!Auth.getInstance().isSysAdmin()) {
-					// Not the system admin, so put the timer on the delete button
-					deleteButton.visible = false;
-					deleteButton.includeInLayout = false;
+			if(editMode) {
+				var saveButton:IDButton = new IDButton("Save");
+				buttonHGroup.addElement(saveButton);
+				saveButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+					editMode = false;
+					annotationText = newComment.text;
+					render();
 					
-					deleteUpdateTimer = new Timer(1000);
-					deleteUpdateTimer.addEventListener(TimerEvent.TIMER, updateDeleteButtonTime);
-					deleteUpdateTimer.start();
+					var myEvent:IDEvent = new IDEvent(IDEvent.COMMENT_EDITED, true);
+					myEvent.data.commentID = assetID;
+					myEvent.data.commentText = annotationText;
+					dispatchEvent(myEvent);
+				});
+				
+				var cancelButton:IDButton = new IDButton("Cancel");
+				buttonHGroup.addElement(cancelButton);
+				cancelButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+					editMode = false;	
+					render();
+					
+					var addReferenceEvent:IDEvent = new IDEvent(IDEvent.CLOSE_REF_PANEL, true);
+					dispatchEvent(addReferenceEvent);
+				});
+				
+			} else {
+				// If the current user is the author of this annotation
+				// Or if the current user is a sys-admin
+				// then add an Edit and a Delete button
+				if(creator == Auth.getInstance().getUsername() || Auth.getInstance().isSysAdmin()) {
+	//				// Create the Edit Button
+	//				var editButton:Button 		= new Button();
+	//				editButton.percentHeight	= 100;
+	//				editButton.percentWidth 	= 100;
+	//				editButton.label			= "Edit";
+	//				buttonHGroup.addElement(editButton);
+	//				
+	//				// Create a Delete button
+					trace("Creating delete button");
+					deleteButton		= new Button();
+					deleteButton.percentHeight 	= 100;
+					deleteButton.percentWidth	= 100;
+					deleteButton.label			= "Delete";
+					buttonHGroup.addElement(deleteButton);
+					
+					deleteButton.addEventListener(MouseEvent.CLICK, deleteButtonClicked);
+					
+					if(!Auth.getInstance().isSysAdmin()) {
+						// Not the system admin, so put the timer on the delete button
+						deleteButton.visible = false;
+						deleteButton.includeInLayout = false;
+						
+						deleteUpdateTimer = new Timer(1000);
+						deleteUpdateTimer.addEventListener(TimerEvent.TIMER, updateDeleteButtonTime);
+						deleteUpdateTimer.start();
+					}
 				}
 				
+				var addRefButton:IDButton = new IDButton("Add Ref");
+				addRefButton.percentWidth = 100;
+				buttonHGroup.addElement(addRefButton);
+				addRefButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+					var addRefEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL, true);
+					addRefEvent.data.commentID = assetID;
+					addRefEvent.data.type = "annotation";
+					dispatchEvent(addRefEvent);
+					editMode = true;
+					render();
+				});
 			}
 			
 			// Add a horizontal rule at the bottom of the comment
@@ -154,6 +250,11 @@ package View.components.Panels.AnnotationList
 			
 			
 		}
+		
+		public function addReference(refAssetID:Number, refMediaTitle:String):void {
+			newComment.text = newComment.text.substring(0, newComment.selectionBeginIndex) + "{" + refMediaTitle + ":" + refAssetID + "}" + newComment.text.substring(newComment.selectionEndIndex); 
+		}
+		
 		
 		/* ============ EVENT LISTENER FUNCTIONS ===================== */
 		private function updateDeleteButtonTime(e:TimerEvent):void {

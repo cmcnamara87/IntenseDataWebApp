@@ -145,7 +145,8 @@ package Controller {
 			public static var OPEN_REF_PANEL:String = "id_asdfasdadsfopenRefPanel";
 			public static var CLOSE_REF_PANEL:String = "id_closeRefPanel";
 			
-			public static var ASSET_ADD_AS_REF:String = "id_assetAddAsRef";
+			public static var ASSET_ADD_AS_REF_COMMENT:String = "id_assetAddAsRef";
+			public static var ASSET_ADD_AS_REF_ANNOTATION:String = "id_assetAddAsRefAnnotation";
 			// The PDF has loaded and finished being displayed on screen
 			public static var MEDIA_LOADED:String = "id_pdfLoaded"; 
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {

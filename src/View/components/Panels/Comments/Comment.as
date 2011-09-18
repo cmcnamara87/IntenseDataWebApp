@@ -161,7 +161,7 @@ package View.components.Panels.Comments
 					trace("mediaTitle", mediaTitle);
 					
 					// for tomorrow, get out the length of the first part, after the </a> is put in, and start seraching from there
-					var replacementString = "<font color='#0000FF'><a href='#go/" + refAssetID + "'>" + mediaTitle + "</a></font>";
+					var replacementString = "(<font color='#0000FF'><a href='#go/" + refAssetID + "'>" + mediaTitle + "</a></font>)";
 					newCommentText = newCommentText.substring(0, startRefLocation) + replacementString + newCommentText.substring(endRefLocation + 1);
 				
 					startRefLocation = newCommentText.indexOf("{", startRefLocation + replacementString);
@@ -196,6 +196,9 @@ package View.components.Panels.Comments
 				cancelButton.addEventListener(MouseEvent.CLICK, function(e:Event) {
 					editMode = false;
 					render();
+					
+					var addReferenceEvent:IDEvent = new IDEvent(IDEvent.CLOSE_REF_PANEL, true);
+					dispatchEvent(addReferenceEvent);
 				});
 				
 			} else {
@@ -262,6 +265,7 @@ package View.components.Panels.Comments
 					addReferenceButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
 						var addReferenceEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL, true);
 						addReferenceEvent.data.commentID = assetID;
+						addReferenceEvent.data.type = "comment";
 						trace("dispatching event with data", assetID);
 						dispatchEvent(addReferenceEvent);
 						

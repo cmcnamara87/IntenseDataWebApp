@@ -6,8 +6,16 @@
 		 >
 	<fx:Script>
 		<![CDATA[
+			import Controller.Dispatcher;
 			[Embed(source="Assets/Template/header_logo_id_2.png")] 
 			[Bindable] private var logo:Class;
+
+			protected function image1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				Dispatcher.call('browse');
+			}
+
 		]]>
 	</fx:Script>
 	<!--<mx:HBox id='headerbackground' width="100%" height="44" backgroundColor="0x336699">-->
@@ -15,7 +23,7 @@
 		<!--<Element:BackgroundImage id="background"></Element:BackgroundImage>-->
 		<s:Group>
 			<!-- The logo -->
-			<mx:Image source="{logo}" width="169" height="20" top="17" left="30"></mx:Image>
+			<mx:Image buttonMode="true" click="image1_clickHandler(event)" source="{logo}" width="169" height="20" top="17" left="30"></mx:Image>
 		</s:Group>
 		<s:Group width="100%">
 			<!-- Logout Button -->

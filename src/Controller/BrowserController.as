@@ -194,7 +194,7 @@ package Controller {
 			
 			// Listen for "Save Comment" button being clicked.
 			currentView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
-			
+			currentView.addEventListener(IDEvent.COMMENT_EDITED, saveEditedComment);
 			currentView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
 			
 			
@@ -1007,6 +1007,10 @@ package Controller {
 			
 			AppModel.getInstance().saveNewComment(	e.data.commentText, currentCollectionID, e.data.replyingToID,
 													e.data.newCommentObject, commentSaved);
+		}
+		
+		private function saveEditedComment(e:IDEvent):void {
+			AppModel.getInstance().editComment(e.data.commentID, e.data.commentText);
 		}
 		
 		/**

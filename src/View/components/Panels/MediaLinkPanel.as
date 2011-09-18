@@ -19,7 +19,7 @@ package View.components.Panels
 		
 		public function MediaLinkPanel()
 		{
-			super(0xDDDDDD, 1, 0x000000, 2);
+			super(0xDDDDDD, 1, 0x555555, 1);
 			this.percentWidth = 100;
 			this.height = 0;
 			
@@ -49,7 +49,7 @@ package View.components.Panels
 		
 		public function addMedia(modelMediaArray:Array):void {
 			for each(var something:Model_Media in modelMediaArray) {
-				var tile:AssetTile = new AssetTile(something, IDEvent.ASSET_ADD_AS_REF);
+				var tile:AssetTile = new AssetTile(something, IDEvent.ASSET_ADD_AS_REF_COMMENT);
 				contents.addElement(tile);
 			}
 		

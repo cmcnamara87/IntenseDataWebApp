@@ -4,8 +4,10 @@ package View.components.Panels.AnnotationList
 	import Controller.Utilities.Auth;
 	
 	import Model.Model_Commentary;
+	import Model.Model_Media;
 	
 	import View.BrowserView;
+	import View.components.Annotation.Annotation;
 	import View.components.Panels.Comments.Comment;
 	import View.components.Panels.Comments.NewComment;
 	import View.components.Panels.Panel;
@@ -31,6 +33,8 @@ package View.components.Panels.AnnotationList
 		private var expanded:Boolean = false; // Whether or not the panel is expanded.
 		
 		private var maxMinButton:Button;
+		
+		private var editingAnnotationID:Number;
 		
 		/**
 		 * The Annotations Panel sits on the right side on the media viewer
@@ -61,6 +65,28 @@ package View.components.Panels.AnnotationList
 			// Event Listenrs
 			maxMinButton.addEventListener(MouseEvent.CLICK, maxMinButtonClicked);
 			closeButton.addEventListener(MouseEvent.CLICK, closeButtonClicked);
+			
+			this.addEventListener(IDEvent.OPEN_REF_PANEL, function(e:IDEvent):void {
+				trace("CAUGHT open ref panel event", e.data.commentID);
+				editingAnnotationID = e.data.commentID;
+			});
+		}
+		
+		public function addReferenceTo(mediaData:Model_Media):void {
+			trace("title of added asset is", mediaData.meta_title);
+			for(var i = 0; i < content.numElements; i++) {
+				var annotation:AnnotationListItem = content.getElementAt(i) as AnnotationListItem;
+				if(editingAnnotationID == annotation.getID()) {
+					annotation.addReference(mediaData.base_asset_id, mediaData.meta_title);
+					return;
+				}
+			}
+			trace("media not found");
+//			var commentIndex:Number = this.getCommentIndexFromAssetID(editingCommentID);
+//			trace("found", editingCommentID, "at", commentIndex); 
+//			var comment:Comment = content.getElementAt(commentIndex) as Comment;
+//			comment.addReference(mediaData.base_asset_id, mediaData.meta_title);
+			
 		}
 		
 		/**

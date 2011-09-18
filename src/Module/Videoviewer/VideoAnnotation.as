@@ -3,6 +3,8 @@ package Module.Videoviewer {
 	import Model.Model_Commentary;
 	import Model.Model_Media;
 	
+	import View.components.IDGUI;
+	
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
@@ -206,7 +208,8 @@ package Module.Videoviewer {
 			_timelineGraphic.addEventListener(MouseEvent.MOUSE_OUT,graphicMouseOut);
 			_timelineGraphic.addEventListener(MouseEvent.MOUSE_UP,annotationClick);
 			_timelineGraphic.mouseChildren = false;
-			_videoGraphicTextField.text = _data.text;
+//			_videoGraphicTextField.text = _data.text;
+			_videoGraphicTextField.htmlText = IDGUI.getLinkHTML(_data.text);
 			_videoGraphicTextFormat.align = TextFormatAlign.CENTER;
 			_videoGraphicTextFormat.size = 16;
 			_videoGraphicTextFormat.font = "Arial";
