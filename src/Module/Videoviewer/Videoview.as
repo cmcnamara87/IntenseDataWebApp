@@ -103,7 +103,7 @@ package Module.Videoviewer {
 			// Listening for MouseDown/Up to create annotations
 			if(BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
 				// Only listen, if we arent looking at an original asset
-				_screen.getOverlay().addEventListener(MouseEvent.MOUSE_DOWN,annotationCreationBegin);
+				_screen.getOverlay().addEventListener(MouseEvent.MOUSE_DOWN, annotationCreationBegin);
 				
 			}
 			

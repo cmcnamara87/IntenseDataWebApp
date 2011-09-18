@@ -15,7 +15,7 @@ package View.components.Panels
 	public class MediaLinkPanel extends GoodBorderContainer
 	{
 		private var contents:HGroup;
-		private const EXPANDED_SIZE:Number = 160;
+		private const EXPANDED_SIZE:Number = 180;
 		
 		public function MediaLinkPanel()
 		{

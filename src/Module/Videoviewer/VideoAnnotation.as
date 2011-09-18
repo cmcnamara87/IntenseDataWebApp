@@ -201,9 +201,9 @@ package Module.Videoviewer {
 		}
 		
 		private function setupVideoGraphics():void {
+			_videoGraphic.addChild(_videoGraphicOverlay);
 			_videoGraphic.addChild(_videoGraphicTextContainer);
 			_videoGraphicTextContainer.addChild(_videoGraphicTextField);
-			_videoGraphic.addChild(_videoGraphicOverlay);
 			_timelineGraphic.addEventListener(MouseEvent.MOUSE_OVER,graphicMouseOver);
 			_timelineGraphic.addEventListener(MouseEvent.MOUSE_OUT,graphicMouseOut);
 			_timelineGraphic.addEventListener(MouseEvent.MOUSE_UP,annotationClick);

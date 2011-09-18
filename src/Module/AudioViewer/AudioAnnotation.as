@@ -4,6 +4,8 @@ package Module.AudioViewer
 	
 	import Model.Model_Commentary;
 	
+	import View.components.IDGUI;
+	
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;

@@ -1,5 +1,7 @@
 package Module.AudioViewer
 {
+	import View.components.IDGUI;
+	
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.media.*;
@@ -23,7 +25,7 @@ package Module.AudioViewer
 		
 		private function setupGraphics():void {
 			var padding:int = 6;
-			annotationTextField.text = theAnnotation.text;
+			annotationTextField.htmlText = IDGUI.getLinkHTML(theAnnotation.text);
 			annotationTextField.selectable = false;
 			annotationTextField.autoSize = TextFieldAutoSize.LEFT;
 			annotationTextFormat.color = theAnnotation._annotationColour;
