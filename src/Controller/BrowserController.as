@@ -28,7 +28,7 @@ package Controller {
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
 	
-	public class BrowserController extends AppController {
+	public class BrowserController extends CollabController {
 		
 		
 		public static const PORTAL:String = "Discussion";

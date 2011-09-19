@@ -31,7 +31,7 @@ package Controller {
 	
 	import spark.components.Group;
 	
-	public class MediaController extends AppController {
+	public class MediaController extends CollabController {
 		
 		
 //		private var assetData:Model_Media;
