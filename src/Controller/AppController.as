@@ -38,9 +38,9 @@ package Controller {
 					layout.header.logoutButton.visible = showLogoutButton;
 					layout.header.logoutButton.addEventListener(MouseEvent.MOUSE_UP,logoutClicked);
 					layout.header.profileButton.visible = showLogoutButton;
-					layout.header.profileButton.setText(Auth.getInstance().getUsername(),true);
+					layout.header.profileButton.label = Auth.getInstance().getUsername();
 					layout.header.profileButton.visible = showLogoutButton;
-					layout.header.profileButton.setText(Auth.getInstance().getUsername(),true);
+					layout.header.profileButton.label = Auth.getInstance().getUsername();
 					layout.header.profileButton.addEventListener(MouseEvent.MOUSE_UP,profileClicked);
 				}
 			}

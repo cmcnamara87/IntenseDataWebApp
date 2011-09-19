@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" 
-		 xmlns:Element="View.Element.*"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%"
+		 xmlns:Element="View.Element.*" 
+		 xmlns:ID="View.components.*"
 		 >
 	<fx:Script>
 		<![CDATA[
@@ -21,14 +22,23 @@
 	<mx:HBox id='headerbackground' width="100%" height="44" backgroundColor="0x336699">
 	<!--<mx:HBox id='headerbackground' width="100%" height="44" backgroundColor="0x333333> -->
 		<!--<Element:BackgroundImage id="background"></Element:BackgroundImage>-->
-		<s:Group>
+		<!-- Add in the logo group -->
+		<s:HGroup width="100%" height="100%" verticalAlign="middle" paddingLeft="10">
 			<!-- The logo -->
-			<mx:Image buttonMode="true" click="image1_clickHandler(event)" source="{logo}" width="169" height="20" top="17" left="30"></mx:Image>
-		</s:Group>
-		<s:Group width="100%">
+			<mx:Image buttonMode="true" click="image1_clickHandler(event)" source="{logo}" width="169" height="20"></mx:Image>
+		</s:HGroup>
+		<!-- Add in the button group -->
+		<s:HGroup height="100%" paddingTop="5" paddingBottom="5" paddingRight="20">
 			<!-- Logout Button -->
-			<Element:RoundButton id="logoutButton" width="101" height="22" top="21" right="-10" text="Logout" visible="false" toolTip="Log out of the system"></Element:RoundButton>
-			<Element:RoundButton id="profileButton" width="80" height="22" top="21" right="90" text="Profile" visible="false" toolTip="Edit your profile"></Element:RoundButton>
-		</s:Group>
+			<s:Button id="notificationButton" height="100%" label="Notifications (0)" visible="true" toolTip="Notifications">
+			</s:Button>
+			<s:Button id="profileButton" height="100%" label="Username (Profile)" visible="false" toolTip="Go to your Profile Page">
+			</s:Button>
+			<s:Button id="logoutButton" height="100%" label="Logout" visible="false" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
+			</s:Button>
+			
+			<!--<Element:RoundButton id="logoutButton" width="101" height="22" top="21" right="-10" text="Logout" visible="false" toolTip="Log out of the system"></Element:RoundButton>-->
+			<!--<Element:RoundButton id="profileButton" width="80" height="22" top="21" right="90" text="Profile" visible="false" toolTip="Edit your profile"></Element:RoundButton>-->
+		</s:HGroup>
 	</mx:HBox>
 </mx:Canvas>

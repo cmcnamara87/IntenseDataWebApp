@@ -13,6 +13,8 @@
 			import mx.controls.Alert; 
 			
 			//The mediaflux server address
+			public static const NAME:String = "Intense Data";
+			
 			public static const QUT_IP:String = '131.181.184.223';
 			public static const ID_SERVER:String = '123.100.147.12';
 			public static var serverAddress:String = ID_SERVER;
