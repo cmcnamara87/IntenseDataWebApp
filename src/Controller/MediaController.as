@@ -208,7 +208,7 @@ package Controller {
 		 */				
 		private function sharingInfoChanged(e:IDEvent):void {
 			
-			super.removeLogoutListener();
+//			super.removeLogoutListener();
 			
 			var username:String = e.data.username;
 			var access:String = e.data.access;
@@ -464,7 +464,7 @@ package Controller {
 		 * 
 		 */		
 		private function sharingInfoUpdated(e:Event):void {
-			super.addLogoutListener();
+//			super.addLogoutListener();
 			// Get out the returned data
 			var data:XML = XML(e.target.data);
 			

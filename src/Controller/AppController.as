@@ -1,6 +1,8 @@
 package Controller {
 	import Controller.Utilities.Auth;
 	
+	import Model.AppModel;
+	
 	import View.Layout;
 	
 	import flash.display.DisplayObject;
@@ -11,7 +13,9 @@ package Controller {
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.setTimeout;
 	
+	import mx.controls.Alert;
 	import mx.core.UIComponent;
+	import mx.events.FlexEvent;
 	
 	import spark.components.Group;
 	
@@ -28,32 +32,58 @@ package Controller {
 		public function AppController() {
 			setLogoutButton();
 			loadView();
+			
+			layout.addEventListener(FlexEvent.CREATION_COMPLETE, function(e:FlexEvent):void {
+				// The layout has finished drawing
+				// Setup Event Listeners
+				setupEventListeners();
+			});
+			
+			// TODO whatever
+			layout.content.addEventListener(FlexEvent.CONTENT_CREATION_COMPLETE, function(e:FlexEvent):void {
+				setupButtons();
+			});
+			
 			super();
 		}
+		
+		private static function setupEventListeners():void {
+			layout.header.logoutButton.addEventListener(MouseEvent.CLICK, logoutButtonClicked);
+			layout.header.notificationButton.addEventListener(MouseEvent.CLICK, notificationButtonClicked);
+			layout.header.profileButton.addEventListener(MouseEvent.MOUSE_UP,profileButtonClicked);
+		}
+		
+		
+		private static function logoutButtonClicked(e:MouseEvent):void {
+			trace("Logout button clicked");
+			Dispatcher.logout();
+		}
+		private static function notificationButtonClicked(e:MouseEvent):void {
+			trace("Notification button clicked");
+			layout.notificationBox.visible = !layout.notificationBox.visible;
+		}
+		private static function profileButtonClicked(e:MouseEvent):void {
+			trace("Profile button clicked");
+			Dispatcher.call("profile");
+		}
+		
+		private static function setupButtons():void {
+			// Listen for notification button being clicked
+			trace("set up buttons!!!**************");
+			layout.header.globalButtonGroup.visible = true;
+			layout.header.profileButton.label = "Profile (" + Auth.getInstance().getUsername() + ")";
+			
+			// Get all notifications
+		}
+		
 		
 		//Whether the logout button is shown or not
 		protected function setLogoutButton():void {
 			if(layout) {
 				if(layout.header.logoutButton) {
-					layout.header.logoutButton.visible = showLogoutButton;
-					layout.header.logoutButton.addEventListener(MouseEvent.MOUSE_UP,logoutClicked);
-					layout.header.profileButton.visible = showLogoutButton;
-					layout.header.profileButton.label = Auth.getInstance().getUsername();
-					layout.header.profileButton.visible = showLogoutButton;
-					layout.header.profileButton.label = Auth.getInstance().getUsername();
-					layout.header.profileButton.addEventListener(MouseEvent.MOUSE_UP,profileClicked);
+					setupButtons();
 				}
 			}
-		}
-		
-		//Calls the logout method
-		private function logoutClicked(e:MouseEvent):void {
-			Dispatcher.logout();
-		}
-		
-		//Calls the profile controller
-		private function profileClicked(e:MouseEvent):void {
-			Dispatcher.call("profile");
 		}
 		
 		//Loads the view set by the controller
@@ -65,38 +95,38 @@ package Controller {
 			}
 		}
 		
-		protected function removeLogoutListener():void {
-			if(layout) {
-				if(layout.header.logoutButton) {
-					if(layout.header.logoutButton.hasEventListener(MouseEvent.MOUSE_UP)) {
-						layout.header.logoutButton.alpha = 0.5;
-						layout.header.logoutButton.removeEventListener(MouseEvent.MOUSE_UP,logoutClicked);
-					}
-				}
-			}
-		}
+//		protected function removeLogoutListener():void {
+//			if(layout) {
+//				if(layout.header.logoutButton) {
+//					if(layout.header.logoutButton.hasEventListener(MouseEvent.MOUSE_UP)) {
+//						layout.header.logoutButton.alpha = 0.5;
+//						layout.header.logoutButton.removeEventListener(MouseEvent.MOUSE_UP,logoutClicked);
+//					}
+//				}
+//			}
+//		}
 		
-		protected function addLogoutListener():void {
-			if(layout) {
-				if(layout.header.logoutButton) {
-					layout.header.logoutButton.alpha = 1;
-					layout.header.logoutButton.addEventListener(MouseEvent.MOUSE_UP,logoutClicked);
-				}
-			}
-		}
+//		protected function addLogoutListener():void {
+//			if(layout) {
+//				if(layout.header.logoutButton) {
+//					layout.header.logoutButton.alpha = 1;
+//					layout.header.logoutButton.addEventListener(MouseEvent.MOUSE_UP,logoutClicked);
+//				}
+//			}
+//		}
 		
 		
 		//When the controller is destroyed/switched
 		public function dealloc():void {
 			if(layout) {
-				if(layout.header.logoutButton) {
-					if(layout.header.logoutButton.hasEventListener(MouseEvent.MOUSE_UP)) {
-						layout.header.logoutButton.removeEventListener(MouseEvent.MOUSE_UP,logoutClicked);
-					}
-					if(layout.header.profileButton.hasEventListener(MouseEvent.MOUSE_UP)) {
-						layout.header.profileButton.removeEventListener(MouseEvent.MOUSE_UP, profileClicked);
-					}
-				}
+//				if(layout.header.logoutButton) {
+//					if(layout.header.logoutButton.hasEventListener(MouseEvent.MOUSE_UP)) {
+//						layout.header.logoutButton.removeEventListener(MouseEvent.MOUSE_UP,logoutClicked);
+//					}
+//					if(layout.header.profileButton.hasEventListener(MouseEvent.MOUSE_UP)) {
+//						layout.header.profileButton.removeEventListener(MouseEvent.MOUSE_UP, profileClicked);
+//					}
+//				}
 				layout.content.removeAllElements();
 			}
 		}

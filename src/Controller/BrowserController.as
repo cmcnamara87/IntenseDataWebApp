@@ -556,7 +556,7 @@ package Controller {
 			// Sharing complete,
 			// enable the logout button
 //			layout.header.logoutButton.enabled = true;
-			super.addLogoutListener();
+//			super.addLogoutListener();
 			
 			// Get out the returned data
 			var data:XML = XML(e.target.data);
@@ -1043,7 +1043,7 @@ package Controller {
 			AppModel.getInstance().changeAccess(currentCollectionID, username, "system", access, true, sharingInfoUpdated);
 			
 			// DIsable the logout button, until the sharing is complete.
-			super.removeLogoutListener();
+//			super.removeLogoutListener();
 //			trace("********** LOGOUT BUTTON IS", layout.header.logoutButton.enabled);
 		}
 		

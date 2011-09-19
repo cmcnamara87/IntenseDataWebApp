@@ -5,6 +5,10 @@ package Controller
 		public function CollabController()
 		{
 			super();
+			
+		}
+		
+		private function setUpEventListeners():void {
 		}
 	}
 }

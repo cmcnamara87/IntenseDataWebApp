@@ -28,13 +28,13 @@
 			<mx:Image buttonMode="true" click="image1_clickHandler(event)" source="{logo}" width="169" height="20"></mx:Image>
 		</s:HGroup>
 		<!-- Add in the button group -->
-		<s:HGroup height="100%" paddingTop="5" paddingBottom="5" paddingRight="20">
+		<s:HGroup id="globalButtonGroup" visible="false" height="100%" paddingTop="5" paddingBottom="5" paddingRight="20">
 			<!-- Logout Button -->
-			<s:Button id="notificationButton" height="100%" label="Notifications (0)" visible="true" toolTip="Notifications">
+			<s:Button id="notificationButton" height="100%" label="Notifications (0)" toolTip="Notifications">
 			</s:Button>
-			<s:Button id="profileButton" height="100%" label="Username (Profile)" visible="false" toolTip="Go to your Profile Page">
+			<s:Button id="profileButton" height="100%" label="Username (Profile)" toolTip="Go to your Profile Page">
 			</s:Button>
-			<s:Button id="logoutButton" height="100%" label="Logout" visible="false" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
+			<s:Button id="logoutButton" height="100%" label="Logout" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
 			</s:Button>
 			
 			<!--<Element:RoundButton id="logoutButton" width="101" height="22" top="21" right="-10" text="Logout" visible="false" toolTip="Log out of the system"></Element:RoundButton>-->
