@@ -7,6 +7,7 @@ package View.components.Panels.AnnotationList
 	import Controller.Utilities.Auth;
 	
 	import View.components.IDButton;
+	import View.components.IDGUI;
 	import View.components.PanelElement;
 	
 	import flash.events.Event;
@@ -117,43 +118,7 @@ package View.components.Panels.AnnotationList
 			} else {
 				trace('edit mode is off');
 				var comment:Text = new Text();
-				
-				var newCommentText:String = annotationText;
-				var startRefLocation:Number = newCommentText.indexOf("{");
-				while(startRefLocation != -1) {
-					trace("{ found at", startRefLocation);
-					var endRefLocation:Number = newCommentText.indexOf("}", startRefLocation);
-					
-					if(endRefLocation == -1) {
-						break;	
-					}
-					
-					trace("} found at", endRefLocation);
-					
-					var colonLocation:Number = newCommentText.indexOf(":", startRefLocation);
-					
-					if(colonLocation == -1) {
-						break;
-					}
-					
-					trace(": found at", colonLocation);
-					
-					// we have everything we need
-					var refAssetID:String = newCommentText.substring(colonLocation + 1, endRefLocation);
-					var mediaTitle:String = newCommentText.substring(startRefLocation + 1, colonLocation);
-					
-					
-					trace("ref ID", refAssetID);
-					trace("mediaTitle", mediaTitle);
-					
-					// for tomorrow, get out the length of the first part, after the </a> is put in, and start seraching from there
-					var replacementString = "(<font color='#0000FF'><a href='#go/" + refAssetID + "'>" + mediaTitle + "</a></font>)";
-					newCommentText = newCommentText.substring(0, startRefLocation) + replacementString + newCommentText.substring(endRefLocation + 1);
-					
-					startRefLocation = newCommentText.indexOf("{", startRefLocation + replacementString);
-				}
-			
-				comment.htmlText = newCommentText;
+				comment.htmlText = IDGUI.getLinkHTML(annotationText);
 				comment.percentWidth = 100;
 				this.addElement(comment);
 			}
@@ -280,14 +245,14 @@ package View.components.Panels.AnnotationList
 		}
 		
 		private function annotationMouseOver(e:MouseEvent):void {
-			trace("List Item Mouse Over", assetID);
+//			trace("List Item Mouse Over", assetID);
 			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, true);
 			myEvent.data.assetID = assetID;
 			this.dispatchEvent(myEvent);
 		}
 		
 		private function annotationMouseOut(e:MouseEvent):void {
-			trace("List Item Mouse Out", assetID);
+//			trace("List Item Mouse Out", assetID);
 			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOUT, true);
 			myEvent.data.assetID = assetID;
 			this.dispatchEvent(myEvent);

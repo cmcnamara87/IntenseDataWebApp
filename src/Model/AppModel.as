@@ -892,13 +892,13 @@ package Model {
 			
 		}
 		
-		public function editComment(commentID:Number, commentText:String):void {
+		public function editComment(commentID:Number, commentText:String, callback:Function = null):void {
 			var args:Object = new Object();
 			var baseXML:XML = _connection.packageRequest('asset.set', args, true);
 			baseXML.service.args["id"] = commentID;
 			baseXML.service.args["meta"]["r_annotation"]["text"] = commentText;
 			
-			if(_connection.sendRequest(baseXML,null)) {
+			if(_connection.sendRequest(baseXML, callback)) {
 				//All good
 			} else {
 				Alert.show("Could not delete comment");

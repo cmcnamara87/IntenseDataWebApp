@@ -19,7 +19,7 @@ package View.components.Panels
 		
 		public function MediaLinkPanel()
 		{
-			super(0xDDDDDD, 1, 0x555555, 1);
+			super(0x333333, 1, 0x555555, 1);
 			this.percentWidth = 100;
 			this.height = 0;
 			
@@ -27,15 +27,19 @@ package View.components.Panels
 			scrollTest.percentHeight = 100;
 			scrollTest.percentWidth = 100;
 			this.addElement(scrollTest);
-//			
+			
 //			// Lets make a panel so we can stick all the media in it, and keep it centered
-//			var centeringGroup:VGroup = new VGroup();
-//			centeringGroup.horizontalAlign = HorizontalAlign.CENTER;
-//			centeringGroup.percentWidth = 100;
-//			scrollTest.viewport = centeringGroup;
+			var centeringGroup:VGroup = new VGroup();
+			centeringGroup.horizontalAlign = HorizontalAlign.CENTER;
+			centeringGroup.percentWidth = 100;
+			centeringGroup.percentHeight = 100;
 			
 			contents = new HGroup();
+			centeringGroup.addElement(contents);
+			
+			
 			scrollTest.viewport = contents;
+			
 //			this.addElement(contents);
 		}
 		
@@ -48,8 +52,9 @@ package View.components.Panels
 		}
 		
 		public function addMedia(modelMediaArray:Array):void {
+			contents.removeAllElements();
 			for each(var something:Model_Media in modelMediaArray) {
-				var tile:AssetTile = new AssetTile(something, IDEvent.ASSET_ADD_AS_REF_COMMENT);
+				var tile:AssetTile = new AssetTile(something, IDEvent.ASSET_ADD_AS_REF_COMMENT, "0xFFFFFF");
 				contents.addElement(tile);
 			}
 		

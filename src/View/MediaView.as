@@ -554,12 +554,12 @@ package View
 		}
 		
 		private function annotationListItemMouseOver(e:IDEvent):void {
-			trace("Caught List Item Mouseover");
+//			trace("Caught List Item Mouseover");
 			mediaViewer.highlightAnnotation(e.data.assetID);
 		}
 		
 		private function annotationListItemMouseOut(e:IDEvent):void {
-			trace("Caught List Item Mouseover");
+//			trace("Caught List Item Mouseover");
 			mediaViewer.unhighlightAnnotation(e.data.assetID);
 			
 		}

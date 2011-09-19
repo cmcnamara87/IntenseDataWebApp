@@ -321,6 +321,7 @@ package Module.Videoviewer {
 		}
 		
 		public function loadAnnotations(data:Array):void {
+			trace("************** LOADING THE ANNOTATIONS ********************");
 			_screen.clearOverlay();
 			_UI.timeline.addAnnotations(data,_screen.getOverlay());
 		}

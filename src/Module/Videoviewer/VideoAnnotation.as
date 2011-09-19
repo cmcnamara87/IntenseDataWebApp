@@ -20,12 +20,11 @@ package Module.Videoviewer {
 		
 		static private var annotationsArray:Array = new Array();
 		
-		static public function resetAnnotations():void {
-			trace("RESETTING ANNOTATIONS");
-			for(var i:Number=0; i<annotationsArray.length; i++) {
-				annotationsArray[i].destroyYourself();
+		static public function resetAnnotations(_videoAnnotations:Sprite = null):void {
+//			killAll = true;
+			while(annotationsArray.length > 0) {
+				(annotationsArray.pop() as VideoAnnotation).destroyYourself();
 			}
-			annotationsArray = new Array();
 		}
 		
 		static public function add(data:*,_interface:VideoTimeline,_annotationColor:uint=0x336699):VideoAnnotation {
@@ -77,6 +76,7 @@ package Module.Videoviewer {
 			var forceMaxedLevel:Number = 3;
 			var maxXLevel:Number = 1;
 			var doneAnnotations:Array = new Array();
+			
 			annotationsArray.sortOn("startTime",Array.NUMERIC);
 			for(var i:Number=0; i<annotationsArray.length; i++) {
 				var xLevel:Number = 1;
@@ -95,6 +95,7 @@ package Module.Videoviewer {
 				if(xLevel > maxXLevel) {
 					maxXLevel = xLevel;
 				}
+				
 				(annotationsArray[i] as VideoAnnotation).redrawGraphics(newTimelineWidth,duration,videoDimensions,xLevel);
 				
 				doneAnnotations.push(annotationsArray[i]);
@@ -126,6 +127,9 @@ package Module.Videoviewer {
 		private var textfieldPadding:Number = 4;
 		private var graphicHeight:Number = 10;
 		public var xLevel:Number = 1;
+		
+		private var fuckingOverlay:Sprite;
+		
 		
 		public function VideoAnnotation(data:*,_interface:VideoTimeline,annotationColor:uint) {
 			this._interface = _interface;
@@ -171,10 +175,13 @@ package Module.Videoviewer {
 		}
 		
 		public function addOverlay(screenOverlay:Sprite):void {
+			fuckingOverlay = screenOverlay;
 			screenOverlay.addChild(_videoGraphic);
 		}
 		
 		public function redrawGraphics(newTimelineWidth:Number,duration:Number,videoDimensions:Rectangle,_xLevel:Number=1):void {
+//			trace("**** REDRAWING ANNOTATIONS ****");
+
 			xLevel = _xLevel;
 			try {
 				var variablegraphicHeight:Number = graphicHeight*(xLevel);
@@ -211,7 +218,7 @@ package Module.Videoviewer {
 			_timelineGraphic.addEventListener(MouseEvent.MOUSE_UP,annotationClick);
 			_timelineGraphic.mouseChildren = false;
 //			_videoGraphicTextField.text = _data.text;
-			_videoGraphicTextField.htmlText = IDGUI.getLinkHTML(_data.text);
+			_videoGraphicTextField.htmlText = IDGUI.getLinkHTML(_data.text, "#000000");
 			_videoGraphicTextFormat.align = TextFormatAlign.CENTER;
 			_videoGraphicTextFormat.size = 16;
 			_videoGraphicTextFormat.font = "Arial";
@@ -273,6 +280,9 @@ package Module.Videoviewer {
 		}
 		
 		private function destroyYourself():void {
+			if(_videoGraphic.parent) {
+				_videoGraphic.parent.removeChild(_videoGraphic);
+			}
 			if(_timelineGraphic.parent) {
 				_timelineGraphic.parent.removeChild(_timelineGraphic);
 			}

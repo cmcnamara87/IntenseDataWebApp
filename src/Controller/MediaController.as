@@ -192,7 +192,9 @@ package Controller {
 		}
 		
 		private function saveEditedComment(e:IDEvent):void {
-			AppModel.getInstance().editComment(e.data.commentID, e.data.commentText);
+			AppModel.getInstance().editComment(e.data.commentID, e.data.commentText, function(e:Event):void {
+				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+			});
 		}
 		
 		/**

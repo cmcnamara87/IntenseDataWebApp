@@ -30,7 +30,7 @@ package Controller {
 		override public function init():void {
 			setupEventListeners();
 			if(quickLogin) {
-				Auth.getInstance().login("cmcnamara87","test");
+				Auth.getInstance().login("cmcnamara87","test1");
 			}
 		}
 		
@@ -46,7 +46,7 @@ package Controller {
 			if(!_authOverride) {
 				Auth.getInstance().login((view as Login).loginbox.usernameBox.getText(),(view as Login).loginbox.passwordBox.getText());
 			} else {
-				Auth.getInstance().login("manager","change_me");
+				Auth.getInstance().login("cmcnamara87","test1");
 			}
 		}
 		

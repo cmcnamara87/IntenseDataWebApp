@@ -46,7 +46,7 @@ package View.components.AssetTile
 		private var assetData:Model_Media // the data for the asset 
 		private var eventToThrowWhenClicked:String;
 		
-		public function AssetTile(assetData:Model_Media, eventToThrowWhenClicked:String)
+		public function AssetTile(assetData:Model_Media, eventToThrowWhenClicked:String, color="0x000000")
 		{
 			super();
 			this.assetData = assetData;
@@ -84,6 +84,7 @@ package View.components.AssetTile
 			
 			caption.text = assetData.meta_title;
 			caption.setStyle('textAlign', TextAlign.CENTER);
+			caption.setStyle('color', color);
 			//caption.setStyle('fontWeight', 'bold');
 			caption.percentWidth = 100;
 			this.addElement(caption);

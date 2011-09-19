@@ -84,6 +84,9 @@ package Controller {
 			var currentView:BrowserView = (view as Browser).craigsbrowser;
 			currentView.addEventListener(Event.REMOVED_FROM_STAGE, stopTimerPlease);
 			currentView.addEventListener(FlexEvent.HIDE, stopTimerPlease );
+			
+			mediaIDHistoryArray = new Array();
+			MediaController.currentMediaData = null;
 		}
 
 		public function stopTimerPlease(e:Event):void {

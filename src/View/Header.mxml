@@ -18,8 +18,8 @@
 
 		]]>
 	</fx:Script>
-	<!--<mx:HBox id='headerbackground' width="100%" height="44" backgroundColor="0x336699">-->
-	<mx:HBox id='headerbackground' width="100%" height="44" backgroundColor="0x333333">
+	<mx:HBox id='headerbackground' width="100%" height="44" backgroundColor="0x336699">
+	<!--<mx:HBox id='headerbackground' width="100%" height="44" backgroundColor="0x333333> -->
 		<!--<Element:BackgroundImage id="background"></Element:BackgroundImage>-->
 		<s:Group>
 			<!-- The logo -->

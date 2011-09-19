@@ -17,7 +17,10 @@ package Module.Videoviewer {
 		
 		private var _timeline:Sprite = new Sprite();
 		private var _timelineHead:Sprite = new Sprite();
+		
+		// The space above the timeline, that holds the box versions of the annotations
 		private var _annotationArea:UIComponent = new UIComponent();
+		
 		private var _timelineBuffer:Sprite = new Sprite();
 		private var _timelineBufferMask:Sprite = new Sprite();
 		private var loadedAnnotations:Boolean = false;
@@ -182,23 +185,25 @@ package Module.Videoviewer {
 			_timelineHead.mouseEnabled = false;
 			if(!loadedAnnotations) {
 				redrawAnnotations();
+				
 			}
 		}
 		
 		public function addAnnotations(data:Array,overlay:Sprite):void {
 			// Remove all current annotations???
-			VideoAnnotation.resetAnnotations();
+			VideoAnnotation.resetAnnotations(overlay);
 			
 			for(var i:Number=0; i<data.length; i++) {
-				addAnnotation(data[i],overlay);
+				addAnnotation(data[i], overlay);
 			}
 			resize();
 		}
 		
-		public function addAnnotation(data:Object,overlay:Sprite):void {
+		public function addAnnotation(data:Object,onVideoAnnotationHolder:Sprite):void {
+			trace("*** ADDING VIDEO ANNOTATION ***");
 			var newAnnotation:VideoAnnotation = VideoAnnotation.add(data,this,colours[Math.round(Math.random()*colours.length-1)]);
 			_annotationArea.addChild(newAnnotation);
-			newAnnotation.addOverlay(overlay);	
+			newAnnotation.addOverlay(onVideoAnnotationHolder);	
 		}
 		
 		private function redrawAnnotations():void {

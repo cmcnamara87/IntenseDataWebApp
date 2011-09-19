@@ -117,11 +117,16 @@ package Controller {
 			}
 			
 			if(Router.getInstance().getURL() == "go") {
-				// Push in whatever hte current medias ID was
-				BrowserController.mediaIDHistoryArray.push(MediaController.currentMediaData.base_asset_id);
-				trace("----HISTORY SAVING FOR", MediaController.currentMediaData.base_asset_id);
-				// Now clear that out, since we are going to be loading a new one
-				BrowserController.currentMediaData = null;
+				if(MediaController.currentMediaData) {
+					// Push in whatever hte current medias ID was
+					// The media controller is the active one
+					// so start saving some browser history
+					BrowserController.mediaIDHistoryArray.push(MediaController.currentMediaData.base_asset_id);
+					trace("----HISTORY SAVING FOR", MediaController.currentMediaData.base_asset_id);
+					// Now clear that out, since we are going to be loading a new one
+					BrowserController.currentMediaData = null;
+				}
+				
 				var argArray:Array = Router.getInstance().getArgs();
 				url = "view/" + argArray[0];
 			}

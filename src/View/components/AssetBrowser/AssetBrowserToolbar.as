@@ -259,7 +259,7 @@ package View.components.AssetBrowser
 			// collection while on a fixed collection (and there is no data) ... TODO fix this up
 			if((BrowserController.collectionData != null) && (BrowserController.collectionData.base_creator_username != Auth.getInstance().getUsername())) {
 				trace("AssetBrowserToolbar: Collection author is", BrowserController.collectionData.base_creator_username, Auth.getInstance().getUsername());
-				deleteButton.label = "Remove " + BrowserController.PORTAL;
+				deleteButton.label = "Leave " + BrowserController.PORTAL;
 			} else {
 //				trace("AssetBrowserToolbar: Collection author is", BrowserController.collectionData.meta_username, Auth.getInstance().getUsername());
 				deleteButton.label = "Delete " + BrowserController.PORTAL;
