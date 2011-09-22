@@ -15,8 +15,11 @@ package View.components.CollectionList
 	
 	import mx.controls.Image;
 	import mx.controls.Label;
+	import mx.core.IUIComponent;
 	import mx.core.UIComponent;
+	import mx.events.DragEvent;
 	import mx.graphics.SolidColor;
+	import mx.managers.DragManager;
 	
 	import spark.components.BorderContainer;
 	import spark.components.Group;
@@ -62,7 +65,7 @@ package View.components.CollectionList
 			fileLabel.addElement(itemCountLabel);
 
 			this.addElement(fileLabel);
-			
+
 			fileLabel.addEventListener(MouseEvent.CLICK, collectionItemClicked);
 		}
 		

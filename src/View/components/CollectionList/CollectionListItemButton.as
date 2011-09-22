@@ -22,8 +22,11 @@ package View.components.CollectionList
 	import mx.containers.Canvas;
 	import mx.controls.Image;
 	import mx.controls.Label;
+	import mx.core.IUIComponent;
 	import mx.effects.Fade;
+	import mx.events.DragEvent;
 	import mx.graphics.SolidColor;
+	import mx.managers.DragManager;
 	import mx.styles.CSSStyleDeclaration;
 	
 	import spark.components.BorderContainer;
@@ -187,6 +190,14 @@ package View.components.CollectionList
 				itemCountLabel.setStyle('textAlign', TextAlign.RIGHT); 
 				background.addElement(itemCountLabel);
 			}
+			
+//			background.addEventListener(DragEvent.DRAG_ENTER, function(e:DragEvent):void {
+//				DragManager.acceptDragDrop(e.currentTarget as IUIComponent);
+//			});
+//			
+//			background.addEventListener(DragEvent.DRAG_DROP, function(e:DragEvent):void {
+//				DragManager.doDrag(e.currentTarget as IUIComponent, null, e);	
+//			});
 			
 			background.addEventListener(MouseEvent.CLICK, labelClicked);
 		}

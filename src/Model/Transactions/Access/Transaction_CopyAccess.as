@@ -1,5 +1,7 @@
 package Model.Transactions.Access
 {
+	import Controller.Utilities.Auth;
+	
 	import Model.AppModel;
 	import Model.Utilities.Connection;
 	
@@ -12,17 +14,23 @@ package Model.Transactions.Access
 		private var copyFromID:Number;
 		private var copyToID:Number;
 		private var connection:Connection;
+		private var ignoreCurrentUser:Boolean;
 		
-		public function Transaction_CopyAccess(copyFromID:Number, copyToID:Number, connection:Connection)
+		public function Transaction_CopyAccess(copyFromID:Number, copyToID:Number, ignoreCurrentUser:Boolean, connection:Connection)
 		{
 			trace("Copy ACLS from", copyFromID, "to", copyToID);
 			this.copyFromID = copyFromID;
 			this.copyToID = copyToID;
 			this.connection = connection;
+			this.ignoreCurrentUser = ignoreCurrentUser;
 			
 			getFromACLs();
 		}
 
+		/**
+		 * Get the ACLs on the first asset 
+		 * 
+		 */
 		private function getFromACLs():void {
 			var args:Object = new Object();
 			args.id = copyFromID;
@@ -32,6 +40,11 @@ package Model.Transactions.Access
 			);
 		}
 		
+		/**
+		 * Set the ACLs on the second asset 
+		 * @param e
+		 * 
+		 */
 		private function setToACLs(e:Event):void {
 			trace("Transaction_CopyAccess:setToACLs - users to copy to", e.target.data);
 			
@@ -43,7 +56,11 @@ package Model.Transactions.Access
 			baseXML.service.args.id = copyToID;
 			
 			for each(var acl:XML in acls) {
-				baseXML.service.args.appendChild(XML('<acl><actor type="user">' + acl.actor + '</actor><access>'+ acl.content +'</access></acl>'));
+				if(ignoreCurrentUser && acl.actor == "system:" + Auth.getInstance().getUsername()) {
+					// ignore it (cause its set to ignore current user,a nd its thecurrent user)
+				} else {
+					baseXML.service.args.appendChild(XML('<acl><actor type="user">' + acl.actor + '</actor><access>'+ acl.content +'</access></acl>'));
+				}
 			}
 			
 			trace("set users request", baseXML);

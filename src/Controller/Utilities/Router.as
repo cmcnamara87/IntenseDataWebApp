@@ -43,6 +43,11 @@ package Controller.Utilities {
 				url: 'profile',
 				title: 'Edit Profile',
 				classname:ProfileController
+			},
+			{
+				url: 'adminTools',
+				title: 'Admin Tools',
+				classname: AdminController
 			}
 		);
 		

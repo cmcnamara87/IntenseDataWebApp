@@ -2,6 +2,7 @@ package Controller {
 	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
+	import Model.Model_Notification;
 	
 	import View.Layout;
 	
@@ -14,6 +15,7 @@ package Controller {
 	import flash.utils.setTimeout;
 	
 	import mx.controls.Alert;
+	import mx.controls.Text;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
 	
@@ -29,6 +31,9 @@ package Controller {
 		//Whether the logout button is shown or not
 		protected var showLogoutButton:Boolean = true;
 		
+		// Store current notifications for hte user
+		private static var notificationsArray:Array;
+		
 		public function AppController() {
 			setLogoutButton();
 			loadView();
@@ -39,7 +44,8 @@ package Controller {
 				setupEventListeners();
 			});
 			
-			// TODO whatever
+			// The content has finished loading
+			// means we have gone to another page, so lets update whats on the buttons
 			layout.content.addEventListener(FlexEvent.CONTENT_CREATION_COMPLETE, function(e:FlexEvent):void {
 				setupButtons();
 			});
@@ -49,8 +55,9 @@ package Controller {
 		
 		private static function setupEventListeners():void {
 			layout.header.logoutButton.addEventListener(MouseEvent.CLICK, logoutButtonClicked);
-			layout.header.notificationButton.addEventListener(MouseEvent.CLICK, notificationButtonClicked);
+			layout.header.notificationButton.addEventListener(MouseEvent.MOUSE_DOWN, notificationButtonClicked);
 			layout.header.profileButton.addEventListener(MouseEvent.MOUSE_UP,profileButtonClicked);
+			layout.header.adminToolsButton.addEventListener(MouseEvent.CLICK, adminToolsButtonClicked);
 		}
 		
 		
@@ -59,21 +66,111 @@ package Controller {
 			Dispatcher.logout();
 		}
 		private static function notificationButtonClicked(e:MouseEvent):void {
-			trace("Notification button clicked");
-			layout.notificationBox.visible = !layout.notificationBox.visible;
+			if(layout.notificationPanel.visible == false) {
+				showNotifications();
+			} else {
+				hideNotifications();
+			}
 		}
 		private static function profileButtonClicked(e:MouseEvent):void {
 			trace("Profile button clicked");
 			Dispatcher.call("profile");
 		}
 		
+		/**
+		 * The Admin Tools button was clicked 
+		 * @param e		Mouse Click Event
+		 * 
+		 */
+		private static function adminToolsButtonClicked(e:MouseEvent):void {
+			Dispatcher.call("adminTools");
+		}
+		
+		/**
+		 * Updates the buttons whenever we load a new page
+		 * 
+		 */
 		private static function setupButtons():void {
 			// Listen for notification button being clicked
 			trace("set up buttons!!!**************");
-			layout.header.globalButtonGroup.visible = true;
+			layout.header.globalButtonGroup.visible = true; 
 			layout.header.profileButton.label = "Profile (" + Auth.getInstance().getUsername() + ")";
 			
-			// Get all notifications
+			// Get the notifications everytime we load a new page
+			getNotifications();
+		}
+		
+		/**
+		 * Get the notification for a the current user from the database. 
+		 * 
+		 */		
+		private static function getNotifications():void {
+			trace("Getting Notifications");
+			AppModel.getInstance().getNotifications(gotNotifications);
+		}
+		
+		/**
+		 * Got notifications for a user.
+		 * Stores the notifications and updates the notification button to show a notification
+		 * count.
+		 *  
+		 * @param e
+		 * 
+		 */		
+		private static function gotNotifications(e:Event):void {
+			var dataXML:XML = XML(e.target.data);
+			if(AppModel.getInstance().callFailed("getting notifications", e)) {
+				return;
+			}
+		
+			// Save the notifications, and get the notification count
+			notificationsArray = AppModel.getInstance().extractAssetsFromXML(dataXML, Model_Notification);
+			notificationsArray = notificationsArray.reverse();
+			layout.header.notificationButton.label = "Notifications (" + notificationsArray.length + ")";
+			if(notificationsArray.length > 0) {
+//				layout.header.notificationButton.setStyle('color', "0xFF8800");
+//				layout.header.notificationButton.setStyle('font-weight', "bold");
+			} else {
+//				layout.header.notificationButton.setStyle('color', "0xEEEEEE");
+//				layout.header.notificationButton.setStyle('font-weight', "normal");
+			}
+			layout.notificationPanel.addNotifications(notificationsArray);
+		}
+		
+		/**
+		 * Show the notifications for the current user. Called after the notification button was clicked. 
+		 * @param e
+		 * 
+		 */		
+		private static function showNotifications():void {
+			layout.notificationPanel.visible = true;
+			layout.notificationPanel.x = layout.header.notificationButton.x;
+			if(notificationsArray) {
+				layout.header.notificationButton.label = "Notifications (" + notificationsArray.length + ")";
+				layout.notificationPanel.addNotifications(notificationsArray);
+			} else {
+				trace("Something went wrong, and we dont have any notifications stored");
+			}
+		}
+		
+		private static function hideNotifications():void {
+			layout.notificationPanel.visible = false;
+			getNotifications();
+		}
+		
+		private function deleteNotification(e:IDEvent):void {
+			trace("Deleting notification", e.data.notificationID);
+			var notificationID:Number = e.data.notificationID;
+			AppModel.getInstance().deleteNotification(notificationID);
+			// remove the notification from the notificationsarray
+			var tempArray:Array = new Array();
+			for(var i:Number = 0; i < notificationsArray.length; i++) {
+				if(notificationsArray[i].base_asset_id != notificationID) {
+					tempArray.push(notificationsArray[i]);
+				}
+			}
+			notificationsArray = tempArray;
+			layout.header.notificationButton.label = "Notifications (" + (notificationsArray.length) + ")";
 		}
 		
 		
@@ -94,39 +191,12 @@ package Controller {
 				}
 			}
 		}
-		
-//		protected function removeLogoutListener():void {
-//			if(layout) {
-//				if(layout.header.logoutButton) {
-//					if(layout.header.logoutButton.hasEventListener(MouseEvent.MOUSE_UP)) {
-//						layout.header.logoutButton.alpha = 0.5;
-//						layout.header.logoutButton.removeEventListener(MouseEvent.MOUSE_UP,logoutClicked);
-//					}
-//				}
-//			}
-//		}
-		
-//		protected function addLogoutListener():void {
-//			if(layout) {
-//				if(layout.header.logoutButton) {
-//					layout.header.logoutButton.alpha = 1;
-//					layout.header.logoutButton.addEventListener(MouseEvent.MOUSE_UP,logoutClicked);
-//				}
-//			}
-//		}
+
 		
 		
 		//When the controller is destroyed/switched
 		public function dealloc():void {
 			if(layout) {
-//				if(layout.header.logoutButton) {
-//					if(layout.header.logoutButton.hasEventListener(MouseEvent.MOUSE_UP)) {
-//						layout.header.logoutButton.removeEventListener(MouseEvent.MOUSE_UP,logoutClicked);
-//					}
-//					if(layout.header.profileButton.hasEventListener(MouseEvent.MOUSE_UP)) {
-//						layout.header.profileButton.removeEventListener(MouseEvent.MOUSE_UP, profileClicked);
-//					}
-//				}
 				layout.content.removeAllElements();
 			}
 		}

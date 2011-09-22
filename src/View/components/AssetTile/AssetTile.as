@@ -23,10 +23,13 @@ package View.components.AssetTile
 	import mx.controls.Alert;
 	import mx.controls.Image;
 	import mx.controls.Label;
+	import mx.core.DragSource;
+	import mx.core.IUIComponent;
 	import mx.effects.Fade;
 	import mx.effects.Resize;
 	import mx.events.CloseEvent;
 	import mx.graphics.BitmapFill;
+	import mx.managers.DragManager;
 	
 	import spark.components.Label;
 	import spark.components.VGroup;
@@ -46,7 +49,7 @@ package View.components.AssetTile
 		private var assetData:Model_Media // the data for the asset 
 		private var eventToThrowWhenClicked:String;
 		
-		public function AssetTile(assetData:Model_Media, eventToThrowWhenClicked:String, color="0x000000")
+		public function AssetTile(assetData:Model_Media, eventToThrowWhenClicked:String, color:String="0x000000")
 		{
 			super();
 			this.assetData = assetData;
@@ -60,7 +63,7 @@ package View.components.AssetTile
 			this.buttonMode = true;
 
 			// Setup Image
-			image = new AssetTileImage(assetData.type);
+			image = new AssetTileImage(assetData.type, assetData.base_asset_id);
 			var centerImage:VGroup = new VGroup();
 			centerImage.horizontalAlign = HorizontalAlign.CENTER;
 			centerImage.percentWidth = 100;
@@ -88,6 +91,12 @@ package View.components.AssetTile
 			//caption.setStyle('fontWeight', 'bold');
 			caption.percentWidth = 100;
 			this.addElement(caption);
+			
+//			this.addEventListener(MouseEvent.MOUSE_DOWN, function(e:MouseEvent):void {
+//				trace("DRAG STARTING");
+//				DragManager.doDrag(e.currentTarget as IUIComponent, null, e);
+//			});
+			
 			
 			// Listen for the asset being clicked
 			// Change icon to 'clicked' version on mouse down

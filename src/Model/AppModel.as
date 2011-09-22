@@ -17,6 +17,7 @@ package Model {
 	import Model.Transactions.Transaction_GetCollections;
 	import Model.Transactions.Transaction_GetPeopleAndCollectionNames;
 	import Model.Transactions.Transaction_GetThisCollectionsMediaAssets;
+	import Model.Transactions.Transaction_Notification;
 	import Model.Transactions.Transaction_SaveCollection;
 	import Model.Transactions.Transaction_SaveNewComment;
 	import Model.Transactions.Transaction_SetAccess;
@@ -547,9 +548,16 @@ package Model {
 			}
 			
 		}
-		
-		public function copyAccess(copyFromID:Number, copyToID:Number):void {
-			var transaction:Transaction_CopyAccess = new Transaction_CopyAccess(copyFromID, copyToID, _connection);
+
+		/**
+		 * Copy the access that is on one asset, to another 
+		 * @param copyFromID			The ID to copy from
+		 * @param copyToID				The ID to copy to
+		 * @param ignoreCurrentUser		True if we should not copy across the current user's acls
+		 * 
+		 */
+		public function copyAccess(copyFromID:Number, copyToID:Number, ignoreCurrentUser:Boolean = false):void {
+			var transaction:Transaction_CopyAccess = new Transaction_CopyAccess(copyFromID, copyToID, ignoreCurrentUser, _connection);
 		}
 		
 		// Saves an annotation
@@ -1483,6 +1491,43 @@ package Model {
 				trace(functionName + ": FAILED", e.target.data);
 			}
 			return (dataXML.reply.@type != "result");
+		}
+		
+		/* =============================================== NOTIFICATIONS =============================================== */
+		/**
+		 * Sends a notification to users who have access to this media asset
+		 * @param mediaID 	The ID of the media that was affected. e.g. If someone comments on an image, this is the image's ID
+		 * @param type		The type of notification (see Notification_Model)
+		 * @param assetID	(opt) The ID of the asset that as added/changed (e.g. the ID of the comment)
+		 * 
+		 */		
+		public function sendNotification(mediaID:Number, type:String, assetID:Number = 0):void {
+			var transaction:Transaction_Notification = new Transaction_Notification(_connection);
+			transaction.sendNotification(mediaID, type, assetID);
+		}
+		
+		/**
+		 * Get all the notifications on the system (that the current user can access) 
+		 * @param callback
+		 * 
+		 */
+		public function getNotifications(callback:Function):void {
+			var args:Object = new Object();
+			args.where = "class>='recensio:base/notification'";
+			args.action = "get-meta";
+			args['get-related-meta'] = true;
+			var baseXML:XML = _connection.packageRequest('asset.query', args, true);
+			_connection.sendRequest(baseXML, callback);
+		}
+		
+		/**
+		 * Removes a notification for a user 
+		 * @param notificationID
+		 * 
+		 */
+		public function deleteNotification(notificationID:Number):void {
+			var transaction:Transaction_Notification = new Transaction_Notification(_connection);
+			transaction.deleteNotificationForUser(notificationID);
 		}
 	}
 		

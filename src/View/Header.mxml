@@ -8,7 +8,7 @@
 	<fx:Script>
 		<![CDATA[
 			import Controller.Dispatcher;
-			[Embed(source="Assets/Template/header_logo_id_2.png")] 
+			[Embed(source="Assets/Template/header_logo_id_5.png")] 
 			[Bindable] private var logo:Class;
 
 			protected function image1_clickHandler(event:MouseEvent):void
@@ -19,22 +19,25 @@
 
 		]]>
 	</fx:Script>
-	<mx:HBox id='headerbackground' width="100%" height="44" backgroundColor="0x336699">
-	<!--<mx:HBox id='headerbackground' width="100%" height="44" backgroundColor="0x333333> -->
+	<!--<mx:HBox id='headerbackground' width="100%" height="44" backgroundColor="0x336699">-->
+	<mx:HBox id='headerbackground' width="100%" height="50" backgroundColor="0x333333">
 		<!--<Element:BackgroundImage id="background"></Element:BackgroundImage>-->
 		<!-- Add in the logo group -->
 		<s:HGroup width="100%" height="100%" verticalAlign="middle" paddingLeft="10">
 			<!-- The logo -->
-			<mx:Image buttonMode="true" click="image1_clickHandler(event)" source="{logo}" width="169" height="20"></mx:Image>
+			<mx:Image buttonMode="true" click="image1_clickHandler(event)" source="{logo}" width="338" height="43"></mx:Image>
 		</s:HGroup>
 		<!-- Add in the button group -->
+
 		<s:HGroup id="globalButtonGroup" visible="false" height="100%" paddingTop="5" paddingBottom="5" paddingRight="20">
 			<!-- Logout Button -->
-			<s:Button id="notificationButton" height="100%" label="Notifications (0)" toolTip="Notifications">
+			<s:Button chromeColor="0x222222" color="0xEEEEEE" id="adminToolsButton" height="100%" label="Admin Tools" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
 			</s:Button>
-			<s:Button id="profileButton" height="100%" label="Username (Profile)" toolTip="Go to your Profile Page">
+			<s:Button chromeColor="0x222222" color="0xEEEEEE" id="notificationButton" height="100%" label="Notifications (0)" toolTip="Notifications">
 			</s:Button>
-			<s:Button id="logoutButton" height="100%" label="Logout" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
+			<s:Button chromeColor="0x222222" color="0xEEEEEE" id="profileButton" height="100%" label="Username (Profile)" toolTip="Go to your Profile Page">
+			</s:Button>
+			<s:Button chromeColor="0x222222" color="0xEEEEEE" id="logoutButton" height="100%" label="Logout" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
 			</s:Button>
 			
 			<!--<Element:RoundButton id="logoutButton" width="101" height="22" top="21" right="-10" text="Logout" visible="false" toolTip="Log out of the system"></Element:RoundButton>-->

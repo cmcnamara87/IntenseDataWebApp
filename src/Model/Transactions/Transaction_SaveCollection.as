@@ -1,13 +1,14 @@
 package Model.Transactions {
 	import Model.AppModel;
 	import Model.Model_Media;
+	import Model.Model_Notification;
+	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
-	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
 	
 	public class Transaction_SaveCollection {
 		
@@ -250,6 +251,9 @@ package Model.Transactions {
 			var transaction:Transaction_CopyCollectionAccess = new Transaction_CopyCollectionAccess(collectionID, addMediaAssetsClonedIDs, false, _connection, function():void {
 				trace("*****************************");
 				trace("Finished Copying COllection Access");
+				for each(var mediaID:Number in addMediaAssetsClonedIDs) {
+					AppModel.getInstance().sendNotification(collectionID, Model_Notification.MEDIA_ADDED_TO_COLLECTION, mediaID);
+				}
 				_callback(collectionID);	
 			});
 //			}

@@ -2,6 +2,7 @@ package View.components.AssetTile
 {
 	import Controller.BrowserController;
 	import Controller.Utilities.AssetLookup;
+	import Controller.Utilities.Auth;
 	
 	import Lib.it.transitions.Tweener;
 	
@@ -9,21 +10,25 @@ package View.components.AssetTile
 	import flash.display.Loader;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.filters.DropShadowFilter;
+	import flash.filters.GlowFilter;
 	import flash.net.URLRequest;
 	
 	import flashx.textLayout.formats.TextAlign;
 	
+	import mx.controls.Image;
 	import mx.effects.Resize;
 	import mx.graphics.BitmapFill;
 	import mx.graphics.SolidColor;
 	import mx.graphics.SolidColorStroke;
 	
 	import spark.components.BorderContainer;
+	import spark.components.Group;
 	import spark.components.Label;
 	import spark.layouts.HorizontalLayout;
 	import spark.layouts.VerticalLayout;
 	
-	public class AssetTileImage extends BorderContainer
+	public class AssetTileImage extends Group
 	{	
 		
 		private var loader:Loader;
@@ -35,12 +40,13 @@ package View.components.AssetTile
 		private var icon:BitmapFill;
 		
 		private var type:String; // The type of icon, eg. picture, video, audio etc
+		private var myIcon:Image;
 		
 		/**
 		 * Creates an Image for the AssetTile of size width/height. 
 		 * @param 	type	The type of the tile (e.g. video, image, document etc)
 		 */		
-		public function AssetTileImage(type:String, url:String = "")
+		public function AssetTileImage(type:String, assetID:Number, url:String = "")
 		{			
 			super();
 			
@@ -50,7 +56,28 @@ package View.components.AssetTile
 			this.width = size;
 			this.height = size;
 			
-			this.borderStroke = new SolidColorStroke(0xFFFFFF, 1, 0);
+			myIcon = new Image();
+			myIcon.percentHeight = 100;
+			myIcon.percentWidth = 100;
+			myIcon.source = AssetLookup.getAssetImageClass(type);
+			if(type == 'image') {
+				myIcon.height = 87;
+				myIcon.width = 87;
+				myIcon.source = "http://" + Recensio_Flex_Beta.serverAddress + ":" + Recensio_Flex_Beta.serverPort + "/mflux/icon.mfjp?_skey=" + Auth.getInstance().getSessionID() + "&id=" + assetID + "&version=0&size=" + size;
+			}
+			myIcon.setStyle("verticalAlign", "center");
+			myIcon.maintainAspectRatio = true;
+			
+			var shadow:GlowFilter = new GlowFilter();
+			shadow.alpha = 0.4;
+			shadow.blurX = 8;
+			shadow.blurY = 8;
+			shadow.color = 0x000000;
+			myIcon.filters = [shadow];
+			
+			this.addElement(myIcon);
+			
+//			this.borderStroke = new SolidColorStroke(0xFFFFFF, 1, 0);
 			
 			// Setup background icon
 			// if its an image, try and...get a screenshot
@@ -66,7 +93,7 @@ package View.components.AssetTile
 			icon = new BitmapFill();
 			icon.source = url;
 			icon.source = AssetLookup.getAssetImage(type);
-			this.backgroundFill = icon;
+//			this.backgroundFill = icon;
 			
 			// Setup the overlay that shows either 'Share' or 'Unshare' in make collection mode (also edit if i ever do it)
 			editingOverlay = new BorderContainer();
@@ -144,7 +171,7 @@ package View.components.AssetTile
 			trace("loaded some shit");
 			var myFill:BitmapFill = new BitmapFill();
 			myFill.source = loader.content as Bitmap
-			this.backgroundFill = myFill;
+//			this.backgroundFill = myFill;
 		}
 
 		/**
@@ -155,7 +182,8 @@ package View.components.AssetTile
 		public function showClickedIcon():void {
 			trace("Changing background image", type);
 			// Get and fill the asset icon for this type of asset
-			icon.source = AssetLookup.getAssetImageClicked(type);
+//			icon.source = AssetLookup.getAssetImageClicked(type);
+			myIcon.y += 5;
 		}
 		
 		public function showRegularIcon():void {

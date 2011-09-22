@@ -202,6 +202,30 @@ package Controller.Utilities {
 			imagesSetup = true;
 		}
 		
+		public static function getAssetImageClass(type:String):Class {
+			if(!imagesSetup) {
+				setupImageData();
+			}
+			switch(type) {
+				case 'image':
+					return Asseticon_image;
+					break;
+				case 'video':
+					return Asseticon_video;
+					break;
+				case 'audio':
+					return Asseticon_audio;
+					break;
+				case 'document':
+					return Asseticon_document;
+				case 'collection':
+					//					return Asseticon_collection_data;
+					break;
+				
+			}
+			return Asseticon_image;
+		}
+		
 		//Gets the appropriate icon for a media type
 		public static function getAssetImage(type:String):BitmapData {
 			if(!imagesSetup) {
