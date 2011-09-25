@@ -45,6 +45,16 @@ package Controller.Utilities {
 				classname:ProfileController
 			},
 			{
+				url: 'dashboard',
+				title: 'Admin Dashboard',
+				classname: DashboardController
+			},
+			{
+				url: 'erasetup',
+				title: 'Era Setup',
+				classname: ERASetupController
+			},
+			{
 				url: 'adminTools',
 				title: 'Admin Tools',
 				classname: AdminController

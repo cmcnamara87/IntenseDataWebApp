@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:VGroup width="100%">
+		<s:BorderContainer width="100%" backgroundColor="0x00FF00">
+			Saved
+		</s:BorderContainer>
+		<s:Label text="ERA Due Date">
+		</s:Label>
+		<s:HGroup verticalAlign="middle">
+			<s:Label text="Day">
+			</s:Label>
+			<s:DropDownList id="day">
+				<s:ArrayList>
+					<fx:String>1</fx:String>
+					<fx:String>2</fx:String>
+					<fx:String>3</fx:String>
+					<fx:String>4</fx:String>
+					<fx:String>5</fx:String>
+					<fx:String>6</fx:String>
+					<fx:String>7</fx:String>
+					<fx:String>8</fx:String>
+					<fx:String>9</fx:String>
+					<fx:String>10</fx:String>
+				</s:ArrayList>
+			</s:DropDownList>
+			<s:Label text="Month">
+			</s:Label>
+			<s:DropDownList id="month">
+				<s:ArrayList>
+					<fx:String>Jan</fx:String>
+					<fx:String>Feb</fx:String>
+					<fx:String>March</fx:String>
+					<fx:String>April</fx:String>
+					<fx:String>May</fx:String>
+					<fx:String>June</fx:String>
+					<fx:String>July</fx:String>
+					<fx:String>August</fx:String>
+					<fx:String>September</fx:String>
+					<fx:String>October</fx:String>
+				</s:ArrayList>
+			</s:DropDownList>
+			<s:Label text="Year">
+			</s:Label>
+			<s:DropDownList id="year">
+				<s:ArrayList>
+					<fx:String>2010</fx:String>
+					<fx:String>2011</fx:String>
+					<fx:String>2012</fx:String>
+					<fx:String>2013</fx:String>
+					<fx:String>2014</fx:String>
+					<fx:String>2015</fx:String>
+					<fx:String>2016</fx:String>
+				</s:ArrayList>
+			</s:DropDownList>
+		</s:HGroup>
+		<s:Label text="Package Size (mb)">
+		</s:Label>
+		<s:HGroup>
+			<s:TextInput id="packageSize">
+			</s:TextInput>
+			<s:Label text="MB">
+			</s:Label>
+		</s:HGroup>
+		<s:Button id="createButton" label="Create New ERA">
+		</s:Button>
+	</s:VGroup>
+	
+</s:Group>

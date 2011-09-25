@@ -15,13 +15,6 @@ package Controller
 		public function AdminController()
 		{
 			view = new UserAdminView();
-			
-			// Show the admin tools buttons
-			layout.header.adminToolsButton.setStyle("chromeColor", 0x000000);
-			layout.header.productionToolsButton.setStyle("chromeColor", 0x222222);
-			layout.header.adminToolButtons.includeInLayout = true;
-			layout.header.adminToolButtons.visible = true;
-			
 			super();
 		}
 		

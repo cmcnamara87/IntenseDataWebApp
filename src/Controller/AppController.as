@@ -57,8 +57,11 @@ package Controller {
 			layout.header.logoutButton.addEventListener(MouseEvent.CLICK, logoutButtonClicked);
 			layout.header.notificationButton.addEventListener(MouseEvent.MOUSE_DOWN, notificationButtonClicked);
 			layout.header.profileButton.addEventListener(MouseEvent.MOUSE_UP,profileButtonClicked);
+			
+			// Mode switching buttons
 			layout.header.adminToolsButton.addEventListener(MouseEvent.CLICK, adminToolsButtonClicked);
 			layout.header.productionToolsButton.addEventListener(MouseEvent.CLICK, productionToolsButtonClicked);
+			
 		}
 		
 		
@@ -84,11 +87,42 @@ package Controller {
 		 * 
 		 */
 		private static function adminToolsButtonClicked(e:MouseEvent):void {
-//			Dispatcher.call("adminTools");
+			// Show the admin tool buttons
+			showAdminToolButtons();
 			
+			// load the Dashboard (which is the default admin tool)
+			Dispatcher.call("erasetup");
 		}
 		
+		/**
+		 * Shows the admin tool buttons 
+		 * 
+		 */
+		private static function showAdminToolButtons():void {
+			
+			// Show the admin tools buttons
+			layout.header.adminToolsButton.setStyle("chromeColor", 0x000000);
+			layout.header.productionToolsButton.setStyle("chromeColor", 0x222222);
+			
+			layout.header.adminToolButtons.visible = true;
+			layout.header.adminToolButtons.includeInLayout = true;
+		}
+		
+		/**
+		 * Hide the admin tool buttons 
+		 * 
+		 */
+		private static function hideAdminToolButtons():void {
+			layout.header.adminToolsButton.setStyle("chromeColor", 0x222222);
+			layout.header.productionToolsButton.setStyle("chromeColor", 0x000000);
+			
+			layout.header.adminToolButtons.visible = false;
+			layout.header.adminToolButtons.includeInLayout = false;
+		}
+		
+		
 		private static function productionToolsButtonClicked(e:MouseEvent):void {
+			hideAdminToolButtons();
 			Dispatcher.call("browse");
 		}
 		
@@ -98,11 +132,11 @@ package Controller {
 		 */
 		private static function setupButtons():void {
 			if(Auth.getInstance().getSessionID() != "") {
-				// Listen for notification button being clicked
-				trace("set up buttons!!!**************");
+				// Only if we have logged in, show the buttons
+				
 				layout.header.globalButtonGroup.visible = true; 
 				layout.header.profileButton.label = Auth.getInstance().getUsername();
-				layout.header.productionToolsButton.setStyle("chromeColor", "0x000000");
+				
 				// Get the notifications everytime we load a new page
 				getNotifications();
 			}

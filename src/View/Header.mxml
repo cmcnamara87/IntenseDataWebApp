@@ -58,7 +58,7 @@
 			<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="productionToolsButton" height="20" label="Production Tools" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
 			</s:Button>
 			
-			<mx:VRule height="100%">
+			<mx:VRule height="100%" chromeColor="0x000000">
 			</mx:VRule>
 			
 			<s:Button chromeColor="0x8FAFF7" cornerRadius="10" color="0x222222" id="notificationButton" height="20" width="30" label="0" toolTip="Notifications">

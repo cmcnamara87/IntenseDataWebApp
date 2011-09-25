@@ -6,6 +6,7 @@ package Model {
 	import Model.Transactions.Access.Transaction_ChangeAccess;
 	import Model.Transactions.Access.Transaction_CopyAccess;
 	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
+	import Model.Transactions.ERAProject.Transaction_CreateERAProject;
 	import Model.Transactions.Share.Transaction_SetUserAssetShare;
 	import Model.Transactions.Transaction_ChangePassword;
 	import Model.Transactions.Transaction_CloneMedia;
@@ -1528,6 +1529,12 @@ package Model {
 		public function deleteNotification(notificationID:Number):void {
 			var transaction:Transaction_Notification = new Transaction_Notification(_connection);
 			transaction.deleteNotificationForUser(notificationID);
+		}
+		
+		
+		/* =============================================== ERA STUFF =============================================== */
+		public function makeERAProject(day:String, month:String, year:String, packageSize:String):void {
+			var newERA:Transaction_CreateERAProject = new Transaction_CreateERAProject(day, month, year, packageSize, _connection);
 		}
 	}
 		
