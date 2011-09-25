@@ -58,6 +58,7 @@ package Controller {
 			layout.header.notificationButton.addEventListener(MouseEvent.MOUSE_DOWN, notificationButtonClicked);
 			layout.header.profileButton.addEventListener(MouseEvent.MOUSE_UP,profileButtonClicked);
 			layout.header.adminToolsButton.addEventListener(MouseEvent.CLICK, adminToolsButtonClicked);
+			layout.header.productionToolsButton.addEventListener(MouseEvent.CLICK, productionToolsButtonClicked);
 		}
 		
 		
@@ -83,7 +84,12 @@ package Controller {
 		 * 
 		 */
 		private static function adminToolsButtonClicked(e:MouseEvent):void {
-			Dispatcher.call("adminTools");
+//			Dispatcher.call("adminTools");
+			
+		}
+		
+		private static function productionToolsButtonClicked(e:MouseEvent):void {
+			Dispatcher.call("browse");
 		}
 		
 		/**
@@ -91,13 +97,15 @@ package Controller {
 		 * 
 		 */
 		private static function setupButtons():void {
-			// Listen for notification button being clicked
-			trace("set up buttons!!!**************");
-			layout.header.globalButtonGroup.visible = true; 
-			layout.header.profileButton.label = "Profile (" + Auth.getInstance().getUsername() + ")";
-			
-			// Get the notifications everytime we load a new page
-			getNotifications();
+			if(Auth.getInstance().getSessionID() != "") {
+				// Listen for notification button being clicked
+				trace("set up buttons!!!**************");
+				layout.header.globalButtonGroup.visible = true; 
+				layout.header.profileButton.label = Auth.getInstance().getUsername();
+				layout.header.productionToolsButton.setStyle("chromeColor", "0x000000");
+				// Get the notifications everytime we load a new page
+				getNotifications();
+			}
 		}
 		
 		/**
@@ -126,7 +134,7 @@ package Controller {
 			// Save the notifications, and get the notification count
 			notificationsArray = AppModel.getInstance().extractAssetsFromXML(dataXML, Model_Notification);
 			notificationsArray = notificationsArray.reverse();
-			layout.header.notificationButton.label = "Notifications (" + notificationsArray.length + ")";
+			layout.header.notificationButton.label = notificationsArray.length + "";
 			if(notificationsArray.length > 0) {
 //				layout.header.notificationButton.setStyle('color', "0xFF8800");
 //				layout.header.notificationButton.setStyle('font-weight', "bold");
@@ -146,7 +154,7 @@ package Controller {
 			layout.notificationPanel.visible = true;
 			layout.notificationPanel.x = layout.header.notificationButton.x;
 			if(notificationsArray) {
-				layout.header.notificationButton.label = "Notifications (" + notificationsArray.length + ")";
+				layout.header.notificationButton.label = notificationsArray.length + "";
 				layout.notificationPanel.addNotifications(notificationsArray);
 			} else {
 				trace("Something went wrong, and we dont have any notifications stored");
@@ -170,7 +178,7 @@ package Controller {
 				}
 			}
 			notificationsArray = tempArray;
-			layout.header.notificationButton.label = "Notifications (" + (notificationsArray.length) + ")";
+			layout.header.notificationButton.label = notificationsArray.length + "";
 		}
 		
 		

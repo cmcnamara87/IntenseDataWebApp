@@ -61,8 +61,8 @@ package View.components.AssetTile
 			myIcon.percentWidth = 100;
 			myIcon.source = AssetLookup.getAssetImageClass(type);
 			if(type == 'image') {
-				myIcon.height = 87;
-				myIcon.width = 87;
+				myIcon.height = 112;
+				myIcon.width = 112;
 				myIcon.source = "http://" + Recensio_Flex_Beta.serverAddress + ":" + Recensio_Flex_Beta.serverPort + "/mflux/icon.mfjp?_skey=" + Auth.getInstance().getSessionID() + "&id=" + assetID + "&version=0&size=" + size;
 			}
 			myIcon.setStyle("verticalAlign", "center");

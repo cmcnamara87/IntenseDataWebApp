@@ -22,8 +22,8 @@ package View.Element {
 		
 		public function LoginBox() {
 			super();
-			var myDropshadow:DropShadowFilter = new DropShadowFilter(3,90,0x999999);
-			this.filters = new Array(myDropshadow);
+			//var myDropshadow:DropShadowFilter = new DropShadowFilter(3,90,0x999999);
+			//this.filters = new Array(myDropshadow);
 			setupTextFields();
 			setupLoginButton();
 		}
@@ -45,9 +45,9 @@ package View.Element {
 		// Redraw/reposition
 		override protected function draw():void {
 			this.graphics.clear();
-			this.graphics.beginFill(0xdddddf);
-			this.graphics.lineStyle(1,0xc7c7c9);
-			this.graphics.drawRoundRect(0-width/2,0-height/2,width,height,12);
+//			this.graphics.beginFill(0xdddddf);
+//			this.graphics.lineStyle(1,0xc7c7c9);
+//			this.graphics.drawRoundRect(0-width/2,0-height/2,width,height,12);
 			usernameBox.width = this.width-padding*2;
 			usernameBox.height = textBoxHeight;
 			usernameBox.x = 0-this.width/2+padding;

@@ -8,6 +8,8 @@
 	<fx:Script>
 		<![CDATA[
 			import Controller.Dispatcher;
+			
+			import Model.Model_User;
 			[Embed(source="Assets/Template/header_logo_id_5.png")] 
 			[Bindable] private var logo:Class;
 
@@ -16,28 +18,55 @@
 				// TODO Auto-generated method stub
 				Dispatcher.call('browse');
 			}
-
 		]]>
 	</fx:Script>
 	<!--<mx:HBox id='headerbackground' width="100%" height="44" backgroundColor="0x336699">-->
 	<mx:HBox id='headerbackground' width="100%" height="50" backgroundColor="0x333333">
 		<!--<Element:BackgroundImage id="background"></Element:BackgroundImage>-->
 		<!-- Add in the logo group -->
-		<s:HGroup width="100%" height="100%" verticalAlign="middle" paddingLeft="10">
+		<s:HGroup height="100%" width="102" verticalAlign="middle" paddingLeft="10">
 			<!-- The logo -->
-			<mx:Image buttonMode="true" click="image1_clickHandler(event)" source="{logo}" width="338" height="43"></mx:Image>
+			<mx:Image buttonMode="true" click="image1_clickHandler(event)" source="{logo}" width="102" height="22"></mx:Image>
 		</s:HGroup>
 		<!-- Add in the button group -->
-
-		<s:HGroup id="globalButtonGroup" visible="false" height="100%" paddingTop="5" paddingBottom="5" paddingRight="20">
-			<!-- Logout Button -->
-			<s:Button chromeColor="0x222222" color="0xEEEEEE" id="adminToolsButton" height="100%" label="Admin Tools" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
+		<s:HGroup id="adminToolButtons" includeInLayout="false" paddingLeft="20" visible="false"  width="100%"  height="100%" verticalAlign="middle">
+				<s:DropDownList chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" selectedIndex="{eraList.length - 2}" >
+					<mx:ArrayCollection id="eraList">
+						<fx:String>ERA 2010</fx:String>
+						<fx:String>ERA 2011</fx:String>
+						<fx:String>ERA 2012</fx:String>
+						<fx:String>Create New ERA</fx:String>
+					</mx:ArrayCollection>
+				</s:DropDownList>
+				<s:Button id="dashboardButton" label="Dashboard" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+				</s:Button>
+				<s:Button id="eraAdminButton" label="ERA Setup" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+				</s:Button>
+				<s:Button id="userAdminButton" label="User Admin" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+				</s:Button>
+				<s:Button id="caseCreatorButton" label="Case Creator" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+				</s:Button>
+				<s:Button id="reportButton" label="Reports" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+				</s:Button>
+		</s:HGroup>
+		<s:HGroup width="100%">
+		</s:HGroup>
+		<s:HGroup id="globalButtonGroup" visible="false" height="100%" paddingTop="5" paddingBottom="5" paddingRight="20" verticalAlign="middle">
+			
+			<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="adminToolsButton" height="20" label="Admin Tools" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
 			</s:Button>
-			<s:Button chromeColor="0x222222" color="0xEEEEEE" id="notificationButton" height="100%" label="Notifications (0)" toolTip="Notifications">
+			<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="productionToolsButton" height="20" label="Production Tools" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
 			</s:Button>
-			<s:Button chromeColor="0x222222" color="0xEEEEEE" id="profileButton" height="100%" label="Username (Profile)" toolTip="Go to your Profile Page">
+			
+			<mx:VRule height="100%">
+			</mx:VRule>
+			
+			<s:Button chromeColor="0x8FAFF7" cornerRadius="10" color="0x222222" id="notificationButton" height="20" width="30" label="0" toolTip="Notifications">
 			</s:Button>
-			<s:Button chromeColor="0x222222" color="0xEEEEEE" id="logoutButton" height="100%" label="Logout" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
+			<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="profileButton" height="20" label="Username" toolTip="Go to your Profile Page">
+			</s:Button>
+			
+			<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="logoutButton" height="20" label="Logout" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
 			</s:Button>
 			
 			<!--<Element:RoundButton id="logoutButton" width="101" height="22" top="21" right="-10" text="Logout" visible="false" toolTip="Log out of the system"></Element:RoundButton>-->
