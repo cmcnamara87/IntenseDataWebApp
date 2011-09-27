@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+
+	<fx:Script>
+		<![CDATA[
+			import Model.Model_ERACase;
+			
+			import spark.events.IndexChangeEvent;
+			public function showCase(eraCase:Model_ERACase):void {
+				rmCode.text = eraCase.rmCode;
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:HGroup>
+		<s:Button label="Create Case"/>
+		<s:DropDownList id="currentCases">
+		</s:DropDownList>	
+	</s:HGroup>
+	<s:VGroup>
+		<s:HGroup>
+			<s:Label text="RM Code" textAlign="right" width="100" />
+			<s:TextInput id="rmCode" />
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label text="QUT School" textAlign="right" width="100" />
+			<s:DropDownList>
+				<s:ArrayList>
+					<fx:String>Dance</fx:String>
+					<fx:String>Design</fx:String>
+					<fx:String>Something</fx:String>
+				</s:ArrayList>
+			</s:DropDownList>
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label text="Researcher" textAlign="right" width="100"/>
+			<s:TextInput />
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label text="FoR" />
+			<s:TextInput />
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label text="Category" />
+			<s:TextInput />
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label text="Title (opt)" />
+			<s:TextInput />
+		</s:HGroup>
+		<s:VGroup>
+			<s:Label text="Production Manager" />
+			<s:Label text="Add Manager" />
+			<s:HGroup>
+				<s:DropDownList>
+					<s:ArrayList>
+						<fx:String>Joe Bloggs</fx:String>
+						<fx:String>John Smith</fx:String>
+					</s:ArrayList>
+				</s:DropDownList>
+				<s:Button label="Add"/>
+			</s:HGroup>
+			<mx:HRule />
+			<s:Label text="Current Managers" />
+			<s:VGroup>
+				<s:Label text="Hey hey" />
+				<s:Label text="You you" />
+			</s:VGroup>
+		</s:VGroup>
+		<s:VGroup>
+			<s:Label text="Production Team" />
+			<s:Label text="Add User" />
+			<s:HGroup>
+				<s:DropDownList>
+					<s:ArrayList>
+						<fx:String>Joe Bloggs</fx:String>
+						<fx:String>John Smith</fx:String>
+					</s:ArrayList>
+				</s:DropDownList>
+				<s:Button label="Add User" />
+			</s:HGroup>
+			
+			<mx:HRule />
+			<s:Label text="Current Managers" />
+			<s:VGroup>
+				<s:Label text="Hey hey" />
+				<s:Label text="You you" />
+			</s:VGroup>
+		</s:VGroup>
+		
+		<s:Button label="Save Case" />
+		
+	</s:VGroup>
+</s:VGroup>

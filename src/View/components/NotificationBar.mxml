@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="0"
+		 backgroundColor="0x00FF00" includeInLayout="false" visible="false"
+		 borderVisible="false"
+		 color="0xFFFFFF">
+
+	<fx:Script>
+		<![CDATA[
+			import flash.utils.clearTimeout;
+			import flash.utils.setTimeout;
+			private var notificationBarHeight:Number = 30;
+			private var hideTimeout:uint;
+			
+			public function showError(message:String):void {
+				this.setStyle("backgroundColor", "0xFF0000");
+				this.setStyle("color", "0x000000");
+				message_text.text = message;
+				show();
+			}
+			
+			public function showGood(message:String):void {
+				this.setStyle("backgroundColor", "0x00FF00");
+				this.setStyle("color", "0xFFFFFF");
+				message_text.text = message;
+				show();
+			}
+			
+			public function showProcess(message:String):void {
+				this.setStyle("backgroundColor", "0xFFFF00");
+				this.setStyle("color", "0xFFFFFF");
+				message_text.text = message;
+				show();
+			}
+			
+			private function hide():void {
+				this.height = 0;
+				this.includeInLayout = false;
+				this.visible = false;
+			}
+			
+			private function show():void {
+				this.height = notificationBarHeight;
+				this.includeInLayout = true;
+				this.visible = true;
+				// Stop the current timeout
+				clearTimeout(hideTimeout);
+				// Setup the new one
+				hideTimeout = setTimeout(hide, 5000);
+			}
+			
+			
+		]]>
+	</fx:Script>
+
+		<s:Label id="message_text" text="Mesage goes here"/>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:HorizontalLayout verticalAlign="middle" paddingBottom="10" paddingTop="10" paddingLeft="10" paddingRight="10">
+		</s:HorizontalLayout>
+	</fx:Declarations>
+</s:BorderContainer>

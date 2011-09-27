@@ -1,5 +1,9 @@
 package Controller.Utilities {
 	import Controller.*;
+	import Controller.Admin.CaseCreatorController;
+	import Controller.Admin.DashboardController;
+	import Controller.Admin.ERASetupController;
+	import Controller.Admin.UserAdminController;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -55,9 +59,14 @@ package Controller.Utilities {
 				classname: ERASetupController
 			},
 			{
-				url: 'adminTools',
-				title: 'Admin Tools',
-				classname: AdminController
+				url: 'useradmin',
+				title: 'User Admin',
+				classname: UserAdminController
+			},
+			{
+				url: 'casecreator',
+				title: 'Case Creator',
+				classname: CaseCreatorController
 			}
 		);
 		

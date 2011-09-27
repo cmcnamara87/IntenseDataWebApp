@@ -2,6 +2,7 @@ package Controller {
 	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
+	import Model.Model_ERAProject;
 	import Model.Model_Notification;
 	
 	import View.Layout;
@@ -34,6 +35,9 @@ package Controller {
 		// Store current notifications for hte user
 		private static var notificationsArray:Array;
 		
+		public static var currentEraProject:Model_ERAProject;
+		public static var ERARoles:Array = new Array("sys_admin", "monitor", "researcher", "production_manager", "production_team", "viewer");
+		
 		public function AppController() {
 			setLogoutButton();
 			loadView();
@@ -62,6 +66,12 @@ package Controller {
 			layout.header.adminToolsButton.addEventListener(MouseEvent.CLICK, adminToolsButtonClicked);
 			layout.header.productionToolsButton.addEventListener(MouseEvent.CLICK, productionToolsButtonClicked);
 			
+			// Admin buttons
+			layout.header.dashboardButton.addEventListener(MouseEvent.CLICK, dashboardButtonClicked);
+			layout.header.eraSetupButton.addEventListener(MouseEvent.CLICK, eraSetupButtonClicked);
+			layout.header.userAdminButton.addEventListener(MouseEvent.CLICK, userAdminButtonClicked);
+			layout.header.caseCreatorButton.addEventListener(MouseEvent.CLICK, caseCreatorButtonClicked);
+			
 		}
 		
 		
@@ -89,6 +99,8 @@ package Controller {
 		private static function adminToolsButtonClicked(e:MouseEvent):void {
 			// Show the admin tool buttons
 			showAdminToolButtons();
+			
+			//
 			
 			// load the Dashboard (which is the default admin tool)
 			Dispatcher.call("erasetup");
@@ -124,6 +136,19 @@ package Controller {
 		private static function productionToolsButtonClicked(e:MouseEvent):void {
 			hideAdminToolButtons();
 			Dispatcher.call("browse");
+		}
+		
+		private static function dashboardButtonClicked(e:MouseEvent):void {
+			Dispatcher.call("dashboard");
+		}
+		private static function eraSetupButtonClicked(e:MouseEvent):void {
+			Dispatcher.call("erasetup");
+		}
+		private static function userAdminButtonClicked(e:MouseEvent):void {
+			Dispatcher.call("useradmin");
+		}
+		private static function caseCreatorButtonClicked(e:MouseEvent):void {
+			Dispatcher.call("casecreator");
 		}
 		
 		/**

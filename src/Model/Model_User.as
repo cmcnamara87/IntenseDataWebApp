@@ -40,6 +40,8 @@ package Model {
 			base_type = rawData.type;
 			base_modifier_id = rawData.modifier.@id;
 			
+			trace("********", rawData);
+			
 			if(rawData.meta.r_user.meta_firstname == " ") 	rawData.meta.r_user.meta_firstname = "";
 			if(rawData.meta.r_user.meta_lastname == " ") 	rawData.meta.r_user.meta_lastname = "";
 			if(rawData.meta.r_user.meta_email == " ") 		rawData.meta.r_user.meta_email = "";

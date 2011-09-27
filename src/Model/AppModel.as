@@ -1,12 +1,20 @@
 package Model {
 	
+	import Controller.AppController;
 	import Controller.Dispatcher;
 	import Controller.Utilities.Auth;
 	
 	import Model.Transactions.Access.Transaction_ChangeAccess;
 	import Model.Transactions.Access.Transaction_CopyAccess;
 	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
+	import Model.Transactions.ERAProject.Transaction_AddRoleToUser;
+	import Model.Transactions.ERAProject.Transaction_CreateERACase;
 	import Model.Transactions.ERAProject.Transaction_CreateERAProject;
+	import Model.Transactions.ERAProject.Transaction_CreateERAUser;
+	import Model.Transactions.ERAProject.Transaction_GetAllCases;
+	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
+	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
+	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
 	import Model.Transactions.Share.Transaction_SetUserAssetShare;
 	import Model.Transactions.Transaction_ChangePassword;
 	import Model.Transactions.Transaction_CloneMedia;
@@ -1029,6 +1037,7 @@ package Model {
 					path = 'asset';
 					break;
 				case Model_User:
+				case Model_ERAUser:
 					path = 'user';
 					break;
 				default:
@@ -1484,6 +1493,7 @@ package Model {
 			var dataXML:XML = XML(e.target.data);
 			return (dataXML.reply.@type == "result");
 		}
+		
 		public function callFailed(functionName:String, e:Event):Boolean {
 			var dataXML:XML = XML(e.target.data);
 			if(dataXML.reply.@type == "result") {
@@ -1492,6 +1502,22 @@ package Model {
 				trace(functionName + ": FAILED", e.target.data);
 			}
 			return (dataXML.reply.@type != "result");
+		}
+		
+		/**
+		 * Get the data out of the response 
+		 * @param e
+		 * @return 
+		 * 
+		 */
+		public function getData(functionName:String, e:Event):XML {
+			var dataXML:XML = XML(e.target.data);
+			if(dataXML.reply.@type != "result") {
+				trace(functionName + ": FAILED", e.target.data);
+				return null;
+			}
+			trace(functionName + ": SUCCESS", e.target.data);
+			return dataXML;
 		}
 		
 		/* =============================================== NOTIFICATIONS =============================================== */
@@ -1533,8 +1559,66 @@ package Model {
 		
 		
 		/* =============================================== ERA STUFF =============================================== */
-		public function makeERAProject(day:String, month:String, year:String, packageSize:String):void {
-			var newERA:Transaction_CreateERAProject = new Transaction_CreateERAProject(day, month, year, packageSize, _connection);
+		/**
+		 * Make a new ERA project 
+		 * @param day			The day the era project is due
+		 * @param month			The month the era project is due
+		 * @param year			The year the era project is due
+		 * @param packageSize	The size of the package for era
+		 * @param callback		
+		 * 
+		 */
+		public function makeERAProject(day:String, month:String, year:String, packageSize:String, callback:Function):void {
+			var newERA:Transaction_CreateERAProject = new Transaction_CreateERAProject(day, month, year, packageSize, _connection, callback);
+		}
+		
+		public function getERAProjects(callback:Function):void {
+			var allProjects:Transaction_GetERAProjects = new Transaction_GetERAProjects(_connection, callback);
+		}
+		
+		/**
+		 * Get all the users on the system 
+		 * @param callback
+		 * 
+		 */
+		public function getERAUsers(callback:Function):void {
+			var getAllUsers:Transaction_GetAllUsers = new Transaction_GetAllUsers(_connection, callback);
+		}
+		
+		/**
+		 * Get all the users on the system that have a specific role 
+		 * @param role					The role to search for
+		 * @param year					The year the 
+		 * @param gotUsersWithRole
+		 * 
+		 */
+		public function getERAUsersWithRole(role:String, year:String, callback:Function):void {
+			var getUsersWithRole:Transaction_GetUsersWithRole = new Transaction_GetUsersWithRole(role, year, _connection, callback);
+		}
+		
+		public function addRoleToERAUser(username:String, role:String, year:String, callback:Function):void {
+			var addRoleToUser:Transaction_AddRoleToUser = new Transaction_AddRoleToUser(username, role, year, _connection, callback);
+		}
+		
+		public function createERAUser(qutUsername:String, firstName:String, lastName:String, callback:Function):void {
+			var createERAUser:Model.Transactions.ERAProject.Transaction_CreateERAUser = new Transaction_CreateERAUser(qutUsername, firstName, lastName, _connection, callback);
+		}
+			
+		public function getAllERACases(eraID:Number, callback:Function):void {
+			var getAllERACases:Transaction_GetAllCases = new Transaction_GetAllCases(eraID, _connection, callback);
+		}
+		
+		public function createERACase(year:String,
+									  rmCode:String, 
+									  title:String,
+									  researcherArray:Array,
+									  qutSchool:String, 
+									  forArray:Array,
+									  categoryArray:Array,
+									  productionManagerUsernameArray:Array,
+									  productionTeamUsernameArray:Array,
+									  callback:Function):void {
+			var createERACase:Transaction_CreateERACase = new Transaction_CreateERACase(year, rmCode, title, researcherArray, qutSchool, forArray, categoryArray, productionManagerUsernameArray, productionTeamUsernameArray, _connection, callback);
 		}
 	}
 		

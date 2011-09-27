@@ -2,6 +2,9 @@ package Controller {
 	import Controller.Utilities.Auth;
 	import Controller.Utilities.Router;
 	
+	import Model.AppModel;
+	import Model.Model_ERAProject;
+	
 	import View.Login;
 	
 	import flash.events.MouseEvent;
@@ -73,7 +76,32 @@ package Controller {
 		// Called if login was successful
 		private function loginSuccessful():void {
 			trace("- Login Successful, redirecting");
-			redirect();
+			
+			// Get out all ERA projects
+			AppModel.getInstance().getERAProjects(gotERAProjects);
+			
+		}
+		private function gotERAProjects(status:Boolean, eraProjectArray:Array):void {
+			if(eraProjectArray.length == 0) {
+				// There are no eras setup, so lets do that
+				Dispatcher.call("erasetup");
+			} else {
+				// There are eras setup
+				// so lets save them
+				trace("ERA Count", eraProjectArray.length);
+				var yearFound:Number = 0;
+				for each(var eraProject:Model_ERAProject in eraProjectArray) {
+					trace("Era year", (eraProject.year), Number(eraProject.year));
+					if(Number(eraProject.year) > yearFound) {
+						trace("Era found");
+						AppController.currentEraProject = eraProject;
+						yearFound = eraProject.year as Number;
+					}
+				}
+				trace("Era saved is",AppController.currentEraProject); 
+				redirect();
+			}
+			
 		}
 		
 		// Log in was successful, so redirect to either the default route or the last used route

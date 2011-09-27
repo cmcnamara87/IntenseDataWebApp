@@ -1,6 +1,7 @@
-package Controller
+package Controller.Admin
 {
 	import spark.components.Label;
+	import Controller.AppController;
 
 	public class DashboardController extends AppController
 	{

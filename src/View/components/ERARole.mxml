@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%">
+
+	<fx:Script>
+		<![CDATA[
+			import Controller.IDEvent;
+			
+			import View.components.Admin.UserListItem;
+			
+			protected function addUserButton_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				var addUserToRole:IDEvent = new IDEvent(IDEvent.ADD_USER_TO_ROLE, true);
+				addUserToRole.data.username = allUsers.selectedItem;
+				addUserToRole.data.role = roleTitle.text;
+				this.dispatchEvent(addUserToRole);
+				
+				var user:UserListItem = new UserListItem();
+				user.username = allUsers.selectedItem;
+				currentUsers.addElement(user);	
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Label id="roleTitle" text="Role" fontSize="15" fontWeight="bold">
+	</s:Label>
+	<s:HGroup>
+		<s:DropDownList id="allUsers" width="100%">
+		</s:DropDownList>
+		<s:Button label="Add User" id="addUserButton" click="addUserButton_clickHandler(event)">
+		</s:Button>
+	</s:HGroup>
+	
+	<s:Scroller width="100%" height="100">
+		<s:VGroup id="currentUsers">
+		</s:VGroup>	
+	</s:Scroller>
+</s:VGroup>

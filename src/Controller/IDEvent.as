@@ -149,6 +149,10 @@ package Controller {
 			public static var ASSET_ADD_AS_REF_ANNOTATION:String = "id_assetAddAsRefAnnotation";
 			// The PDF has loaded and finished being displayed on screen
 			public static var MEDIA_LOADED:String = "id_pdfLoaded"; 
+			
+			// Called when the a user is being added to a role (in the user admin)
+			public static var ADD_USER_TO_ROLE:String = "id_addUserToRole";
+			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 		}

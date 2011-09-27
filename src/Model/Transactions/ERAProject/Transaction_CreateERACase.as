@@ -1,0 +1,130 @@
+package Model.Transactions.ERAProject
+{
+	import Controller.AppController;
+	import Controller.IDEvent;
+	
+	import Model.AppModel;
+	import Model.Model_ERACase;
+	import Model.Model_ERAProject;
+	import Model.Utilities.Connection;
+	
+	import flash.events.Event;
+	
+	public class Transaction_CreateERACase
+	{
+		private var year:String;
+		private var rmCode:String;
+		private var title:String;
+		private var researcherArray:Array;
+		private var qutSchool:String;
+		private var forArray:Array;
+		private var categoryArray:Array;
+		private var productionManagerUsernameArray:Array;
+		private var productionTeamUsernameArray:Array;
+		private var connection:Connection;
+		private var callback:Function;
+		
+		private var newERACaseID:Number;
+		
+		public function Transaction_CreateERACase(year:String,
+												  rmCode:String, 
+												  title:String,
+												  researcherArray:Array,
+												  qutSchool:String, 
+												  forArray:Array,
+												  categoryArray:Array,
+												  productionManagerUsernameArray:Array,
+												  productionTeamUsernameArray:Array,
+												  connection:Connection, 
+												  callback:Function)
+		{
+			
+			this.year = year;
+			this.rmCode = rmCode;
+			this.title = title;
+			this.researcherArray = researcherArray;
+			this.qutSchool = qutSchool;
+			this.forArray = forArray;
+			this.categoryArray = categoryArray;
+			this.productionManagerUsernameArray = productionManagerUsernameArray;
+			this.productionTeamUsernameArray = productionTeamUsernameArray;
+			this.connection = connection;
+			this.callback = callback;
+			
+			createERACase();
+		}
+		
+		private function createERACase():void {
+			var baseXML:XML = connection.packageRequest("asset.create", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			
+			// Create a namespace for this era
+			argsXML.namespace = "ERA/" + this.year;
+			
+			argsXML.type = "ERA/case";
+			
+			// Set this as a collection (cause we are going to put the case elements inside)
+			argsXML.collection = true;
+			
+			// Setup the era meta-data
+			argsXML.meta["ERA-case"]["RM_code"] = this.rmCode;
+			argsXML.meta["ERA-case"]["title"] = this.title;
+
+			// setup the researchers
+			for each(var researcherUsername:String in researcherArray) {
+				argsXML.meta["ERA-case"].appendChild(XML("<researcher_username>" + researcherUsername + "</researcher_username>"));
+			}
+			
+			argsXML.meta["ERA-case"]["qut_school"] = this.qutSchool;
+			
+			for each(var forElementArray:Array in forArray) {
+				argsXML.meta["ERA-case"].appendChild(XML("<for><for_code>" + forElementArray["for_code"] + "</for_code><percentage>" + forElementArray["percentage"] + "</percentage></for>"));
+			}
+			
+			for each(var category:String in categoryArray) {
+				argsXML.meta["ERA-case"].appendChild(XML("<category>" + category + "</category>"));
+			}
+			
+			for each(var productionManagerUsername:String in productionManagerUsernameArray) {
+				argsXML.meta["ERA-case"].appendChild(XML("<production_manager_username>" + productionManagerUsername + "</production_manager_username>"));
+			}
+			
+			for each(var productionTeamUsername:String in productionTeamUsernameArray) {
+				argsXML.meta["ERA-case"].appendChild(XML("<production_team_username>" + productionTeamUsername + "</production_team_username>"));
+			}
+			
+			connection.sendRequest(baseXML, eraCaseCreated);			
+		}
+		
+		private function eraCaseCreated(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("creating era case", e)) == null) {
+				callback(false, null);
+				return;
+			}
+			
+			newERACaseID = data.reply.result.id;
+			
+			// Get out the ERA object
+			var baseXML:XML = connection.packageRequest("asset.get", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			
+			argsXML.id = newERACaseID;
+			
+			connection.sendRequest(baseXML, eraCaseRetrieved);
+		}
+		
+		private function eraCaseRetrieved(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("getting era case", e)) == null) {
+				callback(false, null);
+				return
+			}
+			
+			var eraCase:Model_ERACase = new Model_ERACase();
+			eraCase.setData(data.reply.result.asset[0]);
+			
+			callback(true, eraCase);
+		}
+	}
+}
