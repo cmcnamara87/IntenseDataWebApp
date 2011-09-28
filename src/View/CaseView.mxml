@@ -50,8 +50,8 @@
 			<s:Group height="100%" width="100%">
 				<Component:EvidenceManagement>
 				</Component:EvidenceManagement>
-				<s:BorderContainer id="caseTag" click="caseTag_clickHandler(event)" backgroundColor="black" borderVisible="false" width="40" height="75" top="300">
-					<s:Label x="25" y="20" rotation="90" text="Cases" color="white" fontWeight="bold"/>
+				<s:BorderContainer buttonMode="true" id="caseTag" click="caseTag_clickHandler(event)" backgroundColor="black" borderVisible="false" width="40" height="75" top="300">
+					<s:Label x="15" y="50" rotation="270" text="Cases" color="white" fontWeight="bold"/>
 					<s:filters>
 						<s:DropShadowFilter distance="3" angle="0" alpha="0.5" color="0x000000" blurX="20" blurY="20"/>
 					</s:filters>

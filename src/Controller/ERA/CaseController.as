@@ -23,7 +23,7 @@ package Controller.ERA
 		}
 		
 		private function setupEventListeners():void {
-			
+			// Listen for file upload
 		}
 		override public function init():void {
 			setupEventListeners();
@@ -32,6 +32,13 @@ package Controller.ERA
 		}
 		private function gotAllERACases(status:Boolean, eraCaseArray:Array):void {
 			caseView.addCases(eraCaseArray);	
+		}
+		
+		private function startFileUpload():void {
+//			dataObject = (view as NewAsset).metaForm.getData();
+//			dataObject.file = file;
+//			lock();
+//			AppModel.getInstance().startFileUpload(dataObject);
 		}
 	}
 }

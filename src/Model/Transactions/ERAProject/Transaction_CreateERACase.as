@@ -60,7 +60,7 @@ package Model.Transactions.ERAProject
 			var baseXML:XML = connection.packageRequest("asset.create", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
-			// Create a namespace for this era
+			// put it in the namespace for this era
 			argsXML.namespace = "ERA/" + this.year;
 			
 			argsXML.type = "ERA/case";

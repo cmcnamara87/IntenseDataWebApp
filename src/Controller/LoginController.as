@@ -120,7 +120,8 @@ package Controller {
 				return;
 			}
 			//Dispatcher.call(redirectURL);
-			Dispatcher.call('browse');
+//			Dispatcher.call('browse');
+			Dispatcher.call('case/1/management');
 		}
 	}
 }

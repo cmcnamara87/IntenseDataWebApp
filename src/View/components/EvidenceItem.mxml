@@ -5,11 +5,20 @@
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.Utilities.AssetLookup;
+			private var fileReference:FileReference;
+			
 			protected function uploadButton_clickHandler(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
-				var uploadFile:FileReference = new FileReference();
-				
+				fileReference = new FileReference();
+				fileReference.browse(AssetLookup.getFileTypes());
+				fileReference.addEventListener(Event.SELECT, onFileSelect);
+
+				uploadButton.label = "Uploaded";
+				uploadButton.enabled = false;
+			}
+			
+			private function onFileSelect(e:Event):void {
 				uploadProgress.includeInLayout = true;
 				uploadProgress.visible = true;
 			}
@@ -20,27 +29,67 @@
 				uploadProgress.visible = false;
 			}
 
+
+			protected function usefulCheckbox_changeHandler(event:Event):void
+			{
+				if((event.target as CheckBox).selected == true) {
+					// The useful box was checked
+					processedCheckbox.enabled = true;
+					uploadableCheckbox.enabled = true;
+					uploadButton.enabled = false;
+				} else {
+					// The useful box has been unchecked
+					processedCheckbox.enabled = false;
+					uploadableCheckbox.enabled = false;
+					uploadButton.enabled = false;
+				}
+			}
+
+
+			protected function uploadableCheckbox_changeHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				uploadButton.enabled = true;
+			}
+
+
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				saveButton.visible = false;
+				saveButton.includeInLayout = false;
+				actionGroup.visible = true;
+				actionGroup.includeInLayout = true;
+			}
+
 		]]>
 	</fx:Script>
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:HGroup>
+	<s:HGroup verticalAlign="middle">
+		<s:Button id="deleteEvidence" label="X" width="30"/>
 		<s:DropDownList>
 			<s:ArrayList>
 				<fx:String>Video</fx:String>
 				<fx:String>Images</fx:String>
 				<fx:String>Photos</fx:String>
 				<fx:String>Document</fx:String>
-				<fx:String>Special PDF</fx:String>
+				<fx:String>Physical Object</fx:String>
+				<fx:String>Research Statement</fx:String>
 			</s:ArrayList>
 		</s:DropDownList>
-		<s:TextInput text="title" />
-		<s:TextInput text="description" />
-		<s:CheckBox label="Useful" />
-		<s:CheckBox label="Processed" />
-		<s:Button label="Upload"  id="uploadButton" click="uploadButton_clickHandler(event)" />
+		<s:TextInput text="title" color="0xDDDDDD"/>
+		<s:TextInput text="description" color="0xDDDDDD"/>
+		<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)" />
+		<s:HGroup id="actionGroup" visible="false" includeInLayout="false">
+			<s:CheckBox label="Useful" id="usefulCheckbox" change="usefulCheckbox_changeHandler(event)"/>
+			<s:CheckBox label="Processed" id="processedCheckbox" enabled="false"/>
+			<s:CheckBox label="Uploadable" id="uploadableCheckbox" enabled="false" change="uploadableCheckbox_changeHandler(event)"/>
+			<s:Button label="Upload" id="uploadButton" click="uploadButton_clickHandler(event)" enabled="false" />
+			<s:CheckBox label="Returned" />
+		</s:HGroup>
 	</s:HGroup>
 	<s:HGroup id="uploadProgress" width="100%" visible="false" includeInLayout="false">
 		<s:BorderContainer width="100%" height="20" backgroundColor="0xFF00FF">

@@ -9,6 +9,7 @@ package Model {
 	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
 	import Model.Transactions.ERAProject.Transaction_AddRoleToUser;
 	import Model.Transactions.ERAProject.Transaction_CreateERACase;
+	import Model.Transactions.ERAProject.Transaction_CreateERALogItem;
 	import Model.Transactions.ERAProject.Transaction_CreateERAProject;
 	import Model.Transactions.ERAProject.Transaction_CreateERAUser;
 	import Model.Transactions.ERAProject.Transaction_CreateRoom;
@@ -1625,6 +1626,14 @@ package Model {
 		public function createRoomInCase(caseID:Number, roomType:String, callback:Function):void {
 			var createRoomInCase:Transaction_CreateRoom = new Transaction_CreateRoom(AppController.currentEraProject.year, caseID, roomType, _connection, callback);
 		}
+		
+		public function createERALogItem(caseID:Number, type:String, title:String, callback:Function, description:String=""):void {
+			var createERALogItem:Transaction_CreateERALogItem = new Transaction_CreateERALogItem();
+		}
+		public function uploadERAFile(type:String, fileName:String, title:String, callback:Function, description:String="", transcoded:Boolean=false, uri:String=""):void {
+			
+		}
+			
 	}
 		
 }
