@@ -1,9 +1,10 @@
 package Controller.Utilities {
 	import Controller.*;
-	import Controller.Admin.CaseCreatorController;
-	import Controller.Admin.DashboardController;
-	import Controller.Admin.ERASetupController;
-	import Controller.Admin.UserAdminController;
+	import Controller.ERA.Admin.CaseCreatorController;
+	import Controller.ERA.Admin.DashboardController;
+	import Controller.ERA.Admin.ERASetupController;
+	import Controller.ERA.Admin.UserAdminController;
+	import Controller.ERA.CaseController;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -67,6 +68,11 @@ package Controller.Utilities {
 				url: 'casecreator',
 				title: 'Case Creator',
 				classname: CaseCreatorController
+			},
+			{
+				url: 'case',
+				title: 'Case',
+				classname: CaseController
 			}
 		);
 		

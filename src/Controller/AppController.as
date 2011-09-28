@@ -135,7 +135,8 @@ package Controller {
 		
 		private static function productionToolsButtonClicked(e:MouseEvent):void {
 			hideAdminToolButtons();
-			Dispatcher.call("browse");
+			//Dispatcher.call("browse");
+			Dispatcher.call("case/1/management");
 		}
 		
 		private static function dashboardButtonClicked(e:MouseEvent):void {
@@ -211,7 +212,7 @@ package Controller {
 		 */		
 		private static function showNotifications():void {
 			layout.notificationPanel.visible = true;
-			layout.notificationPanel.x = layout.header.notificationButton.x;
+//			layout.notificationPanel.x = layout.header.notificationButton.x;
 			if(notificationsArray) {
 				layout.header.notificationButton.label = notificationsArray.length + "";
 				layout.notificationPanel.addNotifications(notificationsArray);

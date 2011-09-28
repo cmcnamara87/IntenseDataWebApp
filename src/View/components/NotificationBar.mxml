@@ -4,12 +4,15 @@
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="0"
 		 backgroundColor="0x00FF00" includeInLayout="false" visible="false"
 		 borderVisible="false"
-		 color="0xFFFFFF">
+		 color="0xFFFFFF"
+		 showEffect="{fadeIn}" hideEffect="{fadeOut}" >
 
 	<fx:Script>
 		<![CDATA[
 			import flash.utils.clearTimeout;
 			import flash.utils.setTimeout;
+			
+			import mx.effects.Resize;
 			private var notificationBarHeight:Number = 30;
 			private var hideTimeout:uint;
 			
@@ -59,5 +62,8 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<s:HorizontalLayout verticalAlign="middle" paddingBottom="10" paddingTop="10" paddingLeft="10" paddingRight="10">
 		</s:HorizontalLayout>
+		
+		<s:Fade duration="2000" alphaFrom="0" alphaTo="1" id="fadeIn" />   
+		<s:Fade duration="100" alphaFrom="1" alphaTo="0" id="fadeOut" />
 	</fx:Declarations>
 </s:BorderContainer>

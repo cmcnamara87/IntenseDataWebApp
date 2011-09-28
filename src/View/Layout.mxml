@@ -17,9 +17,9 @@
 	
 	<Notification:NotificationPanel
 		id="notificationPanel"
-		visible="false"
-		includeInLayout="false"
+		visible="true"
+		includeInLayout="true"
 		top="{header.height + 10}"
-		right="100">
+		right="0">
 	</Notification:NotificationPanel>
 </s:Group>

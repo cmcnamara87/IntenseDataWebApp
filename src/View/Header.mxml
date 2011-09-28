@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%"
 		 xmlns:Element="View.Element.*" 
@@ -73,4 +73,7 @@
 			<!--<Element:RoundButton id="profileButton" width="80" height="22" top="21" right="90" text="Profile" visible="false" toolTip="Edit your profile"></Element:RoundButton>-->
 		</s:HGroup>
 	</mx:HBox>
-</mx:Canvas>
+	<s:filters>
+		<s:DropShadowFilter distance="3" angle="270" alpha="0.5" color="0x000000" blurX="20" blurY="20"/>
+	</s:filters>
+</s:Group>

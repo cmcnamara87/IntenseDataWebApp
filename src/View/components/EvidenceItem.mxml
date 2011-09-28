@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%">
+
+	<fx:Script>
+		<![CDATA[
+			protected function uploadButton_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				var uploadFile:FileReference = new FileReference();
+				
+				uploadProgress.includeInLayout = true;
+				uploadProgress.visible = true;
+			}
+
+			protected function cancelUploadButton_clickHandler(event:MouseEvent):void
+			{
+				uploadProgress.includeInLayout = false;
+				uploadProgress.visible = false;
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:HGroup>
+		<s:DropDownList>
+			<s:ArrayList>
+				<fx:String>Video</fx:String>
+				<fx:String>Images</fx:String>
+				<fx:String>Photos</fx:String>
+				<fx:String>Document</fx:String>
+				<fx:String>Special PDF</fx:String>
+			</s:ArrayList>
+		</s:DropDownList>
+		<s:TextInput text="title" />
+		<s:TextInput text="description" />
+		<s:CheckBox label="Useful" />
+		<s:CheckBox label="Processed" />
+		<s:Button label="Upload"  id="uploadButton" click="uploadButton_clickHandler(event)" />
+	</s:HGroup>
+	<s:HGroup id="uploadProgress" width="100%" visible="false" includeInLayout="false">
+		<s:BorderContainer width="100%" height="20" backgroundColor="0xFF00FF">
+		</s:BorderContainer>
+		<s:Button width="50" label="X" id="cancelUploadButton" click="cancelUploadButton_clickHandler(event)"/>
+	</s:HGroup>
+</s:VGroup>

@@ -6,6 +6,7 @@ package Model.Transactions.ERAProject
 	import Model.AppModel;
 	import Model.Model_ERACase;
 	import Model.Model_ERAProject;
+	import Model.Model_ERARoom;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
@@ -25,6 +26,7 @@ package Model.Transactions.ERAProject
 		private var callback:Function;
 		
 		private var newERACaseID:Number;
+		private var roomBeingMadeIndex:Number; //the index for the room we are currently making in @see Model_ERARoom
 		
 		public function Transaction_CreateERACase(year:String,
 												  rmCode:String, 
@@ -77,18 +79,22 @@ package Model.Transactions.ERAProject
 			
 			argsXML.meta["ERA-case"]["qut_school"] = this.qutSchool;
 			
+			// setup for codes/percentages
 			for each(var forElementArray:Array in forArray) {
 				argsXML.meta["ERA-case"].appendChild(XML("<for><for_code>" + forElementArray["for_code"] + "</for_code><percentage>" + forElementArray["percentage"] + "</percentage></for>"));
 			}
 			
+			// setup categories
 			for each(var category:String in categoryArray) {
 				argsXML.meta["ERA-case"].appendChild(XML("<category>" + category + "</category>"));
 			}
 			
+			// setup production manager usernames
 			for each(var productionManagerUsername:String in productionManagerUsernameArray) {
 				argsXML.meta["ERA-case"].appendChild(XML("<production_manager_username>" + productionManagerUsername + "</production_manager_username>"));
 			}
 			
+			// setup production team usernames
 			for each(var productionTeamUsername:String in productionTeamUsernameArray) {
 				argsXML.meta["ERA-case"].appendChild(XML("<production_team_username>" + productionTeamUsername + "</production_team_username>"));
 			}
@@ -105,6 +111,27 @@ package Model.Transactions.ERAProject
 			
 			newERACaseID = data.reply.result.id;
 			
+			// Create all the rooms
+			roomBeingMadeIndex = 0;
+			AppModel.getInstance().createRoomInCase(newERACaseID, Model_ERARoom.ROOM_TYPE_ARRAY[roomBeingMadeIndex], roomCreated);
+		}
+		
+		private function roomCreated(status:Boolean):void {
+			if(!status) {
+				callback(false, null);
+				return
+			}
+			// now create the next room
+			roomBeingMadeIndex++;
+			if(roomBeingMadeIndex == Model_ERARoom.ROOM_TYPE_ARRAY.length) {
+				// We have made all the rooms
+				roomCreationCompleted();
+			} else {
+				AppModel.getInstance().createRoomInCase(newERACaseID, Model_ERARoom.ROOM_TYPE_ARRAY[roomBeingMadeIndex], roomCreated);
+			}
+		}
+		
+		private function roomCreationCompleted():void {
 			// Get out the ERA object
 			var baseXML:XML = connection.packageRequest("asset.get", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;

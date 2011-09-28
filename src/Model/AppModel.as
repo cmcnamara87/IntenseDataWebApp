@@ -11,6 +11,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_CreateERACase;
 	import Model.Transactions.ERAProject.Transaction_CreateERAProject;
 	import Model.Transactions.ERAProject.Transaction_CreateERAUser;
+	import Model.Transactions.ERAProject.Transaction_CreateRoom;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
 	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
@@ -1619,6 +1620,10 @@ package Model {
 									  productionTeamUsernameArray:Array,
 									  callback:Function):void {
 			var createERACase:Transaction_CreateERACase = new Transaction_CreateERACase(year, rmCode, title, researcherArray, qutSchool, forArray, categoryArray, productionManagerUsernameArray, productionTeamUsernameArray, _connection, callback);
+		}
+		
+		public function createRoomInCase(caseID:Number, roomType:String, callback:Function):void {
+			var createRoomInCase:Transaction_CreateRoom = new Transaction_CreateRoom(AppController.currentEraProject.year, caseID, roomType, _connection, callback);
 		}
 	}
 		

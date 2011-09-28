@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  horizontalAlign="center" gap="15" dragDrop="vgroup1_dragDropHandler(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import mx.events.DragEvent;
+			[Bindable]
+			public var roomName:String = "";
+
+			protected function vgroup1_dragDropHandler(event:DragEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:BorderContainer backgroundColor="0x434343" borderVisible="false" height="70" width="70">
+		<s:filters>
+			<s:DropShadowFilter distance="1" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+		</s:filters>
+	</s:BorderContainer>
+	<s:Label text="{roomName}" fontSize="18" color="0xcfcfcf">
+		<s:filters>
+			<s:DropShadowFilter distance="1" angle="270" color="0x000000" blurX="0" blurY="0"/>
+		</s:filters>
+	</s:Label>
+</s:VGroup>
