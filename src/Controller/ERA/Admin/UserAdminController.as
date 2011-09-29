@@ -7,9 +7,9 @@ package Controller.ERA.Admin
 	import Model.Model_ERAUser;
 	import Model.Model_User;
 	
-	import View.UserAdminView;
+	import View.ERA.UserAdminView;
 	import View.components.Admin.UserListItem;
-	import View.components.ERARole;
+	import View.ERA.components.ERARole;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;

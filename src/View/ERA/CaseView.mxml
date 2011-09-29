@@ -2,12 +2,15 @@
 <s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" gap="0"
-		 xmlns:Component="View.components.*"
+		 xmlns:Component="View.components.*" xmlns:components="View.ERA.components.*"
 		 >
 
 	<fx:Script>
 		<![CDATA[
 			import Model.Model_ERACase;
+			import Model.Model_ERALogItem;
+			
+			import View.ERA.components.EvidenceManagement;
 			
 			import mx.collections.ArrayList;
 			
@@ -16,8 +19,22 @@
 			private var aasdf:Array = new Array("helo", "world", "test", "this");
 			private var arrayTest:ArrayList = new ArrayList(aasdf);
 			
+			public function showEvidenceManagement(logItemArray:Model_ERALogItem):void {
+				var evidenceManagement:EvidenceManagement = new EvidenceManagement();
+				room.removeAllElements();
+				room.addElement(evidenceManagement);
+			}
 			
 			public function addCases(caseArray:Array):void {
+				casePanelContent.removeAllElements();
+				
+				if(caseArray.length == 0) {
+					var label2:Label = new Label();
+					label2.text = "No cases found";
+					label2.setStyle('color', '0xFFFFFF');
+					casePanelContent.removeAllElements();
+					casePanelContent.addElement(label2);
+				}
 				for each(var eraCase:Model_ERACase in caseArray) {
 					var someLabel:Label = new Label();
 					someLabel.setStyle('color', '0xFFFFFF');
@@ -41,15 +58,29 @@
 	</fx:Declarations>
 	<!-- The Case Panel -->
 	<s:BorderContainer  id="casePanel" backgroundColor="0x000000" borderVisible="false" height="100%" width="300">
-		<s:VGroup id="casePanelContent">
+		<s:VGroup width="100%" height="100%">
+			<s:DropDownList chromeColor="0x000000" width="100%">
+				<s:ArrayList>
+					<fx:String>ERA INFO IN HERE</fx:String>
+				</s:ArrayList>
+			</s:DropDownList>
+			<s:VGroup id="casePanelContent">
+				<s:Label color="0xFFFFFF">
+					Loading...
+				</s:Label>
+			</s:VGroup>
 		</s:VGroup>
 	</s:BorderContainer>
 	<s:VGroup height="100%" width="100%" gap="0">
 		<!-- START THE CONTENT SECTION -->
-		<s:BorderContainer backgroundColor="0x00FF00" borderVisible="false" height="100%" width="100%">
+		<s:BorderContainer backgroundColor="0xFFFFFF" borderVisible="false" height="100%" width="100%">
 			<s:Group height="100%" width="100%">
-				<Component:EvidenceManagement>
-				</Component:EvidenceManagement>
+				<s:Group height="100%" width="100%" id="room">
+					<s:Label text="Loading..." />
+					<!--<components:EvidenceManagement>
+					</components:EvidenceManagement>-->	
+				</s:Group>
+				
 				<s:BorderContainer buttonMode="true" id="caseTag" click="caseTag_clickHandler(event)" backgroundColor="black" borderVisible="false" width="40" height="75" top="300">
 					<s:Label x="15" y="50" rotation="270" text="Cases" color="white" fontWeight="bold"/>
 					<s:filters>
@@ -64,11 +95,11 @@
 		<s:BorderContainer backgroundColor="0x565656" width="100%" height="160" borderVisible="false">
 			<s:VGroup horizontalAlign="center" height="100%" width="100%">
 				<s:HGroup height="100%" verticalAlign="middle" gap="20">
-					<Component:RoomIcon roomName="Evidence Management" />
-					<Component:RoomIcon roomName="Evidence Room" />
-					<Component:RoomIcon roomName="Forensic Lab" />
-					<Component:RoomIcon roomName="Screening Room" />
-					<Component:RoomIcon roomName="Exhibit" />
+					<components:RoomIcon roomName="Evidence Management" />
+					<components:RoomIcon roomName="Evidence Room" />
+					<components:RoomIcon roomName="Forensic Lab" />
+					<components:RoomIcon roomName="Screening Room" />
+					<components:RoomIcon roomName="Exhibit" />
 				</s:HGroup>
 			</s:VGroup>
 		</s:BorderContainer>

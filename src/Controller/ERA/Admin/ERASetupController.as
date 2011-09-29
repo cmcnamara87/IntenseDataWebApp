@@ -5,7 +5,7 @@ package Controller.ERA.Admin
 	import Model.AppModel;
 	import Model.Model_ERAProject;
 	
-	import View.ERASetupView;
+	import View.ERA.ERASetupView;
 	
 	import flash.events.MouseEvent;
 	

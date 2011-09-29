@@ -5,7 +5,11 @@
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.IDEvent;
 			import Controller.Utilities.AssetLookup;
+			
+			import Model.Model_Base;
+			import Model.Model_ERALogItem;
 			private var fileReference:FileReference;
 			
 			protected function uploadButton_clickHandler(event:MouseEvent):void
@@ -55,11 +59,29 @@
 
 			protected function saveButton_clickHandler(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
+				// Disable the save button while we save
+				saveButton.label = "Saving...";
+				saveButton.enabled = false;
+				
+				// Pass the type, title and description to the controller and this item itself
+				var evidenceSavedEvent:IDEvent = new IDEvent(IDEvent.SAVE_LOG_ITEM, true);
+				evidenceSavedEvent.data.type = evidenceType.selectedItem;
+				evidenceSavedEvent.data.title = title.text;
+				evidenceSavedEvent.data.description = description.text;
+				evidenceSavedEvent.data.evidenceItem = this;
+				dispatchEvent(evidenceSavedEvent);
+			}
+
+			public function addLogItemData(data:Model_ERALogItem):void {
 				saveButton.visible = false;
 				saveButton.includeInLayout = false;
 				actionGroup.visible = true;
 				actionGroup.includeInLayout = true;
+			}
+
+			protected function deleteEvidence_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
 			}
 
 		]]>
@@ -69,8 +91,8 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<s:HGroup verticalAlign="middle">
-		<s:Button id="deleteEvidence" label="X" width="30"/>
-		<s:DropDownList>
+		<s:Button id="deleteEvidence" label="X" width="30" click="deleteEvidence_clickHandler(event)"/>
+		<s:DropDownList id="evidenceType">
 			<s:ArrayList>
 				<fx:String>Video</fx:String>
 				<fx:String>Images</fx:String>
@@ -80,8 +102,8 @@
 				<fx:String>Research Statement</fx:String>
 			</s:ArrayList>
 		</s:DropDownList>
-		<s:TextInput text="title" color="0xDDDDDD"/>
-		<s:TextInput text="description" color="0xDDDDDD"/>
+		<s:TextInput id="title" text="title"/>
+		<s:TextInput id="description" text=""/>
 		<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)" />
 		<s:HGroup id="actionGroup" visible="false" includeInLayout="false">
 			<s:CheckBox label="Useful" id="usefulCheckbox" change="usefulCheckbox_changeHandler(event)"/>

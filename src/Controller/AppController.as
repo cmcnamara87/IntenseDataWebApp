@@ -136,7 +136,7 @@ package Controller {
 		private static function productionToolsButtonClicked(e:MouseEvent):void {
 			hideAdminToolButtons();
 			//Dispatcher.call("browse");
-			Dispatcher.call("case/1/management");
+			Dispatcher.call("case");
 		}
 		
 		private static function dashboardButtonClicked(e:MouseEvent):void {

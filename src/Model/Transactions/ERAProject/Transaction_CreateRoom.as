@@ -46,6 +46,9 @@ package Model.Transactions.ERAProject
 			
 			argsXML.type = "ERA/room";
 			
+			// Make this a collection
+			argsXML.collection = true;
+			
 			// Setup the era meta-data
 			argsXML.meta["ERA-room"]["room_type"] = roomType;
 			

@@ -150,8 +150,12 @@ package Controller {
 			// The PDF has loaded and finished being displayed on screen
 			public static var MEDIA_LOADED:String = "id_pdfLoaded"; 
 			
+			
+			// ERA EVENTS
 			// Called when the a user is being added to a role (in the user admin)
 			public static var ADD_USER_TO_ROLE:String = "id_addUserToRole";
+			// Call when we are initially saving a evidence log item
+			public static var SAVE_LOG_ITEM:String = "id_saveLogItem";
 			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);

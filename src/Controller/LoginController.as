@@ -73,7 +73,10 @@ package Controller {
 			}
 		}
 		
-		// Called if login was successful
+		/**
+		 * Login to MFLUX was successful. Get out all the ERA projects 
+		 * 
+		 */		
 		private function loginSuccessful():void {
 			trace("- Login Successful, redirecting");
 			
@@ -81,6 +84,12 @@ package Controller {
 			AppModel.getInstance().getERAProjects(gotERAProjects);
 			
 		}
+		/**
+		 * Got all the ERA projects, set the most recent one was the current ERA project 
+		 * @param status			True if we successfully retrieved all the ERA proejcts
+		 * @param eraProjectArray	Array of era projects
+		 * 
+		 */
 		private function gotERAProjects(status:Boolean, eraProjectArray:Array):void {
 			if(eraProjectArray.length == 0) {
 				// There are no eras setup, so lets do that
@@ -121,7 +130,7 @@ package Controller {
 			}
 			//Dispatcher.call(redirectURL);
 //			Dispatcher.call('browse');
-			Dispatcher.call('case/1/management');
+			Dispatcher.call('case');
 		}
 	}
 }

@@ -14,6 +14,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_CreateERAUser;
 	import Model.Transactions.ERAProject.Transaction_CreateRoom;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
+	import Model.Transactions.ERAProject.Transaction_GetAllRooms;
 	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
@@ -36,6 +37,7 @@ package Model {
 	import Model.Transactions.Transaction_UnsuspendUser;
 	import Model.Utilities.Connection;
 	
+	import View.ERA.components.EvidenceItem;
 	import View.Element.Comment;
 	import View.components.Panels.Comments.NewComment;
 	import View.components.Panels.Sharing.SharingPanel;
@@ -1626,9 +1628,11 @@ package Model {
 		public function createRoomInCase(caseID:Number, roomType:String, callback:Function):void {
 			var createRoomInCase:Transaction_CreateRoom = new Transaction_CreateRoom(AppController.currentEraProject.year, caseID, roomType, _connection, callback);
 		}
-		
-		public function createERALogItem(caseID:Number, type:String, title:String, callback:Function, description:String=""):void {
-			var createERALogItem:Transaction_CreateERALogItem = new Transaction_CreateERALogItem();
+		public function getAllRoomsInCase(caseID:Number, callback:Function):void {
+			var getAllRoomsInCase:Transaction_GetAllRooms = new Transaction_GetAllRooms(caseID, _connection, callback);
+		}
+		public function createERALogItem(caseID:Number, type:String, title:String, description:String, evidenceItem:EvidenceItem, callback:Function):void {
+			var createERALogItem:Transaction_CreateERALogItem = new Transaction_CreateERALogItem(AppController.currentEraProject.year, caseID, type, title, description, evidenceItem, _connection, callback);
 		}
 		public function uploadERAFile(type:String, fileName:String, title:String, callback:Function, description:String="", transcoded:Boolean=false, uri:String=""):void {
 			
