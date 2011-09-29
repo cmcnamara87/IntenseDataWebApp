@@ -63,7 +63,7 @@
 		<s:HorizontalLayout verticalAlign="middle" paddingBottom="10" paddingTop="10" paddingLeft="10" paddingRight="10">
 		</s:HorizontalLayout>
 		
-		<s:Fade duration="2000" alphaFrom="0" alphaTo="1" id="fadeIn" />   
+		<s:Fade duration="100" alphaFrom="0" alphaTo="1" id="fadeIn" />   
 		<s:Fade duration="100" alphaFrom="1" alphaTo="0" id="fadeOut" />
 	</fx:Declarations>
 </s:BorderContainer>

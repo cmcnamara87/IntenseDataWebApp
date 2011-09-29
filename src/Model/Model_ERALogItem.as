@@ -6,10 +6,10 @@ package Model {
 		public var title:String;
 		public var description:String = "";
 		public var useful:Boolean;
-		public var processed:Boolean;
-		public var uploadedable:Boolean;
-		public var uploaded:Boolean;
-		public var returned:Boolean;
+		public var processed:Boolean = false;
+		public var uploadedable:Boolean = false;
+		public var uploaded:Boolean = false;
+		public var returned:Boolean = false;
 		
 		
 		public function Model_ERALogItem() {
@@ -33,20 +33,20 @@ package Model {
 			}
 			
 			// set if this item is useful
-			this.useful = eraLogItem["useful"];
+			this.useful = eraLogItem["useful"] == "true";
 			
 			
 			// set if this item has been processed
-			this.processed = eraLogItem["processed"];
+			this.processed = eraLogItem["processed"] == "true";
 			
 			// show if this item is uploadable
-			this.uploadedable = eraLogItem["uploadable"];
+			this.uploadedable = eraLogItem["uploadable"] == "true";
 			
 			// show if this item has been uploaded
-			this.uploaded = eraLogItem["uploaded"];
+			this.uploaded = eraLogItem["uploaded"] == "true";
 			
 			// show if this item has been returned
-			this.returned = eraLogItem["returned"];
+			this.returned = eraLogItem["returned"] == "true";
 		}
 	}
 }

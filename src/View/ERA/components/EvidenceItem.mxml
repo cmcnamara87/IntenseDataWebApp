@@ -13,6 +13,10 @@
 			private var fileReference:FileReference;
 			
 			/*================================ EVENT LISTENERS ============================== */
+			
+			/**
+			 * The Upload button was clicked.
+			 */
 			protected function uploadButton_clickHandler(event:MouseEvent):void
 			{
 				fileReference = new FileReference();
@@ -23,18 +27,26 @@
 				uploadButton.enabled = false;
 			}
 			
+			/**
+			 * A file for upload was selected
+			 */
 			private function onFileSelect(e:Event):void {
 				uploadProgress.includeInLayout = true;
 				uploadProgress.visible = true;
 			}
 
+			/**
+			 * The cancel upload button was clicked
+			 */
 			protected function cancelUploadButton_clickHandler(event:MouseEvent):void
 			{
 				uploadProgress.includeInLayout = false;
 				uploadProgress.visible = false;
 			}
 
-
+			/**
+			 * The useful checkbox was ticked
+			 */
 			protected function usefulCheckbox_changeHandler(event:Event):void
 			{
 				if((event.target as CheckBox).selected == true) {
@@ -50,14 +62,18 @@
 				}
 			}
 
-
+			/**
+			 * The uploadable checkbox was ticked
+			 */
 			protected function uploadableCheckbox_changeHandler(event:Event):void
 			{
 				// TODO Auto-generated method stub
 				uploadButton.enabled = true;
 			}
 
-
+			/**
+			 * The save button was clicked
+			 */
 			protected function saveButton_clickHandler(event:MouseEvent):void
 			{
 				// Disable the save button while we save
@@ -72,17 +88,69 @@
 				evidenceSavedEvent.data.evidenceItem = this;
 				dispatchEvent(evidenceSavedEvent);
 			}
-
-			public function addLogItemData(data:Model_ERALogItem):void {
+			
+			public function showCheckBoxes():void {
 				saveButton.visible = false;
 				saveButton.includeInLayout = false;
 				actionGroup.visible = true;
 				actionGroup.includeInLayout = true;
 			}
 
+			public function addLogItemData(logItem:Model_ERALogItem):void {
+				showCheckBoxes();
+				evidenceType.selectedItem = logItem.type;
+				title.text = logItem.title;
+				description.text = logItem.description;
+				
+				usefulCheckbox.selected = logItem.useful;
+				processedCheckbox.selected = logItem.processed;
+				uploadableCheckbox.selected = logItem.uploadedable;
+				if(logItem.uploaded) {
+					uploadButton.label = "Uploaded";
+				} else {
+					uploadButton.label = "Upload";
+				}
+				returnedCheckbox.selected = logItem.returned;
+			}
+
 			protected function deleteEvidence_clickHandler(event:MouseEvent):void
 			{
 				// TODO Auto-generated method stub
+			}
+
+			protected function description_focusInHandler(event:FocusEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(description.text == "description") {
+					description.text = "";
+				}
+			}
+
+
+			protected function title_focusInHandler(event:FocusEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(title.text == "title") {
+					title.text = "";
+				}
+			}
+
+
+			protected function description_focusOutHandler(event:FocusEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(description.text == "") {
+					description.text = "description";
+				}
+			}
+
+
+			protected function title_focusOutHandler(event:FocusEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(title.text == "") {
+					title.text = "title";
+				}
 			}
 
 		]]>
@@ -93,7 +161,7 @@
 	</fx:Declarations>
 	<s:HGroup verticalAlign="middle">
 		<s:Button id="deleteEvidence" label="X" width="30" click="deleteEvidence_clickHandler(event)"/>
-		<s:DropDownList id="evidenceType">
+		<s:DropDownList id="evidenceType" width="200">
 			<s:ArrayList>
 				<fx:String>Video</fx:String>
 				<fx:String>Images</fx:String>
@@ -103,15 +171,15 @@
 				<fx:String>Research Statement</fx:String>
 			</s:ArrayList>
 		</s:DropDownList>
-		<s:TextInput id="title" text="title"/>
-		<s:TextInput id="description" text=""/>
+		<s:TextInput id="title" text="title" focusIn="title_focusInHandler(event)" focusOut="title_focusOutHandler(event)"/>
+		<s:TextInput id="description" text="" focusIn="description_focusInHandler(event)" focusOut="description_focusOutHandler(event)"/>
 		<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)" />
 		<s:HGroup id="actionGroup" visible="false" includeInLayout="false">
 			<s:CheckBox label="Useful" id="usefulCheckbox" change="usefulCheckbox_changeHandler(event)"/>
 			<s:CheckBox label="Processed" id="processedCheckbox" enabled="false"/>
 			<s:CheckBox label="Uploadable" id="uploadableCheckbox" enabled="false" change="uploadableCheckbox_changeHandler(event)"/>
 			<s:Button label="Upload" id="uploadButton" click="uploadButton_clickHandler(event)" enabled="false" />
-			<s:CheckBox label="Returned" />
+			<s:CheckBox id="returnedCheckbox" label="Returned" />
 		</s:HGroup>
 	</s:HGroup>
 	<s:HGroup id="uploadProgress" width="100%" visible="false" includeInLayout="false">

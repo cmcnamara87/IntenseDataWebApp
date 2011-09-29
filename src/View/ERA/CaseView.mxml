@@ -13,6 +13,7 @@
 			import View.ERA.components.EvidenceManagement;
 			
 			import mx.collections.ArrayList;
+			import mx.controls.Text;
 			
 			import spark.components.Label;
 			
@@ -40,9 +41,9 @@
 					casePanelContent.addElement(label2);
 				}
 				for each(var eraCase:Model_ERACase in caseArray) {
-					var someLabel:Label = new Label();
+					var someLabel:Text = new Text();
 					someLabel.setStyle('color', '0xFFFFFF');
-					someLabel.text = eraCase.rmCode;
+					someLabel.htmlText = "<a href='#case/" + eraCase.base_asset_id + "'>" + eraCase.rmCode + "</a>";
 					casePanelContent.addElement(someLabel);
 				}
 			}
@@ -61,7 +62,7 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<!-- The Case Panel -->
-	<s:BorderContainer  id="casePanel" backgroundColor="0x000000" borderVisible="false" height="100%" width="300">
+	<s:BorderContainer  id="casePanel" backgroundColor="0x000000" borderVisible="false" height="100%" width="300" includeInLayout="false" visible="false">
 		<s:VGroup width="100%" height="100%">
 			<s:DropDownList chromeColor="0x000000" width="100%">
 				<s:ArrayList>
@@ -79,11 +80,10 @@
 		<!-- START THE CONTENT SECTION -->
 		<s:BorderContainer backgroundColor="0xFFFFFF" borderVisible="false" height="100%" width="100%">
 			<s:Group height="100%" width="100%">
+				<!-- The Current Room -->
 				<s:Group height="100%" width="100%" id="room">
-					<s:Label text="Loading..." />
-					<!--<components:EvidenceManagement>
-					</components:EvidenceManagement>-->	
 				</s:Group>
+				<!-- End of the Current room -->
 				
 				<s:BorderContainer buttonMode="true" id="caseTag" click="caseTag_clickHandler(event)" backgroundColor="black" borderVisible="false" width="40" height="75" top="300">
 					<s:Label x="15" y="50" rotation="270" text="Cases" color="white" fontWeight="bold"/>
@@ -91,6 +91,9 @@
 						<s:DropShadowFilter distance="3" angle="0" alpha="0.5" color="0x000000" blurX="20" blurY="20"/>
 					</s:filters>
 				</s:BorderContainer>
+				
+				<!--<s:BorderContainer backgroundColor="0x000000" alpha="0.3" width="100%" height="100%">
+				</s:BorderContainer>-->
 			</s:Group>
 		</s:BorderContainer>
 		<!-- END THE CONTENT SECTION -->
