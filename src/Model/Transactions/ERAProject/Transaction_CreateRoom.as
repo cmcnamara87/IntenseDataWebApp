@@ -47,10 +47,13 @@ package Model.Transactions.ERAProject
 			argsXML.type = "ERA/room";
 			
 			// Make this a collection
-			argsXML.collection = true;
+//			argsXML.collection = true;
 			
 			// Setup the era meta-data
 			argsXML.meta["ERA-room"]["room_type"] = roomType;
+			
+			argsXML.related = "";
+			argsXML.related.appendChild(XML('<to relationship="case">' + caseID + '</to>'));
 			
 			trace("CREATING ROOM", baseXML);
 			connection.sendRequest(baseXML, eraRoomCreated);
@@ -65,27 +68,7 @@ package Model.Transactions.ERAProject
 			
 			newRoomID = data.reply.result.id;
 			
-			addRoomToCase();
-		}
-		private function addRoomToCase():void {
-			var baseXML:XML = connection.packageRequest("asset.collection.add", new Object(), true);
-			var argsXML:XMLList = baseXML.service.args;
-			
-			argsXML.id = caseID;
-			argsXML.member = newRoomID;
-			
-			connection.sendRequest(baseXML, roomAddedToCase);
-		}
-		
-		private function roomAddedToCase(e:Event):void {
-			var data:XML;
-			if((data = AppModel.getInstance().getData("adding room to case", e)) == null) {
-				callback(false);
-				return;
-			} else {
-				callback(true);
-				return;
-			}
+			callback(true);
 		}
 	}
 }

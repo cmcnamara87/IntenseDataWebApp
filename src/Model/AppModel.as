@@ -14,6 +14,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_CreateERAUser;
 	import Model.Transactions.ERAProject.Transaction_CreateRoom;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
+	import Model.Transactions.ERAProject.Transaction_GetAllLogItems;
 	import Model.Transactions.ERAProject.Transaction_GetAllRooms;
 	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
@@ -1622,7 +1623,7 @@ package Model {
 									  productionManagerUsernameArray:Array,
 									  productionTeamUsernameArray:Array,
 									  callback:Function):void {
-			var createERACase:Transaction_CreateERACase = new Transaction_CreateERACase(year, rmCode, title, researcherArray, qutSchool, forArray, categoryArray, productionManagerUsernameArray, productionTeamUsernameArray, _connection, callback);
+			var createERACase:Transaction_CreateERACase = new Transaction_CreateERACase(AppController.currentEraProject.base_asset_id, year, rmCode, title, researcherArray, qutSchool, forArray, categoryArray, productionManagerUsernameArray, productionTeamUsernameArray, _connection, callback);
 		}
 		
 		public function createRoomInCase(caseID:Number, roomType:String, callback:Function):void {
@@ -1631,8 +1632,11 @@ package Model {
 		public function getAllRoomsInCase(caseID:Number, callback:Function):void {
 			var getAllRoomsInCase:Transaction_GetAllRooms = new Transaction_GetAllRooms(caseID, _connection, callback);
 		}
-		public function createERALogItem(caseID:Number, type:String, title:String, description:String, evidenceItem:EvidenceItem, callback:Function):void {
-			var createERALogItem:Transaction_CreateERALogItem = new Transaction_CreateERALogItem(AppController.currentEraProject.year, caseID, type, title, description, evidenceItem, _connection, callback);
+		public function createERALogItem(roomID:Number, type:String, title:String, description:String, evidenceItem:EvidenceItem, callback:Function):void {
+			var createERALogItem:Transaction_CreateERALogItem = new Transaction_CreateERALogItem(AppController.currentEraProject.year, roomID, type, title, description, evidenceItem, _connection, callback);
+		}
+		public function getAllERALogItemsInRoom(roomID:Number, callback:Function):void {
+			var getERALogItems:Transaction_GetAllLogItems = new Transaction_GetAllLogItems(roomID, _connection, callback);
 		}
 		public function uploadERAFile(type:String, fileName:String, title:String, callback:Function, description:String="", transcoded:Boolean=false, uri:String=""):void {
 			

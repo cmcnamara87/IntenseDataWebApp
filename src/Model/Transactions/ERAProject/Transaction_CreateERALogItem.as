@@ -21,7 +21,7 @@ package Model.Transactions.ERAProject
 	public class Transaction_CreateERALogItem
 	{
 		private var year:String;
-		private var caseID:Number;
+		private var roomID:Number;
 		private var type:String;
 		private var title:String;
 		private var description:String;
@@ -43,9 +43,9 @@ package Model.Transactions.ERAProject
 		 * @param callback
 		 * 
 		 */
-		public function Transaction_CreateERALogItem(year:String, caseID:Number, type:String, title:String, description:String, evidenceItem:EvidenceItem, connection:Connection, callback:Function):void {
+		public function Transaction_CreateERALogItem(year:String, roomID:Number, type:String, title:String, description:String, evidenceItem:EvidenceItem, connection:Connection, callback:Function):void {
 			this.year = year;
-			this.caseID = caseID;
+			this.roomID = roomID;
 			this.type = type;
 			this.title = title;
 			this.description = description;
@@ -78,6 +78,9 @@ package Model.Transactions.ERAProject
 			argsXML.meta["ERA-log"]["uploaded"] = false;
 			argsXML.meta["ERA-log"]["returned"] = false;
 
+			argsXML.related = "";
+			argsXML.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
+			
 			trace("Creating ERA log item", baseXML);
 			connection.sendRequest(baseXML, eraLogItemCreated);
 		}
@@ -100,17 +103,6 @@ package Model.Transactions.ERAProject
 			
 			connection.sendRequest(baseXML, eraLogItemRetrieved);
 		}
-		
-		private function addLogItemToCase():void {
-			var baseXML:XML = connection.packageRequest("asset.collection.add", new Object(), true);
-			var argsXML:XMLList = baseXML.service.args;
-			
-			argsXML.id = caseID;
-			argsXML.member = logItemID;
-			
-//			connection.sendRequest(baseXML, roomAddedToCase);
-		} 
-		
 		
 		private function eraLogItemRetrieved(e:Event):void {
 			var data:XML;

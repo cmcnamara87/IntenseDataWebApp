@@ -13,6 +13,7 @@ package Model.Transactions.ERAProject
 	
 	public class Transaction_CreateERACase
 	{
+		private var eraID:Number;
 		private var year:String;
 		private var rmCode:String;
 		private var title:String;
@@ -28,7 +29,8 @@ package Model.Transactions.ERAProject
 		private var newERACaseID:Number;
 		private var roomBeingMadeIndex:Number; //the index for the room we are currently making in @see Model_ERARoom
 		
-		public function Transaction_CreateERACase(year:String,
+		public function Transaction_CreateERACase(eraID:Number,
+												  year:String,
 												  rmCode:String, 
 												  title:String,
 												  researcherArray:Array,
@@ -40,7 +42,7 @@ package Model.Transactions.ERAProject
 												  connection:Connection, 
 												  callback:Function)
 		{
-			
+			this.eraID = eraID;	
 			this.year = year;
 			this.rmCode = rmCode;
 			this.title = title;
@@ -65,9 +67,9 @@ package Model.Transactions.ERAProject
 			
 			argsXML.type = "ERA/case";
 			
-			// Set this as a collection (cause we are going to put the case elements inside)
-			argsXML.collection = true;
-			
+//			// Set this as a collection (cause we are going to put the case elements inside)
+//			argsXML.collection = true;
+//			
 			// Setup the era meta-data
 			argsXML.meta["ERA-case"]["RM_code"] = this.rmCode;
 			argsXML.meta["ERA-case"]["title"] = this.title;
@@ -98,6 +100,10 @@ package Model.Transactions.ERAProject
 			for each(var productionTeamUsername:String in productionTeamUsernameArray) {
 				argsXML.meta["ERA-case"].appendChild(XML("<production_team_username>" + productionTeamUsername + "</production_team_username>"));
 			}
+			
+			// Setup the relationship
+			argsXML.related = "";
+			argsXML.related.appendChild(XML('<to relationship="era">' + eraID + '</to>'));
 			
 			connection.sendRequest(baseXML, eraCaseCreated);			
 		}

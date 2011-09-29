@@ -12,6 +12,7 @@
 			import Model.Model_ERALogItem;
 			private var fileReference:FileReference;
 			
+			/*================================ EVENT LISTENERS ============================== */
 			protected function uploadButton_clickHandler(event:MouseEvent):void
 			{
 				fileReference = new FileReference();

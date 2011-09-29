@@ -8,6 +8,7 @@ package Controller.ERA
 	import Model.AppModel;
 	import Model.Model_ERACase;
 	import Model.Model_ERALogItem;
+	import Model.Model_ERARoom;
 	
 	import View.ERA.CaseView;
 	import View.ERA.components.EvidenceItem;
@@ -19,8 +20,10 @@ package Controller.ERA
 	{
 		private var caseView:CaseView; // The View for the case 
 		private var caseID:Number = 0; // The Mflux ID for the current case
+		private var roomType:String;
 		private var currentERACase:Model_ERACase = null;
 		private var roomArray:Array;
+		private var currentRoom:Model_ERARoom = null;
 		
 		public function CaseController()
 		{
@@ -38,23 +41,44 @@ package Controller.ERA
 		}
 		override public function init():void {
 			setupEventListeners();
-			
+			getAllERACases();
+		}
+		
+		/**
+		 * Gets all the Cases for the Current ERA submission 
+		 * 
+		 */
+		private function getAllERACases():void {
 			// Get out the current ID
 			if(Dispatcher.getArgs().length > 0) {
 				// THe case ID was given
 				caseID = Dispatcher.getArgs()[0];
 			} 
+			if(Dispatcher.getArgs().length == 2) {
+				// They room type we want to look for
+				roomType = Dispatcher.getArgs()[1];
+			} else {
+				// No room type given, lets set it
+				roomType = Model_ERARoom.EVIDENCE_MANAGEMENT;
+			}
 			
 			// Get all the ERA cases for this ERA
 			AppModel.getInstance().getAllERACases(AppController.currentEraProject.base_asset_id, gotAllERACases);
 		}
+		
+		/**
+		 * Got all the ERA cases, lets shove them into the view, and display the one we want. 
+		 * @param status
+		 * @param eraCaseArray	An Array of ERA cases
+		 * 
+		 */
 		private function gotAllERACases(status:Boolean, eraCaseArray:Array):void {
 			if(caseID == 0) {
 				// We havent been passed a case ID, so lets just default to the first case for this ERA
 				if(eraCaseArray.length > 0) {
 					caseID = (eraCaseArray[0] as Model_ERACase).base_asset_id;
 					currentERACase = (eraCaseArray[0] as Model_ERACase);
-					Router.getInstance().setURL("case/" + caseID);
+					Router.getInstance().setURL("case/" + caseID + "/" + roomType);
 				}
 			} else {
 				// We have been given an case ID, so lets just match it up to one of the era cases
@@ -83,13 +107,28 @@ package Controller.ERA
 			if(status) {
 				layout.notificationBar.showGood("got rooms");
 				this.roomArray = eraRoomArray;
-				caseView.showEvidenceManagement(null);
+				currentRoom = this.getRoomIndex(roomType);
+				loadRoomContents();
+				
+				
 			} else {
 				layout.notificationBar.showError("failed to get rooms");
 			}
 				
 		}
 		
+		private function loadRoomContents():void {
+			switch(roomType) {
+				case Model_ERARoom.EVIDENCE_MANAGEMENT:
+					AppModel.getInstance().getAllERALogItemsInRoom(currentRoom.base_asset_id, gotAllLogItems);
+					break;
+				default:
+					break;
+			}
+		}
+		private function gotAllLogItems(status:Boolean, logItemArray:Array):void {
+			caseView.showEvidenceManagement(logItemArray);
+		}
 		/**
 		 * Saves an Evidence Item 
 		 * @param e		The ID Event
@@ -101,7 +140,7 @@ package Controller.ERA
 			var description:String = e.data.description;
 			var evidenceItem:EvidenceItem = e.data.evidenceItem;
 			
-			AppModel.getInstance().createERALogItem(caseID, type, title, description, evidenceItem, logItemSaved);
+			AppModel.getInstance().createERALogItem(currentRoom.base_asset_id, type, title, description, evidenceItem, logItemSaved);
 		}
 		private function logItemSaved(status:Boolean, logItem:Model_ERALogItem=null, evidenceItem:EvidenceItem=null):void {
 			if(!status) {
@@ -118,6 +157,17 @@ package Controller.ERA
 //			dataObject.file = file;
 //			lock();
 //			AppModel.getInstance().startFileUpload(dataObject);
+		}
+		
+		private function getRoomIndex(roomType:String):Model_ERARoom {
+			for(var i:Number = 0; i < roomArray.length; i++) {
+				var room:Model_ERARoom = (roomArray[i] as Model_ERARoom);
+				trace("room type", room.roomType);
+				if(room.roomType == roomType) {
+					return room;
+				}
+			}
+			return null;
 		}
 	}
 }

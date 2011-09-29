@@ -19,10 +19,14 @@
 			private var aasdf:Array = new Array("helo", "world", "test", "this");
 			private var arrayTest:ArrayList = new ArrayList(aasdf);
 			
-			public function showEvidenceManagement(logItemArray:Model_ERALogItem):void {
+			public function showEvidenceManagement(logItemArray:Array):void {
 				var evidenceManagement:EvidenceManagement = new EvidenceManagement();
 				room.removeAllElements();
 				room.addElement(evidenceManagement);
+				
+				evidenceManagement.addLogItems(logItemArray);
+				
+				
 			}
 			
 			public function addCases(caseArray:Array):void {

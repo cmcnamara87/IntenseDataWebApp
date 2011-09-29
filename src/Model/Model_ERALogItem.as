@@ -2,14 +2,14 @@ package Model {
 	
 	public class Model_ERALogItem extends Model_Base {
 		
-		private var type:String;
-		private var title:String;
-		private var description:String = "";
-		private var useful:Boolean;
-		private var processed:Boolean;
-		private var uploadedable:Boolean;
-		private var uploaded:Boolean;
-		private var returned:Boolean;
+		public var type:String;
+		public var title:String;
+		public var description:String = "";
+		public var useful:Boolean;
+		public var processed:Boolean;
+		public var uploadedable:Boolean;
+		public var uploaded:Boolean;
+		public var returned:Boolean;
 		
 		
 		public function Model_ERALogItem() {
