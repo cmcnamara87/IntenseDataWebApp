@@ -1,70 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 	 xmlns:s="library://ns.adobe.com/flex/spark" 
-	 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
-	 paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20">
+	 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" >
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Label text="ERA Setup" fontSize="35" fontWeight="bold">
-	</s:Label>
-	<s:Label text="ERA Due Date" fontSize="20" fontWeight="bold">
-	</s:Label>
-	<s:HGroup verticalAlign="middle">
-		<s:Label text="Day">
-		</s:Label>
-		<s:DropDownList id="day">
-			<s:ArrayList>
-				<fx:String>01</fx:String>
-				<fx:String>02</fx:String>
-				<fx:String>03</fx:String>
-				<fx:String>04</fx:String>
-				<fx:String>05</fx:String>
-				<fx:String>06</fx:String>
-				<fx:String>07</fx:String>
-				<fx:String>08</fx:String>
-				<fx:String>09</fx:String>
-				<fx:String>10</fx:String>
-			</s:ArrayList>
-		</s:DropDownList>
-		<s:Label text="Month">
-		</s:Label>
-		<s:DropDownList id="month">
-			<s:ArrayList>
-				<fx:String>Jan</fx:String>
-				<fx:String>Feb</fx:String>
-				<fx:String>Mar</fx:String>
-				<fx:String>Apr</fx:String>
-				<fx:String>May</fx:String>
-				<fx:String>Jun</fx:String>
-				<fx:String>Jul</fx:String>
-				<fx:String>Aug</fx:String>
-				<fx:String>Sep</fx:String>
-				<fx:String>Oct</fx:String>
-			</s:ArrayList>
-		</s:DropDownList>
-		<s:Label text="Year">
-		</s:Label>
-		<s:DropDownList id="year">
-			<s:ArrayList>
-				<fx:String>2010</fx:String>
-				<fx:String>2011</fx:String>
-				<fx:String>2012</fx:String>
-				<fx:String>2013</fx:String>
-				<fx:String>2014</fx:String>
-				<fx:String>2015</fx:String>
-				<fx:String>2016</fx:String>
-			</s:ArrayList>
-		</s:DropDownList>
-	</s:HGroup>
-	<s:Label text="Package Size (mb)">
-	</s:Label>
-	<s:HGroup>
-		<s:TextInput id="packageSize">
-		</s:TextInput>
-		<s:Label text="MB">
-		</s:Label>
-	</s:HGroup>
-	<s:Button id="createButton" label="Save ERA">
-	</s:Button>
+	<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
+		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20">
+			<s:VGroup>
+				<s:Label text="ERA Details" fontSize="30" fontWeight="bold" color="0x5e6469" height="30">
+					<s:filters>
+						<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+					</s:filters>
+				</s:Label>
+			</s:VGroup>
+		</s:HGroup>
+	</s:BorderContainer>
+	<s:VGroup horizontalAlign="center" height="100%" width="100%">
+		<s:VGroup width="900" height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+			<s:Label text="ERA Due Date" fontWeight="bold">
+			</s:Label>
+			<s:HGroup verticalAlign="middle">
+				<s:Label text="Day">
+				</s:Label>
+				<s:DropDownList id="day">
+					<s:ArrayList>
+						<fx:String>01</fx:String>
+						<fx:String>02</fx:String>
+						<fx:String>03</fx:String>
+						<fx:String>04</fx:String>
+						<fx:String>05</fx:String>
+						<fx:String>06</fx:String>
+						<fx:String>07</fx:String>
+						<fx:String>08</fx:String>
+						<fx:String>09</fx:String>
+						<fx:String>10</fx:String>
+					</s:ArrayList>
+				</s:DropDownList>
+				<s:Label text="Month">
+				</s:Label>
+				<s:DropDownList id="month">
+					<s:ArrayList>
+						<fx:String>Jan</fx:String>
+						<fx:String>Feb</fx:String>
+						<fx:String>Mar</fx:String>
+						<fx:String>Apr</fx:String>
+						<fx:String>May</fx:String>
+						<fx:String>Jun</fx:String>
+						<fx:String>Jul</fx:String>
+						<fx:String>Aug</fx:String>
+						<fx:String>Sep</fx:String>
+						<fx:String>Oct</fx:String>
+					</s:ArrayList>
+				</s:DropDownList>
+				<s:Label text="Year">
+				</s:Label>
+				<s:DropDownList id="year">
+					<s:ArrayList>
+						<fx:String>2010</fx:String>
+						<fx:String>2011</fx:String>
+						<fx:String>2012</fx:String>
+						<fx:String>2013</fx:String>
+						<fx:String>2014</fx:String>
+						<fx:String>2015</fx:String>
+						<fx:String>2016</fx:String>
+					</s:ArrayList>
+				</s:DropDownList>
+			</s:HGroup>
+			<s:Label text="Package Size (mb)" fontWeight="bold">
+			</s:Label>
+			<s:HGroup>
+				<s:TextInput id="packageSize">
+				</s:TextInput>
+				<s:Label text="MB">
+				</s:Label>
+			</s:HGroup>
+			<s:Button id="createButton" label="Save ERA">
+			</s:Button>
+		</s:VGroup>
+	</s:VGroup>
 </s:VGroup>

@@ -3,8 +3,17 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:Element="View.Element.*"
 		 xmlns:Component="View.components.*">
+
+	<fx:Script>
+		<![CDATA[
+			[Embed(source="Assets/Template/login_logo.jpg")] 
+			[Bindable] private var login_logo:Class;
+		]]>
+	</fx:Script>
+
 	<!-- Login Box -->
 	<s:BorderContainer id="box" width="100%" height="400" backgroundColor="0x333333" borderVisible="false">
+		<mx:Image source="{login_logo}" width="731" height="374"></mx:Image>
 		<Element:LoginBox id="loginbox" width="337" height="184" x="{2/3 * box.width}" y="{box.height/2}" toolTip="Login to the system"></Element:LoginBox>
 	</s:BorderContainer>
 </s:Group>

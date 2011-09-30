@@ -35,7 +35,8 @@ package Controller {
 		// Store current notifications for hte user
 		private static var notificationsArray:Array;
 		
-		public static var currentEraProject:Model_ERAProject;
+		public static var eraProjectArray:Array; // an array of all the era projects in the system
+		public static var currentEraProject:Model_ERAProject; // the current era project we are looking at
 		public static var ERARoles:Array = new Array("sys_admin", "monitor", "researcher", "production_manager", "production_team", "viewer");
 		
 		public function AppController() {
@@ -100,8 +101,6 @@ package Controller {
 			// Show the admin tool buttons
 			showAdminToolButtons();
 			
-			//
-			
 			// load the Dashboard (which is the default admin tool)
 			Dispatcher.call("erasetup");
 		}
@@ -116,8 +115,12 @@ package Controller {
 			layout.header.adminToolsButton.setStyle("chromeColor", 0x000000);
 			layout.header.productionToolsButton.setStyle("chromeColor", 0x222222);
 			
+			// make them visible
 			layout.header.adminToolButtons.visible = true;
 			layout.header.adminToolButtons.includeInLayout = true;
+			
+			// Add the era to the list
+			layout.header.addERAProjects(AppController.eraProjectArray);
 		}
 		
 		/**
@@ -165,6 +168,9 @@ package Controller {
 				
 				// Get the notifications everytime we load a new page
 				getNotifications();
+				
+				layout.header.visible = true;
+				layout.header.includeInLayout = true;
 			}
 		}
 		

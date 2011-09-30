@@ -19,6 +19,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
+	import Model.Transactions.ERAProject.Transaction_UploadERAFile;
 	import Model.Transactions.Share.Transaction_SetUserAssetShare;
 	import Model.Transactions.Transaction_ChangePassword;
 	import Model.Transactions.Transaction_CloneMedia;
@@ -47,6 +48,7 @@ package Model {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	import flash.net.FileReference;
 	import flash.net.URLVariables;
 	import flash.utils.setInterval;
 	
@@ -1638,8 +1640,8 @@ package Model {
 		public function getAllERALogItemsInRoom(roomID:Number, callback:Function):void {
 			var getERALogItems:Transaction_GetAllLogItems = new Transaction_GetAllLogItems(roomID, _connection, callback);
 		}
-		public function uploadERAFile(type:String, fileName:String, title:String, callback:Function, description:String="", transcoded:Boolean=false, uri:String=""):void {
-			
+		public function uploadERAFile(roomID:Number, type:String, title:String, description:String, fileReference:FileReference, evidenceItem:EvidenceItem, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
+			var uploadERAFile:Transaction_UploadERAFile = new Transaction_UploadERAFile(AppController.currentEraProject.year, roomID, type, title, description, fileReference, evidenceItem, _connection, ioErrorCallback, progressCallback, completeCallback);
 		}
 			
 	}

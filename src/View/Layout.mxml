@@ -6,7 +6,7 @@
 		 xmlns:Component="View.components.*" xmlns:components="View.ERA.components.*">
 	<!-- Header -->
 	<s:VGroup width="100%" height="100%" gap="0">
-		<View:Header id="header"></View:Header>
+		<View:Header id="header" visible="false" includeInLayout="false"></View:Header>
 		<components:NotificationBar id="notificationBar">
 		</components:NotificationBar>
 		<!-- Controller View Area -->

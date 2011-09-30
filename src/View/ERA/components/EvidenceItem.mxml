@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%">
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
 
 	<fx:Script>
 		<![CDATA[
 			import Controller.IDEvent;
 			import Controller.Utilities.AssetLookup;
 			
+			import Model.AppModel;
 			import Model.Model_Base;
 			import Model.Model_ERALogItem;
+			
+			import mx.controls.Alert;
 			private var fileReference:FileReference;
 			
 			/*================================ EVENT LISTENERS ============================== */
@@ -33,8 +36,36 @@
 			private function onFileSelect(e:Event):void {
 				uploadProgress.includeInLayout = true;
 				uploadProgress.visible = true;
+				
+				
+				var uploadEvent:IDEvent = new IDEvent(IDEvent.SAVE_FILE, true);
+				uploadEvent.data.type = evidenceType.selectedItem;
+				uploadEvent.data.title = title.text;
+				uploadEvent.data.description = description.text;
+				uploadEvent.data.evidenceItem = this;
+				uploadEvent.data.fileReference = fileReference;
+				
+				uploadButton.enabled = false;
+				
+				dispatchEvent(uploadEvent);
+//				AppModel.getInstance().startFileUpload(dataObject);
 			}
-
+			
+			public function showComplete():void {
+				uploadButton.label = "Upload Complete";
+				uploadButton.enabled = false;
+				uploadProgress.includeInLayout = false;
+				uploadProgress.visible = false;
+			}
+			public function showProgress(percentage:Number):void {
+				uploadProgress.percentWidth = percentage;
+//				trace("***", percentage, "%");
+			}
+			private function ioErrorHandler(e:IOError):void {
+				
+			}
+			
+			
 			/**
 			 * The cancel upload button was clicked
 			 */
@@ -100,7 +131,9 @@
 				showCheckBoxes();
 				evidenceType.selectedItem = logItem.type;
 				title.text = logItem.title;
+				title.setStyle('color', '0x000000');
 				description.text = logItem.description;
+				description.setStyle('color', '0x000000');
 				
 				usefulCheckbox.selected = logItem.useful;
 				processedCheckbox.selected = logItem.processed;
@@ -123,6 +156,7 @@
 				// TODO Auto-generated method stub
 				if(description.text == "description") {
 					description.text = "";
+					description.setStyle('color', '0x000000');
 				}
 			}
 
@@ -132,6 +166,7 @@
 				// TODO Auto-generated method stub
 				if(title.text == "title") {
 					title.text = "";
+					description.setStyle('color', '0x000000');
 				}
 			}
 
@@ -141,6 +176,7 @@
 				// TODO Auto-generated method stub
 				if(description.text == "") {
 					description.text = "description";
+					description.setStyle('color', '0x888888');
 				}
 			}
 
@@ -150,6 +186,7 @@
 				// TODO Auto-generated method stub
 				if(title.text == "") {
 					title.text = "title";
+					description.setStyle('color', '0x888888');
 				}
 			}
 
@@ -171,8 +208,8 @@
 				<fx:String>Research Statement</fx:String>
 			</s:ArrayList>
 		</s:DropDownList>
-		<s:TextInput id="title" text="title" focusIn="title_focusInHandler(event)" focusOut="title_focusOutHandler(event)"/>
-		<s:TextInput id="description" text="" focusIn="description_focusInHandler(event)" focusOut="description_focusOutHandler(event)"/>
+		<s:TextInput id="title" text="title" color="0x888888" focusIn="title_focusInHandler(event)" focusOut="title_focusOutHandler(event)"/>
+		<s:TextInput id="description" width="300" text="description" color="0x888888" focusIn="description_focusInHandler(event)" focusOut="description_focusOutHandler(event)"/>
 		<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)" />
 		<s:HGroup id="actionGroup" visible="false" includeInLayout="false">
 			<s:CheckBox label="Useful" id="usefulCheckbox" change="usefulCheckbox_changeHandler(event)"/>

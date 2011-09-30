@@ -7,12 +7,15 @@ package Controller.ERA
 	
 	import Model.AppModel;
 	import Model.Model_ERACase;
+	import Model.Model_ERAEvidence;
 	import Model.Model_ERALogItem;
 	import Model.Model_ERARoom;
 	
 	import View.ERA.CaseView;
 	import View.ERA.components.EvidenceItem;
 	import View.ERA.components.NotificationBar;
+	
+	import flash.net.FileReference;
 	
 	import mx.controls.Alert;
 	
@@ -37,6 +40,7 @@ package Controller.ERA
 		private function setupEventListeners():void {
 			// Listen for log item being saved
 			caseView.addEventListener(IDEvent.SAVE_LOG_ITEM, saveLogItem);
+			caseView.addEventListener(IDEvent.SAVE_FILE, saveFile);
 			// Listen for file upload
 		}
 		override public function init():void {
@@ -140,7 +144,7 @@ package Controller.ERA
 			var description:String = e.data.description;
 			var evidenceItem:EvidenceItem = e.data.evidenceItem;
 			
-			AppModel.getInstance().createERALogItem(currentRoom.base_asset_id, type, title, description, evidenceItem, logItemSaved);
+			AppModel.getInstance().createERALogItem(getRoomIndex(Model_ERARoom.EVIDENCE_MANAGEMENT).base_asset_id, type, title, description, evidenceItem, logItemSaved);
 		}
 		private function logItemSaved(status:Boolean, logItem:Model_ERALogItem=null, evidenceItem:EvidenceItem=null):void {
 			if(!status) {
@@ -152,11 +156,26 @@ package Controller.ERA
 			evidenceItem.addLogItemData(logItem);
 		}
 		
-		private function startFileUpload():void {
-//			dataObject = (view as NewAsset).metaForm.getData();
-//			dataObject.file = file;
-//			lock();
-//			AppModel.getInstance().startFileUpload(dataObject);
+		private function saveFile(e:IDEvent):void {
+			var file:FileReference = e.data.fileReference;
+			var evidenceItem:EvidenceItem = e.data.evidenceItem;
+			var type:String = e.data.type;
+			var title:String = e.data.title;
+			var description:String = e.data.description;
+			AppModel.getInstance().uploadERAFile(getRoomIndex(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, type, title, description, file, evidenceItem, uploadIOError, uploadProgress, uploadComplete); 
+		}
+		private function uploadIOError():void {
+			
+		}
+		private function uploadProgress(percentage:Number, evidenceItem:EvidenceItem):void {
+			evidenceItem.showProgress(percentage);
+		}
+		private function uploadComplete(status:Boolean, eraEvidence:Model_ERAEvidence=null, evidenceItem:EvidenceItem=null):void {
+			if(status) {
+				evidenceItem.showComplete();
+			} else {
+				Alert.show("Upload failed");
+			}
 		}
 		
 		private function getRoomIndex(roomType:String):Model_ERARoom {

@@ -137,7 +137,7 @@ package Model.Transactions.ERAProject
 		
 		private function eraDataRetrieved(e:Event):void {
 			var data:XML;
-			if((data = AppModel.getInstance().getData("creating era project", e)) == null) {
+			if((data = AppModel.getInstance().getData("getting era project", e)) == null) {
 				callback(false, null);
 			}
 			

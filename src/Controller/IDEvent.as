@@ -156,6 +156,7 @@ package Controller {
 			public static var ADD_USER_TO_ROLE:String = "id_addUserToRole";
 			// Call when we are initially saving a evidence log item
 			public static var SAVE_LOG_ITEM:String = "id_saveLogItem";
+			public static var SAVE_FILE:String = "id_saveFile";
 			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
