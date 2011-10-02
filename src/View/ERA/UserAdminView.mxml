@@ -13,8 +13,7 @@
 			protected function cancelUserButton_clickHandler(event:MouseEvent):void
 			{
 				// Make the create panel invisible
-				this.createUserPanel.visible = false;
-				this.createUserPanel.includeInLayout = false;
+				closeCreateUserPanel();
 				
 				qutUsername.text = "";
 				firstName.text = "";
@@ -24,6 +23,9 @@
 
 			protected function showCreateUserPanelButton_clickHandler(event:MouseEvent):void
 			{
+				// Enable the panel (since it might be disabled from saving)
+				this.createUserPanel.enabled = true;
+				
 				// Make the panel visible
 				this.createUserPanel.visible = true;
 				this.createUserPanel.includeInLayout = true;
@@ -31,6 +33,8 @@
 				qutUsername.text = "";
 				firstName.text = "";
 				lastName.text = "";
+				
+				
 			}
 			
 			public function addERAUsers(eraUserArray:Array):void {
@@ -46,6 +50,18 @@
 					allUsers.addElement(userListItem);
 				}
 			}
+
+			protected function createUserButton_clickHandler(event:MouseEvent):void
+			{
+				// Disable this panel, so nothing can be changed while we are saving
+				createUserPanel.enabled = false;
+			}
+			
+			public function closeCreateUserPanel():void {
+				this.createUserPanel.visible = false;
+				this.createUserPanel.includeInLayout = false;
+			}
+
 		]]>
 	</fx:Script>
 
@@ -78,7 +94,7 @@
 				</s:Label>
 				
 				<!-- Create user panel -->
-				<s:VGroup id="createUserPanel" visible="false" includeInLayout="false" paddingTop="10" width="100%">
+				<s:VGroup id="createUserPanel" paddingTop="10" width="100%">
 					<s:HGroup verticalAlign="middle">
 						<s:Label text="QUT Username" width="150"></s:Label><s:TextInput id="qutUsername" width="250"></s:TextInput>
 					</s:HGroup>
@@ -89,7 +105,7 @@
 						<s:Label text="Last Name" width="150"></s:Label><s:TextInput id="lastName" width="250"></s:TextInput>
 					</s:HGroup>
 					<s:HGroup verticalAlign="middle">
-						<s:Button id="createUserButton" label="Save">
+						<s:Button id="createUserButton" label="Save" click="createUserButton_clickHandler(event)">
 						</s:Button>
 						<s:Button id="cancelUserButton" label="Cancel" click="cancelUserButton_clickHandler(event)">
 						</s:Button>

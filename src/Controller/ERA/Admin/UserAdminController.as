@@ -71,8 +71,9 @@ package Controller.ERA.Admin
 				layout.notificationBar.showGood("User Created");
 				
 				// Add user to saved user array
-				this.usersArray.push(eraUser);
+				this.usersArray.unshift(eraUser);
 				userAdminView.addERAUsers(usersArray);
+				userAdminView.closeCreateUserPanel();
 
 			} else {
 				layout.notificationBar.showError("User Creation Failed");
