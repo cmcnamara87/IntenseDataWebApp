@@ -5,7 +5,7 @@
 		 backgroundColor="0x00FF00" includeInLayout="false" visible="false"
 		 borderVisible="false"
 		 color="0xFFFFFF"
-		 showEffect="{fadeIn}" hideEffect="{fadeOut}" >
+		 resizeEffect="Resize">
 
 	<fx:Script>
 		<![CDATA[
