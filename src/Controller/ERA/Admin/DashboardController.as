@@ -1,16 +1,17 @@
 package Controller.ERA.Admin
 {
-	import spark.components.Label;
 	import Controller.AppController;
+	
+	import View.ERA.DashboardView;
+	
+	import spark.components.Label;
 
 	public class DashboardController extends AppController
 	{
 		public function DashboardController()
 		{
 			// @todo 
-			var label:Label = new Label();
-			label.text = "dashboard controller";
-			view = label;
+			view = new DashboardView();
 			super();
 		}
 		

@@ -21,8 +21,8 @@
 		]]>
 	</fx:Script>
 	
-	<s:Label text="{firstName} {lastName} ({username})">
+	<s:Label text="{firstName} {lastName} ({username})" width="100%">
 	</s:Label>
-	<s:Button label="X">
+	<s:Button label="X" width="50">
 	</s:Button>
 </s:HGroup>

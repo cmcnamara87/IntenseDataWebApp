@@ -70,7 +70,6 @@ package Controller {
 			// Admin buttons
 			layout.header.newERAButton.addEventListener(MouseEvent.CLICK, newEraButtonClicked);
 			layout.header.dashboardButton.addEventListener(MouseEvent.CLICK, dashboardButtonClicked);
-			layout.header.eraEdit.addEventListener(MouseEvent.CLICK, eraEditClicked);
 			layout.header.userAdminButton.addEventListener(MouseEvent.CLICK, userAdminButtonClicked);
 			layout.header.caseCreatorButton.addEventListener(MouseEvent.CLICK, caseCreatorButtonClicked);
 			
@@ -156,9 +155,6 @@ package Controller {
 		}
 		private static function dashboardButtonClicked(e:MouseEvent):void {
 			Dispatcher.call("dashboard");
-		}
-		private static function eraEditClicked(e:MouseEvent):void {
-			Dispatcher.call("era");
 		}
 		private static function userAdminButtonClicked(e:MouseEvent):void {
 			Dispatcher.call("useradmin");

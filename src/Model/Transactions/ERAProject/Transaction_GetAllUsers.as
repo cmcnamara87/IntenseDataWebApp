@@ -24,6 +24,8 @@ package Model.Transactions.ERAProject
 			var argsXML:XMLList = baseXML.service.args;
 			
 			argsXML.domain = "system";
+			argsXML.role = "ERA-user";
+			argsXML.role.@type = "role";
 			
 			connection.sendRequest(baseXML, gotAllUsers);
 		}

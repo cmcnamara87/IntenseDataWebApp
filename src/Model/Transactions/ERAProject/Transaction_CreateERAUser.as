@@ -73,6 +73,11 @@ package Model.Transactions.ERAProject
 			connection.sendRequest(baseXML, grantIDUserRole);
 		}
 		
+		/**
+		 * Give the user the standard ID user role 
+		 * @param e
+		 * 
+		 */
 		private function grantIDUserRole(e:Event):void {
 			var data:XML;
 			if((data = AppModel.getInstance().getData("create user", e)) == null) {
@@ -89,6 +94,30 @@ package Model.Transactions.ERAProject
 			argsXML.role = "iduser";
 			argsXML.role.@type = "role";
 						
+			connection.sendRequest(baseXML, grantERAUserRole);
+		}
+		
+		/**
+		 * Give the user the special ERA user role
+		 * @param e
+		 * 
+		 */
+		private function grantERAUserRole(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("granting ID user role", e)) == null) {
+				callback(false);
+				return;
+			}
+			
+			var baseXML:XML = connection.packageRequest("actor.grant", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			
+			// actor.grant :type user :name system:johnsmith :role user -type role
+			argsXML.type = "user";
+			argsXML.name = "system:" + username;
+			argsXML.role = "ERA-user";
+			argsXML.role.@type = "role";
+			
 			connection.sendRequest(baseXML, idUserGranted);
 		}
 		

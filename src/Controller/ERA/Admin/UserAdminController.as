@@ -48,6 +48,19 @@ package Controller.ERA.Admin
 			var firstName:String = userAdminView.firstName.text;
 			var lastName:String = userAdminView.lastName.text;
 			
+			if(qutUsername == "") {
+				layout.notificationBar.showError("Please fill in a QUT username");
+				return;
+			}
+			if(firstName == "") {
+				layout.notificationBar.showError("Please fill out the first name");
+				return;
+			}
+			if(lastName == "") {
+				layout.notificationBar.showError("Please fill out the last name");
+				return;
+			}
+			
 			AppModel.getInstance().createERAUser(qutUsername, firstName, lastName, eraUserCreated);
 		}
 		private function eraUserCreated(status:Boolean):void {
@@ -125,13 +138,7 @@ package Controller.ERA.Admin
 			this.usersArray = usersArray;
 			trace("users count", usersArray.length);
 			
-			for each(var user:Model_ERAUser in usersArray) {
-				var userListItem:UserListItem = new UserListItem();
-				userListItem.firstName = user.firstName;
-				userListItem.lastName = user.lastName;
-				userListItem.username = user.username;
-				userAdminView.allUsers.addElement(userListItem);
-			}
+			userAdminView.addERAUsers(usersArray);
 			
 			getUsersWithRoles();
 		}

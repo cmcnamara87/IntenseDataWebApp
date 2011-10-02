@@ -1,30 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:Admin="View.components.Admin.*"
-		 paddingBottom="20" paddingLeft="20" paddingRight="20" paddingTop="20">
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:Admin="View.components.Admin.*">
 
 	<fx:Script>
 		<![CDATA[
+			import Model.Model_ERAUser;
 			import Model.Model_User;
-			protected function createUserButton_clickHandler(event:MouseEvent):void
-			{
-				// TODO Auto-generated method stub
-			}
+			
+			import View.components.Admin.UserListItem;
 
 			protected function cancelUserButton_clickHandler(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
-				this.createUserPanel.visible = !this.createUserPanel.visible;
-				this.createUserPanel.includeInLayout = !this.createUserPanel.includeInLayout;
+				// Make the create panel invisible
+				this.createUserPanel.visible = false;
+				this.createUserPanel.includeInLayout = false;
+				
+				qutUsername.text = "";
+				firstName.text = "";
+				lastName.text = "";
 			}
 
 
 			protected function showCreateUserPanelButton_clickHandler(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
-				this.createUserPanel.visible = !this.createUserPanel.visible;
-				this.createUserPanel.includeInLayout = !this.createUserPanel.includeInLayout;
+				// Make the panel visible
+				this.createUserPanel.visible = true;
+				this.createUserPanel.includeInLayout = true;
+				
+				qutUsername.text = "";
+				firstName.text = "";
+				lastName.text = "";
+			}
+			
+			public function addERAUsers(eraUserArray:Array):void {
+				// Remove anything in the list currently
+				allUsers.removeAllElements();
+				
+				// Add the current users
+				for each(var user:Model_ERAUser in eraUserArray) {
+					var userListItem:UserListItem = new UserListItem();
+					userListItem.firstName = user.firstName;
+					userListItem.lastName = user.lastName;
+					userListItem.username = user.username;
+					allUsers.addElement(userListItem);
+				}
 			}
 		]]>
 	</fx:Script>
@@ -33,40 +53,59 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
-	<s:Scroller width="100%" height="100%">
-		<s:VGroup>
-			<s:Label text="Current Users" fontSize="20" fontWeight="bold">
-			</s:Label>
-			
-			<s:Button id="showCreateUserPanelButton" label="Create New User" click="showCreateUserPanelButton_clickHandler(event)">
-			</s:Button>
-			
-			<s:VGroup id="createUserPanel" visible="false" includeInLayout="false">
-				<s:HGroup verticalAlign="middle">
-					<s:Label text="QUT Username"></s:Label><s:TextInput id="qutUsername"></s:TextInput>
-				</s:HGroup>
-				<s:HGroup verticalAlign="middle">
-					<s:Label text="First Name"></s:Label><s:TextInput id="firstName"></s:TextInput>
-				</s:HGroup>
-				<s:HGroup verticalAlign="middle">
-					<s:Label text="Last Name"></s:Label><s:TextInput id="lastName"></s:TextInput>
-				</s:HGroup>
-				<s:HGroup verticalAlign="middle">
-					<s:Button id="createUserButton" label="Save" click="createUserButton_clickHandler(event)">
-					</s:Button>
-					<s:Button id="cancelUserButton" label="Cancel" click="cancelUserButton_clickHandler(event)">
-					</s:Button>
+	<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
+		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
+			<s:VGroup width="100%">
+				<s:HGroup width="100%">
+					<s:Label text="User Administration" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+						<s:filters>
+							<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+						</s:filters>
+					</s:Label>
+					
+					<s:Button id="showCreateUserPanelButton" label="Create New User" click="showCreateUserPanelButton_clickHandler(event)" cornerRadius="10" height="30" />
+					
 				</s:HGroup>
 			</s:VGroup>
-			
-			<s:Scroller width="100%" height="200">
-				<s:VGroup id="allUsers" width="100%" height="100%">
+		</s:HGroup>
+	</s:BorderContainer>
+	
+	<s:Scroller width="100%" height="100%">
+		<s:VGroup horizontalAlign="center">
+			<!-- Content box -->
+			<s:VGroup width="960" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+				<s:Label text="Current Users" fontSize="20" fontWeight="bold">
+				</s:Label>
+				
+				<!-- Create user panel -->
+				<s:VGroup id="createUserPanel" visible="false" includeInLayout="false" paddingTop="10">
+					<s:HGroup verticalAlign="middle">
+						<s:Label text="QUT Username" width="150"></s:Label><s:TextInput id="qutUsername" width="250"></s:TextInput>
+					</s:HGroup>
+					<s:HGroup verticalAlign="middle">
+						<s:Label text="First Name" width="150"></s:Label><s:TextInput id="firstName" width="250"></s:TextInput>
+					</s:HGroup>
+					<s:HGroup verticalAlign="middle">
+						<s:Label text="Last Name" width="150"></s:Label><s:TextInput id="lastName" width="250"></s:TextInput>
+					</s:HGroup>
+					<s:HGroup verticalAlign="middle">
+						<s:Button id="createUserButton" label="Save">
+						</s:Button>
+						<s:Button id="cancelUserButton" label="Cancel" click="cancelUserButton_clickHandler(event)">
+						</s:Button>
+					</s:HGroup>
+					<mx:HRule chromeColor="0x000000" width="100%" />
+				</s:VGroup>
+				<!-- End user panel -->
+				
+				<s:VGroup id="allUsers" width="100%" height="100%" paddingTop="10" paddingBottom="20">
+					<s:Label text="loading" />
 				</s:VGroup>	
-			</s:Scroller>
-			
-			<s:Label text="Roles" fontSize="20" fontWeight="bold">
-			</s:Label>
-			<s:VGroup id="roles" width="100%">
+				
+				<s:Label text="Roles" fontSize="20" fontWeight="bold">
+				</s:Label>
+				<s:VGroup id="roles" width="100%">
+				</s:VGroup>
 			</s:VGroup>
 		</s:VGroup>
 	</s:Scroller>

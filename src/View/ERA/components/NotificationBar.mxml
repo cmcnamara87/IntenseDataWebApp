@@ -25,7 +25,7 @@
 			
 			public function showGood(message:String):void {
 				this.setStyle("backgroundColor", "0x00FF00");
-				this.setStyle("color", "0xFFFFFF");
+				this.setStyle("color", "0x000000");
 				message_text.text = message;
 				show();
 			}
@@ -56,13 +56,15 @@
 			
 		]]>
 	</fx:Script>
-
-		<s:Label id="message_text" text="Mesage goes here"/>
+	
+	
+	<s:HGroup verticalAlign="middle" width="100%" height="100%" paddingLeft="10" paddingRight="10">
+		<s:Label id="message_text" text="Mesage goes here"/>	
+	</s:HGroup>
+	
+	
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		<s:HorizontalLayout verticalAlign="middle" paddingBottom="10" paddingTop="10" paddingLeft="10" paddingRight="10">
-		</s:HorizontalLayout>
-		
 		<s:Fade duration="100" alphaFrom="0" alphaTo="1" id="fadeIn" />   
 		<s:Fade duration="100" alphaFrom="1" alphaTo="0" id="fadeOut" />
 	</fx:Declarations>
