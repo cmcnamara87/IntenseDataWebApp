@@ -8,7 +8,10 @@
 			import Model.Model_ERAUser;
 			import Model.Model_User;
 			
+			import View.ERA.components.ERARole;
 			import View.components.Admin.UserListItem;
+			
+			import mx.collections.ArrayList;
 
 			protected function cancelUserButton_clickHandler(event:MouseEvent):void
 			{
@@ -41,6 +44,13 @@
 				// Remove anything in the list currently
 				allUsers.removeAllElements();
 				
+				if(eraUserArray.length == 0) {
+					var noUsers:Label = new Label();
+					noUsers.text = "No users found";
+					allUsers.addElement(noUsers);
+					return;
+				}
+				
 				// Add the current users
 				for each(var user:Model_ERAUser in eraUserArray) {
 					var userListItem:UserListItem = new UserListItem();
@@ -57,9 +67,31 @@
 				createUserPanel.enabled = false;
 			}
 			
+			/* == PUBLIC FUNCTIONS == */
 			public function closeCreateUserPanel():void {
 				this.createUserPanel.visible = false;
 				this.createUserPanel.includeInLayout = false;
+			}
+			
+			public function addRole(role:String, roleERAUserArray:Array, allERAUsersArray:Array):void {
+				// Make a new era role box
+				var roleBox:ERARole = new ERARole();
+				roleBox.role = role;
+				roleBox.percentWidth = 100;
+				roles.addElement(roleBox);
+				
+				
+				var formattedArray:ArrayList = new ArrayList();
+				for each(var eraUser:Model_ERAUser in allERAUsersArray) {
+					formattedArray.addItem(eraUser.username);
+				}
+				roleBox.allERAUsers = formattedArray;
+				
+				for each(var user:String in roleERAUserArray) {
+					var userListItem:UserListItem = new UserListItem();
+					userListItem.username = user;
+					roleBox.currentUsers.addElement(userListItem);
+				}
 			}
 
 		]]>
@@ -90,11 +122,11 @@
 		<s:VGroup horizontalAlign="center" width="100%">
 			<!-- Content box -->
 			<s:VGroup width="960" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
-				<s:Label text="Current Users" fontSize="20" fontWeight="bold">
+				<s:Label text="Current Users" fontSize="20" fontWeight="bold" color="0x5e6469">
 				</s:Label>
 				
 				<!-- Create user panel -->
-				<s:VGroup id="createUserPanel" paddingTop="10" width="100%">
+				<s:VGroup id="createUserPanel" paddingTop="10" width="100%" includeInLayout="false" visible="false">
 					<s:HGroup verticalAlign="middle">
 						<s:Label text="QUT Username" width="150"></s:Label><s:TextInput id="qutUsername" width="250"></s:TextInput>
 					</s:HGroup>
@@ -117,6 +149,8 @@
 				<s:VGroup id="allUsers" width="100%" height="100%" paddingTop="10" paddingBottom="20">
 					<s:Label text="loading" />
 				</s:VGroup>	
+				
+				<mx:HRule chromeColor="0x000000" width="100%" />
 				
 				<s:Label text="Roles" fontSize="20" fontWeight="bold">
 				</s:Label>

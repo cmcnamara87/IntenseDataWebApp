@@ -9,6 +9,14 @@
 			
 			import View.components.Admin.UserListItem;
 			
+			import mx.collections.ArrayList;
+			
+			[Bindable]
+			public var role:String = "Role";
+			[Bindable]
+			public var allERAUsers:ArrayList = new ArrayList();
+			
+			
 			protected function addUserButton_clickHandler(event:MouseEvent):void
 			{
 				// TODO Auto-generated method stub
@@ -27,10 +35,10 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Label id="roleTitle" text="Role" fontSize="15" fontWeight="bold">
+	<s:Label id="roleTitle" text="{role}" fontSize="15" fontWeight="bold">
 	</s:Label>
-	<s:HGroup>
-		<s:DropDownList id="allUsers" width="100%">
+	<s:HGroup width="100%">
+		<s:DropDownList id="allUsers" width="100%" dataProvider="{allERAUsers}">
 		</s:DropDownList>
 		<s:Button label="Add User" id="addUserButton" click="addUserButton_clickHandler(event)">
 		</s:Button>

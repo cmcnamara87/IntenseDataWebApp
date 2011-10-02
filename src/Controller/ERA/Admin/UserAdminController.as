@@ -100,31 +100,30 @@ package Controller.ERA.Admin
 		/* ========================================== END OF ADD ROLE TO USER ========================================== */
 		
 		/* ======================================= GET USERS WITH ROLE ========================================== */
+		/**
+		 * Get all the users with the roles (roles are stored in an array in the app controller) @see AppController 
+		 * 
+		 */
 		private function getUsersWithRoles():void {
 			for each(var role:String in AppController.ERARoles) {
 				// Get all the users that have the role
 				AppModel.getInstance().getERAUsersWithRole(role, AppController.currentEraProject.year, gotUsersWithRole);
 			}
 		}
-		private function gotUsersWithRole(status:Boolean, role:String, usersArray:Array):void {
-			var roleBox:ERARole = new ERARole();
-			roleBox.percentWidth = 100;
-			roleBox.percentHeight = 100;
-			userAdminView.roles.addElement(roleBox);
-			
-			roleBox.roleTitle.text = role;
-			
-			var formattedArray:ArrayList = new ArrayList();
-			for each(var eraUser:Model_ERAUser in this.usersArray) {
-				formattedArray.addItem(eraUser.username);
+		/**
+		 * Got a list of users for a given role. Add them to the view 
+		 * @param status
+		 * @param role
+		 * @param usersArray
+		 * 
+		 */
+		private function gotUsersWithRole(status:Boolean, role:String, roleERAUserArray:Array):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to get " + role + " users");
+				return;
 			}
-			roleBox.allUsers.dataProvider = formattedArray;
 			
-			for each(var user:String in usersArray) {
-				var userListItem:UserListItem = new UserListItem();
-				userListItem.username = user;
-				roleBox.currentUsers.addElement(userListItem);
-			}
+			userAdminView.addRole(role, roleERAUserArray, this.usersArray);
 		}
 		/* ======================================= END OF GET USERS WITH ROLE ========================================== */		
 	
