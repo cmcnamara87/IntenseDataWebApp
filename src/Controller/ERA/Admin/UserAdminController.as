@@ -8,8 +8,8 @@ package Controller.ERA.Admin
 	import Model.Model_User;
 	
 	import View.ERA.UserAdminView;
-	import View.components.Admin.UserListItem;
 	import View.ERA.components.ERARole;
+	import View.components.Admin.UserListItem;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -38,7 +38,10 @@ package Controller.ERA.Admin
 		}
 		
 		private function setupEventListeners():void {
+			// Add user to role
 			view.addEventListener(IDEvent.ADD_USER_TO_ROLE, addUserToRole);
+			
+			// Create user
 			userAdminView.createUserButton.addEventListener(MouseEvent.CLICK, createNewUser);
 		}
 		
@@ -63,9 +66,14 @@ package Controller.ERA.Admin
 			
 			AppModel.getInstance().createERAUser(qutUsername, firstName, lastName, eraUserCreated);
 		}
-		private function eraUserCreated(status:Boolean):void {
+		private function eraUserCreated(status:Boolean, eraUser:Model_ERAUser):void {
 			if(status) {
 				layout.notificationBar.showGood("User Created");
+				
+				// Add user to saved user array
+				this.usersArray.push(eraUser);
+				userAdminView.addERAUsers(usersArray);
+
 			} else {
 				layout.notificationBar.showError("User Creation Failed");
 			}
@@ -90,6 +98,7 @@ package Controller.ERA.Admin
 		}
 		/* ========================================== END OF ADD ROLE TO USER ========================================== */
 		
+		/* ======================================= GET USERS WITH ROLE ========================================== */
 		private function getUsersWithRoles():void {
 			for each(var role:String in AppController.ERARoles) {
 				// Get all the users that have the role
@@ -110,21 +119,16 @@ package Controller.ERA.Admin
 			}
 			roleBox.allUsers.dataProvider = formattedArray;
 			
-//			for each(var user:Model_ERAUser in usersArray) {
-//				trace("user list", user.firstName);
-//				var userListItem:UserListItem = new UserListItem();
-//				userListItem.firstName = user.firstName;
-//				userListItem.lastName = user.lastName;
-//				userListItem.username = user.username;
-//				roleBox.addElement(userListItem);
-//			}
 			for each(var user:String in usersArray) {
 				var userListItem:UserListItem = new UserListItem();
 				userListItem.username = user;
 				roleBox.currentUsers.addElement(userListItem);
 			}
 		}
+		/* ======================================= END OF GET USERS WITH ROLE ========================================== */		
+	
 		
+		/* ======================================= GET USERS ON SYSTEM ========================================== */
 		private function getUsersOnSystem():void {
 			AppModel.getInstance().getERAUsers(gotUsers);
 		}
@@ -142,6 +146,7 @@ package Controller.ERA.Admin
 			
 			getUsersWithRoles();
 		}
+		/* ======================================= END OF GET USERS ON SYSTEM ========================================== */
 		
 	}
 }

@@ -1,6 +1,7 @@
 package Model.Transactions.ERAProject
 {
 	import Model.AppModel;
+	import Model.Model_ERAUser;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
@@ -118,17 +119,37 @@ package Model.Transactions.ERAProject
 			argsXML.role = "ERA-user";
 			argsXML.role.@type = "role";
 			
-			connection.sendRequest(baseXML, idUserGranted);
+			connection.sendRequest(baseXML, getUserDetails);
 		}
 		
-		private function idUserGranted(e:Event):void {
+		private function getUserDetails(e:Event):void {
 			var data:XML;
-			if((data = AppModel.getInstance().getData("id user role granted", e)) == null) {
+			if((data = AppModel.getInstance().getData("granting ERA role", e)) == null) {
 				callback(false);
 				return;
-			} else {
-				callback(true);
 			}
+			
+			var baseXML:XML = connection.packageRequest("user.get", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			
+			// actor.grant :type user :name system:johnsmith :role user -type role
+			argsXML.user = username;
+			argsXML.domain = "system";
+			
+			connection.sendRequest(baseXML, gotUserDetails);
+		}
+		
+		private function gotUserDetails(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("getting user details", e)) == null) {
+				callback(false);
+				return;
+			}
+			
+			var eraUser:Model_ERAUser = new Model_ERAUser();
+			eraUser.setData(data.reply.result.user[0]);
+			
+			callback(true, eraUser);
 		}
 	}
 }
