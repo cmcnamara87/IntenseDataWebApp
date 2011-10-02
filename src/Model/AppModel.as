@@ -13,12 +13,14 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_CreateERAProject;
 	import Model.Transactions.ERAProject.Transaction_CreateERAUser;
 	import Model.Transactions.ERAProject.Transaction_CreateRoom;
+	import Model.Transactions.ERAProject.Transaction_DeleteERAProject;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
 	import Model.Transactions.ERAProject.Transaction_GetAllLogItems;
 	import Model.Transactions.ERAProject.Transaction_GetAllRooms;
 	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
+	import Model.Transactions.ERAProject.Transaction_UpdateERAProject;
 	import Model.Transactions.ERAProject.Transaction_UploadERAFile;
 	import Model.Transactions.Share.Transaction_SetUserAssetShare;
 	import Model.Transactions.Transaction_ChangePassword;
@@ -1577,6 +1579,12 @@ package Model {
 		 */
 		public function makeERAProject(day:String, month:String, year:String, packageSize:String, callback:Function):void {
 			var newERA:Transaction_CreateERAProject = new Transaction_CreateERAProject(day, month, year, packageSize, _connection, callback);
+		}
+		public function updateERAProject(eraProjectID:Number, day:String, month:String, year:String, packageSize:String, callback:Function):void {
+			var updateERA:Transaction_UpdateERAProject = new Transaction_UpdateERAProject(eraProjectID, day, month, year, packageSize, _connection, callback);
+		}
+		public function deleteERAProject(eraProjectID:Number, callback:Function):void {
+			var deleteERA:Transaction_DeleteERAProject = new Transaction_DeleteERAProject(eraProjectID, _connection, callback);
 		}
 		
 		public function getERAProjects(callback:Function):void {

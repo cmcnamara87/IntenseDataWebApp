@@ -1,7 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 	 xmlns:s="library://ns.adobe.com/flex/spark" 
-	 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" >
+	 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:components="View.ERA.components.*" >
+
+	<fx:Script>
+		<![CDATA[
+			import Model.Model_ERAProject;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			
+			import spark.events.IndexChangeEvent;
+			private var creationMode:Boolean = false;
+			
+			private var projectArray:ArrayCollection = new ArrayCollection();
+			
+			public function addERAProjects(eraProjectArray:Array):void {
+				projectArray = new ArrayCollection();
+				for each(var eraProject:Model_ERAProject in eraProjectArray) {
+					var baseID:Number = eraProject.base_asset_id;
+					var eraName:String = "ERA " + eraProject.year;
+					var object:Object = new Object();
+					object.label = eraName;
+					object.data = baseID;
+					projectArray.addItem(object);
+				}
+				eras.dataProvider = projectArray;
+				if(eras.dataProvider.length > 0) {
+					eras.selectedIndex = 0;
+				}
+				
+				this.leaveCreationMode();
+			}
+			public function addERAProject(eraProject:Model_ERAProject):void {
+				day.selectedItem = eraProject.day;
+				month.selectedItem = eraProject.month;
+				year.selectedItem = eraProject.year;
+				packageSize.text = eraProject.packageSize;
+			}
+			
+			private function enterCreationMode():void {
+				// Disable The controls
+				makeNewERA.enabled = false;
+				eras.enabled = false;
+				deleteERAButton.enabled = false;
+				
+				// Clear all the inputs
+				day.selectedIndex = -1;
+				month.selectedIndex = -1;
+				year.selectedIndex = -1;
+				packageSize.text = "";
+				
+				creationMode = true;
+				
+				createButton.visible = true;
+				createButton.includeInLayout = true;
+				saveButton.visible = false;
+				saveButton.includeInLayout = false;
+				cancelButton.visible = true;
+				cancelButton.includeInLayout = true;
+			}
+			private function leaveCreationMode():void {
+				createButton.visible = false;
+				createButton.includeInLayout = false;
+				saveButton.visible = true;
+				saveButton.includeInLayout = true;
+				cancelButton.visible = false;
+				cancelButton.includeInLayout = false;
+				
+				makeNewERA.enabled = true;
+				eras.enabled = true;
+				deleteERAButton.enabled = true;
+				
+				creationMode = false;
+				
+				trace("changing era");
+				if(eras.dataProvider.length > 0) {
+					trace("era changed");
+					eras.selectedIndex = 0;
+				}
+			}
+			
+			protected function makeNewERA_clickHandler(event:MouseEvent):void
+			{
+				this.enterCreationMode();
+			}
+			
+			protected function eras_changeHandler(e:IndexChangeEvent):void
+			{
+				// TODO Auto-generated method stub
+//				Alert.show(DropDownList(e.target).selectedItem.data + " " + DropDownList(e.target).selectedItem.label);
+			}
+
+
+			protected function cancelButton_clickHandler(event:MouseEvent):void
+			{
+				leaveCreationMode();
+			}
+
+		]]>
+	</fx:Script>
+
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -16,8 +115,17 @@
 			</s:VGroup>
 		</s:HGroup>
 	</s:BorderContainer>
+	<components:NotificationBar id="myNotificationBar" width="100%" />
 	<s:VGroup horizontalAlign="center" height="100%" width="100%">
+		<!-- Create the middle box -->
 		<s:VGroup width="900" height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+			<!-- Create Menu box -->
+			<s:HGroup width="100%">
+				<s:Button id="makeNewERA" label="Make New ERA"  click="makeNewERA_clickHandler(event)"/>
+				<s:DropDownList id="eras" width="100%" change="eras_changeHandler(event)" />
+				<s:Button id="deleteERAButton" label="Delete ERA" />
+			</s:HGroup>
+			
 			<s:Label text="ERA Due Date" fontWeight="bold">
 			</s:Label>
 			<s:HGroup verticalAlign="middle">
@@ -75,8 +183,11 @@
 				<s:Label text="MB">
 				</s:Label>
 			</s:HGroup>
-			<s:Button id="createButton" label="Save ERA">
-			</s:Button>
+			<s:HGroup>
+				<s:Button id="saveButton" label="Save ERA" />
+				<s:Button id="createButton" label="Create ERA" visible="false" />
+				<s:Button id="cancelButton" label="Cancel" click="cancelButton_clickHandler(event)" visible="false"/>
+			</s:HGroup>
 		</s:VGroup>
 	</s:VGroup>
 </s:VGroup>

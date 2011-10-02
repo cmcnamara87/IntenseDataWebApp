@@ -68,8 +68,9 @@ package Controller {
 			layout.header.productionToolsButton.addEventListener(MouseEvent.CLICK, productionToolsButtonClicked);
 			
 			// Admin buttons
+			layout.header.newERAButton.addEventListener(MouseEvent.CLICK, newEraButtonClicked);
 			layout.header.dashboardButton.addEventListener(MouseEvent.CLICK, dashboardButtonClicked);
-			layout.header.eraSetupButton.addEventListener(MouseEvent.CLICK, eraSetupButtonClicked);
+			layout.header.eraEdit.addEventListener(MouseEvent.CLICK, eraEditClicked);
 			layout.header.userAdminButton.addEventListener(MouseEvent.CLICK, userAdminButtonClicked);
 			layout.header.caseCreatorButton.addEventListener(MouseEvent.CLICK, caseCreatorButtonClicked);
 			
@@ -106,6 +107,14 @@ package Controller {
 		}
 		
 		/**
+		 * Updates the ERA dropdown list to be whatevers in the ERA array 
+		 * 
+		 */
+		public static function updateERADropdownList():void {
+			layout.header.addERAProjects(AppController.eraProjectArray);	
+		}
+		
+		/**
 		 * Shows the admin tool buttons 
 		 * 
 		 */
@@ -120,7 +129,7 @@ package Controller {
 			layout.header.adminToolButtons.includeInLayout = true;
 			
 			// Add the era to the list
-			layout.header.addERAProjects(AppController.eraProjectArray);
+			updateERADropdownList();
 		}
 		
 		/**
@@ -142,11 +151,14 @@ package Controller {
 			Dispatcher.call("case");
 		}
 		
+		private static function newEraButtonClicked(e:MouseEvent):void {
+			Dispatcher.call("erasetup");
+		}
 		private static function dashboardButtonClicked(e:MouseEvent):void {
 			Dispatcher.call("dashboard");
 		}
-		private static function eraSetupButtonClicked(e:MouseEvent):void {
-			Dispatcher.call("erasetup");
+		private static function eraEditClicked(e:MouseEvent):void {
+			Dispatcher.call("era");
 		}
 		private static function userAdminButtonClicked(e:MouseEvent):void {
 			Dispatcher.call("useradmin");
