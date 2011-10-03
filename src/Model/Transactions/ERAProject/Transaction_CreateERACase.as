@@ -7,6 +7,7 @@ package Model.Transactions.ERAProject
 	import Model.Model_ERACase;
 	import Model.Model_ERAProject;
 	import Model.Model_ERARoom;
+	import Model.Model_ERAUser;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
@@ -21,8 +22,8 @@ package Model.Transactions.ERAProject
 		private var qutSchool:String;
 		private var forArray:Array;
 		private var categoryArray:Array;
-		private var productionManagerUsernameArray:Array;
-		private var productionTeamUsernameArray:Array;
+		private var productionManagerArray:Array;
+		private var productionTeamArray:Array;
 		private var connection:Connection;
 		private var callback:Function;
 		
@@ -50,8 +51,8 @@ package Model.Transactions.ERAProject
 			this.qutSchool = qutSchool;
 			this.forArray = forArray;
 			this.categoryArray = categoryArray;
-			this.productionManagerUsernameArray = productionManagerUsernameArray;
-			this.productionTeamUsernameArray = productionTeamUsernameArray;
+			this.productionManagerArray = productionManagerUsernameArray;
+			this.productionTeamArray = productionTeamUsernameArray;
 			this.connection = connection;
 			this.callback = callback;
 			
@@ -75,8 +76,8 @@ package Model.Transactions.ERAProject
 			argsXML.meta["ERA-case"]["title"] = this.title;
 
 			// setup the researchers
-			for each(var researcherUsername:String in researcherArray) {
-				argsXML.meta["ERA-case"].appendChild(XML("<researcher_username>" + researcherUsername + "</researcher_username>"));
+			for each(var researcher:Model_ERAUser in researcherArray) {
+				argsXML.meta["ERA-case"].appendChild(XML("<researcher_username><username>" + researcher.username + "</username><first_name>"+researcher.firstName+"</first_name><last_name>"+researcher.lastName+"</last_name></researcher_username>"));
 			}
 			
 			argsXML.meta["ERA-case"]["qut_school"] = this.qutSchool;
@@ -92,13 +93,13 @@ package Model.Transactions.ERAProject
 			}
 			
 			// setup production manager usernames
-			for each(var productionManagerUsername:String in productionManagerUsernameArray) {
-				argsXML.meta["ERA-case"].appendChild(XML("<production_manager_username>" + productionManagerUsername + "</production_manager_username>"));
+			for each(var productionManager:Model_ERAUser in productionManagerArray) {
+				argsXML.meta["ERA-case"].appendChild(XML("<production_manager_username><username>" + productionManager.username + "</username><first_name>"+productionManager.firstName+"</first_name><last_name>"+productionManager.lastName+"</last_name></production_manager_username>"));
 			}
 			
 			// setup production team usernames
-			for each(var productionTeamUsername:String in productionTeamUsernameArray) {
-				argsXML.meta["ERA-case"].appendChild(XML("<production_team_username>" + productionTeamUsername + "</production_team_username>"));
+			for each(var productionTeam:Model_ERAUser in productionTeamArray) {
+				argsXML.meta["ERA-case"].appendChild(XML("<production_team_username><username>" + productionTeam.username + "</username><first_name>"+productionTeam.firstName+"</first_name><last_name>"+productionTeam.lastName+"</last_name></production_team_username>"));
 			}
 			
 			// Setup the relationship

@@ -24,7 +24,7 @@ package Controller.ERA
 		private var caseView:CaseView; // The View for the case 
 		private var caseID:Number = 0; // The Mflux ID for the current case
 		private var roomType:String;
-		private var currentERACase:Model_ERACase = null;
+		public static var currentERACase:Model_ERACase = null;
 		private var roomArray:Array;
 		private var currentRoom:Model_ERARoom = null;
 		
@@ -94,7 +94,7 @@ package Controller.ERA
 				}
 			}
 			
-			
+			// Just check that we found a case from all that shit up above
 			if(currentERACase != null) {
 				// We have an era case to show
 				// Get out all the rooms
@@ -109,12 +109,9 @@ package Controller.ERA
 		}
 		private function gotAllRooms(status:Boolean, eraRoomArray:Array):void {
 			if(status) {
-				layout.notificationBar.showGood("got rooms");
 				this.roomArray = eraRoomArray;
 				currentRoom = this.getRoomIndex(roomType);
 				loadRoomContents();
-				
-				
 			} else {
 				layout.notificationBar.showError("failed to get rooms");
 			}

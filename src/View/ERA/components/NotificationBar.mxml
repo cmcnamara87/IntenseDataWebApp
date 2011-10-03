@@ -24,7 +24,7 @@
 			}
 			
 			public function showGood(message:String):void {
-				this.setStyle("backgroundColor", "0x00FF00");
+				this.setStyle("backgroundColor", "0x99FF9B");
 				this.setStyle("color", "0x000000");
 				message_text.text = message;
 				show();

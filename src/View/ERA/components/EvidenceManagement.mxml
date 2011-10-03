@@ -5,44 +5,80 @@
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
+			import Controller.ERA.CaseController;
 			import Controller.IDEvent;
 			
 			import Model.Model_ERALogItem;
 			
 			import flash.utils.setTimeout;
 			
+			private var noEvidence:Boolean = false;
+			
 			public function addLogItems(logItemArray:Array):void {
 				logItemList.removeAllElements();
+				
+				if(logItemArray == null) {
+					// We are still loading
+					var label:Label = new Label();
+					label.text = "Loading...";
+					logItemList.addElement(label);
+					return;
+				}
+				
+				if(logItemArray.length == 0) {
+					noEvidence = true;
+					var label:Label = new Label();
+					label.text = "No Evidence Items stored.";
+					logItemList.addElement(label);
+					return;
+				}
+				
 				for each(var logItem:Model_ERALogItem in logItemArray) {
 					var evidenceItem:EvidenceItem = new EvidenceItem();
 					logItemList.addElement(evidenceItem);				
 					evidenceItem.addLogItemData(logItem);
 				}
+			}
+
+			protected function makeNewItemButton_clickHandler(event:MouseEvent):void
+			{
+				if(noEvidence) {
+					logItemList.removeAllElements(); // removes the 'no evidence items stored' label
+				}
 				var evidenceItemNew:EvidenceItem = new EvidenceItem();
 				logItemList.addElement(evidenceItemNew);
 			}
+
 		]]>
 	</fx:Script>
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
+	<!-- TITLE BAR WITH CREATION BUTTON -->
 	<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
-		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20">
-			<s:VGroup>
-				<s:Label text="ERA ????/?????"  fontSize="11" color="0xaaaaaa" />
-				<s:Label text="Evidence Management" fontSize="30" fontWeight="bold" color="0x5e6469" height="30">
-					<s:filters>
-						<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
-					</s:filters>
-				</s:Label>
+		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
+			<s:VGroup width="100%">
+				<s:HGroup width="100%">
+					<s:Label text="Case Creator" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+						<s:filters>
+							<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+						</s:filters>
+					</s:Label>
+					<s:Button id="makeNewItemButton" label="Add New Item" cornerRadius="10" height="30" click="makeNewItemButton_clickHandler(event)"/>
+				</s:HGroup>
 			</s:VGroup>
 		</s:HGroup>
 	</s:BorderContainer>
+	<!-- END OF TITLE BAR WITH CREATION BUTTON -->
+	
 	<s:BorderContainer width="100%" height="100%" borderColor="0xFFFFFF">
 		<s:Scroller width="100%" height="100%">
-			<s:VGroup id="logItemList" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
-			</s:VGroup>	
+			<s:VGroup horizontalAlign="center">
+				<s:VGroup width="960" id="logItemList" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+				</s:VGroup>	
+			</s:VGroup>
 		</s:Scroller>
 	</s:BorderContainer>
 </s:VGroup>

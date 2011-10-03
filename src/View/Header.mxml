@@ -65,13 +65,13 @@
 				</s:Button>
 				<s:DropDownList id="eraDropDown" contentBackgroundColor="0x222222" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" >
 				</s:DropDownList>
-				<s:Button id="dashboardButton" label="Dashboard" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+				<s:Button id="dashboardButton" enabled="false" label="Dashboard" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
 				</s:Button>
 				<s:Button id="userAdminButton" label="User Admin" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
 				</s:Button>
 				<s:Button id="caseCreatorButton" label="Case Creator" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
 				</s:Button>
-				<s:Button id="reportButton" label="Reports" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+				<s:Button id="reportButton" enabled="false" label="Reports" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
 				</s:Button>
 		</s:HGroup>
 		<s:HGroup width="100%">

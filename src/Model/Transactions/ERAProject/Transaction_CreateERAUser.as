@@ -68,6 +68,7 @@ package Model.Transactions.ERAProject
 			argsXML.domain = domain;
 			argsXML.email = email;
 			
+			argsXML.meta["ERA-user"]["username"] = username;
 			argsXML.meta["ERA-user"]["first_name"] = firstName;
 			argsXML.meta["ERA-user"]["last_name"] = lastName;
 

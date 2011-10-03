@@ -4,12 +4,12 @@ package Model {
 		
 		public var rmCode:String;
 		public var title:String;
-		public var researcherUsernames:Array = new Array();
+		public var researchersArray:Array = new Array();
 		public var qutSchool:String;
 		public var forArray:Array = new Array(); // array of FOR_Models
 		public var categoryArray:Array = new Array();
-		public var productionManagerUsernameArray:Array = new Array();
-		public var productionTeamUsernameArray:Array = new Array();
+		public var productionManagerArray:Array = new Array();
+		public var productionTeamArray:Array = new Array();
 		
 		public static const CAT1:String = "Category_1";
 		public static const CAT2:String = "Category_2";
@@ -33,8 +33,12 @@ package Model {
 			this.title = eraCase["title"];
 			
 			// add all the researchers usernames
-			for each(var researcherUsername:String in eraCase["researcher_username"]) {
-				researcherUsernames.push(researcherUsername);
+			for each(var researcherXML:XML in eraCase["researcher_username"]) {
+				var researcher:Model_ERAUser = new Model_ERAUser();
+				researcher.username = researcherXML["username"];
+				researcher.firstName = researcherXML["first_name"];
+				researcher.lastName = researcherXML["last_name"];
+				researchersArray.push(researcher);
 			}
 			
 			// add the qut school
@@ -54,13 +58,21 @@ package Model {
 			}
 			
 			// add all the production managers
-			for each(var productionManagerUsername:String in eraCase["production_manager_username"]) {
-				productionManagerUsernameArray.push(productionManagerUsername);
+			for each(var productionManagerXML:XML in eraCase["production_manager_username"]) {
+				var productionManager:Model_ERAUser = new Model_ERAUser();
+				productionManager.username = productionManagerXML["username"];
+				productionManager.firstName = productionManagerXML["first_name"];
+				productionManager.lastName = productionManagerXML["last_name"];
+				productionManagerArray.push(productionManager);
 			}
 			
 			// add all the production team members
-			for each(var productionTeamUsername:String in eraCase["production_team_username"]) {
-				productionTeamUsernameArray.push(productionTeamUsername);
+			for each(var productionTeamXML:XML in eraCase["production_manager_username"]) {
+				var productionTeam:Model_ERAUser = new Model_ERAUser();
+				productionTeam.username = productionTeamXML["username"];
+				productionTeam.firstName = productionTeamXML["first_name"];
+				productionTeam.lastName = productionTeamXML["last_name"];
+				productionTeamArray.push(productionTeam);
 			}
 		}
 	}

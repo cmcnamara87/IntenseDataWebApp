@@ -16,15 +16,72 @@
 			
 			import spark.events.IndexChangeEvent;
 			
+			public var chosenResearchersArray:Array = new Array();
+			public var chosenProductionManagersArray:Array = new Array();
+			public var chosenTeamMembersArray:Array = new Array();
+			public var chosenForsArray:Array = new Array();
+			public var chosenCategories:Array = new Array();
+			
 			public function addAllCases(caseArray:Array):void {
 				var dropdownData:ArrayCollection = new ArrayCollection();
 				for each(var eraCase:Model_ERACase in caseArray) {
 					var object:Object = new Object();
 					object.data = eraCase;
-					object.label = eraCase.rmCode + " (" + eraCase.researcherUsernames[0] + ")";
+					
+					var researcherUsername:String = (eraCase.researchersArray[0] as Model_ERAUser).username;
+					object.label = eraCase.rmCode + " (" + researcherUsername + ")";
 					dropdownData.addItem(object);
 				}
 				currentCases.dataProvider = dropdownData;
+			}
+			
+			private function renderProductionManagers():void {
+				productionManagersList.removeAllElements();
+				for each(var user:Model_ERAUser in chosenProductionManagersArray) {
+					var userListItem:UserListItem = new UserListItem();
+					userListItem.username = user.username;
+					userListItem.firstName = user.firstName;
+					userListItem.lastName = user.lastName;
+					productionManagersList.addElement(userListItem);
+				}
+			}
+			
+			private function renderTeamMembers():void {
+				productionTeamMemberList.removeAllElements();
+				for each(var user:Model_ERAUser in chosenTeamMembersArray) {
+					var userListItem:UserListItem = new UserListItem();
+					userListItem.username = user.username;
+					userListItem.firstName = user.firstName;
+					userListItem.lastName = user.lastName;
+					productionTeamMemberList.addElement(userListItem);
+				}
+			}
+			
+			private function renderResearchers():void {
+				researcherList.removeAllElements();
+				for each(var user:Model_ERAUser in chosenResearchersArray) {
+					var userListItem:UserListItem = new UserListItem();
+					userListItem.username = user.username;
+					userListItem.firstName = user.firstName
+					userListItem.lastName = user.lastName;
+					researcherList.addElement(userListItem);
+				}
+			}
+			private function renderFor():void {
+				forList.removeAllElements();
+				for each(var forPair:Array in chosenForsArray) {
+					var label:Label = new Label();
+					label.text = forPair[Model_ERACase.FOR_CODE] + " " + forPair[Model_ERACase.PERCENTAGE] + "%";
+					forList.addElement(label);
+				}
+			}
+			private function renderCategories():void {
+				categoryList.removeAllElements();
+				for each(var category:String in chosenCategories) {
+					var label:Label = new Label();
+					label.text = category;
+					categoryList.addElement(label);
+				}
 			}
 			
 			public function showCase(eraCase:Model_ERACase):void {
@@ -34,51 +91,36 @@
 				qutSchool.text = eraCase.qutSchool;
 				
 				// Show the Researchers
-				for each(var username:String in eraCase.researcherUsernames) {
-					var userListItem:UserListItem = new UserListItem();
-					userListItem.username = username;
-					researcherList.addElement(userListItem);
-				}
+				chosenResearchersArray = eraCase.researchersArray;
+				renderResearchers();
 				
 				// Show the FOR Codes
-				for each(var forPair:Array in eraCase.forArray) {
-					var label:Label = new Label();
-					label.text = forPair[Model_ERACase.FOR_CODE] + " " + forPair[Model_ERACase.PERCENTAGE] + "%";
-					forList.addElement(label);
-				}
+				chosenForsArray = eraCase.forArray;
+				renderFor();
 				
 				// Add all category 
-				var categoryDropdownData:ArrayCollection = new ArrayCollection();
-				for each(var categoryCode:String in Model_ERACase.CATEGORY_ARRAY) {
-					var object:Object = new Object();
-					object.data = categoryCode;
-					object.label = categoryCode;
-					categoryDropdownData.addItem(object);
-				}
-				category.dataProvider = categoryDropdownData;
+//				var categoryDropdownData:ArrayCollection = new ArrayCollection();
+//				for each(var categoryCode:String in Model_ERACase.CATEGORY_ARRAY) {
+//					var object:Object = new Object();
+//					object.data = categoryCode;
+//					object.label = categoryCode;
+//					categoryDropdownData.addItem(object);
+//				}
+//				category.dataProvider = categoryDropdownData;
 				
 				// Add case categories
-				for each(var caseCategory:String in eraCase.categoryArray) {
-					var label:Label = new Label();
-					label.text = caseCategory;
-					categoryList.addElement(label);
-				}
+				chosenCategories = eraCase.categoryArray;
+				renderCategories();
 				
 				// Set the title for the case
 				title.text = eraCase.title;
 				
 				// Add all the production managers
-				for each(var username:String in eraCase.productionManagerUsernameArray) {
-					var userListItem:UserListItem = new UserListItem();
-					userListItem.username = username;
-					productionManagersList.addElement(userListItem);
-				}
+				chosenProductionManagersArray = eraCase.productionManagerArray;
+				renderProductionManagers();
 				
-				for each(var username:String in eraCase.productionTeamUsernameArray) {
-					var userListItem:UserListItem = new UserListItem();
-					userListItem.username = username;
-					productionTeamMemberList.addElement(userListItem);
-				}
+				chosenTeamMembersArray = eraCase.productionTeamArray;
+				renderTeamMembers();
 			}
 			
 			public function addAllResearchers(userArray:Array):void {
@@ -114,8 +156,146 @@
 				allProductionTeamMembers.dataProvider = dropdownData;
 			}
 
+			private function enterCreationMode():void {
+				// Disable the case selection dropdown list and delete case button
+				currentCases.enabled = false;
+				currentCases.selectedIndex = -1;
+				deleteCase.enabled = false;
+				
+				// Clear all values
+				rmCode.text = "";
+				qutSchool.text = "";
+				researcherList.removeAllElements();
+				forList.removeAllElements();
+				categoryList.removeAllElements();
+				title.text = "";
+				productionManagersList.removeAllElements();
+				productionTeamMemberList.removeAllElements();
+				
+				// Clear all stored stuff
+				chosenResearchersArray = new Array();
+				chosenProductionManagersArray = new Array();
+				chosenTeamMembersArray = new Array();
+				chosenForsArray = new Array();
+				chosenCategories = new Array();
+				
+				// Show create and cancel button
+				createCaseButton.visible = true;
+				createCaseButton.includeInLayout = true;
+				cancelButton.visible = true;
+				cancelButton.includeInLayout = true;
+				
+				saveButton.visible = false;
+				saveButton.includeInLayout = false;
+			}
+			public function exitCreationMode():void {
+				currentCases.enabled = true;
+				deleteCase.enabled = true;
+			}
 			protected function makeNewCase_clickHandler(event:MouseEvent):void
 			{
+				enterCreationMode();
+			}
+
+
+			protected function addResearcher_clickHandler(event:MouseEvent):void
+			{
+				if(allResearchers.selectedIndex == -1) return;
+				
+				// get out the researcher selected
+				var researcherSelected:Model_ERAUser = allResearchers.selectedItem.data as Model_ERAUser;
+				
+				// Add it to the saved list
+				chosenResearchersArray.push(researcherSelected);
+				renderResearchers();
+			}
+
+
+			protected function addFor_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				var forPair:Array = new Array();
+				forPair[Model_ERACase.FOR_CODE] = forCode.text;
+				forPair[Model_ERACase.PERCENTAGE] = forPercentage.text;
+				
+				// save it and show it
+				chosenForsArray.push(forPair);
+				renderFor();
+			}
+
+
+			protected function addCategory_clickHandler(event:MouseEvent):void
+			{
+				if(category.selectedIndex == -1) return;
+				
+				// get out the researcher selected
+				var categorySelected:String = category.selectedItem;
+				
+				// Add it to the saved list
+				chosenCategories.push(categorySelected);
+				renderCategories();
+			}
+
+
+			protected function addProductionManagerButton_clickHandler(event:MouseEvent):void
+			{
+				if(allProductionManagers.selectedIndex == -1) return;
+				
+				// get out the researcher selected
+				var managerSelected:Model_ERAUser = allProductionManagers.selectedItem.data as Model_ERAUser;
+				
+				// Add it to the saved list
+				chosenProductionManagersArray.push(managerSelected);
+				renderProductionManagers();
+			}
+
+
+			protected function addTeamMemberButton_clickHandler(event:MouseEvent):void
+			{
+				if(allProductionTeamMembers.selectedIndex == -1) return;
+				
+				// get out the researcher selected
+				var teamMemberSelected:Model_ERAUser = allProductionTeamMembers.selectedItem.data as Model_ERAUser;
+				
+				// Add it to the saved list
+				chosenTeamMembersArray.push(teamMemberSelected);
+				renderTeamMembers();
+			}
+
+
+			protected function forCode_focusInHandler(event:FocusEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(forCode.text == "FoR Code") {
+					forCode.text = "";
+				}
+			}
+
+
+			protected function forPercentage_focusOutHandler(event:FocusEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(forPercentage.text == "") {
+					forPercentage.text = "FoR Percentage";
+				}
+			}
+
+
+			protected function forCode_focusOutHandler(event:FocusEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(forCode.text == "") {
+					forCode.text = "FoR Code";
+				}
+			}
+
+
+			protected function forPercentage_focusInHandler(event:FocusEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(forPercentage.text == "FoR Percentage") {
+					forPercentage.text = "";
+				}
 			}
 
 		]]>
@@ -148,7 +328,7 @@
 			<s:VGroup width="960" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
 				
 				<s:HGroup width="100%">
-					<s:DropDownList id="currentCases" width="100%" >
+					<s:DropDownList id="currentCases" width="100%" change="{showCase(currentCases.selectedItem.data as Model_ERACase)}">
 					</s:DropDownList>	
 					<s:Button id="deleteCase" label="Delete Case" />
 				</s:HGroup>
@@ -161,6 +341,12 @@
 					</components:content>
 				</components:FormGroup>
 			
+				<components:FormGroup title="Title (opt)">
+					<components:content>
+						<s:TextInput id="title" borderAlpha="0.5" width="100%" />
+					</components:content>
+				</components:FormGroup>
+				
 				<components:FormGroup title="QUT School">
 					<components:content>
 						<s:TextInput id="qutSchool" borderAlpha="0.5" width="100%" />
@@ -176,7 +362,7 @@
 									<fx:String>Reseracher Name</fx:String>
 								</s:ArrayList>
 							</s:DropDownList>
-							<s:Button id="addResearcher" label="Add Researcher" />	
+							<s:Button id="addResearcher" label="Add Researcher" click="addResearcher_clickHandler(event)" />	
 						</s:HGroup>
 						<s:VGroup id="researcherList" width="100%">
 						</s:VGroup>
@@ -187,8 +373,10 @@
 				<components:FormGroup title="FoR">
 					<components:content>
 						<s:HGroup width="100%">
-							<s:TextInput text="FoR Code" borderAlpha="0.5" width="100%" />
-							<s:TextInput text="FoR Percentage" borderAlpha="0.5" width="100%" />
+							<s:TextInput id="forCode" text="FoR Code" borderAlpha="0.5" width="100%" focusIn="forCode_focusInHandler(event)" focusOut="forCode_focusOutHandler(event)"/>
+							<s:TextInput id="forPercentage" text="FoR Percentage" borderAlpha="0.5" width="100%" focusIn="forPercentage_focusInHandler(event)" focusOut="forPercentage_focusOutHandler(event)"/>
+							<s:Label text="%" />
+							<s:Button id="addFor" label="Add FoR" click="addFor_clickHandler(event)" />
 						</s:HGroup>
 						<s:VGroup id="forList">
 						</s:VGroup>
@@ -198,8 +386,8 @@
 				<components:FormGroup title="Category">
 					<components:content>
 						<s:HGroup width="100%">
-							<s:DropDownList id="category" width="100%" />
-							<s:Button id="addCategory" label="Add Category" />
+							<s:DropDownList id="category" width="100%" dataProvider="{new ArrayList(Model_ERACase.CATEGORY_ARRAY)}"/>
+							<s:Button id="addCategory" label="Add Category" click="addCategory_clickHandler(event)"/>
 						</s:HGroup>
 						<s:VGroup id="categoryList">
 							
@@ -207,17 +395,13 @@
 					</components:content>
 				</components:FormGroup>
 				
-				<components:FormGroup title="Title (opt)">
-					<components:content>
-						<s:TextInput id="title" borderAlpha="0.5" width="100%" />
-					</components:content>
-				</components:FormGroup>
+				
 				
 				<components:FormGroup title="Production Manager">
 					<components:content>
 						<s:HGroup width="100%">
 							<s:DropDownList width="100%" id="allProductionManagers" />
-							<s:Button label="Add Production Mananger"/>
+							<s:Button label="Add Production Mananger" id="addProductionManagerButton" click="addProductionManagerButton_clickHandler(event)"/>
 						</s:HGroup>
 						<s:VGroup id="productionManagersList" width="100%">
 						</s:VGroup>
@@ -229,14 +413,19 @@
 					<components:content>
 						<s:HGroup width="100%"> 
 							<s:DropDownList width="100%" id="allProductionTeamMembers" />
-							<s:Button label="Add Production Team Member" />
+							<s:Button label="Add Production Team Member" id="addTeamMemberButton" click="addTeamMemberButton_clickHandler(event)" />
 						</s:HGroup>
 						<s:VGroup id="productionTeamMemberList" width="100%">
 						</s:VGroup>
 					</components:content>
 				</components:FormGroup>
 				
-				<s:Button label="Save Case" chromeColor="0x8FAFF7" />
+				<s:HGroup id="buttonGroup">
+					<s:Button label="Save Changes" chromeColor="0x8FAFF7" id="saveButton" />
+					<s:Button label="Create Case"  chromeColor="0x8FAFF7" id="createCaseButton" visible="false" includeInLayout="false" />
+					<s:Button label="Cancel" id="cancelButton" visible="false" includeInLayout="false"/>
+				</s:HGroup>
+				
 				
 			</s:VGroup>
 		</s:VGroup>

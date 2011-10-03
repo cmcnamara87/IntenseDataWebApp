@@ -8,6 +8,8 @@ package Controller.ERA.Admin
 	
 	import View.ERA.CaseCreatorView;
 	
+	import flash.events.MouseEvent;
+	
 	import mx.collections.ArrayList;
 	
 	import spark.components.DropDownList;
@@ -43,20 +45,66 @@ package Controller.ERA.Admin
 		}
 		
 		private function setupEventListeners():void {
-			caseCreatorView.currentCases.addEventListener(IndexChangeEvent.CHANGE, changeCase);
-			
-			
+			caseCreatorView.createCaseButton.addEventListener(MouseEvent.CLICK, createCase);
 		}
 		
-		private function changeCase(e:IndexChangeEvent):void {
-			var rmCode:String = (e.target as DropDownList).selectedItem;
-			for each(var eraCase:Model_ERACase in eraCaseArray) {
-				if(eraCase.rmCode == rmCode) {
-					caseCreatorView.showCase(eraCase);
-					break;
-				}
-			}
+		/* ====================================== CREATE A CASE ===================================== */
+		private function createCase(e:MouseEvent):void {
+			// Get RM Code
+			var rmCode:String = caseCreatorView.rmCode.text;
+			
+			// Get title
+			var title:String = caseCreatorView.title.text;
+			
+			// get researchers
+			var researcherUsernames:Array = caseCreatorView.chosenResearchersArray;
+			
+			// Get QUT school
+			var qutSchool:String = caseCreatorView.qutSchool.text;
+			
+			// Get FoRs
+			var forArray:Array = caseCreatorView.chosenForsArray;
+			
+			// Get Category array
+			var categoryArray:Array = caseCreatorView.chosenCategories;
+			
+			var productionManagerArray:Array = caseCreatorView.chosenProductionManagersArray;
+			
+			var productionTeamArray:Array = caseCreatorView.chosenTeamMembersArray;
+			
+			// Create a era case now lol
+			AppModel.getInstance().createERACase(
+				AppController.currentEraProject.year,
+				rmCode,
+				title, 
+				researcherUsernames, 
+				qutSchool, 
+				forArray,
+				categoryArray,
+				productionManagerArray,
+				productionTeamArray, 
+				eraCaseCreated);
 		}
+		private function eraCaseCreated(status:Boolean, eraCase:Model_ERACase):void {
+			if(!status) {
+				layout.notificationBar.showError("Error making cases");
+				return;
+			}
+			
+			layout.notificationBar.showGood("Case Created");
+			// Add the case
+			this.eraCaseArray.push(eraCase);
+			
+			// Add it to the view
+			caseCreatorView.addAllCases(eraCaseArray);
+			
+			caseCreatorView.exitCreationMode();
+			
+			caseCreatorView.currentCases.selectedIndex = eraCaseArray.length - 1;
+			caseCreatorView.showCase(eraCaseArray[eraCaseArray.length - 1]);
+		}
+		/* ====================================== END OF CREATE A CASE ===================================== */
+		
 		
 		/* ====================================== GET ALL ERA CASES FOR THE CURRENT ERA ===================================== */
 		/**
@@ -79,12 +127,6 @@ package Controller.ERA.Admin
 				caseCreatorView.currentCases.selectedIndex = 0;
 				caseCreatorView.showCase(eraCaseArray[0]);
 			}
-			var forArray:Array = new Array();
-			forArray["for_code"] = "2345FORCODE";
-			forArray["percentage"] = "100";
-			// Create a era case now lol
-//			AppModel.getInstance().createERACase(AppController.currentEraProject.year, "COOOOOOOL", "Magical Case", new Array("cmcnamara87", "mark"), "Cheesecake", new Array(forArray), new Array("magical category"), new Array("peter h", "mark"), new Array("craig", "others"), eraCaseCreated);
-			// Do something
 		}
 		/* ========================================== END OF GET ALL ERA CASES FOR THE CURRENT ERA ========================================== */
 		
@@ -113,12 +155,6 @@ package Controller.ERA.Admin
 			caseCreatorView.addAllTeamMembers(userArray);
 		}
 		
-		private function eraCaseCreated(status:Boolean, eraCase:Model_ERACase):void {
-			if(status) {
-				layout.notificationBar.showGood("Made cases");
-			} else {
-				layout.notificationBar.showError("Error making cases");
-			}
-		}
+		
 	}
 }
