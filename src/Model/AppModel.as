@@ -21,6 +21,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
+	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
 	import Model.Transactions.ERAProject.Transaction_UpdateERAProject;
 	import Model.Transactions.ERAProject.Transaction_UploadERAFile;
 	import Model.Transactions.Share.Transaction_SetUserAssetShare;
@@ -42,6 +43,7 @@ package Model {
 	import Model.Transactions.Transaction_UnsuspendUser;
 	import Model.Utilities.Connection;
 	
+	import View.ERA.components.ERARole;
 	import View.ERA.components.EvidenceItem;
 	import View.Element.Comment;
 	import View.components.Panels.Comments.NewComment;
@@ -1612,8 +1614,11 @@ package Model {
 			var getUsersWithRole:Transaction_GetUsersWithRole = new Transaction_GetUsersWithRole(role, year, _connection, callback);
 		}
 		
-		public function addRoleToERAUser(username:String, role:String, year:String, callback:Function):void {
-			var addRoleToUser:Transaction_AddRoleToUser = new Transaction_AddRoleToUser(username, role, year, _connection, callback);
+		public function addRoleToERAUser(userData:Model_ERAUser, role:String, year:String, roleComponent:ERARole, callback:Function):void {
+			var addRoleToUser:Transaction_AddRoleToUser = new Transaction_AddRoleToUser(userData, role, year, roleComponent, _connection, callback);
+		}
+		public function removeRoleFromERAUser(username:String, role:String, roleComponent:ERARole, callback:Function):void {
+			var removeRoleFromUser:Transaction_RemoveRoleFromUser = new Transaction_RemoveRoleFromUser(username, role, AppController.currentEraProject.year, roleComponent, _connection, callback);
 		}
 		
 		public function createERAUser(qutUsername:String, firstName:String, lastName:String, callback:Function):void {

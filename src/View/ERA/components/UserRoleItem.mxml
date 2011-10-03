@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components:UserListItem xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:Admin="View.components.Admin.*" xmlns:components="View.ERA.components.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import Controller.IDEvent;
+			
+			
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			
+			public var roleComponent:ERARole = null;
+			public var role:String = "";
+			
+			override protected function deleteButton_clickHandler(event:MouseEvent):void
+			{
+				trace("Deleting role");
+				if(deleteEventToThrow == "") {
+					Alert.show("No delete event set");
+				}
+				var deleteEvent:IDEvent = new IDEvent(deleteEventToThrow, true);
+				// Save the username
+				deleteEvent.data.username = username;
+				deleteEvent.data.roleComponent = roleComponent;
+				deleteEvent.data.role = role;
+				dispatchEvent(deleteEvent);
+			}
+			
+		]]>
+	</fx:Script>
+</components:UserListItem>

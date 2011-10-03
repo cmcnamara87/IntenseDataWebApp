@@ -7,11 +7,13 @@
 		 >
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
 			import Controller.Dispatcher;
 			
 			import Model.Model_ERAProject;
 			import Model.Model_User;
 			
+			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			[Embed(source="Assets/Template/header_logo_id_5.png")] 
 			[Bindable] private var logo:Class;
@@ -23,12 +25,27 @@
 			}
 			
 			public function addERAProjects(eraProjectArray:Array):void {
-				var eraNameArray:ArrayList = new ArrayList();
-				for each(var eraProject:Model_ERAProject in eraProjectArray) {
-					eraNameArray.addItem("ERA " + eraProject.year);
+				var eraNameArray:ArrayCollection = new ArrayCollection();
+				
+				// The position of the era project that is set as the current era project
+				var selectedIndex:Number = 0;
+				
+				for(var i:Number = 0; i < eraProjectArray.length; i++) {
+					var eraProject:Model_ERAProject = eraProjectArray[i] as Model_ERAProject;
+					
+					// Add the era project to the dropdown
+					var object:Object = new Object();
+					object.label = "ERA * " + eraProject.year;
+					object.data = eraProject;
+					eraNameArray.addItem(object);
+					
+					// Check if the era project is the current project, if so, save its position
+					if(AppController.currentEraProject.base_asset_id == eraProject.base_asset_id) {
+						selectedIndex = i;
+					}
 				}
 				eraDropDown.dataProvider = eraNameArray;
-				eraDropDown.selectedIndex = 0;
+				eraDropDown.selectedIndex = selectedIndex;
 			}
 		]]>
 	</fx:Script>

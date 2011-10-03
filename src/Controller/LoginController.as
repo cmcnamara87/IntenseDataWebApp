@@ -105,12 +105,12 @@ package Controller {
 				
 				// Pick out the newest ERA, and set it as the current
 				for each(var eraProject:Model_ERAProject in eraProjectArray) {
-					trace("Era year", (eraProject.year), Number(eraProject.year));
+					trace("Era year", yearFound, Number(eraProject.year));
 					if(Number(eraProject.year) > yearFound) {
 						trace("Era found");
 						
 						AppController.currentEraProject = eraProject;
-						yearFound = eraProject.year as Number;
+						yearFound = Number(eraProject.year);
 					}
 				}
 				trace("Era saved is",AppController.currentEraProject); 

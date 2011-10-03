@@ -4,6 +4,8 @@ package Model.Transactions.ERAProject
 	import Model.Model_ERAUser;
 	import Model.Utilities.Connection;
 	
+	import View.ERA.components.ERARole;
+	
 	import flash.events.Event;
 	
 	public class Transaction_AddRoleToUser
@@ -12,7 +14,8 @@ package Model.Transactions.ERAProject
 		private var callback:Function;
 		private var role:String;
 		private var year:String;
-		private var username:String;
+		private var userData:Model_ERAUser;
+		private var roleComponent:ERARole;
 
 		/**
 		 * 
@@ -23,13 +26,14 @@ package Model.Transactions.ERAProject
 		 * @param callback
 		 * 
 		 */
-		public function Transaction_AddRoleToUser(username:String, role:String, year:String, connection:Connection, callback:Function)
+		public function Transaction_AddRoleToUser(userData:Model_ERAUser, role:String, year:String, roleComponent:ERARole, connection:Connection, callback:Function)
 		{
 			this.connection = connection;
 			this.callback = callback;
+			this.roleComponent = roleComponent;
 			this.role = role;
 			this.year = year;
-			this.username = username;
+			this.userData = userData;
 			
 			//actor.grant :type user :name system:johnsmith :role user -type role
 			
@@ -37,7 +41,7 @@ package Model.Transactions.ERAProject
 			var argsXML:XMLList = baseXML.service.args;
 			
 			argsXML.type = "user";
-			argsXML.name = "system:" + username;
+			argsXML.name = "system:" + userData.username;
 			argsXML.role = role + "_" + year;
 			argsXML.role.@type = "role";
 			
@@ -50,7 +54,7 @@ package Model.Transactions.ERAProject
 				callback(false);
 				return;
 			} else {
-				callback(true);
+				callback(true, userData, roleComponent);
 				return;
 			}
 		}

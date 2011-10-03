@@ -9,7 +9,7 @@ package Controller.ERA.Admin
 	
 	import View.ERA.UserAdminView;
 	import View.ERA.components.ERARole;
-	import View.components.Admin.UserListItem;
+	import View.ERA.components.UserListItem;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -46,6 +46,9 @@ package Controller.ERA.Admin
 			
 			// Listen for user being deleted
 			userAdminView.addEventListener(IDEvent.ERA_DELETE_USER, deleteUser);
+			
+			// Listen for user being removed from a role
+			userAdminView.addEventListener(IDEvent.ERA_REMOVE_USER_FROM_ROLE, removeUserFromRole);
 		}
 		
 		/* ========================================== CREATING ERA USER ========================================== */
@@ -88,17 +91,20 @@ package Controller.ERA.Admin
 		/* ========================================== ADD ROLE TO USER ========================================== */
 		private function addUserToRole(e:IDEvent):void {
 			// Add user to role
-			var username:String = e.data.username;
+			var eraUserData:Model_ERAUser = e.data.eraUserData as Model_ERAUser;
 			var role:String = e.data.role;
-			
-			AppModel.getInstance().addRoleToERAUser(username, role, AppController.currentEraProject.year, roleAddedToUser);
+			var roleComponent:ERARole = e.data.roleComponent
+			AppModel.getInstance().addRoleToERAUser(eraUserData, role, AppController.currentEraProject.year, roleComponent, roleAddedToUser);
 		}
-		private function roleAddedToUser(status:Boolean):void {
-			if(status) {
-				layout.notificationBar.showGood("User added to role");
-			} else {
-				layout.notificationBar.showError("Failed");
+		private function roleAddedToUser(status:Boolean, userData:Model_ERAUser=null, roleComponent:ERARole=null):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to give role to " + userData.username);
+				return;
 			}
+			
+			layout.notificationBar.showGood("User added to role");
+			
+			roleComponent.addUserWithRole(userData);
 		}
 		/* ========================================== END OF ADD ROLE TO USER ========================================== */
 		
@@ -130,7 +136,23 @@ package Controller.ERA.Admin
 		}
 		/* ========================================== END OF DELETE A USER ========================================== */
 		
-		
+		private function removeUserFromRole(e:IDEvent):void {
+			trace("Removing user from role");
+			var username:String = e.data.username;
+			var roleComponent:ERARole = e.data.roleComponent;
+			var role:String = e.data.role;
+			
+			AppModel.getInstance().removeRoleFromERAUser(username, role, roleComponent, userRemovedFromRole);
+		}
+		private function userRemovedFromRole(status:Boolean, username:String="", roleComponent:ERARole=null):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to remove role for " + username);
+				return;
+			}
+			
+			roleComponent.removeUser(username);
+			
+		}
 		/* ======================================= GET USERS WITH ROLE ========================================== */
 		/**
 		 * Get all the users with the roles (roles are stored in an array in the app controller) @see AppController 

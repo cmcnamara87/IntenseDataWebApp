@@ -158,6 +158,7 @@ package Controller {
 			public static var ERA_SAVE_LOG_ITEM:String = "id_saveLogItem";
 			public static var ERA_SAVE_FILE:String = "id_saveFile";
 			public static var ERA_DELETE_USER:String = "era_deleteUser";
+			public static var ERA_REMOVE_USER_FROM_ROLE:String = "era_removeUserFromRole";
 			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);

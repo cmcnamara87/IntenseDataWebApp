@@ -11,7 +11,7 @@
 			import Model.Model_User;
 			
 			import View.ERA.components.ERARole;
-			import View.components.Admin.UserListItem;
+			import View.ERA.components.UserListItem;
 			
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
@@ -51,11 +51,7 @@
 				for(var i:Number = 0; i < roles.numElements; i++) {
 					var roleComponent:ERARole = roles.getElementAt(i) as ERARole;
 					
-					var formattedArray:ArrayList = new ArrayList();
-					for each(var eraUser:Model_ERAUser in eraUserArray) {
-						formattedArray.addItem(eraUser.username);
-					}
-					roleComponent.allERAUsers = formattedArray;
+					roleComponent.addAllUsers(eraUserArray);
 					
 					roleComponent.update();
 				}
@@ -76,13 +72,6 @@
 					userListItem.username = user.username;
 					userListItem.deleteEventToThrow = IDEvent.ERA_DELETE_USER;
 					allUsers.addElement(userListItem);
-					
-//					userListItem.deleteButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-//						Alert.show("Deleting User");
-//						var deleteUserEvent:IDEvent = new IDEvent(IDEvent.ERA_DELETE_USER);
-//						deleteUserEvent.data.username = user.username;
-//						dispatchEvent(deleteUserEvent);
-//					});
 				}
 			}
 
@@ -98,6 +87,9 @@
 				this.createUserPanel.includeInLayout = false;
 			}
 			
+			/**
+			 * Adds a role to the user admin display
+			 */
 			public function addRole(role:String, roleERAUserArray:Array, allERAUsersArray:Array):void {
 				// Make a new era role box
 				var roleBox:ERARole = new ERARole();
@@ -105,12 +97,7 @@
 				roleBox.percentWidth = 100;
 				roles.addElement(roleBox);
 				
-				
-				var formattedArray:ArrayList = new ArrayList();
-				for each(var eraUser:Model_ERAUser in allERAUsersArray) {
-					formattedArray.addItem(eraUser.username);
-				}
-				roleBox.allERAUsers = formattedArray;
+				roleBox.addAllUsers(allERAUsersArray);
 				
 				roleBox.addUsersWithRole(roleERAUserArray);
 			}

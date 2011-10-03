@@ -9,6 +9,7 @@
 		<![CDATA[
 			import Controller.IDEvent;
 			
+			
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
 
@@ -33,6 +34,7 @@
 				var deleteEvent:IDEvent = new IDEvent(deleteEventToThrow, true);
 				// Save the username
 				deleteEvent.data.username = username;
+				
 				dispatchEvent(deleteEvent);
 			}
 

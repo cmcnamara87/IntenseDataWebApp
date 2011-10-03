@@ -1,5 +1,6 @@
 package Controller {
 	import Controller.Utilities.Auth;
+	import Controller.Utilities.Router;
 	
 	import Model.AppModel;
 	import Model.Model_ERAProject;
@@ -20,7 +21,9 @@ package Controller {
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
 	
+	import spark.components.DropDownList;
 	import spark.components.Group;
+	import spark.events.IndexChangeEvent;
 	
 	// All controllers extend this class
 	public class AppController extends Object {
@@ -72,6 +75,9 @@ package Controller {
 			layout.header.dashboardButton.addEventListener(MouseEvent.CLICK, dashboardButtonClicked);
 			layout.header.userAdminButton.addEventListener(MouseEvent.CLICK, userAdminButtonClicked);
 			layout.header.caseCreatorButton.addEventListener(MouseEvent.CLICK, caseCreatorButtonClicked);
+			
+			// Changing ERA years
+			layout.header.eraDropDown.addEventListener(IndexChangeEvent.CHANGE, eraChanged);
 			
 		}
 		
@@ -150,6 +156,18 @@ package Controller {
 			Dispatcher.call("case");
 		}
 		
+		private static function eraChanged(e:IndexChangeEvent):void {
+			var dropdownList:DropDownList = (e.target as DropDownList);
+			
+			// Grab out the selected era's data
+			var eraProject:Model_ERAProject = dropdownList.selectedItem.data;
+			// Set it as the new current era
+			currentEraProject = eraProject;
+			
+			// Refresh the page
+			var currentURL:String = Router.getInstance().getURL();
+			Dispatcher.call(currentURL);
+		}
 		private static function newEraButtonClicked(e:MouseEvent):void {
 			Dispatcher.call("erasetup");
 		}
