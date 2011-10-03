@@ -16,12 +16,20 @@
 			
 			import spark.events.IndexChangeEvent;
 			
+			// the selected reserachers for the case
 			public var chosenResearchersArray:Array = new Array();
+			// The selected production managers
 			public var chosenProductionManagersArray:Array = new Array();
+			// The selected team members
 			public var chosenTeamMembersArray:Array = new Array();
+			// the selected for's
 			public var chosenForsArray:Array = new Array();
+			// the selected categories
 			public var chosenCategories:Array = new Array();
 			
+			/**
+			 * Adds all the cases for the current ERA 
+			 */
 			public function addAllCases(caseArray:Array):void {
 				
 				if(caseArray.length == 0) {
@@ -56,6 +64,10 @@
 				}
 			}
 			
+			/* RENDER FUNCTIONS */
+			/**
+			 * Render all the team members that have been selected 
+			 */
 			private function renderTeamMembers():void {
 				productionTeamMemberList.removeAllElements();
 				for each(var user:Model_ERAUser in chosenTeamMembersArray) {
@@ -67,6 +79,9 @@
 				}
 			}
 			
+			/**
+			 * Render all the reserachers selected
+			 */
 			private function renderResearchers():void {
 				researcherList.removeAllElements();
 				for each(var user:Model_ERAUser in chosenResearchersArray) {
@@ -77,6 +92,9 @@
 					researcherList.addElement(userListItem);
 				}
 			}
+			/**
+			 * Render all the FoRs chosen
+			 */
 			private function renderFor():void {
 				forList.removeAllElements();
 				for each(var forPair:Array in chosenForsArray) {
@@ -85,6 +103,10 @@
 					forList.addElement(label);
 				}
 			}
+			
+			/**
+			 * Render all the categories
+			 */
 			private function renderCategories():void {
 				categoryList.removeAllElements();
 				for each(var category:String in chosenCategories) {
@@ -94,6 +116,9 @@
 				}
 			}
 			
+			/**
+			 * Show the details for a specific case in the view
+			 */
 			public function showCase(eraCase:Model_ERACase):void {
 				// Show RM Code
 				rmCode.text = eraCase.rmCode;
@@ -107,16 +132,6 @@
 				// Show the FOR Codes
 				chosenForsArray = eraCase.forArray;
 				renderFor();
-				
-				// Add all category 
-//				var categoryDropdownData:ArrayCollection = new ArrayCollection();
-//				for each(var categoryCode:String in Model_ERACase.CATEGORY_ARRAY) {
-//					var object:Object = new Object();
-//					object.data = categoryCode;
-//					object.label = categoryCode;
-//					categoryDropdownData.addItem(object);
-//				}
-//				category.dataProvider = categoryDropdownData;
 				
 				// Add case categories
 				chosenCategories = eraCase.categoryArray;
@@ -201,6 +216,15 @@
 			public function exitCreationMode():void {
 				currentCases.enabled = true;
 				deleteCaseButton.enabled = true;
+				
+				saveButton.visible = true;
+				saveButton.includeInLayout = true;
+				
+				createCaseButton.visible = false;
+				createCaseButton.includeInLayout = false;
+				
+				cancelButton.visible = false;
+				cancelButton.includeInLayout = false;
 			}
 			protected function makeNewCase_clickHandler(event:MouseEvent):void
 			{
@@ -306,6 +330,14 @@
 				if(forPercentage.text == "FoR Percentage") {
 					forPercentage.text = "";
 				}
+			}
+
+
+			protected function cancelButton_clickHandler(event:MouseEvent):void
+			{
+				exitCreationMode();
+				currentCases.selectedIndex = 0;
+				showCase(currentCases.selectedItem.data as Model_ERACase);
 			}
 
 		]]>
@@ -437,7 +469,7 @@
 				<s:HGroup id="buttonGroup">
 					<s:Button label="Save Changes" chromeColor="0x8FAFF7" id="saveButton" />
 					<s:Button label="Create Case"  chromeColor="0x8FAFF7" id="createCaseButton" visible="false" includeInLayout="false" />
-					<s:Button label="Cancel" id="cancelButton" visible="false" includeInLayout="false"/>
+					<s:Button label="Cancel" id="cancelButton" visible="false" includeInLayout="false" click="cancelButton_clickHandler(event)"/>
 				</s:HGroup>
 				
 				
