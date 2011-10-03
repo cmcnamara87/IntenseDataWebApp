@@ -7,6 +7,8 @@
 		<![CDATA[
 			import Controller.IDEvent;
 			
+			import Model.Model_ERAUser;
+			
 			import View.components.Admin.UserListItem;
 			
 			import mx.collections.ArrayList;
@@ -16,6 +18,39 @@
 			[Bindable]
 			public var allERAUsers:ArrayList = new ArrayList();
 			
+			private var userArray:Array;
+			
+			/**
+			 * Makes sure we dont have an users added that no longer exist
+			 */
+			public function update():void {
+				for(var i:Number = 0; i < userArray.length; i++) {
+					var roleUser:Model_ERAUser = userArray[i] as Model_ERAUser;
+					var found:Boolean = false;
+					for each (var allUser:String in allERAUsers) {
+						if(roleUser.username == allUser) found = true;
+					}
+					if(found == false) {
+						userArray.splice(i, 1);
+						addUsersWithRole(userArray);
+					}
+				}
+			}
+			
+			public function addUsersWithRole(userArray:Array):void {
+				// Save the user array (so we can update it later if need be)
+				this.userArray = userArray;
+				
+				currentUsers.removeAllElements();
+				
+				for each(var user:Model_ERAUser in userArray) {
+					var userListItem:UserListItem = new UserListItem();
+					userListItem.username = user.username;
+					userListItem.firstName = user.firstName;
+					userListItem.lastName = user.lastName;
+					currentUsers.addElement(userListItem);
+				}
+			}	
 			
 			protected function addUserButton_clickHandler(event:MouseEvent):void
 			{

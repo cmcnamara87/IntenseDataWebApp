@@ -56,6 +56,8 @@
 						formattedArray.addItem(eraUser.username);
 					}
 					roleComponent.allERAUsers = formattedArray;
+					
+					roleComponent.update();
 				}
 				
 				if(eraUserArray.length == 0) {
@@ -110,11 +112,7 @@
 				}
 				roleBox.allERAUsers = formattedArray;
 				
-				for each(var user:String in roleERAUserArray) {
-					var userListItem:UserListItem = new UserListItem();
-					userListItem.username = user;
-					roleBox.currentUsers.addElement(userListItem);
-				}
+				roleBox.addUsersWithRole(roleERAUserArray);
 			}
 
 		]]>
