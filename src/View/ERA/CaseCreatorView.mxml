@@ -23,6 +23,16 @@
 			public var chosenCategories:Array = new Array();
 			
 			public function addAllCases(caseArray:Array):void {
+				
+				if(caseArray.length == 0) {
+					currentCases.enabled = false;
+					deleteCaseButton.enabled = false;
+					return;
+				}
+				
+				currentCases.enabled = true;
+				deleteCaseButton.enabled = true;
+				
 				var dropdownData:ArrayCollection = new ArrayCollection();
 				for each(var eraCase:Model_ERACase in caseArray) {
 					var object:Object = new Object();
@@ -160,7 +170,7 @@
 				// Disable the case selection dropdown list and delete case button
 				currentCases.enabled = false;
 				currentCases.selectedIndex = -1;
-				deleteCase.enabled = false;
+				deleteCaseButton.enabled = false;
 				
 				// Clear all values
 				rmCode.text = "";
@@ -190,7 +200,7 @@
 			}
 			public function exitCreationMode():void {
 				currentCases.enabled = true;
-				deleteCase.enabled = true;
+				deleteCaseButton.enabled = true;
 			}
 			protected function makeNewCase_clickHandler(event:MouseEvent):void
 			{
@@ -327,12 +337,16 @@
 			<!-- Content box -->
 			<s:VGroup width="960" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
 				
-				<s:HGroup width="100%">
+				<s:Label text="Current Case" fontSize="20" fontWeight="bold" color="0x5e6469">
+				</s:Label>
+				
+				<s:HGroup width="100%" paddingBottom="20">
 					<s:DropDownList id="currentCases" width="100%" change="{showCase(currentCases.selectedItem.data as Model_ERACase)}">
 					</s:DropDownList>	
-					<s:Button id="deleteCase" label="Delete Case" />
+					<s:Button id="deleteCaseButton" label="Delete Case" />
 				</s:HGroup>
-	
+				<mx:HRule width="100%" chromeColor="0x000000" />
+				
 				<components:FormGroup title="RM Code">
 					<components:content>
 						<s:TextInput id="rmCode" borderAlpha="0.5" width="100%" />

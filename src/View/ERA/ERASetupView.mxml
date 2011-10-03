@@ -45,7 +45,9 @@
 				eras.enabled = false;
 				deleteERAButton.enabled = false;
 				
+				
 				// Clear all the inputs
+				eras.selectedIndex = -1;
 				day.selectedIndex = -1;
 				month.selectedIndex = -1;
 				year.selectedIndex = -1;

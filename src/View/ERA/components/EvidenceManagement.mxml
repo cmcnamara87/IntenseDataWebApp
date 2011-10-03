@@ -60,15 +60,18 @@
 	<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
 		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
 			<s:VGroup width="100%">
-				<s:HGroup width="100%">
-					<s:Label text="Case Creator" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
-						<s:filters>
-							<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
-						</s:filters>
-					</s:Label>
-					<s:Button id="makeNewItemButton" label="Add New Item" cornerRadius="10" height="30" click="makeNewItemButton_clickHandler(event)"/>
-				</s:HGroup>
+						<s:Label text="ERA {AppController.currentEraProject.year} / RM {CaseController.currentERACase.rmCode}" fontSize="12" color="0x828F9A">
+							<s:filters>
+								<s:DropShadowFilter distance="1" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+							</s:filters>
+						</s:Label>
+						<s:Label text="Evidence Management" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+							<s:filters>
+								<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+							</s:filters>
+						</s:Label>
 			</s:VGroup>
+			<s:Button id="makeNewItemButton" label="Add New Item" cornerRadius="10" height="30" click="makeNewItemButton_clickHandler(event)"/>
 		</s:HGroup>
 	</s:BorderContainer>
 	<!-- END OF TITLE BAR WITH CREATION BUTTON -->

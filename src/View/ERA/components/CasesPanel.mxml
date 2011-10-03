@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx" height="100%">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:VGroup width="100%" height="100%">
+		<s:DropDownList chromeColor="0x000000" contentBackgroundColor="0x000000" color="0xFFFFFF" width="100%">
+			<s:ArrayList>
+				<fx:String>ERA INFO IN HERE</fx:String>
+			</s:ArrayList>
+		</s:DropDownList>
+		<s:VGroup id="casePanelContent">
+			<s:Label color="0xFFFFFF">
+				Loading...
+			</s:Label>
+		</s:VGroup>
+	</s:VGroup>
+</s:BorderContainer>

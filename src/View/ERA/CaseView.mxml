@@ -7,11 +7,15 @@
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
+			
 			import Model.Model_ERACase;
 			import Model.Model_ERALogItem;
+			import Model.Model_ERAProject;
 			
 			import View.ERA.components.EvidenceManagement;
 			
+			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.controls.Text;
 			
@@ -26,13 +30,12 @@
 				room.addElement(evidenceManagement);
 				
 				evidenceManagement.addLogItems(logItemArray);
-				
-				
 			}
 			
 			public function addCases(caseArray:Array):void {
-				casePanelContent.removeAllElements();
 				
+				// Add all the Cases
+				casePanelContent.removeAllElements();
 				if(caseArray.length == 0) {
 					var label2:Label = new Label();
 					label2.text = "No cases found";
@@ -46,6 +49,29 @@
 					someLabel.htmlText = "<a href='#case/" + eraCase.base_asset_id + "'>" + eraCase.rmCode + "</a>";
 					casePanelContent.addElement(someLabel);
 				}
+				
+				// Now add all the ERAs to the dropdown (probably dont need this here, maybe another function???)
+				var eraNameArray:ArrayCollection = new ArrayCollection();
+				
+				// The position of the era project that is set as the current era project
+				var selectedIndex:Number = 0;
+				
+				for(var i:Number = 0; i < AppController.eraProjectArray.length; i++) {
+					var eraProject:Model_ERAProject = AppController.eraProjectArray[i] as Model_ERAProject;
+					
+					// Add the era project to the dropdown
+					var object:Object = new Object();
+					object.label = "ERA " + eraProject.year;
+					object.data = eraProject;
+					eraNameArray.addItem(object);
+					
+					// Check if the era project is the current project, if so, save its position
+					if(AppController.currentEraProject.base_asset_id == eraProject.base_asset_id) {
+						selectedIndex = i;
+					}
+				}
+				caseERADropdown.dataProvider = eraNameArray;
+				caseERADropdown.selectedIndex = selectedIndex;
 			}
 
 			protected function caseTag_clickHandler(event:MouseEvent):void
@@ -67,12 +93,9 @@
 	<!-- The Case Panel -->
 	<s:BorderContainer  id="casePanel" backgroundColor="0x000000" borderVisible="false" height="100%" width="0" resizeEffect="Resize">
 		<s:VGroup width="100%" height="100%">
-			<s:DropDownList chromeColor="0x000000" contentBackgroundColor="0x000000" color="0xFFFFFF" width="100%">
-				<s:ArrayList>
-					<fx:String>ERA INFO IN HERE</fx:String>
-				</s:ArrayList>
+			<s:DropDownList id="caseERADropdown" chromeColor="0x000000" contentBackgroundColor="0x000000" color="0xFFFFFF" width="100%">
 			</s:DropDownList>
-			<s:VGroup id="casePanelContent">
+			<s:VGroup id="casePanelContent" paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
 				<s:Label color="0xFFFFFF">
 					Loading...
 				</s:Label>
@@ -108,10 +131,10 @@
 			<s:VGroup horizontalAlign="center" height="100%" width="100%">
 				<s:HGroup height="100%" verticalAlign="middle" gap="20">
 					<components:RoomIcon roomName="Evidence Management" />
-					<components:RoomIcon roomName="Evidence Room" />
-					<components:RoomIcon roomName="Forensic Lab" />
-					<components:RoomIcon roomName="Screening Room" />
-					<components:RoomIcon roomName="Exhibit" />
+					<components:RoomIcon roomName="Evidence Room" alpha="0.5" />
+					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" />
+					<components:RoomIcon roomName="Screening Room" alpha="0.5" />
+					<components:RoomIcon roomName="Exhibit" alpha="0.5"/>
 				</s:HGroup>
 			</s:VGroup>
 		</s:BorderContainer>

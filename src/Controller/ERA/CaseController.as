@@ -9,6 +9,7 @@ package Controller.ERA
 	import Model.Model_ERACase;
 	import Model.Model_ERAEvidence;
 	import Model.Model_ERALogItem;
+	import Model.Model_ERAProject;
 	import Model.Model_ERARoom;
 	
 	import View.ERA.CaseView;
@@ -18,6 +19,10 @@ package Controller.ERA
 	import flash.net.FileReference;
 	
 	import mx.controls.Alert;
+	import mx.events.IndexChangedEvent;
+	
+	import spark.components.DropDownList;
+	import spark.events.IndexChangeEvent;
 	
 	public class CaseController extends AppController
 	{
@@ -41,11 +46,26 @@ package Controller.ERA
 			// Listen for log item being saved
 			caseView.addEventListener(IDEvent.ERA_SAVE_LOG_ITEM, saveLogItem);
 			caseView.addEventListener(IDEvent.ERA_SAVE_FILE, saveFile);
+			
+			caseView.caseERADropdown.addEventListener(IndexChangeEvent.CHANGE, eraChanged);
 			// Listen for file upload
 		}
 		override public function init():void {
 			setupEventListeners();
 			getAllERACases();
+		}
+		
+		private function eraChanged(e:IndexChangeEvent):void {
+			var dropdownList:DropDownList = (e.target as DropDownList);
+			
+			// Grab out the selected era's data
+			var eraProject:Model_ERAProject = dropdownList.selectedItem.data;
+			// Set it as the new current era
+			currentEraProject = eraProject;
+			
+			// Refresh the page
+			var currentURL:String = Router.getInstance().getURL();
+			Dispatcher.call(currentURL);
 		}
 		
 		/**
@@ -111,7 +131,10 @@ package Controller.ERA
 			if(status) {
 				this.roomArray = eraRoomArray;
 				currentRoom = this.getRoomIndex(roomType);
-				loadRoomContents();
+				if(currentRoom != null) {
+					trace("No rooms found");
+					loadRoomContents();
+				}
 			} else {
 				layout.notificationBar.showError("failed to get rooms");
 			}
