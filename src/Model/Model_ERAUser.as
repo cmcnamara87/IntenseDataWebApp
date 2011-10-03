@@ -6,7 +6,14 @@ package Model {
 		public var lastName:String;
 		public var username:String;
 		
-		public static var ERARoles:Array = new Array("sys_admin", "monitor", "researcher", "production_manager", "production_team", "viewer");
+		public static const SYS_ADMIN:String = "sys_admin";
+		public static const MONITOR:String = "monitor";
+		public static const RESEARCHER:String = "researcher";
+		public static const PRODUCTION_MANAGER:String = "production_manager";
+		public static const PRODUCTION_TEAM:String = "production_team";
+		public static const VIEWER:String = "viewer";
+		
+		public static var ERARoles:Array = new Array(SYS_ADMIN, MONITOR, RESEARCHER, PRODUCTION_MANAGER, PRODUCTION_TEAM, VIEWER);
 		
 		public function Model_ERAUser() {
 			super();

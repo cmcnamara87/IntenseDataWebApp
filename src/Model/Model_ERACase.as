@@ -11,7 +11,12 @@ package Model {
 		public var productionManagerUsernameArray:Array = new Array();
 		public var productionTeamUsernameArray:Array = new Array();
 		
+		public static const CAT1:String = "Category_1";
+		public static const CAT2:String = "Category_2";
+		public static const CATEGORY_ARRAY:Array = new Array(CAT1, CAT2);
 		
+		public static const FOR_CODE = "for_code";
+		public static const PERCENTAGE = "percentage";
 		public function Model_ERACase() {
 			super();
 		}
@@ -38,8 +43,8 @@ package Model {
 			// add all the for codes + percentages
 			for each(var forData:XML in eraCase["for"]) {
 				var forPair:Array = new Array();
-				forPair["for_code"] = forData["for_code"];
-				forPair["percentage"] = forData["percentage"];
+				forPair[FOR_CODE] = forData[FOR_CODE];
+				forPair[PERCENTAGE] = forData[PERCENTAGE];
 				forArray.push(forPair);
 			}
 			

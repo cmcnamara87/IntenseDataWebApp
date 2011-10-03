@@ -52,16 +52,18 @@
 	<!--<mx:HBox id='headerbackground' width="100%" height="44" backgroundColor="0x336699">-->
 	<mx:HBox id='headerbackground' width="100%" height="50" backgroundColor="0x333333">
 		<!--<Element:BackgroundImage id="background"></Element:BackgroundImage>-->
+		
 		<!-- Add in the logo group -->
 		<s:HGroup height="100%" width="102" verticalAlign="middle" paddingLeft="10">
 			<!-- The logo -->
 			<mx:Image buttonMode="true" click="image1_clickHandler(event)" source="{logo}" width="102" height="22"></mx:Image>
 		</s:HGroup>
+		
 		<!-- Add in the button group -->
 		<s:HGroup id="adminToolButtons" includeInLayout="false" paddingLeft="20" visible="false"  width="100%"  height="100%" verticalAlign="middle">
 				<s:Button id="newERAButton" label="Manage ERAs" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
 				</s:Button>
-				<s:DropDownList id="eraDropDown" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" >
+				<s:DropDownList id="eraDropDown" contentBackgroundColor="0x222222" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" >
 				</s:DropDownList>
 				<s:Button id="dashboardButton" label="Dashboard" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
 				</s:Button>

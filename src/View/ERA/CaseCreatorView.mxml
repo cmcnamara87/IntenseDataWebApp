@@ -1,19 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:components="View.ERA.components.*"  width="100%" height="100%"
 		 gap="0">
 
 	<fx:Script>
 		<![CDATA[
 			import Model.Model_ERACase;
+			import Model.Model_ERAUser;
+			
+			import View.ERA.components.UserListItem;
+			
+			import mx.collections.ArrayCollection;
 			
 			import spark.events.IndexChangeEvent;
-			public function showCase(eraCase:Model_ERACase):void {
-				rmCode.text = eraCase.rmCode;
-				qutSchool.text = eraCase.qutSchool;
-				title.text = eraCase.title;
+			
+			public function addAllCases(caseArray:Array):void {
+				var dropdownData:ArrayCollection = new ArrayCollection();
+				for each(var eraCase:Model_ERACase in caseArray) {
+					var object:Object = new Object();
+					object.data = eraCase;
+					object.label = eraCase.rmCode + " (" + eraCase.researcherUsernames[0] + ")";
+					dropdownData.addItem(object);
+				}
+				currentCases.dataProvider = dropdownData;
 			}
+			
+			public function showCase(eraCase:Model_ERACase):void {
+				// Show RM Code
+				rmCode.text = eraCase.rmCode;
+				// Show QUT School
+				qutSchool.text = eraCase.qutSchool;
+				
+				// Show the Researchers
+				for each(var username:String in eraCase.researcherUsernames) {
+					var userListItem:UserListItem = new UserListItem();
+					userListItem.username = username;
+					researcherList.addElement(userListItem);
+				}
+				
+				// Show the FOR Codes
+				for each(var forPair:Array in eraCase.forArray) {
+					var label:Label = new Label();
+					label.text = forPair[Model_ERACase.FOR_CODE] + " " + forPair[Model_ERACase.PERCENTAGE] + "%";
+					forList.addElement(label);
+				}
+				
+				// Add all category 
+				var categoryDropdownData:ArrayCollection = new ArrayCollection();
+				for each(var categoryCode:String in Model_ERACase.CATEGORY_ARRAY) {
+					var object:Object = new Object();
+					object.data = categoryCode;
+					object.label = categoryCode;
+					categoryDropdownData.addItem(object);
+				}
+				category.dataProvider = categoryDropdownData;
+				
+				// Add case categories
+				for each(var caseCategory:String in eraCase.categoryArray) {
+					var label:Label = new Label();
+					label.text = caseCategory;
+					categoryList.addElement(label);
+				}
+				
+				// Set the title for the case
+				title.text = eraCase.title;
+				
+				// Add all the production managers
+				for each(var username:String in eraCase.productionManagerUsernameArray) {
+					var userListItem:UserListItem = new UserListItem();
+					userListItem.username = username;
+					productionManagersList.addElement(userListItem);
+				}
+				
+				for each(var username:String in eraCase.productionTeamUsernameArray) {
+					var userListItem:UserListItem = new UserListItem();
+					userListItem.username = username;
+					productionTeamMemberList.addElement(userListItem);
+				}
+			}
+			
+			public function addAllResearchers(userArray:Array):void {
+				var dropdownData:ArrayCollection = new ArrayCollection();
+				for each(var researcherUser:Model_ERAUser in userArray) {
+					var object:Object = new Object();
+					object.data = researcherUser;
+					object.label = researcherUser.firstName + " " + researcherUser.lastName + " (" + researcherUser.username + ")";
+					dropdownData.addItem(object);
+				}
+				allResearchers.dataProvider = dropdownData;
+			}
+			
+			public function addAllProductionManagers(userArray:Array):void {
+				var dropdownData:ArrayCollection = new ArrayCollection();
+				for each(var productionManagerUser:Model_ERAUser in userArray) {
+					var object:Object = new Object();
+					object.data = productionManagerUser;
+					object.label = productionManagerUser.firstName + " " + productionManagerUser.lastName + " (" + productionManagerUser.username + ")";
+					dropdownData.addItem(object);
+				}
+				allProductionManagers.dataProvider = dropdownData;
+			}
+			
+			public function addAllTeamMembers(userArray:Array):void {
+				var dropdownData:ArrayCollection = new ArrayCollection();
+				for each(var teamMemberUser:Model_ERAUser in userArray) {
+					var object:Object = new Object();
+					object.data = teamMemberUser;
+					object.label = teamMemberUser.firstName + " " + teamMemberUser.lastName + " (" + teamMemberUser.username + ")";
+					dropdownData.addItem(object);
+				}
+				allProductionTeamMembers.dataProvider = dropdownData;
+			}
+
+			protected function makeNewCase_clickHandler(event:MouseEvent):void
+			{
+			}
+
 		]]>
 	</fx:Script>
 
@@ -26,93 +130,115 @@
 		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
 			<s:VGroup width="100%">
 				<s:HGroup width="100%">
-					<s:Label text="ERA Details" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+					<s:Label text="Case Creator" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
 						<s:filters>
 							<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
 						</s:filters>
 					</s:Label>
-					<s:Button id="makeNewERA" label="Make New Case" cornerRadius="10" height="30"/>
+					<s:Button id="makeNewCase" label="Make New Case" cornerRadius="10" height="30" click="makeNewCase_clickHandler(event)"/>
 				</s:HGroup>
 			</s:VGroup>
 		</s:HGroup>
 	</s:BorderContainer>
 	<!-- END OF TITLE BAR WITH CREATION BUTTON -->
 	
-	<s:HGroup width="100%">
-		<s:DropDownList id="currentCases" width="100%">
-		</s:DropDownList>	
-	</s:HGroup>
-	<s:VGroup width="100%">
-		<s:HGroup width="100%">
-			<s:Label text="RM Code" textAlign="right" width="100" />
-			<s:TextInput id="rmCode" />
-		</s:HGroup>
-		<s:HGroup>
-			<s:Label text="QUT School" textAlign="right" width="100" />
-			<s:TextInput id="qutSchool" />
-		</s:HGroup>
-		<s:HGroup>
-			<s:Label text="Researcher" textAlign="right" width="100"/>
-			<s:ComboBox id="researcher">
-				<s:ArrayList>
-					<fx:String>Reseracher Name</fx:String>
-					<fx:String>Reseracher Name</fx:String>
-				</s:ArrayList>
-			</s:ComboBox>
-		</s:HGroup>
-		<s:HGroup>
-			<s:Label text="FoR" />
-			<s:TextInput />
-		</s:HGroup>
-		<s:HGroup>
-			<s:Label text="Category" />
-			<s:TextInput />
-		</s:HGroup>
-		<s:HGroup>
-			<s:Label text="Title (opt)" />
-			<s:TextInput id="title" />
-		</s:HGroup>
-		<s:VGroup>
-			<s:Label text="Production Manager" />
-			<s:Label text="Add Manager" />
-			<s:HGroup>
-				<s:DropDownList>
-					<s:ArrayList>
-						<fx:String>Joe Bloggs</fx:String>
-						<fx:String>John Smith</fx:String>
-					</s:ArrayList>
-				</s:DropDownList>
-				<s:Button label="Add"/>
-			</s:HGroup>
-			<mx:HRule />
-			<s:Label text="Current Managers" />
-			<s:VGroup>
-				<s:Label text="Hey hey" />
-				<s:Label text="You you" />
-			</s:VGroup>
-		</s:VGroup>
-		<s:VGroup>
-			<s:Label text="Production Team" />
-			<s:Label text="Add User" />
-			<s:HGroup>
-				<s:DropDownList>
-					<s:ArrayList>
-						<fx:String>Joe Bloggs</fx:String>
-						<fx:String>John Smith</fx:String>
-					</s:ArrayList>
-				</s:DropDownList>
-				<s:Button label="Add User" />
-			</s:HGroup>
+	<s:Scroller width="100%" height="100%">
+		<s:VGroup horizontalAlign="center" width="100%">
+			<!-- Content box -->
+			<s:VGroup width="960" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+				
+				<s:HGroup width="100%">
+					<s:DropDownList id="currentCases" width="100%" >
+					</s:DropDownList>	
+					<s:Button id="deleteCase" label="Delete Case" />
+				</s:HGroup>
+	
+				<components:FormGroup title="RM Code">
+					<components:content>
+						<s:TextInput id="rmCode" borderAlpha="0.5" width="100%" />
+						<s:VGroup width="100%">
+						</s:VGroup>
+					</components:content>
+				</components:FormGroup>
 			
-			<mx:HRule />
-			<s:Label text="Current Managers" />
-			<s:VGroup>
-				<s:Label text="Hey hey" />
-				<s:Label text="You you" />
+				<components:FormGroup title="QUT School">
+					<components:content>
+						<s:TextInput id="qutSchool" borderAlpha="0.5" width="100%" />
+					</components:content>
+				</components:FormGroup>
+				
+				<components:FormGroup title="Researchers">
+					<components:content>
+						<s:HGroup width="100%">
+							<s:DropDownList	id="allResearchers" width="100%">
+								<s:ArrayList>
+									<fx:String>Reseracher Name</fx:String>
+									<fx:String>Reseracher Name</fx:String>
+								</s:ArrayList>
+							</s:DropDownList>
+							<s:Button id="addResearcher" label="Add Researcher" />	
+						</s:HGroup>
+						<s:VGroup id="researcherList" width="100%">
+						</s:VGroup>
+					</components:content>
+				</components:FormGroup>
+				
+				
+				<components:FormGroup title="FoR">
+					<components:content>
+						<s:HGroup width="100%">
+							<s:TextInput text="FoR Code" borderAlpha="0.5" width="100%" />
+							<s:TextInput text="FoR Percentage" borderAlpha="0.5" width="100%" />
+						</s:HGroup>
+						<s:VGroup id="forList">
+						</s:VGroup>
+					</components:content>
+				</components:FormGroup>
+				
+				<components:FormGroup title="Category">
+					<components:content>
+						<s:HGroup width="100%">
+							<s:DropDownList id="category" width="100%" />
+							<s:Button id="addCategory" label="Add Category" />
+						</s:HGroup>
+						<s:VGroup id="categoryList">
+							
+						</s:VGroup>
+					</components:content>
+				</components:FormGroup>
+				
+				<components:FormGroup title="Title (opt)">
+					<components:content>
+						<s:TextInput id="title" borderAlpha="0.5" width="100%" />
+					</components:content>
+				</components:FormGroup>
+				
+				<components:FormGroup title="Production Manager">
+					<components:content>
+						<s:HGroup width="100%">
+							<s:DropDownList width="100%" id="allProductionManagers" />
+							<s:Button label="Add Production Mananger"/>
+						</s:HGroup>
+						<s:VGroup id="productionManagersList" width="100%">
+						</s:VGroup>
+					</components:content>
+				</components:FormGroup>
+				
+
+				<components:FormGroup title="Production Team Member">
+					<components:content>
+						<s:HGroup width="100%"> 
+							<s:DropDownList width="100%" id="allProductionTeamMembers" />
+							<s:Button label="Add Production Team Member" />
+						</s:HGroup>
+						<s:VGroup id="productionTeamMemberList" width="100%">
+						</s:VGroup>
+					</components:content>
+				</components:FormGroup>
+				
+				<s:Button label="Save Case" chromeColor="0x8FAFF7" />
+				
 			</s:VGroup>
 		</s:VGroup>
-		
-		<s:Button label="Save Case" />
-		
-	</s:VGroup>
+	</s:Scroller>
 </s:VGroup>
