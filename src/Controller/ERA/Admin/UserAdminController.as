@@ -136,6 +136,8 @@ package Controller.ERA.Admin
 		}
 		/* ========================================== END OF DELETE A USER ========================================== */
 		
+		
+		/* ========================================== REMOVING A ROLE FROM A USER ========================================== */
 		private function removeUserFromRole(e:IDEvent):void {
 			trace("Removing user from role");
 			var username:String = e.data.username;
@@ -149,17 +151,20 @@ package Controller.ERA.Admin
 				layout.notificationBar.showError("Failed to remove role for " + username);
 				return;
 			}
-			
+			layout.notificationBar.showGood("Role removed from " + username);
 			roleComponent.removeUser(username);
 			
 		}
+		/* ========================================== END OF REMOVING A ROLE FROM A USER ========================================== */
+		
+		
 		/* ======================================= GET USERS WITH ROLE ========================================== */
 		/**
 		 * Get all the users with the roles (roles are stored in an array in the app controller) @see AppController 
 		 * 
 		 */
 		private function getUsersWithRoles():void {
-			for each(var role:String in AppController.ERARoles) {
+			for each(var role:String in Model_ERAUser.ERARoles) {
 				// Get all the users that have the role
 				AppModel.getInstance().getERAUsersWithRole(role, AppController.currentEraProject.year, gotUsersWithRole);
 			}

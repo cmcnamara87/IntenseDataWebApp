@@ -40,7 +40,7 @@ package Controller {
 		
 		public static var eraProjectArray:Array; // an array of all the era projects in the system
 		public static var currentEraProject:Model_ERAProject; // the current era project we are looking at
-		public static var ERARoles:Array = new Array("sys_admin", "monitor", "researcher", "production_manager", "production_team", "viewer");
+//		public static var ERARoles:Array = new Array("sys_admin", "monitor", "researcher", "production_manager", "production_team", "viewer");
 		
 		public function AppController() {
 			setLogoutButton();

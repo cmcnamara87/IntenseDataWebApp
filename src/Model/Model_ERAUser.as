@@ -6,6 +6,8 @@ package Model {
 		public var lastName:String;
 		public var username:String;
 		
+		public static var ERARoles:Array = new Array("sys_admin", "monitor", "researcher", "production_manager", "production_team", "viewer");
+		
 		public function Model_ERAUser() {
 			super();
 		}
@@ -17,6 +19,25 @@ package Model {
 			this.lastName = firstLetterUpperCase(rawData.meta["ERA-user"]["last_name"]);
 //			this.firstName = rawData.asset.meta.r_user.firstname;
 //			this.lastName = rawData.asset.meta.r_user.lastname;
+		}
+		
+		public static function getRolePrettyName(role:String):String {
+			switch(role) {
+				case "sys_admin":
+					return "System Administrator";
+				case "monitor":
+					return "Monitor";
+				case "researcher":
+					return "Researcher";
+				case "production_manager":
+					return "Production Manager";
+				case "production_team":
+					return "Production Team";
+				case "viewer":
+					return "Viewer"
+				default:
+					return "Unknown Role"
+			}
 		}
 		
 		private function firstLetterUpperCase(str:String) : String {

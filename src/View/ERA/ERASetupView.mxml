@@ -104,6 +104,7 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
+	<!-- TITLE BAR WITH CREATION BUTTON -->
 	<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
 		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
 			<s:VGroup width="100%">
@@ -118,6 +119,8 @@
 			</s:VGroup>
 		</s:HGroup>
 	</s:BorderContainer>
+	<!-- END OF TITLE BAR WITH CREATION BUTTON -->
+	
 	<components:NotificationBar id="myNotificationBar" width="100%" />
 	<s:VGroup horizontalAlign="center" height="100%" width="100%">
 		<!-- Create the middle box -->

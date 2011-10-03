@@ -92,7 +92,7 @@
 				// TODO Auto-generated method stub
 				var addUserToRole:IDEvent = new IDEvent(IDEvent.ERA_ADD_USER_TO_ROLE, true);
 				addUserToRole.data.eraUserData = allUsers.selectedItem.data;
-				addUserToRole.data.role = roleTitle.text;
+				addUserToRole.data.role = role;
 				addUserToRole.data.roleComponent = this;
 				this.dispatchEvent(addUserToRole);	
 			}
@@ -102,17 +102,15 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Label id="roleTitle" text="{role}" fontSize="15" fontWeight="bold">
+	<s:Label id="roleTitle" text="{Model_ERAUser.getRolePrettyName(role)}" fontSize="15" fontWeight="bold" color="0x5e6469">
 	</s:Label>
-	<s:HGroup width="100%">
+	<s:HGroup width="100%" paddingTop="5">
 		<s:DropDownList id="allUsers" width="100%">
 		</s:DropDownList>
-		<s:Button label="Add User" id="addUserButton" click="addUserButton_clickHandler(event)">
+		<s:Button label="Assign Role" id="addUserButton" click="addUserButton_clickHandler(event)">
 		</s:Button>
 	</s:HGroup>
-	
-	<s:Scroller width="100%" height="100">
-		<s:VGroup id="currentUsers">
-		</s:VGroup>	
-	</s:Scroller>
+	<s:VGroup id="currentUsers" width="100%" paddingTop="10">
+	</s:VGroup>
+	<mx:HRule chromeColor="0x000000" width="100%" />
 </s:VGroup>

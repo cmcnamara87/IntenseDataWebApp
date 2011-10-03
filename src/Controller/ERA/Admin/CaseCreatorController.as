@@ -84,13 +84,14 @@ package Controller.ERA.Admin
 			if(eraCaseArray.length > 0) {
 				caseCreatorView.showCase(eraCaseArray[0]);
 			}
-			var forArray:Array = new Array();
-			forArray["for_code"] = "2345FORCODE";
-			forArray["percentage"] = "100";
+//			var forArray:Array = new Array();
+//			forArray["for_code"] = "2345FORCODE";
+//			forArray["percentage"] = "100";
 			// Create a era case now lol
-			AppModel.getInstance().createERACase(AppController.currentEraProject.year, "COOL1234", "Magical Case", new Array("cmcnamara87", "mark"), "Design", new Array(forArray), new Array("magical category"), new Array("peter h", "mark"), new Array("craig", "others"), eraCaseCreated);
+//			AppModel.getInstance().createERACase(AppController.currentEraProject.year, "COOL1234", "Magical Case", new Array("cmcnamara87", "mark"), "Design", new Array(forArray), new Array("magical category"), new Array("peter h", "mark"), new Array("craig", "others"), eraCaseCreated);
 			// Do something
 		}
+		/* ========================================== END OF GET ALL ERA CASES FOR THE CURRENT ERA ========================================== */
 		
 		private function eraCaseCreated(status:Boolean, eraCase:Model_ERACase):void {
 			if(status) {

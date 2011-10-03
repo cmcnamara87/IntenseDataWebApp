@@ -5,6 +5,7 @@ package Model.Transactions.ERAProject
 	
 	import Model.AppModel;
 	import Model.Model_ERAProject;
+	import Model.Model_ERAUser;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
@@ -55,13 +56,13 @@ package Model.Transactions.ERAProject
 			if(e == null) {
 				// This is the first time we are creating a role (probably sys-admin)
 				// so its not coming back from making another one
-				createERARole(AppController.ERARoles[currentRoleIndex], year, createAllRoles);
+				createERARole(Model_ERAUser.ERARoles[currentRoleIndex], year, createAllRoles);
 				return;
 			}
 			
 			// We are coming back from creating another role
 			// check all went well
-			if(AppModel.getInstance().getData(AppController.ERARoles[currentRoleIndex], e) == null) {
+			if(AppModel.getInstance().getData(Model_ERAUser.ERARoles[currentRoleIndex], e) == null) {
 				callback(false, null);
 				return;
 			}
@@ -69,14 +70,14 @@ package Model.Transactions.ERAProject
 			// Do the next role
 			currentRoleIndex++;
 			
-			if(currentRoleIndex == AppController.ERARoles.length) {
+			if(currentRoleIndex == Model_ERAUser.ERARoles.length) {
 				// We have finished creating all the roles successfully
 				// lets make hte project
 				createERAProject();
 				return;
 			}
 			
-			createERARole(AppController.ERARoles[currentRoleIndex], year, createAllRoles);
+			createERARole(Model_ERAUser.ERARoles[currentRoleIndex], year, createAllRoles);
 		}
 
 		/**

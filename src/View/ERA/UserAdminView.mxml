@@ -130,7 +130,7 @@
 		<s:VGroup horizontalAlign="center" width="100%">
 			<!-- Content box -->
 			<s:VGroup width="960" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
-				<s:Label text="Current Users" fontSize="20" fontWeight="bold" color="0x5e6469">
+				<s:Label text="Current nQuisitor Users" fontSize="20" fontWeight="bold" color="0x5e6469">
 				</s:Label>
 				
 				<!-- Create user panel -->
@@ -160,9 +160,9 @@
 				
 				<mx:HRule chromeColor="0x000000" width="100%" />
 				
-				<s:Label text="Roles" fontSize="20" fontWeight="bold">
+				<s:Label text="Roles" fontSize="20" fontWeight="bold" color="0x5e6469">
 				</s:Label>
-				<s:VGroup id="roles" width="100%">
+				<s:VGroup id="roles" width="100%" paddingTop="10">
 				</s:VGroup>
 			</s:VGroup>
 		</s:VGroup>
