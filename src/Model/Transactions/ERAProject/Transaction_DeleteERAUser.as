@@ -13,11 +13,9 @@ package Model.Transactions.ERAProject
 	{
 		private var connection:Connection; 
 		private var callback:Function;
-		private var username:Number;
-		private var year:String;
-		private var currentRoleIndex:Number = 0;
+		private var username:String;
 		
-		public function Transaction_DeleteERAUser(username:Number, connection:Connection, callback:Function)
+		public function Transaction_DeleteERAUser(username:String, connection:Connection, callback:Function)
 		{
 			this.username = username;
 			this.connection = connection;
@@ -43,7 +41,7 @@ package Model.Transactions.ERAProject
 			if((data = AppModel.getInstance().getData("deleting era user", e)) == null) {
 				callback(false);
 			} else {
-				callback(true);
+				callback(true, username);
 			}
 		}
 	}

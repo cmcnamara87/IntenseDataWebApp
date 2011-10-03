@@ -59,24 +59,26 @@ package Controller.ERA.Admin
 		 * 
 		 */		
 		private function eraDeleted(status:Boolean, deletedERAID:Number=0):void {
-			if(status) {
-				// Remove the deleted era from the list of era projects
-				for(var i:Number = 0; i < AppController.eraProjectArray.length; i++) {
-					var eraProject:Model_ERAProject = AppController.eraProjectArray[i] as Model_ERAProject;
-					if(eraProject.base_asset_id == deletedERAID) {
-						AppController.eraProjectArray.splice(i, 1);
-						break;
-					}
-				}
-				// show conformation
-				layout.notificationBar.showGood("Era Deleted");
-				// update the era projects being displayed in the era setup view
-				eraSetupView.addERAProjects(AppController.eraProjectArray);
-				// and update the global era project dropdown
-				AppController.updateERADropdownList();	
-			} else {
-				eraSetupView.myNotificationBar.showError("Era Failed to be Created");	
+			if(!status) {
+				eraSetupView.myNotificationBar.showError("Failed to delete ERA");
+				return;
 			}
+		
+			// Remove the deleted era from the list of era projects
+			for(var i:Number = 0; i < AppController.eraProjectArray.length; i++) {
+				var eraProject:Model_ERAProject = AppController.eraProjectArray[i] as Model_ERAProject;
+				if(eraProject.base_asset_id == deletedERAID) {
+					AppController.eraProjectArray.splice(i, 1);
+					break;
+				}
+			}
+			// show conformation
+			layout.notificationBar.showGood("Era Deleted");
+			// update the era projects being displayed in the era setup view
+			eraSetupView.addERAProjects(AppController.eraProjectArray);
+			// and update the global era project dropdown
+			AppController.updateERADropdownList();	
+			
 		}
 		
 		private function eraChanged(e:IndexChangeEvent):void {

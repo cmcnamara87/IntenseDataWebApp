@@ -39,8 +39,8 @@ package Controller.ERA
 		
 		private function setupEventListeners():void {
 			// Listen for log item being saved
-			caseView.addEventListener(IDEvent.SAVE_LOG_ITEM, saveLogItem);
-			caseView.addEventListener(IDEvent.SAVE_FILE, saveFile);
+			caseView.addEventListener(IDEvent.ERA_SAVE_LOG_ITEM, saveLogItem);
+			caseView.addEventListener(IDEvent.ERA_SAVE_FILE, saveFile);
 			// Listen for file upload
 		}
 		override public function init():void {

@@ -14,6 +14,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_CreateERAUser;
 	import Model.Transactions.ERAProject.Transaction_CreateRoom;
 	import Model.Transactions.ERAProject.Transaction_DeleteERAProject;
+	import Model.Transactions.ERAProject.Transaction_DeleteERAUser;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
 	import Model.Transactions.ERAProject.Transaction_GetAllLogItems;
 	import Model.Transactions.ERAProject.Transaction_GetAllRooms;
@@ -1617,6 +1618,9 @@ package Model {
 		
 		public function createERAUser(qutUsername:String, firstName:String, lastName:String, callback:Function):void {
 			var createERAUser:Model.Transactions.ERAProject.Transaction_CreateERAUser = new Transaction_CreateERAUser(qutUsername, firstName, lastName, _connection, callback);
+		}
+		public function deleteERAUser(qutUsername:String, callback:Function):void {
+			var deleteERAUser:Transaction_DeleteERAUser = new Transaction_DeleteERAUser(qutUsername, _connection, callback);
 		}
 			
 		public function getAllERACases(eraID:Number, callback:Function):void {

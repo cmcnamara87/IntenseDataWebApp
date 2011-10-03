@@ -38,7 +38,7 @@
 				uploadProgress.visible = true;
 				
 				
-				var uploadEvent:IDEvent = new IDEvent(IDEvent.SAVE_FILE, true);
+				var uploadEvent:IDEvent = new IDEvent(IDEvent.ERA_SAVE_FILE, true);
 				uploadEvent.data.type = evidenceType.selectedItem;
 				uploadEvent.data.title = title.text;
 				uploadEvent.data.description = description.text;
@@ -112,7 +112,7 @@
 				saveButton.enabled = false;
 				
 				// Pass the type, title and description to the controller and this item itself
-				var evidenceSavedEvent:IDEvent = new IDEvent(IDEvent.SAVE_LOG_ITEM, true);
+				var evidenceSavedEvent:IDEvent = new IDEvent(IDEvent.ERA_SAVE_LOG_ITEM, true);
 				evidenceSavedEvent.data.type = evidenceType.selectedItem;
 				evidenceSavedEvent.data.title = title.text;
 				evidenceSavedEvent.data.description = description.text;

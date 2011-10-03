@@ -5,6 +5,8 @@
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.IDEvent;
+			
 			import Model.Model_ERAUser;
 			import Model.Model_User;
 			
@@ -12,6 +14,7 @@
 			import View.components.Admin.UserListItem;
 			
 			import mx.collections.ArrayList;
+			import mx.controls.Alert;
 
 			protected function cancelUserButton_clickHandler(event:MouseEvent):void
 			{
@@ -44,7 +47,19 @@
 				// Remove anything in the list currently
 				allUsers.removeAllElements();
 				
+				// Update all the Role dropdowns (if there are any)
+				for(var i:Number = 0; i < roles.numElements; i++) {
+					var roleComponent:ERARole = roles.getElementAt(i) as ERARole;
+					
+					var formattedArray:ArrayList = new ArrayList();
+					for each(var eraUser:Model_ERAUser in eraUserArray) {
+						formattedArray.addItem(eraUser.username);
+					}
+					roleComponent.allERAUsers = formattedArray;
+				}
+				
 				if(eraUserArray.length == 0) {
+					// No users, so dont show any
 					var noUsers:Label = new Label();
 					noUsers.text = "No users found";
 					allUsers.addElement(noUsers);
@@ -57,7 +72,15 @@
 					userListItem.firstName = user.firstName;
 					userListItem.lastName = user.lastName;
 					userListItem.username = user.username;
+					userListItem.deleteEventToThrow = IDEvent.ERA_DELETE_USER;
 					allUsers.addElement(userListItem);
+					
+//					userListItem.deleteButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+//						Alert.show("Deleting User");
+//						var deleteUserEvent:IDEvent = new IDEvent(IDEvent.ERA_DELETE_USER);
+//						deleteUserEvent.data.username = user.username;
+//						dispatchEvent(deleteUserEvent);
+//					});
 				}
 			}
 

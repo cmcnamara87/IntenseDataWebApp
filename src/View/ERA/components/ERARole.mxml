@@ -20,7 +20,7 @@
 			protected function addUserButton_clickHandler(event:MouseEvent):void
 			{
 				// TODO Auto-generated method stub
-				var addUserToRole:IDEvent = new IDEvent(IDEvent.ADD_USER_TO_ROLE, true);
+				var addUserToRole:IDEvent = new IDEvent(IDEvent.ERA_ADD_USER_TO_ROLE, true);
 				addUserToRole.data.username = allUsers.selectedItem;
 				addUserToRole.data.role = roleTitle.text;
 				this.dispatchEvent(addUserToRole);

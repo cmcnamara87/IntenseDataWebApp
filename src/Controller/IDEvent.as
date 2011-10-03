@@ -153,10 +153,11 @@ package Controller {
 			
 			// ERA EVENTS
 			// Called when the a user is being added to a role (in the user admin)
-			public static var ADD_USER_TO_ROLE:String = "id_addUserToRole";
+			public static var ERA_ADD_USER_TO_ROLE:String = "id_addUserToRole";
 			// Call when we are initially saving a evidence log item
-			public static var SAVE_LOG_ITEM:String = "id_saveLogItem";
-			public static var SAVE_FILE:String = "id_saveFile";
+			public static var ERA_SAVE_LOG_ITEM:String = "id_saveLogItem";
+			public static var ERA_SAVE_FILE:String = "id_saveFile";
+			public static var ERA_DELETE_USER:String = "era_deleteUser";
 			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);

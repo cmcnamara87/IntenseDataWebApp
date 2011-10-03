@@ -39,10 +39,13 @@ package Controller.ERA.Admin
 		
 		private function setupEventListeners():void {
 			// Add user to role
-			view.addEventListener(IDEvent.ADD_USER_TO_ROLE, addUserToRole);
+			view.addEventListener(IDEvent.ERA_ADD_USER_TO_ROLE, addUserToRole);
 			
 			// Create user
 			userAdminView.createUserButton.addEventListener(MouseEvent.CLICK, createNewUser);
+			
+			// Listen for user being deleted
+			userAdminView.addEventListener(IDEvent.ERA_DELETE_USER, deleteUser);
 		}
 		
 		/* ========================================== CREATING ERA USER ========================================== */
@@ -98,6 +101,35 @@ package Controller.ERA.Admin
 			}
 		}
 		/* ========================================== END OF ADD ROLE TO USER ========================================== */
+		
+		
+		/* ========================================== DELETE A USER ========================================== */
+		private function deleteUser(e:IDEvent):void {
+			var username:String = e.data.username;
+			AppModel.getInstance().deleteERAUser(username, userDeleted);
+		}
+		private function userDeleted(status:Boolean, username:String=""):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to delete user");
+				return;
+			}
+			
+			layout.notificationBar.showGood("User " + username + " deleted");
+			
+			for(var i:Number = 0; i < this.usersArray.length; i++) {
+				var deletedERAUser:Model_ERAUser = this.usersArray[i] as Model_ERAUser;
+				if(deletedERAUser.username == username) {
+					this.usersArray.splice(i, 1);
+					break;
+				}
+			}
+			
+			// Add the updated list of users to the view
+			userAdminView.addERAUsers(this.usersArray);
+			
+		}
+		/* ========================================== END OF DELETE A USER ========================================== */
+		
 		
 		/* ======================================= GET USERS WITH ROLE ========================================== */
 		/**

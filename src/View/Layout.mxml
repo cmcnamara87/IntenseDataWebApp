@@ -17,8 +17,8 @@
 	
 	<Notification:NotificationPanel
 		id="notificationPanel"
-		visible="true"
-		includeInLayout="true"
+		visible="false"
+		includeInLayout="false"
 		top="{header.height + 10}"
 		right="0">
 	</Notification:NotificationPanel>
