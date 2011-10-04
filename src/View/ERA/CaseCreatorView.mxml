@@ -16,6 +16,9 @@
 			
 			import spark.events.IndexChangeEvent;
 			
+			[Bindable]
+			public var currentYear:String = "";
+			
 			// the selected reserachers for the case
 			public var chosenResearchersArray:Array = new Array();
 			// The selected production managers
@@ -33,8 +36,7 @@
 			public function addAllCases(caseArray:Array):void {
 				
 				if(caseArray.length == 0) {
-					currentCases.enabled = false;
-					deleteCaseButton.enabled = false;
+					enterCreationMode();
 					return;
 				}
 				
@@ -182,6 +184,9 @@
 			}
 
 			private function enterCreationMode():void {
+				// Disable the create new case button
+				makeNewCase.enabled = false;
+				
 				// Disable the case selection dropdown list and delete case button
 				currentCases.enabled = false;
 				currentCases.selectedIndex = -1;
@@ -207,13 +212,22 @@
 				// Show create and cancel button
 				createCaseButton.visible = true;
 				createCaseButton.includeInLayout = true;
-				cancelButton.visible = true;
-				cancelButton.includeInLayout = true;
+				
+				if(currentCases.dataProvider == null || currentCases.dataProvider.length == 0) {
+					// We have nothing to go back to if we click cancel, so just disable it
+					cancelButton.enabled = false;
+				} else {
+					cancelButton.enabled = true;
+				}
+					cancelButton.visible = true;
+					cancelButton.includeInLayout = true;
 				
 				saveButton.visible = false;
 				saveButton.includeInLayout = false;
 			}
 			public function exitCreationMode():void {
+				makeNewCase.enabled = false;
+				
 				currentCases.enabled = true;
 				deleteCaseButton.enabled = true;
 				
@@ -352,7 +366,7 @@
 		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
 			<s:VGroup width="100%">
 				<s:HGroup width="100%">
-					<s:Label text="Case Creator" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+					<s:Label text="Case Creator {currentYear}" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
 						<s:filters>
 							<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
 						</s:filters>

@@ -16,6 +16,12 @@
 			private var projectArray:ArrayCollection = new ArrayCollection();
 			
 			public function addERAProjects(eraProjectArray:Array):void {
+				if(eraProjectArray.length == 0) {
+					// We have no projects, so go into creation mode by default
+					enterCreationMode();
+					return;
+				}
+				
 				projectArray = new ArrayCollection();
 				for each(var eraProject:Model_ERAProject in eraProjectArray) {
 					var baseID:Number = eraProject.base_asset_id;
@@ -26,10 +32,10 @@
 					projectArray.addItem(object);
 				}
 				eras.dataProvider = projectArray;
-				if(eras.dataProvider.length > 0) {
+				if(eras.dataProvider.length > 0 && eras.selectedIndex == -1) {
 					eras.selectedIndex = 0;
 				}
-				
+//				
 				this.leaveCreationMode();
 			}
 			public function addERAProject(eraProject:Model_ERAProject):void {
@@ -61,7 +67,18 @@
 				saveButton.includeInLayout = false;
 				cancelButton.visible = true;
 				cancelButton.includeInLayout = true;
+				
+				// Only enable the cancel button if we have things to go back to
+				// (so we already have some eras)
+				if(eras.dataProvider != null || eras.dataProvider.length > 0) {
+					cancelButton.enabled = true;
+				} else {
+					cancelButton.enabled = false;
+				}
 			}
+			/**
+			 * Leaves creation mode
+			 */
 			private function leaveCreationMode():void {
 				createButton.visible = false;
 				createButton.includeInLayout = false;
@@ -87,13 +104,6 @@
 			{
 				this.enterCreationMode();
 			}
-			
-			protected function eras_changeHandler(e:IndexChangeEvent):void
-			{
-				// TODO Auto-generated method stub
-//				Alert.show(DropDownList(e.target).selectedItem.data + " " + DropDownList(e.target).selectedItem.label);
-			}
-
 
 			protected function cancelButton_clickHandler(event:MouseEvent):void
 			{
@@ -128,11 +138,14 @@
 		<!-- Create the middle box -->
 		<s:VGroup width="900" height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
 			<!-- Create Menu box -->
+			
+			<s:Label text="ERA Edition" fontSize="20" fontWeight="bold" color="0x5e6469" />
 			<s:HGroup width="100%">
 				
-				<s:DropDownList id="eras" width="100%" change="eras_changeHandler(event)" />
+				<s:DropDownList id="eras" width="100%" />
 				<s:Button id="deleteERAButton" label="Delete ERA" />
 			</s:HGroup>
+			<mx:HRule width="100%" chromeColor="0x000000" />
 			
 			<components:FormGroup title="ERA Due Date">
 				<components:content>
@@ -198,7 +211,7 @@
 			</components:FormGroup>
 			<s:HGroup>
 				<s:Button id="saveButton" label="Save Changes" />
-				<s:Button id="createButton" label="Save Edition" visible="false" />
+				<s:Button id="createButton" label="Save New Edition" visible="false" />
 				<s:Button id="cancelButton" label="Cancel" click="cancelButton_clickHandler(event)" visible="false"/>
 			</s:HGroup>
 		</s:VGroup>

@@ -36,6 +36,8 @@ package Controller.ERA.Admin
 			layout.header.unhighlightAllButtons();
 			layout.header.caseCreatorButton.setStyle("chromeColor", "0x000000");
 			
+			caseCreatorView.currentYear = AppController.currentEraProject.year;
+			
 			setupEventListeners();
 			// Get all the cases
 			AppModel.getInstance().getAllERACases(AppController.currentEraProject.base_asset_id, gotAllCases);

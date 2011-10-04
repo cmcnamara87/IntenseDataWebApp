@@ -5,7 +5,7 @@ package Controller.ERA.Admin
 	import Model.AppModel;
 	import Model.Model_ERAProject;
 	
-	import View.ERA.ERASetupView;
+	import View.ERA.ERAEditionManagerView;
 	
 	import flash.events.MouseEvent;
 	
@@ -17,7 +17,7 @@ package Controller.ERA.Admin
 
 	public class ERASetupController extends AppController
 	{
-		private var eraSetupView:ERASetupView = new ERASetupView();
+		private var eraSetupView:ERAEditionManagerView = new ERAEditionManagerView();
 		
 		public function ERASetupController()
 		{
@@ -29,6 +29,7 @@ package Controller.ERA.Admin
 			// Make the era management button darker
 			layout.header.unhighlightAllButtons();
 			layout.header.newERAButton.setStyle("chromeColor", "0x000000");
+			layout.header.adminToolsButton.setStyle("chromeColor", "0x000000");
 			
 			// Listen for new eras being created
 			eraSetupView.createButton.addEventListener(MouseEvent.CLICK, createButtonClicked);
@@ -44,6 +45,7 @@ package Controller.ERA.Admin
 			eraSetupView.eras.addEventListener(IndexChangeEvent.CARET_CHANGE, eraChanged);
 		}
 		
+		/* ========================================== DELETING AN ERA ========================================== */
 		/**
 		 * The delete button was clicked. Delete the ERA
 		 * @param e
@@ -80,8 +82,8 @@ package Controller.ERA.Admin
 			eraSetupView.addERAProjects(AppController.eraProjectArray);
 			// and update the global era project dropdown
 			AppController.updateERADropdownList();	
-			
 		}
+		/* ========================================== END OF DELETING AN ERA ========================================== */
 		
 		private function eraChanged(e:IndexChangeEvent):void {
 			try {
@@ -98,6 +100,7 @@ package Controller.ERA.Admin
 			}
 		}
 		
+		/* ========================================== SAVING UPDATES TO AN ERA ========================================== */
 		/**
 		 * The save updated version of the era has been clicked. 
 		 * @param e
@@ -106,6 +109,10 @@ package Controller.ERA.Admin
 		private function saveButtonClicked(e:MouseEvent):void {
 			layout.notificationBar.showProcess("Updating ERA");
 			var packageSize:String = eraSetupView.packageSize.text;
+			if(packageSize == "") {
+				layout.notificationBar.showError("Please enter a package size");
+				return;
+			}
 			AppModel.getInstance().updateERAProject(eraSetupView.eras.selectedItem.data,
 													eraSetupView.day.selectedItem,
 													eraSetupView.month.selectedItem,
@@ -137,32 +144,64 @@ package Controller.ERA.Admin
 				AppController.eraProjectArray.push(data);
 				
 				// Update the views
-				layout.notificationBar.showGood("Era Created");
+				layout.notificationBar.showGood("ERA Edition Updated");
 				eraSetupView.addERAProjects(AppController.eraProjectArray);
 				AppController.updateERADropdownList();
 			} else {
 				eraSetupView.myNotificationBar.showError("Era Failed to be Created");	
 			}
 		}
-
+		/* ========================================== END OF SAVING UPDATES TO AN ERA ========================================== */
+		
 		private function createButtonClicked(e:MouseEvent):void {
-			//DD-MMM-YYYY
+			// Some basic validation stuff
+			if(eraSetupView.day.selectedIndex == -1) {
+				layout.notificationBar.showError("Please select a day");
+				return;
+			}
+			var eraDay:String = eraSetupView.day.selectedItem;
 			
+			if(eraSetupView.month.selectedIndex == -1) {
+				layout.notificationBar.showError("Please select a month");
+				return;
+			}
+			var eraMonth:String = eraSetupView.month.selectedItem;
+			
+			if(eraSetupView.year.selectedIndex == -1) {
+				layout.notificationBar.showError("Please select a month");
+				return;
+			}
+			var eraYear:String = eraSetupView.year.selectedItem;
+			
+			var packageSize:String = eraSetupView.packageSize.text;
+			if(packageSize == "") {
+				layout.notificationBar.showError("Please enter a package size");
+				return;
+			}
+			
+			// check that we dont already have an era for that year
+			for each(var era:Model_ERAProject in AppController.eraProjectArray) {
+				if(era.year == eraYear) {
+					layout.notificationBar.showError("An ERA Edition for this year already exists");
+					return;
+				}
+			} 
+
 			// Lets make the due date
-				layout.notificationBar.showProcess("Saving ERA");
-				var packageSize:String = eraSetupView.packageSize.text;
-				AppModel.getInstance().makeERAProject(	eraSetupView.day.selectedItem,
-														eraSetupView.month.selectedItem,
-														eraSetupView.year.selectedItem,
-														packageSize,
-														eraCreated);
+			layout.notificationBar.showProcess("Saving ERA");
+				
+			AppModel.getInstance().makeERAProject(	eraSetupView.day.selectedItem,
+													eraSetupView.month.selectedItem,
+													eraSetupView.year.selectedItem,
+													packageSize,
+													eraCreated);
 		}
 		
 		private function eraCreated(status:Boolean, data:Model_ERAProject):void {
 			if(status) {
 				AppController.currentEraProject = data;
 				AppController.eraProjectArray.push(data);
-				eraSetupView.myNotificationBar.showGood("Era Created");
+				layout.notificationBar.showGood("Era Created");
 				
 				eraSetupView.addERAProjects(AppController.eraProjectArray);
 				AppController.updateERADropdownList();

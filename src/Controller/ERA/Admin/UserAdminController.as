@@ -41,6 +41,8 @@ package Controller.ERA.Admin
 		}
 		
 		private function setupEventListeners():void {
+			userAdminView.currentYear = AppController.currentEraProject.year;
+			
 			// Add user to role
 			view.addEventListener(IDEvent.ERA_ADD_USER_TO_ROLE, addUserToRole);
 			
@@ -72,6 +74,8 @@ package Controller.ERA.Admin
 				layout.notificationBar.showError("Please fill out the last name");
 				return;
 			}
+			
+			userAdminView.createUserPanel.enabled = false;
 			
 			AppModel.getInstance().createERAUser(qutUsername, firstName, lastName, eraUserCreated);
 		}
@@ -114,6 +118,7 @@ package Controller.ERA.Admin
 		
 		/* ========================================== DELETE A USER ========================================== */
 		private function deleteUser(e:IDEvent):void {
+			layout.notificationBar.showProcess("Deleting " + username);
 			var username:String = e.data.username;
 			AppModel.getInstance().deleteERAUser(username, userDeleted);
 		}
@@ -146,6 +151,8 @@ package Controller.ERA.Admin
 			var username:String = e.data.username;
 			var roleComponent:ERARole = e.data.roleComponent;
 			var role:String = e.data.role;
+			
+			layout.notificationBar.showProcess("Removing " + username);
 			
 			AppModel.getInstance().removeRoleFromERAUser(username, role, roleComponent, userRemovedFromRole);
 		}

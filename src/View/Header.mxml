@@ -35,7 +35,7 @@
 					
 					// Add the era project to the dropdown
 					var object:Object = new Object();
-					object.label = "ERA * " + eraProject.year;
+					object.label = "ERA " + eraProject.year;
 					object.data = eraProject;
 					eraNameArray.addItem(object);
 					
@@ -68,19 +68,32 @@
 		</s:HGroup>
 		
 		<!-- Add in the button group -->
-		<s:HGroup id="adminToolButtons" includeInLayout="false" paddingLeft="20" visible="false"  width="100%"  height="100%" verticalAlign="middle">
-				<s:Button id="newERAButton" label="ERA Edition Manager" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
-				</s:Button>
-				<s:DropDownList id="eraDropDown" contentBackgroundColor="0x222222" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" >
-				</s:DropDownList>
-				<s:Button id="dashboardButton" enabled="false" label="Dashboard" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
-				</s:Button>
-				<s:Button id="userAdminButton" label="User Admin" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
-				</s:Button>
-				<s:Button id="caseCreatorButton" label="Case Creator" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
-				</s:Button>
-				<s:Button id="reportButton" enabled="false" label="Reports" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
-				</s:Button>
+		<s:HGroup id="adminToolButtons" includeInLayout="false" paddingLeft="20" visible="false"  width="100%"  height="100%" verticalAlign="middle" paddingTop="5" paddingBottom="5">
+			<s:Line height="100%">
+				<s:stroke>
+					<s:SolidColorStroke color="0x000000" weight="1" caps="round" />
+				</s:stroke>
+			</s:Line>
+			
+			<s:Button id="newERAButton" label="ERA Edition Manager" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+			</s:Button>
+		
+			<s:Line height="100%">
+				<s:stroke>
+					<s:SolidColorStroke color="0x000000" weight="1" caps="round" />
+				</s:stroke>
+			</s:Line>
+		
+			<s:DropDownList id="eraDropDown" contentBackgroundColor="0x222222" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" >
+			</s:DropDownList>
+			<s:Button id="dashboardButton" enabled="false" label="Dashboard" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+			</s:Button>
+			<s:Button id="userAdminButton" label="User Admin" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+			</s:Button>
+			<s:Button id="caseCreatorButton" label="Case Creator" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+			</s:Button>
+			<s:Button id="reportButton" enabled="false" label="Reports" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+			</s:Button>
 		</s:HGroup>
 		<s:HGroup width="100%">
 		</s:HGroup>
@@ -88,11 +101,14 @@
 			
 			<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="adminToolsButton" height="20" label="Admin Tools" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
 			</s:Button>
-			<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="productionToolsButton" height="20" label="Production Tools" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
+			<s:Button chromeColor="0x000000" cornerRadius="10" color="0xEEEEEE" id="productionToolsButton" height="20" label="Production Tools" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
 			</s:Button>
 			
-			<mx:VRule height="100%" chromeColor="0x000000">
-			</mx:VRule>
+			<s:Line height="100%">
+				<s:stroke>
+					<s:SolidColorStroke color="0x000000" weight="1" caps="round" />
+				</s:stroke>
+			</s:Line>
 			
 			<s:Button chromeColor="0x8FAFF7" cornerRadius="10" color="0x222222" id="notificationButton" height="20" width="30" label="0" toolTip="Notifications">
 			</s:Button>

@@ -5,6 +5,7 @@
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
 			import Controller.IDEvent;
 			
 			import Model.Model_ERAUser;
@@ -16,6 +17,9 @@
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
 
+			[Bindable]
+			public var currentYear:String = "";
+			
 			protected function cancelUserButton_clickHandler(event:MouseEvent):void
 			{
 				// Make the create panel invisible
@@ -78,7 +82,7 @@
 			protected function createUserButton_clickHandler(event:MouseEvent):void
 			{
 				// Disable this panel, so nothing can be changed while we are saving
-				createUserPanel.enabled = false;
+				
 			}
 			
 			/* == PUBLIC FUNCTIONS == */
@@ -113,7 +117,7 @@
 		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
 			<s:VGroup width="100%">
 				<s:HGroup width="100%">
-					<s:Label text="User Administration" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+					<s:Label text="User Administration {currentYear}" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
 						<s:filters>
 							<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
 						</s:filters>
