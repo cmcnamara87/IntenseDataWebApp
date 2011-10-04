@@ -20,6 +20,8 @@
 			import mx.controls.Text;
 			
 			import spark.components.Label;
+			import spark.layouts.HorizontalAlign;
+			import spark.layouts.VerticalAlign;
 			
 			private var aasdf:Array = new Array("helo", "world", "test", "this");
 			private var arrayTest:ArrayList = new ArrayList(aasdf);
@@ -28,28 +30,42 @@
 				var evidenceManagement:EvidenceManagement = new EvidenceManagement();
 				room.removeAllElements();
 				room.addElement(evidenceManagement);
-				
 				evidenceManagement.addLogItems(logItemArray);
 			}
 			
-			public function addCases(caseArray:Array):void {
-				
-				// Add all the Cases
+			public function showNoCases():void {
+				var label2:Label = new Label();
+				label2.text = "No cases found";
+				label2.setStyle('color', '0xFFFFFF');
 				casePanelContent.removeAllElements();
-				if(caseArray.length == 0) {
-					var label2:Label = new Label();
-					label2.text = "No cases found";
-					label2.setStyle('color', '0xFFFFFF');
-					casePanelContent.removeAllElements();
-					casePanelContent.addElement(label2);
-				}
-				for each(var eraCase:Model_ERACase in caseArray) {
-					var someLabel:Text = new Text();
-					someLabel.setStyle('color', '0xFFFFFF');
-					someLabel.htmlText = "<a href='#case/" + eraCase.base_asset_id + "'>" + eraCase.rmCode + "</a>";
-					casePanelContent.addElement(someLabel);
+				casePanelContent.addElement(label2);
+				
+				room.removeAllElements();
+				
+				var hgroup:HGroup = new HGroup();
+				hgroup.percentHeight = 100;
+				hgroup.percentWidth = 100;
+				hgroup.verticalAlign = VerticalAlign.MIDDLE
+				room.addElement(hgroup);
+
+				var vgroup:VGroup = new VGroup();
+				vgroup.horizontalAlign = HorizontalAlign.CENTER;
+				vgroup.percentWidth = 100;
+				hgroup.addElement(vgroup);
+				
+				var label3:Label = new Label();
+				label3.text = "No cases found";
+				hgroup.addElement(label3);
+				
+				if(caseNav.height != 0) {
+					// Hide the case nav cause we dont have any cases
+					caseNav.height = 0;
 				}
 				
+				showERAInDropdown();
+				
+			}
+			private function showERAInDropdown():void {
 				// Now add all the ERAs to the dropdown (probably dont need this here, maybe another function???)
 				var eraNameArray:ArrayCollection = new ArrayCollection();
 				
@@ -72,6 +88,28 @@
 				}
 				caseERADropdown.dataProvider = eraNameArray;
 				caseERADropdown.selectedIndex = selectedIndex;
+			}
+			public function addCases(caseArray:Array):void {
+				
+				// Add all the Cases
+				casePanelContent.removeAllElements();
+				if(caseArray.length == 0) {
+					var label2:Label = new Label();
+					label2.text = "No cases found";
+					label2.setStyle('color', '0xFFFFFF');
+					casePanelContent.removeAllElements();
+					casePanelContent.addElement(label2);
+				}
+				for each(var eraCase:Model_ERACase in caseArray) {
+					var someLabel:Text = new Text();
+					someLabel.setStyle('color', '0xFFFFFF');
+					someLabel.htmlText = "<a href='#case/" + eraCase.base_asset_id + "'>" + eraCase.rmCode + "</a>";
+					casePanelContent.addElement(someLabel);
+				}
+				
+				caseNav.height = 160;
+				
+				showERAInDropdown();
 			}
 
 			protected function caseTag_clickHandler(event:MouseEvent):void
@@ -113,8 +151,8 @@
 				</s:Group>
 				<!-- End of the Current room -->
 				
-				<s:BorderContainer buttonMode="true" id="caseTag" click="caseTag_clickHandler(event)" backgroundColor="black" borderVisible="false" width="40" height="75" top="300">
-					<s:Label x="12" y="60" rotation="270" text="Cases" color="white" fontWeight="bold" fontSize="16"/>
+				<s:BorderContainer buttonMode="true" id="caseTag" click="caseTag_clickHandler(event)" backgroundColor="black" borderVisible="false" width="40" height="105" top="270">
+					<s:Label x="12" y="80" rotation="270" text="ERA Cases" color="white" fontSize="16"/>
 					<s:filters>
 						<s:DropShadowFilter distance="3" angle="0" alpha="0.5" color="0x000000" blurX="20" blurY="20"/>
 					</s:filters>
@@ -127,10 +165,10 @@
 		<!-- END THE CONTENT SECTION -->
 		
 		<!-- START THE CASE NAV SECTION -->
-		<s:BorderContainer backgroundColor="0x565656" width="100%" height="160" borderVisible="false">
+		<s:BorderContainer id="caseNav" backgroundColor="0x565656" width="100%" height="160" borderVisible="false" resizeEffect="Resize">
 			<s:VGroup horizontalAlign="center" height="100%" width="100%">
 				<s:HGroup height="100%" verticalAlign="middle" gap="20">
-					<components:RoomIcon roomName="Evidence Management" />
+					<components:RoomIcon roomName="Evidence Manager" />
 					<components:RoomIcon roomName="Evidence Room" alpha="0.5" />
 					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" />
 					<components:RoomIcon roomName="Screening Room" alpha="0.5" />

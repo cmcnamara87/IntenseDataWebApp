@@ -33,6 +33,9 @@ package Controller.ERA.Admin
 		}
 		
 		override public function init():void {
+			layout.header.unhighlightAllButtons();
+			layout.header.caseCreatorButton.setStyle("chromeColor", "0x000000");
+			
 			setupEventListeners();
 			// Get all the cases
 			AppModel.getInstance().getAllERACases(AppController.currentEraProject.base_asset_id, gotAllCases);

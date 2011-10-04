@@ -157,8 +157,12 @@ package Controller {
 			// Call when we are initially saving a evidence log item
 			public static var ERA_SAVE_LOG_ITEM:String = "id_saveLogItem";
 			public static var ERA_SAVE_FILE:String = "id_saveFile";
+			// Delete user in user admin
 			public static var ERA_DELETE_USER:String = "era_deleteUser";
+			// remove the user from a role
 			public static var ERA_REMOVE_USER_FROM_ROLE:String = "era_removeUserFromRole";
+			public static var ERA_UPDATE_LOG:String = "era_UpdateLog";
+			
 			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);

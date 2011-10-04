@@ -26,14 +26,16 @@ package Controller.ERA.Admin
 		}
 		
 		override public function init():void {
+			// Make the era management button darker
+			layout.header.unhighlightAllButtons();
+			layout.header.newERAButton.setStyle("chromeColor", "0x000000");
+			
 			// Listen for new eras being created
 			eraSetupView.createButton.addEventListener(MouseEvent.CLICK, createButtonClicked);
 			// Listen for old eras being updated
 			eraSetupView.saveButton.addEventListener(MouseEvent.CLICK, saveButtonClicked);
 			// Listen for delete being called
 			eraSetupView.deleteERAButton.addEventListener(MouseEvent.CLICK, deleteButtonClicked);
-			
-			
 			
 			// Add the current erap rojects to the view
 			eraSetupView.addERAProjects(AppController.eraProjectArray);

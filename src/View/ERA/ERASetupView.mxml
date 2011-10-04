@@ -111,12 +111,12 @@
 		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
 			<s:VGroup width="100%">
 				<s:HGroup width="100%">
-					<s:Label text="ERA Details" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+					<s:Label text="ERA Edition Manager" toolTip="Create and Manage your ERAs" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
 						<s:filters>
 							<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
 						</s:filters>
 					</s:Label>
-					<s:Button id="makeNewERA" label="Make New ERA"  click="makeNewERA_clickHandler(event)" cornerRadius="10" height="30"/>
+					<s:Button id="makeNewERA" label="Create New ERA Edition"  click="makeNewERA_clickHandler(event)" cornerRadius="10" height="30"/>
 				</s:HGroup>
 			</s:VGroup>
 		</s:HGroup>
@@ -186,7 +186,7 @@
 				</components:content>
 			</components:FormGroup>
 			
-			<components:FormGroup title="Package Size (mb)">
+			<components:FormGroup title="Package Size (MB)">
 				<components:content>
 					<s:HGroup>
 						<s:TextInput id="packageSize">
@@ -198,7 +198,7 @@
 			</components:FormGroup>
 			<s:HGroup>
 				<s:Button id="saveButton" label="Save Changes" />
-				<s:Button id="createButton" label="Create ERA" visible="false" />
+				<s:Button id="createButton" label="Save Edition" visible="false" />
 				<s:Button id="cancelButton" label="Cancel" click="cancelButton_clickHandler(event)" visible="false"/>
 			</s:HGroup>
 		</s:VGroup>

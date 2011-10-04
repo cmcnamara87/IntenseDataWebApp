@@ -357,7 +357,7 @@
 							<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
 						</s:filters>
 					</s:Label>
-					<s:Button id="makeNewCase" label="Make New Case" cornerRadius="10" height="30" click="makeNewCase_clickHandler(event)"/>
+					<s:Button id="makeNewCase" label="Create New Case" cornerRadius="10" height="30" click="makeNewCase_clickHandler(event)"/>
 				</s:HGroup>
 			</s:VGroup>
 		</s:HGroup>
@@ -387,7 +387,7 @@
 					</components:content>
 				</components:FormGroup>
 			
-				<components:FormGroup title="Title (opt)">
+				<components:FormGroup title="Case Title">
 					<components:content>
 						<s:TextInput id="title" borderAlpha="0.5" width="100%" />
 					</components:content>
@@ -468,7 +468,7 @@
 				
 				<s:HGroup id="buttonGroup">
 					<s:Button label="Save Changes" chromeColor="0x8FAFF7" id="saveButton" />
-					<s:Button label="Create Case"  chromeColor="0x8FAFF7" id="createCaseButton" visible="false" includeInLayout="false" />
+					<s:Button label="Save Case"  chromeColor="0x8FAFF7" id="createCaseButton" visible="false" includeInLayout="false" />
 					<s:Button label="Cancel" id="cancelButton" visible="false" includeInLayout="false" click="cancelButton_clickHandler(event)"/>
 				</s:HGroup>
 				

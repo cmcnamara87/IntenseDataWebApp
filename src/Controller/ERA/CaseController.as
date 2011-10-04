@@ -47,6 +47,9 @@ package Controller.ERA
 			caseView.addEventListener(IDEvent.ERA_SAVE_LOG_ITEM, saveLogItem);
 			caseView.addEventListener(IDEvent.ERA_SAVE_FILE, saveFile);
 			
+			
+			caseView.addEventListener(IDEvent.ERA_UPDATE_LOG, updateLog);
+			// Listen for era being changed
 			caseView.caseERADropdown.addEventListener(IndexChangeEvent.CHANGE, eraChanged);
 			// Listen for file upload
 		}
@@ -97,6 +100,19 @@ package Controller.ERA
 		 * 
 		 */
 		private function gotAllERACases(status:Boolean, eraCaseArray:Array):void {
+			if(!status) {
+				layout.notificationBar.showError("Could not retrieve any cases");
+				return;
+			}
+			
+			// did we get no cases?
+			if(eraCaseArray.length == 0) {
+				caseView.showNoCases();
+				return;
+			}
+			// If the era case is emtpy, its going to display "no cases found"
+			caseView.addCases(eraCaseArray);
+			
 			if(caseID == 0) {
 				// We havent been passed a case ID, so lets just default to the first case for this ERA
 				if(eraCaseArray.length > 0) {
@@ -123,8 +139,7 @@ package Controller.ERA
 				// so lets show the evidence management view
 				caseView.showEvidenceManagement(null);
 			}
-			// If the era case is emtpy, its going to display "no cases found"
-			caseView.addCases(eraCaseArray);
+			
 			
 		}
 		private function gotAllRooms(status:Boolean, eraRoomArray:Array):void {
@@ -141,6 +156,7 @@ package Controller.ERA
 				
 		}
 		
+		/* ====================================== LOAD A ROOM CONTENT ===================================== */
 		private function loadRoomContents():void {
 			switch(roomType) {
 				case Model_ERARoom.EVIDENCE_MANAGEMENT:
@@ -150,9 +166,19 @@ package Controller.ERA
 					break;
 			}
 		}
+		/* ====================================== END OF LOAD A ROOM CONTENT ===================================== */
+		
+		
+		
+		/* ====================================== GOT ALL THE LOG ITEMS ===================================== */
 		private function gotAllLogItems(status:Boolean, logItemArray:Array):void {
 			caseView.showEvidenceManagement(logItemArray);
 		}
+		/* ====================================== END OF GOT ALL THE LOG ITEMS ===================================== */
+		
+		
+		
+		/* ====================================== SAVE A LOG ITEM ===================================== */
 		/**
 		 * Saves an Evidence Item 
 		 * @param e		The ID Event
@@ -175,7 +201,14 @@ package Controller.ERA
 			layout.notificationBar.showGood("Evidence Item saved");
 			evidenceItem.addLogItemData(logItem);
 		}
+		/* ====================================== END OF SAVE A LOG ITEM ===================================== */
 		
+		private function updateLog(e:IDEvent):void {
+			// get out the log item
+//			AppModel.getInstance().addRoleToERAUser(/
+		}
+		
+		/* ====================================== SAVE A FILE ===================================== */
 		private function saveFile(e:IDEvent):void {
 			var file:FileReference = e.data.fileReference;
 			var evidenceItem:EvidenceItem = e.data.evidenceItem;
@@ -197,6 +230,8 @@ package Controller.ERA
 				Alert.show("Upload failed");
 			}
 		}
+		/* ====================================== END OF SAVE A FILE ===================================== */
+		
 		
 		private function getRoomIndex(roomType:String):Model_ERARoom {
 			for(var i:Number = 0; i < roomArray.length; i++) {

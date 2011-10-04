@@ -2,7 +2,6 @@ package Controller.Utilities {
 	import Controller.*;
 	import Controller.ERA.Admin.CaseCreatorController;
 	import Controller.ERA.Admin.DashboardController;
-	import Controller.ERA.Admin.ERAEditController;
 	import Controller.ERA.Admin.ERASetupController;
 	import Controller.ERA.Admin.UserAdminController;
 	import Controller.ERA.CaseController;
@@ -54,11 +53,6 @@ package Controller.Utilities {
 				url: 'dashboard',
 				title: 'Admin Dashboard',
 				classname: DashboardController
-			},
-			{
-				url: 'era',
-				title: 'ERA Details',
-				classname: ERAEditController
 			},
 			{
 				url: 'erasetup',
