@@ -1663,15 +1663,12 @@ package Model {
 		public function createERALogItem(roomID:Number, type:String, title:String, description:String, evidenceItem:EvidenceItem, callback:Function):void {
 			var createERALogItem:Transaction_CreateERALogItem = new Transaction_CreateERALogItem(AppController.currentEraProject.year, roomID, type, title, description, evidenceItem, _connection, callback);
 		}
-		public function updateLogItemBooleanValue():void {
-			var updateLogItemBooleanValue:Transaction_UpdateLogItemBooleanValue = new Transaction_UpdateLogItemBooleanValue(
+		public function updateLogItemBooleanValue(logItemID:Number, elementName:String, value:Boolean, evidenceItem:EvidenceItem, callback:Function):void {
+			var updateLogItemBooleanValue:Transaction_UpdateLogItemBooleanValue = new Transaction_UpdateLogItemBooleanValue(logItemID, elementName, value, evidenceItem, _connection, callback);
 		}
 		public function getAllERALogItemsInRoom(roomID:Number, callback:Function):void {
 			var getERALogItems:Transaction_GetAllLogItems = new Transaction_GetAllLogItems(roomID, _connection, callback);
 		}
-		public function updateLogItemBooleanValue(logItemID:Number, fieldToUpdate:String, value:Boolean, callback:Function):void {
-//			var updateLogItemBooleanValue:Trans
-		} 
 		public function uploadERAFile(roomID:Number, type:String, title:String, description:String, fileReference:FileReference, evidenceItem:EvidenceItem, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
 			var uploadERAFile:Transaction_UploadERAFile = new Transaction_UploadERAFile(AppController.currentEraProject.year, roomID, type, title, description, fileReference, evidenceItem, _connection, ioErrorCallback, progressCallback, completeCallback);
 		}

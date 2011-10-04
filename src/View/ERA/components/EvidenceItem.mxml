@@ -84,24 +84,41 @@
 				if((event.target as CheckBox).selected == true) {
 					// The useful box was checked
 					processedCheckbox.enabled = true;
-					uploadableCheckbox.enabled = true;
 					uploadButton.enabled = false;
 				} else {
 					// The useful box has been unchecked
 					processedCheckbox.enabled = false;
-					uploadableCheckbox.enabled = false;
 					uploadButton.enabled = false;
 				}
+				
+				var usefulEvent:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_LOG, true);
+				usefulEvent.data.logItemID = logItem.base_asset_id;
+				usefulEvent.data.elementName = "useful";
+				usefulEvent.data.value = (event.target as CheckBox).selected;
+				usefulEvent.data.evidenceItem = this;
+				dispatchEvent(usefulEvent);
 			}
-
-			/**
-			 * The uploadable checkbox was ticked
-			 */
-			protected function uploadableCheckbox_changeHandler(event:Event):void
+			
+			protected function processedCheckbox_clickHandler(event:MouseEvent):void
 			{
 				// TODO Auto-generated method stub
-				uploadButton.enabled = true;
+				if((event.target as CheckBox).selected == true) {
+					// The useful box was checked
+					uploadButton.enabled = true;
+				} else {
+					// The useful box has been unchecked
+					uploadButton.enabled = false;
+				}
+				
+				var usefulEvent:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_LOG, true);
+				usefulEvent.data.logItemID = logItem.base_asset_id;
+				usefulEvent.data.elementName = "processed";
+				usefulEvent.data.value = (event.target as CheckBox).selected;
+				usefulEvent.data.evidenceItem = this;
+				dispatchEvent(usefulEvent);
+				
 			}
+
 
 			/**
 			 * The save button was clicked
@@ -140,9 +157,19 @@
 				description.text = logItem.description;
 				description.setStyle('color', '0x000000');
 				
+				// Disable the text entry boxes, because theyh ave already been saved
+				evidenceType.enabled = false;
+				title.enabled = false;
+				description.enabled = false;
+				
 				usefulCheckbox.selected = logItem.useful;
+				if(usefulCheckbox.selected == true) {
+					processedCheckbox.enabled = true;
+				}
+				if(processedCheckbox.selected == true) {
+					uploadButton.enabled = true;
+				}
 				processedCheckbox.selected = logItem.processed;
-				uploadableCheckbox.selected = logItem.uploadedable;
 				if(logItem.uploaded) {
 					uploadButton.label = "Uploaded";
 				} else {
@@ -195,6 +222,9 @@
 				}
 			}
 
+
+
+
 		]]>
 	</fx:Script>
 
@@ -218,8 +248,7 @@
 		<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)" />
 		<s:HGroup id="actionGroup" visible="false" includeInLayout="false">
 			<s:CheckBox label="Useful" id="usefulCheckbox" change="usefulCheckbox_changeHandler(event)"/>
-			<s:CheckBox label="Processed" id="processedCheckbox" enabled="false"/>
-			<s:CheckBox label="Uploadable" id="uploadableCheckbox" enabled="false" change="uploadableCheckbox_changeHandler(event)"/>
+			<s:CheckBox label="Processed" id="processedCheckbox" enabled="false" click="processedCheckbox_clickHandler(event)"/>
 			<s:Button label="Upload" id="uploadButton" click="uploadButton_clickHandler(event)" enabled="false" />
 			<s:CheckBox id="returnedCheckbox" label="Returned" />
 		</s:HGroup>

@@ -211,6 +211,8 @@ package Controller.ERA
 			var value:Boolean = e.data.value;
 			var evidenceItem:EvidenceItem = e.data.evidenceItem;
 			
+			AppModel.getInstance().updateLogItemBooleanValue(logItemID, elementName, value, evidenceItem, logItemUpdated);
+			
 //			AppModel.getInstance().updateERALogItem();
 		}
 		private function logItemUpdated(status:Boolean, logItem:Model_ERALogItem=null, evidenceItem:EvidenceItem=null):void {
@@ -233,13 +235,14 @@ package Controller.ERA
 			AppModel.getInstance().uploadERAFile(getRoomIndex(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, type, title, description, file, evidenceItem, uploadIOError, uploadProgress, uploadComplete); 
 		}
 		private function uploadIOError():void {
-			
+			layout.notificationBar.showError("Failed to Upload file.");
 		}
 		private function uploadProgress(percentage:Number, evidenceItem:EvidenceItem):void {
 			evidenceItem.showProgress(percentage);
 		}
 		private function uploadComplete(status:Boolean, eraEvidence:Model_ERAEvidence=null, evidenceItem:EvidenceItem=null):void {
 			if(status) {
+				layout.notificationBar.showGood("Upload Complete");
 				evidenceItem.showComplete();
 			} else {
 				Alert.show("Upload failed");
