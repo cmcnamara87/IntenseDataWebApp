@@ -1,6 +1,8 @@
 package Model.Transactions.ERAProject
 {
 	import Model.Utilities.Connection;
+	
+	import View.ERA.components.EvidenceItem;
 
 	public class Transaction_UpdateLogItemBooleanValue
 	{
@@ -10,8 +12,9 @@ package Model.Transactions.ERAProject
 		private var connection:Connection;
 		private var callback:Function;
 	
-		public function Transaction_UpdateLogItemBooleanValue(logItemID:Number, fieldToUpdate:String, value:Boolean, connection:Connection, callback:Function):void {
-		
+		public function Transaction_UpdateLogItemBooleanValue(logItemID:Number, elementName:String, value:Boolean, evidenceItem:EvidenceItem, _connection:Connection, callback:Function):void {
+			this.logItemID = log
+			
 		}
 	}
 }

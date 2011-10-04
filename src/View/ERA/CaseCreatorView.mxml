@@ -36,6 +36,7 @@
 			public function addAllCases(caseArray:Array):void {
 				
 				if(caseArray.length == 0) {
+					currentCases.dataProvider = new ArrayList(caseArray);
 					enterCreationMode();
 					return;
 				}
@@ -124,8 +125,15 @@
 			public function showCase(eraCase:Model_ERACase):void {
 				// Show RM Code
 				rmCode.text = eraCase.rmCode;
+				
 				// Show QUT School
-				qutSchool.text = eraCase.qutSchool;
+				for(var i:Number = 0; i < qutSchool.dataProvider.length; i++) {
+					var object:Object = (qutSchool.dataProvider as ArrayCollection).getItemAt(i);
+					if(object.data == eraCase.qutSchool) {
+						qutSchool.selectedIndex = i;
+						break;
+					}
+				}
 				
 				// Show the Researchers
 				chosenResearchersArray = eraCase.researchersArray;
@@ -194,7 +202,7 @@
 				
 				// Clear all values
 				rmCode.text = "";
-				qutSchool.text = "";
+				qutSchool.selectedIndex = -1;
 				researcherList.removeAllElements();
 				forList.removeAllElements();
 				categoryList.removeAllElements();
@@ -389,7 +397,7 @@
 				<s:HGroup width="100%" paddingBottom="20">
 					<s:DropDownList id="currentCases" width="100%" change="{showCase(currentCases.selectedItem.data as Model_ERACase)}">
 					</s:DropDownList>	
-					<s:Button id="deleteCaseButton" label="Delete Case" />
+					<s:Button id="deleteCaseButton" label="Delete Case"/>
 				</s:HGroup>
 				<mx:HRule width="100%" chromeColor="0x000000" />
 				
@@ -409,7 +417,12 @@
 				
 				<components:FormGroup title="QUT School">
 					<components:content>
-						<s:TextInput id="qutSchool" borderAlpha="0.5" width="100%" />
+						<s:DropDownList id="qutSchool" width="100%">
+							<s:ArrayCollection>
+								<fx:Object data="MECA" label="M E C Arts" />
+								<fx:Object data="ASDA" label="ASDA BLAH" />
+							</s:ArrayCollection>
+						</s:DropDownList>
 					</components:content>
 				</components:FormGroup>
 				

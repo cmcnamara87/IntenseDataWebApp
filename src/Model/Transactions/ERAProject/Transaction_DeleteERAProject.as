@@ -106,8 +106,9 @@ package Model.Transactions.ERAProject
 			var baseXML:XML = connection.packageRequest("asset.destroy", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
-			// Setup the era meta-data
+			// delete the project
 			argsXML.id = eraProjectID;
+			argsXML.atomic = true;
 			
 			connection.sendRequest(baseXML, eraDestroyed);		
 		}

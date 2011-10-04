@@ -13,6 +13,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_CreateERAProject;
 	import Model.Transactions.ERAProject.Transaction_CreateERAUser;
 	import Model.Transactions.ERAProject.Transaction_CreateRoom;
+	import Model.Transactions.ERAProject.Transaction_DeleteERACase;
 	import Model.Transactions.ERAProject.Transaction_DeleteERAProject;
 	import Model.Transactions.ERAProject.Transaction_DeleteERAUser;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
@@ -22,7 +23,9 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
 	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
+	import Model.Transactions.ERAProject.Transaction_UpdateERACase;
 	import Model.Transactions.ERAProject.Transaction_UpdateERAProject;
+	import Model.Transactions.ERAProject.Transaction_UpdateLogItemBooleanValue;
 	import Model.Transactions.ERAProject.Transaction_UploadERAFile;
 	import Model.Transactions.Share.Transaction_SetUserAssetShare;
 	import Model.Transactions.Transaction_ChangePassword;
@@ -1644,6 +1647,12 @@ package Model {
 									  callback:Function):void {
 			var createERACase:Transaction_CreateERACase = new Transaction_CreateERACase(AppController.currentEraProject.base_asset_id, year, rmCode, title, researcherArray, qutSchool, forArray, categoryArray, productionManagerUsernameArray, productionTeamUsernameArray, _connection, callback);
 		}
+		public function updateERACase(caseID:Number, rmCode:String, title:String, researcherArray:Array, qutSchool:String, forArray:Array, categoryArray:Array, productionManagerArray:Array, productionTeamArray:Array, callback:Function):void {
+			var updateERACase:Transaction_UpdateERACase = new Transaction_UpdateERACase(caseID, rmCode, title, researcherArray, qutSchool, forArray, categoryArray, productionManagerArray, productionTeamArray, _connection, callback); 
+		}
+		public function deleteERACase(caseID:Number, callback:Function):void {
+			var deleteERACase:Transaction_DeleteERACase = new Transaction_DeleteERACase(caseID, _connection, callback);
+		}
 		
 		public function createRoomInCase(caseID:Number, roomType:String, callback:Function):void {
 			var createRoomInCase:Transaction_CreateRoom = new Transaction_CreateRoom(AppController.currentEraProject.year, caseID, roomType, _connection, callback);
@@ -1653,6 +1662,9 @@ package Model {
 		}
 		public function createERALogItem(roomID:Number, type:String, title:String, description:String, evidenceItem:EvidenceItem, callback:Function):void {
 			var createERALogItem:Transaction_CreateERALogItem = new Transaction_CreateERALogItem(AppController.currentEraProject.year, roomID, type, title, description, evidenceItem, _connection, callback);
+		}
+		public function updateLogItemBooleanValue():void {
+			var updateLogItemBooleanValue:Transaction_UpdateLogItemBooleanValue = new Transaction_UpdateLogItemBooleanValue(
 		}
 		public function getAllERALogItemsInRoom(roomID:Number, callback:Function):void {
 			var getERALogItems:Transaction_GetAllLogItems = new Transaction_GetAllLogItems(roomID, _connection, callback);

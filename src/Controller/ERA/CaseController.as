@@ -206,6 +206,21 @@ package Controller.ERA
 		private function updateLog(e:IDEvent):void {
 			// get out the log item
 //			AppModel.getInstance().addRoleToERAUser(/
+			var logItemID:Number = e.data.logItemID;
+			var elementName:String = e.data.elementName;
+			var value:Boolean = e.data.value;
+			var evidenceItem:EvidenceItem = e.data.evidenceItem;
+			
+//			AppModel.getInstance().updateERALogItem();
+		}
+		private function logItemUpdated(status:Boolean, logItem:Model_ERALogItem=null, evidenceItem:EvidenceItem=null):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to save evidence item");
+				return;
+			}
+			
+			layout.notificationBar.showGood("Evidence Item Updated");
+			evidenceItem.addLogItemData(logItem);
 		}
 		
 		/* ====================================== SAVE A FILE ===================================== */

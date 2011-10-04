@@ -59,6 +59,8 @@
 				year.selectedIndex = -1;
 				packageSize.text = "";
 				
+				year.enabled = true;
+				
 				creationMode = true;
 				
 				createButton.visible = true;
@@ -86,6 +88,8 @@
 				saveButton.includeInLayout = true;
 				cancelButton.visible = false;
 				cancelButton.includeInLayout = false;
+				
+				year.enabled = false;
 				
 				makeNewERA.enabled = true;
 				eras.enabled = true;

@@ -51,21 +51,100 @@ package Controller.ERA.Admin
 		
 		private function setupEventListeners():void {
 			caseCreatorView.createCaseButton.addEventListener(MouseEvent.CLICK, createCase);
+			caseCreatorView.saveButton.addEventListener(MouseEvent.CLICK, saveChangesToCase);
+			caseCreatorView.deleteCaseButton.addEventListener(MouseEvent.CLICK, deleteCase);
 		}
 		
-		/* ====================================== CREATE A CASE ===================================== */
-		private function createCase(e:MouseEvent):void {
+		private function validInputs():Boolean {
+			var rmCode:String = caseCreatorView.rmCode.text;			
+			if(rmCode == "") {
+				layout.notificationBar.showError("Please enter an RM Code.");
+				return false;
+			}
+			
+			// Get title
+			var title:String = caseCreatorView.title.text;
+			if(title == "") {
+				layout.notificationBar.showError("Please enter a Case Title.");
+				return false;
+			}
+			
+			// Get QUT school
+			if(caseCreatorView.qutSchool.selectedIndex == -1) {
+				layout.notificationBar.showError("Please Select a QUT School");
+				return false;
+			}
+			var qutSchool:String = caseCreatorView.qutSchool.selectedItem.data;
+			
+			// get researchers
+			var researcherUsernames:Array = caseCreatorView.chosenResearchersArray;
+			if(researcherUsernames.length == 0) {
+				layout.notificationBar.showError("Please Add at least one Researcher.");
+				return false;
+			}
+			
+			// Get FoRs
+			var forArray:Array = caseCreatorView.chosenForsArray;
+			if(forArray.length == 0) {
+				layout.notificationBar.showError("Please Add at least one FoR");
+				return false;
+			}
+			// Check taht the FORs add up to 100%
+			var totalPercentage:Number = 0;
+			for each(var forPair:Array in forArray) {
+				trace("percentage", forPair[Model_ERACase.PERCENTAGE]);
+				totalPercentage += Number(forPair[Model_ERACase.PERCENTAGE]);
+			}
+			trace("totla percentage is", totalPercentage);
+			if(totalPercentage != 100) {
+				layout.notificationBar.showError("Please make sure your FoR percentages add up to 100%");
+				return false;
+			}
+			
+			// Get Category array
+			var categoryArray:Array = caseCreatorView.chosenCategories;
+			if(categoryArray.length == 0) {
+				layout.notificationBar.showError("Please Add at least one Category.");
+				return false;
+			}
+			
+			var productionManagerArray:Array = caseCreatorView.chosenProductionManagersArray;
+			if(productionManagerArray.length == 0) {
+				layout.notificationBar.showError("Please enter at least one Production Manager.");
+				return false;
+			}
+			
+			var productionTeamArray:Array = caseCreatorView.chosenTeamMembersArray;
+			if(productionTeamArray.length == 0) {
+				layout.notificationBar.showError("Please enter at least one Production Team Member.");
+				return false;
+			}
+			
+			return true;
+		}
+		private function saveChangesToCase(e:MouseEvent):void {
+			if(!validInputs()) {
+				return;
+			}
+			
+			if(caseCreatorView.currentCases.selectedIndex == -1) {
+				return;
+			}
+			
+			// Get out the case ID
+			var caseID:Number = (caseCreatorView.currentCases.selectedItem.data as Model_ERACase).base_asset_id;
+			
 			// Get RM Code
-			var rmCode:String = caseCreatorView.rmCode.text;
+			var rmCode:String = caseCreatorView.rmCode.text;			
 			
 			// Get title
 			var title:String = caseCreatorView.title.text;
 			
+			// Get QUT school
+			var qutSchool:String = caseCreatorView.qutSchool.selectedItem.data;
+			
 			// get researchers
 			var researcherUsernames:Array = caseCreatorView.chosenResearchersArray;
-			
-			// Get QUT school
-			var qutSchool:String = caseCreatorView.qutSchool.text;
 			
 			// Get FoRs
 			var forArray:Array = caseCreatorView.chosenForsArray;
@@ -76,6 +155,80 @@ package Controller.ERA.Admin
 			var productionManagerArray:Array = caseCreatorView.chosenProductionManagersArray;
 			
 			var productionTeamArray:Array = caseCreatorView.chosenTeamMembersArray;
+			
+			layout.notificationBar.showProcess("Saving Case...");
+			
+			// Create a era case now lol
+			AppModel.getInstance().updateERACase(
+				caseID,
+				rmCode,
+				title,
+				researcherUsernames,
+				qutSchool,
+				forArray,
+				categoryArray,
+				productionManagerArray,
+				productionTeamArray,
+				eraCaseUpdated);
+		}
+		private function eraCaseUpdated(status:Boolean, eraCaseUpdated:Model_ERACase):void {
+			if(!status) {
+				layout.notificationBar.showError("Error Updating Case");
+				return;
+			}
+			
+			layout.notificationBar.showGood("Case Updated " + eraCaseUpdated.rmCode);
+			
+			// Replace the case with the new one
+			for(var i:Number = 0; i < this.eraCaseArray.length; i++) {
+				var eraCase:Model_ERACase = this.eraCaseArray[i] as Model_ERACase;
+				if(eraCase.base_asset_id == eraCaseUpdated.base_asset_id) {
+					this.eraCaseArray.splice(i, 1);
+					break;
+				}
+			}
+			this.eraCaseArray.push(eraCaseUpdated);
+			
+			// Add it to the view
+			caseCreatorView.addAllCases(eraCaseArray);
+			
+			caseCreatorView.exitCreationMode();
+			
+			caseCreatorView.showCase(eraCaseArray[i]);
+			
+			trace("selecting index", i);
+			caseCreatorView.currentCases.selectedIndex = i;
+			
+		}
+		/* ====================================== CREATE A CASE ===================================== */
+		private function createCase(e:MouseEvent):void {
+			
+			if(!validInputs()) {
+				return;
+			}
+			// Get RM Code
+			var rmCode:String = caseCreatorView.rmCode.text;			
+			
+			// Get title
+			var title:String = caseCreatorView.title.text;
+			
+			// Get QUT school
+			var qutSchool:String = caseCreatorView.qutSchool.selectedItem.data;
+			
+			// get researchers
+			var researcherUsernames:Array = caseCreatorView.chosenResearchersArray;
+
+			// Get FoRs
+			var forArray:Array = caseCreatorView.chosenForsArray;
+			
+			// Get Category array
+			var categoryArray:Array = caseCreatorView.chosenCategories;
+			
+			var productionManagerArray:Array = caseCreatorView.chosenProductionManagersArray;
+			
+			var productionTeamArray:Array = caseCreatorView.chosenTeamMembersArray;
+			
+			layout.notificationBar.showProcess("Saving Case...");
 			
 			// Create a era case now lol
 			AppModel.getInstance().createERACase(
@@ -110,6 +263,36 @@ package Controller.ERA.Admin
 		}
 		/* ====================================== END OF CREATE A CASE ===================================== */
 		
+		private function deleteCase(e:MouseEvent):void {
+			if(caseCreatorView.currentCases.selectedIndex == -1) return;
+			
+			var caseID:Number = (caseCreatorView.currentCases.selectedItem.data as Model_ERACase).base_asset_id;
+			AppModel.getInstance().deleteERACase(caseID, caseDeleted);
+		}
+		private function caseDeleted(status:Boolean, caseID:Number):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to delete Case");
+				return;
+			}	
+			
+			layout.notificationBar.showGood("Case Deleted");
+			
+			// Replace the case with the new one
+			for(var i:Number = 0; i < this.eraCaseArray.length; i++) {
+				var eraCase:Model_ERACase = this.eraCaseArray[i] as Model_ERACase;
+				if(eraCase.base_asset_id == caseID) {
+					this.eraCaseArray.splice(i, 1);
+					break;
+				}
+			}
+			
+			caseCreatorView.addAllCases(eraCaseArray);
+				if(eraCaseArray.length != 0) {
+				caseCreatorView.currentCases.selectedIndex = 0;
+				caseCreatorView.showCase(eraCaseArray[0]);
+			}
+			
+		}
 		
 		/* ====================================== GET ALL ERA CASES FOR THE CURRENT ERA ===================================== */
 		/**

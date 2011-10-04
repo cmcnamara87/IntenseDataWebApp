@@ -12,10 +12,9 @@ package Model.Transactions.ERAProject
 	
 	import flash.events.Event;
 	
-	public class Transaction_CreateERACase
+	public class Transaction_UpdateERACase
 	{
-		private var eraID:Number;
-		private var year:String;
+		private var caseID:Number;
 		private var rmCode:String;
 		private var title:String;
 		private var researcherArray:Array;
@@ -30,8 +29,7 @@ package Model.Transactions.ERAProject
 		private var newERACaseID:Number;
 		private var roomBeingMadeIndex:Number; //the index for the room we are currently making in @see Model_ERARoom
 		
-		public function Transaction_CreateERACase(eraID:Number,
-												  year:String,
+		public function Transaction_UpdateERACase(caseID:Number,
 												  rmCode:String, 
 												  title:String,
 												  researcherArray:Array,
@@ -43,8 +41,7 @@ package Model.Transactions.ERAProject
 												  connection:Connection, 
 												  callback:Function)
 		{
-			this.eraID = eraID;	
-			this.year = year;
+			this.caseID = caseID;	
 			this.rmCode = rmCode;
 			this.title = title;
 			this.researcherArray = researcherArray;
@@ -56,25 +53,22 @@ package Model.Transactions.ERAProject
 			this.connection = connection;
 			this.callback = callback;
 			
-			createERACase();
+			updateERACase();
 		}
 		
-		private function createERACase():void {
-			var baseXML:XML = connection.packageRequest("asset.create", new Object(), true);
+		private function updateERACase():void {
+			var baseXML:XML = connection.packageRequest("asset.set", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
+
+			argsXML.id = caseID;
 			
-			// put it in the namespace for this era
-			argsXML.namespace = "ERA/" + this.year;
-			
-			argsXML.type = "ERA/case";
-			
-//			// Set this as a collection (cause we are going to put the case elements inside)
-//			argsXML.collection = true;
-//			
+			//			// Set this as a collection (cause we are going to put the case elements inside)
+			//			argsXML.collection = true;
+			//			
 			// Setup the era meta-data
 			argsXML.meta["ERA-case"]["RM_code"] = this.rmCode;
 			argsXML.meta["ERA-case"]["title"] = this.title;
-
+			
 			// setup the researchers
 			for each(var researcher:Model_ERAUser in researcherArray) {
 				argsXML.meta["ERA-case"].appendChild(XML("<researcher_username><username>" + researcher.username + "</username><first_name>"+researcher.firstName+"</first_name><last_name>"+researcher.lastName+"</last_name></researcher_username>"));
@@ -101,56 +95,29 @@ package Model.Transactions.ERAProject
 			for each(var productionTeam:Model_ERAUser in productionTeamArray) {
 				argsXML.meta["ERA-case"].appendChild(XML("<production_team_username><username>" + productionTeam.username + "</username><first_name>"+productionTeam.firstName+"</first_name><last_name>"+productionTeam.lastName+"</last_name></production_team_username>"));
 			}
-			
-			// Setup the relationship
-			argsXML.related = "";
-			argsXML.related.appendChild(XML('<to relationship="era">' + eraID + '</to>'));
-			
-			connection.sendRequest(baseXML, eraCaseCreated);			
+
+			connection.sendRequest(baseXML, eraCaseUpdated);			
 		}
 		
-		private function eraCaseCreated(e:Event):void {
+		private function eraCaseUpdated(e:Event):void {
 			var data:XML;
-			if((data = AppModel.getInstance().getData("creating era case", e)) == null) {
+			if((data = AppModel.getInstance().getData("updating era case", e)) == null) {
 				callback(false, null);
 				return;
 			}
-			
-			newERACaseID = data.reply.result.id;
-			
-			// Create all the rooms
-			roomBeingMadeIndex = 0;
-			AppModel.getInstance().createRoomInCase(newERACaseID, Model_ERARoom.ROOM_TYPE_ARRAY[roomBeingMadeIndex], roomCreated);
-		}
-		
-		private function roomCreated(status:Boolean):void {
-			if(!status) {
-				callback(false, null);
-				return
-			}
-			// now create the next room
-			roomBeingMadeIndex++;
-			if(roomBeingMadeIndex == Model_ERARoom.ROOM_TYPE_ARRAY.length) {
-				// We have made all the rooms
-				roomCreationCompleted();
-			} else {
-				AppModel.getInstance().createRoomInCase(newERACaseID, Model_ERARoom.ROOM_TYPE_ARRAY[roomBeingMadeIndex], roomCreated);
-			}
-		}
-		
-		private function roomCreationCompleted():void {
+				
 			// Get out the ERA object
 			var baseXML:XML = connection.packageRequest("asset.get", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
-			argsXML.id = newERACaseID;
+			argsXML.id = caseID;
 			
 			connection.sendRequest(baseXML, eraCaseRetrieved);
 		}
 		
 		private function eraCaseRetrieved(e:Event):void {
 			var data:XML;
-			if((data = AppModel.getInstance().getData("getting era case", e)) == null) {
+			if((data = AppModel.getInstance().getData("getting updated era case", e)) == null) {
 				callback(false, null);
 				return
 			}

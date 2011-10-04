@@ -32,7 +32,7 @@
 			
 			public function showProcess(message:String):void {
 				this.setStyle("backgroundColor", "0xFFFF00");
-				this.setStyle("color", "0xFFFFFF");
+				this.setStyle("color", "0x000000");
 				message_text.text = message;
 				show();
 			}

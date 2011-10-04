@@ -152,7 +152,7 @@
 				<!-- End of the Current room -->
 				
 				<s:BorderContainer buttonMode="true" id="caseTag" click="caseTag_clickHandler(event)" backgroundColor="black" borderVisible="false" width="40" height="105" top="270">
-					<s:Label x="12" y="80" rotation="270" text="ERA Cases" color="white" fontSize="16"/>
+					<s:Label x="12" y="90" rotation="270" text="ERA Cases" color="white" fontSize="16"/>
 					<s:filters>
 						<s:DropShadowFilter distance="3" angle="0" alpha="0.5" color="0x000000" blurX="20" blurY="20"/>
 					</s:filters>

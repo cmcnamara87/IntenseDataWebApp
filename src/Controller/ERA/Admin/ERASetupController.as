@@ -52,8 +52,11 @@ package Controller.ERA.Admin
 		 * 
 		 */
 		private function deleteButtonClicked(e:MouseEvent):void {
-			layout.notificationBar.showProcess("Updating ERA");
-			var packageSize:String = eraSetupView.packageSize.text;
+			if(eraSetupView.eras.selectedIndex == -1) {
+				return;
+			}
+			
+			layout.notificationBar.showProcess("Deleting ERA Edition");
 			AppModel.getInstance().deleteERAProject(eraSetupView.eras.selectedItem.data, eraDeleted);
 		}
 		/**
@@ -100,6 +103,7 @@ package Controller.ERA.Admin
 			}
 		}
 		
+		
 		/* ========================================== SAVING UPDATES TO AN ERA ========================================== */
 		/**
 		 * The save updated version of the era has been clicked. 
@@ -108,11 +112,15 @@ package Controller.ERA.Admin
 		 */
 		private function saveButtonClicked(e:MouseEvent):void {
 			layout.notificationBar.showProcess("Updating ERA");
-			var packageSize:String = eraSetupView.packageSize.text;
-			if(packageSize == "") {
-				layout.notificationBar.showError("Please enter a package size");
+			
+			// Some basic validation stuff
+			if(!inputsValid()) {
 				return;
 			}
+			
+			
+			var packageSize:String = eraSetupView.packageSize.text;
+			
 			AppModel.getInstance().updateERAProject(eraSetupView.eras.selectedItem.data,
 													eraSetupView.day.selectedItem,
 													eraSetupView.month.selectedItem,
@@ -153,39 +161,55 @@ package Controller.ERA.Admin
 		}
 		/* ========================================== END OF SAVING UPDATES TO AN ERA ========================================== */
 		
-		private function createButtonClicked(e:MouseEvent):void {
-			// Some basic validation stuff
+		
+		private function inputsValid():Boolean {
 			if(eraSetupView.day.selectedIndex == -1) {
 				layout.notificationBar.showError("Please select a day");
-				return;
+				return false;
 			}
-			var eraDay:String = eraSetupView.day.selectedItem;
 			
 			if(eraSetupView.month.selectedIndex == -1) {
 				layout.notificationBar.showError("Please select a month");
-				return;
+				return false;
 			}
-			var eraMonth:String = eraSetupView.month.selectedItem;
 			
 			if(eraSetupView.year.selectedIndex == -1) {
 				layout.notificationBar.showError("Please select a month");
-				return;
+				return false;
 			}
-			var eraYear:String = eraSetupView.year.selectedItem;
 			
-			var packageSize:String = eraSetupView.packageSize.text;
-			if(packageSize == "") {
+			if( eraSetupView.packageSize.text == "") {
 				layout.notificationBar.showError("Please enter a package size");
+				return false;
+			}
+			
+			return true;
+		}
+		
+		private function createButtonClicked(e:MouseEvent):void {
+			// Some basic validation stuff
+			if(!inputsValid()) {
 				return;
 			}
 			
 			// check that we dont already have an era for that year
 			for each(var era:Model_ERAProject in AppController.eraProjectArray) {
-				if(era.year == eraYear) {
+				if(era.year == eraSetupView.year.selectedItem) {
 					layout.notificationBar.showError("An ERA Edition for this year already exists");
 					return;
 				}
 			} 
+			
+			
+			var eraDay:String = eraSetupView.day.selectedItem;
+			
+			
+			var eraMonth:String = eraSetupView.month.selectedItem;
+			
+			
+			var eraYear:String = eraSetupView.year.selectedItem;
+			
+			var packageSize:String = eraSetupView.packageSize.text;
 
 			// Lets make the due date
 			layout.notificationBar.showProcess("Saving ERA");
