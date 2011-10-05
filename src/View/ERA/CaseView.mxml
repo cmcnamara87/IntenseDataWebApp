@@ -9,6 +9,8 @@
 		<![CDATA[
 			import Controller.AppController;
 			import Controller.ERA.CaseController;
+			import Controller.Utilities.AssetLookup;
+			import Controller.Utilities.Auth;
 			
 			import Model.Model_ERACase;
 			import Model.Model_ERALogItem;
@@ -186,12 +188,18 @@
 		<!-- START THE CASE NAV SECTION -->
 		<s:BorderContainer id="caseNav" backgroundColor="0x565656" width="100%" height="160" borderVisible="false" resizeEffect="Resize">
 			<s:VGroup horizontalAlign="center" height="100%" width="100%">
-				<s:HGroup height="100%" verticalAlign="middle" gap="20">
+				<s:HGroup height="100%" verticalAlign="middle" gap="10">
 					<components:RoomIcon roomName="Evidence Manager" />
+					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
 					<components:RoomIcon roomName="Evidence Box" alpha="0.5" unavailable="true" />
+					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
 					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" unavailable="true" />
+					<mx:Image source="{AssetLookup.getLeftRightArrowIconClass()}" width="46" height="72"></mx:Image>
 					<components:RoomIcon roomName="Screening Lab" alpha="0.5" unavailable="true" />
+					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
 					<components:RoomIcon roomName="Exhibition" alpha="0.5" unavailable="true" />
+					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
+					<components:RoomIcon roomName="Post Mortem" alpha="0.5" unavailable="true" />
 				</s:HGroup>
 			</s:VGroup>
 		</s:BorderContainer>

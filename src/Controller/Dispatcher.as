@@ -133,6 +133,7 @@ package Controller {
 			trace("CALLED WITH URL", url);
 			Router.getInstance().setURL(url);
 			url = Router.getInstance().getURL();
+			trace("CONTROLLER IS", Router.getInstance().getController(url));
 			loadController(Router.getInstance().getController(url));
 			forceRedraw();
 		}
@@ -152,6 +153,7 @@ package Controller {
 			if(currentController) {
 				currentController.dealloc();
 			}
+			trace("**** ", newController);
 			currentController = new newController();
 			currentController.init();
 		}

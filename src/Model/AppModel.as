@@ -22,6 +22,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetAllRooms;
 	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
+	import Model.Transactions.ERAProject.Transaction_GetUser;
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
 	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
 	import Model.Transactions.ERAProject.Transaction_UpdateERACase;
@@ -1607,6 +1608,7 @@ package Model {
 			var getAllUsers:Transaction_GetAllUsers = new Transaction_GetAllUsers(_connection, callback);
 		}
 		
+		
 		/**
 		 * Get all the users on the system that have a specific role 
 		 * @param role					The role to search for
@@ -1631,7 +1633,9 @@ package Model {
 		public function deleteERAUser(qutUsername:String, callback:Function):void {
 			var deleteERAUser:Transaction_DeleteERAUser = new Transaction_DeleteERAUser(qutUsername, _connection, callback);
 		}
-			
+		public function getERAUser(username:String, callback:Function):void {
+			var getERAUser:Transaction_GetUser = new Transaction_GetUser(username, _connection, callback);
+		}
 		public function getAllERACases(eraID:Number, callback:Function):void {
 			var getAllERACases:Transaction_GetAllCases = new Transaction_GetAllCases(eraID, _connection, callback);
 		}

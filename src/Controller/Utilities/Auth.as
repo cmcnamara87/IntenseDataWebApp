@@ -2,10 +2,12 @@ package Controller.Utilities {
 	
 	import Controller.AppController;
 	import Controller.BrowserController;
+	import Controller.Dispatcher;
 	import Controller.IDEvent;
 	import Controller.LoginController;
 	
 	import Model.AppModel;
+	import Model.Model_ERAUser;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -17,6 +19,7 @@ package Controller.Utilities {
 		private var _username:String = "";
 		private var _password:String = "";
 		private var _redirectURL:String = "";
+		private var eraUser:Model_ERAUser = null;
 		private var isSystemAdministrator:Boolean = false;
 		private var isUser:Boolean = false;
 		
@@ -49,7 +52,9 @@ package Controller.Utilities {
 			}
 			_username = username;
 			_password = password;
-			AppModel.getInstance().login(_username,_password,loginCallback);			
+			
+			AppModel.getInstance().login(_username,_password,loginCallback);
+			
 		}
 		
 		//Returned from the login mediaflux call.  Returns a Session ID if successful
@@ -62,8 +67,7 @@ package Controller.Utilities {
 				// Set the session ID
 				setSessionID(dataXML..session);
 				
-				// Now Get out the roles of the user (make sure they have the IDUSER role)
-				AppModel.getInstance().getUserRoles(userRolesRetrieved);
+				AppModel.getInstance().getERAUser(_username, gotUserDetails);
 				
 			} else {			
 				var response:IDEvent = new IDEvent(IDEvent.LOGIN_RESPONSE);
@@ -76,6 +80,20 @@ package Controller.Utilities {
 				this.dispatchEvent(response);
 			}
 		
+		}
+		
+		
+		private function gotUserDetails(status:Boolean, eraUser:Model_ERAUser=null):void {
+			if(!status) {
+				Dispatcher.logout();
+				return;
+			}
+			// Save the user details
+			this.eraUser = eraUser;
+			
+			// Now Get out the roles of the user (make sure they have the IDUSER role)
+			AppModel.getInstance().getUserRoles(userRolesRetrieved);
+			
 		}
 		
 		/**
@@ -106,6 +124,7 @@ package Controller.Utilities {
 						isSystemAdministrator = true;
 					}
 					if(role == "sys_admin") {
+						trace("****************** FOUND SYS ADMIN *****************");
 						isSystemAdministrator = true;	
 					}
 				}
@@ -193,6 +212,10 @@ package Controller.Utilities {
 		 */		
 		public function isSysAdmin():Boolean {
 			return isSystemAdministrator;
+		}
+		
+		public function getUserDetails():Model_ERAUser {
+			return eraUser;
 		}
 		//Returns the password (only for changing password)
 		public function getPassword():String {

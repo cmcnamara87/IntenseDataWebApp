@@ -4,6 +4,7 @@ package Controller.Utilities {
 	import Controller.ERA.Admin.DashboardController;
 	import Controller.ERA.Admin.ERASetupController;
 	import Controller.ERA.Admin.UserAdminController;
+	import Controller.ERA.AppSauce;
 	import Controller.ERA.CaseController;
 	
 	import flash.events.Event;
@@ -48,6 +49,11 @@ package Controller.Utilities {
 				url: 'profile',
 				title: 'Edit Profile',
 				classname:ProfileController
+			},
+			{
+				url: 'applesauce',
+				title: 'Apple Sauce',
+				classname: AppSauce
 			},
 			{
 				url: 'dashboard',
@@ -103,8 +109,10 @@ package Controller.Utilities {
 		public function getController(url:String):Class {
 			var newController:Class = null;
 			for(var i:Number=0; i<routes.length; i++) {
+				trace("looking at route", routes[i].url, url);
 				if(routes[i].url == url) {
 					newController = routes[i].classname;
+					trace("MATCH FOUND", newController);
 				}
 			}
 			return newController;

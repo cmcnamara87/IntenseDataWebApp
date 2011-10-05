@@ -95,7 +95,7 @@ package Controller {
 		}
 		private static function profileButtonClicked(e:MouseEvent):void {
 			trace("Profile button clicked");
-			Dispatcher.call("profile");
+			Dispatcher.call("applesauce");
 		}
 		
 		/**
@@ -194,6 +194,8 @@ package Controller {
 			if(Auth.getInstance().isSysAdmin()) {
 				layout.header.adminToolButtons.visible = true;
 				layout.header.adminToolButtons.includeInLayout = true;
+				layout.header.switchingModeButtonGroup.includeInLayout = true;
+				layout.header.switchingModeButtonGroup.visible = true;
 			} else {
 				layout.header.adminToolButtons.visible = false;
 				layout.header.adminToolButtons.includeInLayout = false;

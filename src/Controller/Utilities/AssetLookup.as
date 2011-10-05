@@ -26,7 +26,11 @@ package Controller.Utilities {
 		private static var Asseticon_video_clicked:Class;
 		private static var Asseticon_video_clicked_data:BitmapData = (new Asseticon_video_clicked as Bitmap).bitmapData;
 		
+		[Embed(source="Assets/Template/left_arrow.jpg")]
+		private static var LeftArrowIconClass:Class;
 		
+		[Embed(source="Assets/Template/left_right_arrow.jpg")]
+		private static var LeftRightArrowIconClass:Class;
 		
 		[Embed(source="Assets/Template/assets/audio2.png")] 
 		private static var Asseticon_audio:Class;
@@ -333,6 +337,13 @@ package Controller.Utilities {
 			return Postit_icon_data;
 		}
 		
+		public static function getLeftArrowIconClass():Class {
+			return LeftArrowIconClass;
+		}
+		
+		public static function getLeftRightArrowIconClass():Class {
+			return LeftRightArrowIconClass;
+		}
 		/**
 		 * Gets the icon for a certain button type.
 		 * 

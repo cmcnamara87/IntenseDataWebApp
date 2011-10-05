@@ -9,7 +9,7 @@
 			[Embed(source="Assets/Template/login_logo.jpg")] 
 			[Bindable] private var login_logo:Class;
 			
-			[Embed(source="Assets/Template/header_logo_id_4.jpg")] 
+			[Embed(source="Assets/Template/header_logo_id_4.png")] 
 			[Bindable] private var idLogo:Class;
 			
 		]]>
@@ -20,8 +20,8 @@
 		<mx:Image source="{login_logo}" width="824" height="400"></mx:Image>
 		<Element:LoginBox id="loginbox" width="337" height="184" x="{5/6 * box.width}" y="{box.height/2}" toolTip="Login to the system"></Element:LoginBox>
 	</s:BorderContainer>
-	<s:HGroup paddingBottom="10" paddingLeft="80" paddingRight="10" paddingTop="10" verticalAlign="middle">
+	<s:HGroup paddingBottom="10" paddingLeft="80" paddingRight="10" paddingTop="5" verticalAlign="bottom">
 		<s:Label text="Powered by" />	
-		<mx:Image source="{idLogo}" width="300" height="28"></mx:Image>
+		<mx:Image source="{idLogo}" width="200" height="19"></mx:Image>
 	</s:HGroup>
 </s:VGroup>
