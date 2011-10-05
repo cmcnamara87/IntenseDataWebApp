@@ -66,6 +66,7 @@ package Model.Transactions.ERAProject
 			//			argsXML.collection = true;
 			//			
 			// Setup the era meta-data
+			argsXML.meta.@action = "replace";
 			argsXML.meta["ERA-case"]["RM_code"] = this.rmCode;
 			argsXML.meta["ERA-case"]["title"] = this.title;
 			

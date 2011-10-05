@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%">
+
+	<fx:Script>
+		<![CDATA[
+			[Bindable]
+			public var forCode:String = "";
+			[Bindable]
+			public var forPercentage:String = "";
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Label text="{forCode}" width="50%">
+	</s:Label>
+	<s:Label text="{forPercentage}%" width="50%">
+	</s:Label>
+	<s:Button label="X" width="50" id="deleteButton">
+	</s:Button>
+</s:HGroup>

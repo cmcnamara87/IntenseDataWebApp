@@ -159,12 +159,8 @@ package Controller.ERA
 					if(roomType == Model_ERARoom.EVIDENCE_MANAGEMENT) {
 						// people who have access, are the sys admin,
 						trace("its an evidence management room");
-						for each(var role:String in Auth.getInstance().userRoleArray) {
-							if(role == (Model_ERAUser.SYS_ADMIN + "_" + AppController.currentEraProject.year)) {
-								canAccessRoom = true;
-								trace("is a sys admin");
-								break;
-							}
+						if(Auth.getInstance().isSysAdmin()) {
+							canAccessRoom = true;
 						}
 						
 						// production manager

@@ -12,6 +12,7 @@ package Controller.ERA.Admin
 	import View.ERA.components.UserListItem;
 	
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	
 	import mx.collections.ArrayList;
@@ -48,7 +49,7 @@ package Controller.ERA.Admin
 			
 			// Create user
 			userAdminView.createUserButton.addEventListener(MouseEvent.CLICK, createNewUser);
-			
+
 			// Listen for user being deleted
 			userAdminView.addEventListener(IDEvent.ERA_DELETE_USER, deleteUser);
 			
@@ -199,7 +200,7 @@ package Controller.ERA.Admin
 		 * @param usersArray
 		 * 
 		 */
-		private function gotUsersWithRole(status:Boolean, role:String, roleERAUserArray:Array):void {
+		private function gotUsersWithRole(status:Boolean, role:String="", roleERAUserArray:Array=null):void {
 			if(!status) {
 				layout.notificationBar.showError("Failed to get " + role + " users");
 				return;
@@ -215,7 +216,7 @@ package Controller.ERA.Admin
 			AppModel.getInstance().getERAUsers(gotUsers);
 		}
 		
-		private function gotUsers(status:Boolean, usersArray:Array):void {
+		private function gotUsers(status:Boolean, usersArray:Array=null):void {
 			if(!status) {
 				layout.notificationBar.showError("Failed to get users");
 				return;

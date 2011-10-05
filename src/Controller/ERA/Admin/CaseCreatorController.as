@@ -92,10 +92,8 @@ package Controller.ERA.Admin
 			// Check taht the FORs add up to 100%
 			var totalPercentage:Number = 0;
 			for each(var forPair:Array in forArray) {
-				trace("percentage", forPair[Model_ERACase.PERCENTAGE]);
 				totalPercentage += Number(forPair[Model_ERACase.PERCENTAGE]);
 			}
-			trace("totla percentage is", totalPercentage);
 			if(totalPercentage != 100) {
 				layout.notificationBar.showError("Please make sure your FoR percentages add up to 100%");
 				return false;
@@ -319,7 +317,7 @@ package Controller.ERA.Admin
 		/* ========================================== END OF GET ALL ERA CASES FOR THE CURRENT ERA ========================================== */
 		
 		/* ========================================== GET ALL RESEACHERS ========================================== */
-		private function gotAllResearchers(status:Boolean, role:String, userArray:Array):void {
+		private function gotAllResearchers(status:Boolean, role:String="", userArray:Array=null):void {
 			if(!status) {
 				layout.notificationBar.showError("Failed to get all researchers");
 				return;
@@ -328,14 +326,14 @@ package Controller.ERA.Admin
 			caseCreatorView.addAllResearchers(userArray);
 		}
 		/* ========================================== END OF GET ALL RESEACHERS ========================================== */
-		private function gotAllProductionManagers(status:Boolean, role:String, userArray:Array):void {
+		private function gotAllProductionManagers(status:Boolean, role:String="", userArray:Array=null):void {
 			if(!status) {
 				layout.notificationBar.showError("Failed to get all researchers");
 				return;
 			}
 			caseCreatorView.addAllProductionManagers(userArray);
 		}
-		private function gotAllTeamMembers(status:Boolean, role:String, userArray:Array):void {
+		private function gotAllTeamMembers(status:Boolean, role:String="", userArray:Array=null):void {
 			if(!status) {
 				layout.notificationBar.showError("Failed to get all researchers");
 				return;

@@ -10,9 +10,12 @@
 			import Model.Model_ERACase;
 			import Model.Model_ERAUser;
 			
+			import View.ERA.components.CategoryItem;
+			import View.ERA.components.FORItem;
 			import View.ERA.components.UserListItem;
 			
 			import mx.collections.ArrayCollection;
+			import mx.collections.ArrayList;
 			
 			import spark.events.IndexChangeEvent;
 			
@@ -64,7 +67,19 @@
 					userListItem.firstName = user.firstName;
 					userListItem.lastName = user.lastName;
 					productionManagersList.addElement(userListItem);
+					userListItem.deleteButton.addEventListener(MouseEvent.CLICK, deleteProductionManager);
 				}
+			}
+			private function deleteProductionManager(e:MouseEvent):void {
+				var userListItem:UserListItem = e.target.owner as UserListItem;
+				// remove it from the array and re-render
+				for(var i:Number = 0; i < chosenProductionManagersArray.length; i++) {
+					var productionManager:Model_ERAUser = chosenProductionManagersArray[i] as Model_ERAUser;
+					if(productionManager.username == userListItem.username) {
+						chosenProductionManagersArray.splice(i, 1);
+					}
+				}
+				renderProductionManagers();
 			}
 			
 			/* RENDER FUNCTIONS */
@@ -79,7 +94,19 @@
 					userListItem.firstName = user.firstName;
 					userListItem.lastName = user.lastName;
 					productionTeamMemberList.addElement(userListItem);
+					userListItem.deleteButton.addEventListener(MouseEvent.CLICK, deleteTeamMember);
 				}
+			}
+			private function deleteTeamMember(e:MouseEvent):void {
+				var userListItem:UserListItem = e.target.owner as UserListItem;
+				// remove it from the array and re-render
+				for(var i:Number = 0; i < chosenTeamMembersArray.length; i++) {
+					var teamMember:Model_ERAUser = chosenTeamMembersArray[i] as Model_ERAUser;
+					if(teamMember.username == userListItem.username) {
+						chosenTeamMembersArray.splice(i, 1);
+					}
+				}
+				renderTeamMembers();
 			}
 			
 			/**
@@ -93,18 +120,46 @@
 					userListItem.firstName = user.firstName
 					userListItem.lastName = user.lastName;
 					researcherList.addElement(userListItem);
+					userListItem.deleteButton.addEventListener(MouseEvent.CLICK, deleteResearcher);
 				}
+			}
+			private function deleteResearcher(e:MouseEvent):void {
+				var userListItem:UserListItem = e.target.owner as UserListItem;
+				// remove it from the array and re-render
+				for(var i:Number = 0; i < chosenResearchersArray.length; i++) {
+					var researcher:Model_ERAUser = chosenResearchersArray[i] as Model_ERAUser;
+					if(researcher.username == userListItem.username) {
+						chosenResearchersArray.splice(i, 1);
+					}
+				}
+				renderResearchers();
 			}
 			/**
 			 * Render all the FoRs chosen
 			 */
 			private function renderFor():void {
+				forCode.text = "";
+				forPercentage.text = "";
+				
 				forList.removeAllElements();
 				for each(var forPair:Array in chosenForsArray) {
-					var label:Label = new Label();
-					label.text = forPair[Model_ERACase.FOR_CODE] + " " + forPair[Model_ERACase.PERCENTAGE] + "%";
-					forList.addElement(label);
+					var forItem:FORItem = new FORItem();
+					forItem.forCode = forPair[Model_ERACase.FOR_CODE];
+					forItem.forPercentage = forPair[Model_ERACase.PERCENTAGE];
+					forList.addElement(forItem);
+					forItem.deleteButton.addEventListener(MouseEvent.CLICK, deleteFOR);
 				}
+			}
+			private function deleteFOR(e:MouseEvent):void {
+				var forItem:FORItem = e.target.owner as FORItem;
+				// remove it from the array and re-render
+				for(var i:Number = 0; i < chosenForsArray.length; i++) {
+					var forPair:Array = chosenForsArray[i];
+					if(forPair[Model_ERACase.FOR_CODE] == forItem.forCode) {
+						chosenForsArray.splice(i, 1);
+					}
+				}
+				renderFor();
 			}
 			
 			/**
@@ -113,10 +168,22 @@
 			private function renderCategories():void {
 				categoryList.removeAllElements();
 				for each(var category:String in chosenCategories) {
-					var label:Label = new Label();
-					label.text = category;
-					categoryList.addElement(label);
+					var categoryItem:CategoryItem = new CategoryItem();
+					categoryItem.category = category;
+					categoryList.addElement(categoryItem);
+					categoryItem.deleteButton.addEventListener(MouseEvent.CLICK, deleteCategory);
 				}
+			}
+			private function deleteCategory(e:MouseEvent):void {
+				var categoryItem:CategoryItem = e.target.owner as CategoryItem;
+				// remove it from the array and re-render
+				for(var i:Number = 0; i < chosenCategories.length; i++) {
+					var category:String = chosenCategories[i];
+					if(category == categoryItem.category) {
+						chosenCategories.splice(i, 1);
+					}
+				}
+				renderCategories();
 			}
 			
 			/**
@@ -430,10 +497,6 @@
 					<components:content>
 						<s:HGroup width="100%">
 							<s:DropDownList	id="allResearchers" width="100%">
-								<s:ArrayList>
-									<fx:String>Reseracher Name</fx:String>
-									<fx:String>Reseracher Name</fx:String>
-								</s:ArrayList>
 							</s:DropDownList>
 							<s:Button id="addResearcher" label="Add Researcher" click="addResearcher_clickHandler(event)" />	
 						</s:HGroup>
@@ -451,7 +514,7 @@
 							<s:Label text="%" />
 							<s:Button id="addFor" label="Add FoR" click="addFor_clickHandler(event)" />
 						</s:HGroup>
-						<s:VGroup id="forList">
+						<s:VGroup id="forList" width="100%">
 						</s:VGroup>
 					</components:content>
 				</components:FormGroup>
@@ -462,7 +525,7 @@
 							<s:DropDownList id="category" width="100%" dataProvider="{new ArrayList(Model_ERACase.CATEGORY_ARRAY)}"/>
 							<s:Button id="addCategory" label="Add Category" click="addCategory_clickHandler(event)"/>
 						</s:HGroup>
-						<s:VGroup id="categoryList">
+						<s:VGroup id="categoryList" width="100%">
 							
 						</s:VGroup>
 					</components:content>

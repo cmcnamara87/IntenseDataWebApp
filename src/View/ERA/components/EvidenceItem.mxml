@@ -210,9 +210,9 @@
 			protected function title_focusInHandler(event:FocusEvent):void
 			{
 				// TODO Auto-generated method stub
-				if(title.text == "title") {
+				if(title.text == "name") {
 					title.text = "";
-					description.setStyle('color', '0x000000');
+					title.setStyle('color', '0x000000');
 				}
 			}
 
@@ -231,8 +231,8 @@
 			{
 				// TODO Auto-generated method stub
 				if(title.text == "") {
-					title.text = "title";
-					description.setStyle('color', '0x888888');
+					title.text = "name";
+					title.setStyle('color', '0x888888');
 				}
 			}
 
@@ -286,7 +286,7 @@
 				<fx:String>Video</fx:String>
 			</s:ArrayList>
 		</s:DropDownList>
-		<s:TextInput id="title" text="title" color="0x888888" focusIn="title_focusInHandler(event)" focusOut="title_focusOutHandler(event)"/>
+		<s:TextInput id="title" text="name" color="0x888888" focusIn="title_focusInHandler(event)" focusOut="title_focusOutHandler(event)"/>
 		<s:TextInput id="description" width="300" text="description" color="0x888888" focusIn="description_focusInHandler(event)" focusOut="description_focusOutHandler(event)"/>
 		<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)" />
 		<s:HGroup id="actionGroup" visible="false" includeInLayout="false">

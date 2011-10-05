@@ -29,7 +29,7 @@
 			protected function deleteButton_clickHandler(event:MouseEvent):void
 			{
 				if(deleteEventToThrow == "") {
-					Alert.show("No delete event set");
+					return;
 				}
 				var deleteEvent:IDEvent = new IDEvent(deleteEventToThrow, true);
 				// Save the username
