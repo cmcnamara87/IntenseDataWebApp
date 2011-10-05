@@ -7,9 +7,10 @@ package Model {
 		public var description:String = "";
 		public var useful:Boolean;
 		public var processed:Boolean = false;
-		public var uploadedable:Boolean = false;
 		public var uploaded:Boolean = false;
 		public var returned:Boolean = false;
+		public var collected:Boolean = false;
+		public var dataItemID:Number = 0;
 		
 		
 		public function Model_ERALogItem() {
@@ -38,15 +39,19 @@ package Model {
 			
 			// set if this item has been processed
 			this.processed = eraLogItem["processed"] == "true";
-			
-			// show if this item is uploadable
-			this.uploadedable = eraLogItem["uploadable"] == "true";
-			
+
 			// show if this item has been uploaded
-			this.uploaded = eraLogItem["uploaded"] == "true";
+			// we know its been uploaded, if it has a relationship to its data item
+			var dataFileNumber:Number = Number(rawData.related.(@type=="datafile").to);
+			if(dataFileNumber > 0) {
+				dataItemID = dataFileNumber;
+				this.uploaded = true;
+			}
 			
 			// show if this item has been returned
 			this.returned = eraLogItem["returned"] == "true";
+			
+			this.collected = eraLogItem["collected"] == "true";
 		}
 	}
 }

@@ -162,6 +162,7 @@ package Controller {
 			// remove the user from a role
 			public static var ERA_REMOVE_USER_FROM_ROLE:String = "era_removeUserFromRole";
 			public static var ERA_UPDATE_LOG:String = "era_UpdateLog";
+			public static var ERA_DELETE_LOG_ITEM:String = "era_deleteLogItem";
 			
 			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {

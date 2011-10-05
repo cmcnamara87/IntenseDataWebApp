@@ -10,6 +10,7 @@
 			
 			import Model.AppModel;
 			import Model.Model_Base;
+			import Model.Model_ERAEvidence;
 			import Model.Model_ERALogItem;
 			
 			import mx.controls.Alert;
@@ -19,6 +20,10 @@
 			
 			/*================================ EVENT LISTENERS ============================== */
 			
+			public function getID():Number {
+				if(logItem == null) return 0;
+				return logItem.base_asset_id;
+			}
 			/**
 			 * The Upload button was clicked.
 			 */
@@ -46,6 +51,7 @@
 				uploadEvent.data.description = description.text;
 				uploadEvent.data.evidenceItem = this;
 				uploadEvent.data.fileReference = fileReference;
+				uploadEvent.data.logItemID = logItem.base_asset_id;
 				
 				uploadButton.enabled = false;
 				
@@ -53,11 +59,13 @@
 //				AppModel.getInstance().startFileUpload(dataObject);
 			}
 			
-			public function showComplete():void {
+			public function showComplete(evidence:Model_ERAEvidence):void {
 				uploadButton.label = "Upload Complete";
 				uploadButton.enabled = false;
 				uploadProgress.includeInLayout = false;
 				uploadProgress.visible = false;
+				logItem.uploaded = true;
+				logItem.dataItemID = evidence.base_asset_id;
 			}
 			public function showProgress(percentage:Number):void {
 				progressBar.showPercentage(percentage);
@@ -166,21 +174,27 @@
 				if(usefulCheckbox.selected == true) {
 					processedCheckbox.enabled = true;
 				}
+				
+				processedCheckbox.selected = logItem.processed;
 				if(processedCheckbox.selected == true) {
 					uploadButton.enabled = true;
 				}
-				processedCheckbox.selected = logItem.processed;
+				
 				if(logItem.uploaded) {
 					uploadButton.label = "Uploaded";
+					uploadButton.enabled = false;
 				} else {
 					uploadButton.label = "Upload";
 				}
 				returnedCheckbox.selected = logItem.returned;
+				collectedCheckbox.selected = logItem.collected;
 			}
 
 			protected function deleteEvidence_clickHandler(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
+				var deleteEvent:IDEvent = new IDEvent(IDEvent.ERA_DELETE_LOG_ITEM, true);
+				deleteEvent.data.logItem = logItem;
+				dispatchEvent(deleteEvent);
 			}
 
 			protected function description_focusInHandler(event:FocusEvent):void
@@ -225,6 +239,33 @@
 
 
 
+
+			protected function returnedCheckbox_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				collectedCheckbox.enabled = returnedCheckbox.selected;
+				
+				var usefulEvent:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_LOG, true);
+				usefulEvent.data.logItemID = logItem.base_asset_id;
+				usefulEvent.data.elementName = "returned";
+				usefulEvent.data.value = (event.target as CheckBox).selected;
+				usefulEvent.data.evidenceItem = this;
+				dispatchEvent(usefulEvent);
+				
+			}
+
+
+			protected function collectedCheckbox_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				var usefulEvent:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_LOG, true);
+				usefulEvent.data.logItemID = logItem.base_asset_id;
+				usefulEvent.data.elementName = "collected";
+				usefulEvent.data.value = (event.target as CheckBox).selected;
+				usefulEvent.data.evidenceItem = this;
+				dispatchEvent(usefulEvent);
+			}
+
 		]]>
 	</fx:Script>
 
@@ -235,12 +276,14 @@
 		<s:Button id="deleteEvidence" label="X" width="30" click="deleteEvidence_clickHandler(event)"/>
 		<s:DropDownList id="evidenceType" width="200">
 			<s:ArrayList>
-				<fx:String>Video</fx:String>
+				<fx:String>Audio</fx:String>
+				<fx:String>PDF</fx:String>
 				<fx:String>Images</fx:String>
 				<fx:String>Photos</fx:String>
-				<fx:String>Document</fx:String>
 				<fx:String>Physical Object</fx:String>
+				<fx:String>Research Description</fx:String>
 				<fx:String>Research Statement</fx:String>
+				<fx:String>Video</fx:String>
 			</s:ArrayList>
 		</s:DropDownList>
 		<s:TextInput id="title" text="title" color="0x888888" focusIn="title_focusInHandler(event)" focusOut="title_focusOutHandler(event)"/>
@@ -250,7 +293,8 @@
 			<s:CheckBox label="Useful" id="usefulCheckbox" change="usefulCheckbox_changeHandler(event)"/>
 			<s:CheckBox label="Processed" id="processedCheckbox" enabled="false" click="processedCheckbox_clickHandler(event)"/>
 			<s:Button label="Upload" id="uploadButton" click="uploadButton_clickHandler(event)" enabled="false" />
-			<s:CheckBox id="returnedCheckbox" label="Returned" />
+			<s:CheckBox id="returnedCheckbox" label="Return" click="returnedCheckbox_clickHandler(event)"/>
+			<s:CheckBox id="collectedCheckbox" label="Collected" click="collectedCheckbox_clickHandler(event)" enabled="false"/>
 		</s:HGroup>
 	</s:HGroup>
 	<s:HGroup id="uploadProgress" width="100%" visible="false" includeInLayout="false">

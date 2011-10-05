@@ -14,7 +14,7 @@
 			import flash.utils.setTimeout;
 			
 			private var noEvidence:Boolean = false;
-			
+
 			public function addLogItems(logItemArray:Array):void {
 				logItemList.removeAllElements();
 				
@@ -25,7 +25,7 @@
 					logItemList.addElement(label);
 					return;
 				}
-				
+
 				if(logItemArray.length == 0) {
 					noEvidence = true;
 					var label:Label = new Label();
@@ -40,7 +40,20 @@
 					evidenceItem.addLogItemData(logItem);
 				}
 			}
-
+			public function deleteEvidenceItem(logItemDeleted:Model_ERALogItem):void {
+				for(var i:Number = 0; i < logItemList.numElements; i++) {
+					var evidenceItem:EvidenceItem = logItemList.getElementAt(i) as EvidenceItem;
+					var evidenceItemID:Number = evidenceItem.getID();
+					
+					if(evidenceItemID != 0) {
+						if(evidenceItemID == logItemDeleted.base_asset_id) {
+							logItemList.removeElementAt(i);
+							break;
+						}	
+					}
+				}
+			}
+			
 			protected function makeNewItemButton_clickHandler(event:MouseEvent):void
 			{
 				if(noEvidence) {

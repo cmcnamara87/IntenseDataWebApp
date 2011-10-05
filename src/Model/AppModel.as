@@ -14,6 +14,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_CreateERAUser;
 	import Model.Transactions.ERAProject.Transaction_CreateRoom;
 	import Model.Transactions.ERAProject.Transaction_DeleteERACase;
+	import Model.Transactions.ERAProject.Transaction_DeleteERALogItem;
 	import Model.Transactions.ERAProject.Transaction_DeleteERAProject;
 	import Model.Transactions.ERAProject.Transaction_DeleteERAUser;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
@@ -1663,14 +1664,17 @@ package Model {
 		public function createERALogItem(roomID:Number, type:String, title:String, description:String, evidenceItem:EvidenceItem, callback:Function):void {
 			var createERALogItem:Transaction_CreateERALogItem = new Transaction_CreateERALogItem(AppController.currentEraProject.year, roomID, type, title, description, evidenceItem, _connection, callback);
 		}
+		public function deleteERALogItem(logItem:Model_ERALogItem, callback:Function):void {
+			var deleteERALogItem:Transaction_DeleteERALogItem = new Transaction_DeleteERALogItem(logItem, _connection, callback);
+		}
 		public function updateLogItemBooleanValue(logItemID:Number, elementName:String, value:Boolean, evidenceItem:EvidenceItem, callback:Function):void {
 			var updateLogItemBooleanValue:Transaction_UpdateLogItemBooleanValue = new Transaction_UpdateLogItemBooleanValue(logItemID, elementName, value, evidenceItem, _connection, callback);
 		}
 		public function getAllERALogItemsInRoom(roomID:Number, callback:Function):void {
 			var getERALogItems:Transaction_GetAllLogItems = new Transaction_GetAllLogItems(roomID, _connection, callback);
 		}
-		public function uploadERAFile(roomID:Number, type:String, title:String, description:String, fileReference:FileReference, evidenceItem:EvidenceItem, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
-			var uploadERAFile:Transaction_UploadERAFile = new Transaction_UploadERAFile(AppController.currentEraProject.year, roomID, type, title, description, fileReference, evidenceItem, _connection, ioErrorCallback, progressCallback, completeCallback);
+		public function uploadERAFile(roomID:Number, logItemID:Number, type:String, title:String, description:String, fileReference:FileReference, evidenceItem:EvidenceItem, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
+			var uploadERAFile:Transaction_UploadERAFile = new Transaction_UploadERAFile(AppController.currentEraProject.year, roomID, logItemID, type, title, description, fileReference, evidenceItem, _connection, ioErrorCallback, progressCallback, completeCallback);
 		}
 			
 	}

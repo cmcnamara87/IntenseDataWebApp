@@ -11,9 +11,29 @@ package Model {
 		public var productionManagerArray:Array = new Array();
 		public var productionTeamArray:Array = new Array();
 		
-		public static const CAT1:String = "Category_1";
-		public static const CAT2:String = "Category_2";
-		public static const CATEGORY_ARRAY:Array = new Array(CAT1, CAT2);
+		public static const CAT1:String = "Original Creative Works - Visual Art Work (NP-A1)";
+		public static const CAT2:String = "Original Creative Works - Design/Architectual Work (NP-A2)";
+		public static const CAT3:String = "Original Creative Works - Textural Work (NP-A3)";
+		public static const CAT4:String = "Original Creative Works - Other (NP-A4)";
+		
+		public static const CAT5:String = "Recorded/Rendered Creative Works - Film/Video (NP-C1)";
+		public static const CAT6:String = "Recorded/Rendered Creative Works - Performance (NP-C2)";
+		public static const CAT7:String = "Recorded/Rendered Creative Works - Inter-Arts (NP-C3)";
+		public static const CAT8:String = "Recorded/Rendered Creative Works - Digital Creative Works (NP-C4)";
+		public static const CAT9:String = "Recorded/Rendered Creative Works - Website/Web Exhibition (NP-C1)";
+		public static const CAT10:String = "Recorded/Rendered Creative Works - Other (NP-C6)";
+		
+		public static const CAT11:String = "Curated or Produced Substantial Exhibitions - Web-based Exhibition (NP-D1)";
+		public static const CAT12:String = "Curated or Produced Substantial Exhibitions - Exihition/Event (NP-D2)";
+		public static const CAT13:String = "Curated or Produced Substantial Exhibitions - Festival (NP-D3)";
+		public static const CAT14:String = "Curated or Produced Substantial Exhibitions - Other (NP-D4)";
+		
+		public static const CAT15:String = "Live Performance of Creative Work - Music (NPB1)";
+		public static const CAT16:String = "Live Performance of Creative Work - Play (NPB2)";
+		public static const CAT17:String = "Live Performance of Creative Work - Dance (NPB3)";
+		public static const CAT18:String = "Live Performance of Creative Work - Other (NPB4)";
+		
+		public static const CATEGORY_ARRAY:Array = new Array(CAT1, CAT2, CAT3, CAT4, CAT5, CAT6, CAT7, CAT8, CAT9, CAT10, CAT11, CAT12, CAT13, CAT14, CAT15, CAT16, CAT17, CAT18);
 		
 		public static const FOR_CODE = "for_code";
 		public static const PERCENTAGE = "percentage";

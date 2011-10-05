@@ -74,9 +74,8 @@ package Model.Transactions.ERAProject
 			}
 			argsXML.meta["ERA-log"]["useful"] = false;
 			argsXML.meta["ERA-log"]["processed"] = false;
-			argsXML.meta["ERA-log"]["uploadable"] = false;
-			argsXML.meta["ERA-log"]["uploaded"] = false;
 			argsXML.meta["ERA-log"]["returned"] = false;
+			argsXML.meta["ERA-log"]["collected"] = false;
 
 			argsXML.related = "";
 			argsXML.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));

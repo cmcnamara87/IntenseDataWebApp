@@ -117,6 +117,11 @@ package Controller {
 		 */
 		public static function updateERADropdownList():void {
 			layout.header.addERAProjects(AppController.eraProjectArray);	
+			if(AppController.eraProjectArray.length == 0) {
+				layout.header.adminToolButtons.enabled = false;
+			} else {
+				layout.header.adminToolButtons.enabled = true;
+			}
 		}
 		
 		/**
@@ -186,6 +191,15 @@ package Controller {
 		 * 
 		 */
 		private static function setupButtons():void {
+			if(Auth.getInstance().isSysAdmin()) {
+				layout.header.adminToolButtons.visible = true;
+				layout.header.adminToolButtons.includeInLayout = true;
+			} else {
+				layout.header.adminToolButtons.visible = false;
+				layout.header.adminToolButtons.includeInLayout = false;
+				layout.header.switchingModeButtonGroup.includeInLayout = false;
+				layout.header.switchingModeButtonGroup.visible = false;
+			}
 			if(Auth.getInstance().getSessionID() != "") {
 				// Only if we have logged in, show the buttons
 				

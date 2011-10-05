@@ -63,9 +63,20 @@ package Controller.ERA.Admin
 			var lastName:String = userAdminView.lastName.text;
 			
 			if(qutUsername == "") {
-				layout.notificationBar.showError("Please fill in a QUT username");
+				layout.notificationBar.showError("Please fill in a QUT email address");
 				return;
 			}
+			// Check that it is a qut email address
+			var qutUsernameParts:Array = qutUsername.split("@");
+			if(qutUsernameParts.length != 2) {
+				layout.notificationBar.showError("Please fill in a QUT email address");
+				return;
+			}
+			if(qutUsernameParts[1] != "qut.edu.au") {
+				layout.notificationBar.showError("Please fill in a QUT email address");
+				return;
+			}
+			
 			if(firstName == "") {
 				layout.notificationBar.showError("Please fill out the first name");
 				return;
@@ -76,6 +87,8 @@ package Controller.ERA.Admin
 			}
 			
 			userAdminView.createUserPanel.enabled = false;
+			
+			layout.notificationBar.showProcess("Creating User...");
 			
 			AppModel.getInstance().createERAUser(qutUsername, firstName, lastName, eraUserCreated);
 		}

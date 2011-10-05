@@ -53,10 +53,34 @@ package Model.Transactions.ERAProject
 			if((data = AppModel.getInstance().getData("add role to user", e)) == null) {
 				callback(false);
 				return;
-			} else {
+			} 
+			
+			if(role != Model_ERAUser.SYS_ADMIN) {
 				callback(true, userData, roleComponent);
 				return;
 			}
+			
+			// Add another special role for hte sys admin
+			var baseXML:XML = connection.packageRequest("actor.grant", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			
+			argsXML.type = "user";
+			argsXML.name = "system:" + userData.username;
+			argsXML.role = Model_ERAUser.SYS_ADMIN;
+			argsXML.role.@type = "role";
+			
+			connection.sendRequest(baseXML, specialRoleAdded);
+		}
+		
+		private function specialRoleAdded(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("add sys-admin role", e)) == null) {
+				callback(false);
+				return;
+			} 
+			
+			callback(true, userData, roleComponent);
+			return;
 		}
 	}
 }

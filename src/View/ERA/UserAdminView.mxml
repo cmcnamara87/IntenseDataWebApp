@@ -140,7 +140,7 @@
 				<!-- Create user panel -->
 				<s:VGroup id="createUserPanel" paddingTop="10" width="100%" includeInLayout="false" visible="false">
 					<s:HGroup verticalAlign="middle">
-						<s:Label text="QUT Username" width="150"></s:Label><s:TextInput id="qutUsername" width="250"></s:TextInput>
+						<s:Label text="QUT Email Address" width="150"></s:Label><s:TextInput id="qutUsername" width="250"></s:TextInput>
 					</s:HGroup>
 					<s:HGroup verticalAlign="middle">
 						<s:Label text="First Name" width="150"></s:Label><s:TextInput id="firstName" width="250"></s:TextInput>

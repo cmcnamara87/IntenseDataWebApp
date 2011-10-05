@@ -55,6 +55,7 @@ package Model.Transactions.ERAProject
 				callback(false);
 				return;
 			} else {
+				// TODO work out what happens for 'sys-admin' role (non-year version)
 				callback(true, username, roleComponent);
 				return;
 			}

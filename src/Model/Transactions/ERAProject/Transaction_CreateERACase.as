@@ -68,8 +68,32 @@ package Model.Transactions.ERAProject
 			
 			argsXML.type = "ERA/case";
 			
-//			// Set this as a collection (cause we are going to put the case elements inside)
-//			argsXML.collection = true;
+			// Setup the ACLS
+			// People with access to hte Case are
+			// super admin
+			// all monitors
+			// all the sys admins
+			// all viewers
+//			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.SUPER_ADMIN + '</actor><access>read-write</access></acl>'));
+			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.SYS_ADMIN + '</actor><access>read-write</access></acl>'));
+			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.MONITOR + "_" + year + '</actor><access>read-write</access></acl>'));
+			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.VIEWER + "_" + year + '</actor><access>read-write</access></acl>'));
+//			
+			// only the researchers specified
+			for each(var researcher:Model_ERAUser in researcherArray) {
+				argsXML.appendChild(XML('<acl><actor type="user">system:' + researcher.username + '</actor><access>read-write</access></acl>'));
+			}
+			
+			// only the production managers specified
+			for each(var productionManager:Model_ERAUser in productionManagerArray) {
+				argsXML.appendChild(XML('<acl><actor type="user">system:' + productionManager.username + '</actor><access>read-write</access></acl>'));
+			}
+			
+			// only the production team specificed
+			for each(var productionTeam:Model_ERAUser in productionTeamArray) {
+				argsXML.appendChild(XML('<acl><actor type="user">system:' + productionTeam.username + '</actor><access>read-write</access></acl>'));
+			}
+			
 //			
 			// Setup the era meta-data
 			argsXML.meta["ERA-case"]["RM_code"] = this.rmCode;

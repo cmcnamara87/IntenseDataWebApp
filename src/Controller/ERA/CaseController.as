@@ -3,6 +3,7 @@ package Controller.ERA
 	import Controller.AppController;
 	import Controller.Dispatcher;
 	import Controller.IDEvent;
+	import Controller.Utilities.Auth;
 	import Controller.Utilities.Router;
 	
 	import Model.AppModel;
@@ -11,6 +12,7 @@ package Controller.ERA
 	import Model.Model_ERALogItem;
 	import Model.Model_ERAProject;
 	import Model.Model_ERARoom;
+	import Model.Model_ERAUser;
 	
 	import View.ERA.CaseView;
 	import View.ERA.components.EvidenceItem;
@@ -46,7 +48,7 @@ package Controller.ERA
 			// Listen for log item being saved
 			caseView.addEventListener(IDEvent.ERA_SAVE_LOG_ITEM, saveLogItem);
 			caseView.addEventListener(IDEvent.ERA_SAVE_FILE, saveFile);
-			
+			caseView.addEventListener(IDEvent.ERA_DELETE_LOG_ITEM, deleteLogItem);
 			
 			caseView.addEventListener(IDEvent.ERA_UPDATE_LOG, updateLog);
 			// Listen for era being changed
@@ -54,6 +56,8 @@ package Controller.ERA
 			// Listen for file upload
 		}
 		override public function init():void {
+			layout.header.adminToolButtons.visible = false;
+			layout.header.adminToolButtons.includeInLayout = false;
 			setupEventListeners();
 			getAllERACases();
 		}
@@ -110,8 +114,6 @@ package Controller.ERA
 				caseView.showNoCases();
 				return;
 			}
-			// If the era case is emtpy, its going to display "no cases found"
-			caseView.addCases(eraCaseArray);
 			
 			if(caseID == 0) {
 				// We havent been passed a case ID, so lets just default to the first case for this ERA
@@ -132,26 +134,70 @@ package Controller.ERA
 			
 			// Just check that we found a case from all that shit up above
 			if(currentERACase != null) {
+				// If the era case is emtpy, its going to display "no cases found"
+				caseView.addCases(eraCaseArray);
+				
 				// We have an era case to show
 				// Get out all the rooms
 				AppModel.getInstance().getAllRoomsInCase(caseID, gotAllRooms);
 				// so lets load all the evidence for it
 				// so lets show the evidence management view
-				caseView.showEvidenceManagement(null);
 			}
-			
-			
 		}
 		private function gotAllRooms(status:Boolean, eraRoomArray:Array):void {
 			if(status) {
 				this.roomArray = eraRoomArray;
 				currentRoom = this.getRoomIndex(roomType);
 				if(currentRoom != null) {
-					trace("No rooms found");
-					loadRoomContents();
+					trace("Found rooms");
+					
+					// Do we have access to this room?
+					// ONLY LOOKING AT EVIDENCE MANAGER FOR NOW!!!!
+					// TODO ADD IN OTHER ROOMS
+					var canAccessRoom:Boolean = false;
+					trace("Checking for access");
+					if(roomType == Model_ERARoom.EVIDENCE_MANAGEMENT) {
+						// people who have access, are the sys admin,
+						trace("its an evidence management room");
+						for each(var role:String in Auth.getInstance().userRoleArray) {
+							if(role == (Model_ERAUser.SYS_ADMIN + "_" + AppController.currentEraProject.year)) {
+								canAccessRoom = true;
+								trace("is a sys admin");
+								break;
+							}
+						}
+						
+						// production manager
+						for each(var user:Model_ERAUser in currentERACase.productionManagerArray) {
+							if(Auth.getInstance().getUsername() == user.username) {
+								canAccessRoom = true;
+								trace("is a production manager");
+								break;
+							}
+						}
+						
+						// or production team
+						for each(var teamUser:Model_ERAUser in currentERACase.productionTeamArray) {
+							if(Auth.getInstance().getUsername() == teamUser.username) {
+								canAccessRoom = true;
+								trace("is a production team member");
+								break;
+							}
+						}
+					}
+					
+					
+					
+					if(canAccessRoom) {
+						trace("Access granted*******");
+						caseView.showEvidenceManagement(null);
+						loadRoomContents();
+					} else {
+						trace("access refused");
+					}
 				}
 			} else {
-				layout.notificationBar.showError("failed to get rooms");
+				layout.notificationBar.showError("No Rooms Found.");
 			}
 				
 		}
@@ -203,6 +249,23 @@ package Controller.ERA
 		}
 		/* ====================================== END OF SAVE A LOG ITEM ===================================== */
 		
+		/* ====================================== DELETE A LOG ITEM ===================================== */
+		private function deleteLogItem(e:IDEvent):void {
+			var logItem:Model_ERALogItem = e.data.logItem;
+			
+			AppModel.getInstance().deleteERALogItem(logItem, logItemDeleted);
+		}
+		private function logItemDeleted(status:Boolean, logItemDeleted:Model_ERALogItem=null):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to delete evidence");
+				return;
+			}
+			layout.notificationBar.showGood("Evidence Deleted");
+			caseView.deleteEvidenceItem(logItemDeleted);
+		}
+		/* ====================================== END OF DELETE A LOG ITEM ===================================== */
+		
+		/* ====================================== UPDATE A LOG ITEM ===================================== */
 		private function updateLog(e:IDEvent):void {
 			// get out the log item
 //			AppModel.getInstance().addRoleToERAUser(/
@@ -224,6 +287,7 @@ package Controller.ERA
 			layout.notificationBar.showGood("Evidence Item Updated");
 			evidenceItem.addLogItemData(logItem);
 		}
+		/* ====================================== END OF UPDATE A LOG ITEM ===================================== */
 		
 		/* ====================================== SAVE A FILE ===================================== */
 		private function saveFile(e:IDEvent):void {
@@ -232,7 +296,11 @@ package Controller.ERA
 			var type:String = e.data.type;
 			var title:String = e.data.title;
 			var description:String = e.data.description;
-			AppModel.getInstance().uploadERAFile(getRoomIndex(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, type, title, description, file, evidenceItem, uploadIOError, uploadProgress, uploadComplete); 
+			var logItemID:Number = e.data.logItemID;
+			
+			layout.notificationBar.showProcess("Uploading file...");
+			
+			AppModel.getInstance().uploadERAFile(getRoomIndex(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, logItemID, type, title, description, file, evidenceItem, uploadIOError, uploadProgress, uploadComplete); 
 		}
 		private function uploadIOError():void {
 			layout.notificationBar.showError("Failed to Upload file.");
@@ -243,7 +311,7 @@ package Controller.ERA
 		private function uploadComplete(status:Boolean, eraEvidence:Model_ERAEvidence=null, evidenceItem:EvidenceItem=null):void {
 			if(status) {
 				layout.notificationBar.showGood("Upload Complete");
-				evidenceItem.showComplete();
+				evidenceItem.showComplete(eraEvidence);
 			} else {
 				Alert.show("Upload failed");
 			}

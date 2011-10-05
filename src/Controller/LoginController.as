@@ -32,6 +32,9 @@ package Controller {
 		//INIT
 		override public function init():void {
 			setupEventListeners();
+			
+			layout.header.visible = false;
+			layout.header.includeInLayout = false;
 			if(quickLogin) {
 				Auth.getInstance().login("cmcnamara87","test1");
 			}

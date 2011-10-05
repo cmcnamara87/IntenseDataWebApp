@@ -182,6 +182,11 @@ package Controller.ERA.Admin
 				layout.notificationBar.showError("Please enter a package size");
 				return false;
 			}
+			var packageSizeNumber:Number = Number(eraSetupView.packageSize.text);
+			if(packageSizeNumber == 0 && eraSetupView.packageSize.text != "0") {
+				layout.notificationBar.showError("Please enter a package size as a number.");
+				return false;
+			}
 			
 			return true;
 		}

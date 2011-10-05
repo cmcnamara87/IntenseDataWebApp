@@ -6,6 +6,7 @@ package Model {
 		public var lastName:String;
 		public var username:String;
 		
+		public static const SUPER_ADMIN:String = "ERA-super-admin";
 		public static const SYS_ADMIN:String = "sys_admin";
 		public static const MONITOR:String = "monitor";
 		public static const RESEARCHER:String = "researcher";
@@ -41,7 +42,7 @@ package Model {
 				case "production_team":
 					return "Production Team";
 				case "viewer":
-					return "Viewer"
+					return "External Viewer"
 				default:
 					return "Unknown Role"
 			}

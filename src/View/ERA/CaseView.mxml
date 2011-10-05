@@ -8,16 +8,19 @@
 	<fx:Script>
 		<![CDATA[
 			import Controller.AppController;
+			import Controller.ERA.CaseController;
 			
 			import Model.Model_ERACase;
 			import Model.Model_ERALogItem;
 			import Model.Model_ERAProject;
+			import Model.Model_ERAUser;
 			
 			import View.ERA.components.EvidenceManagement;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.controls.Text;
+			import mx.graphics.SolidColor;
 			
 			import spark.components.Label;
 			import spark.layouts.HorizontalAlign;
@@ -26,12 +29,18 @@
 			private var aasdf:Array = new Array("helo", "world", "test", "this");
 			private var arrayTest:ArrayList = new ArrayList(aasdf);
 			
+			private var evidenceManagement:EvidenceManagement;
+			
 			public function showEvidenceManagement(logItemArray:Array):void {
-				var evidenceManagement:EvidenceManagement = new EvidenceManagement();
+				evidenceManagement = new EvidenceManagement();
 				room.removeAllElements();
 				room.addElement(evidenceManagement);
 				evidenceManagement.addLogItems(logItemArray);
 			}
+			public function deleteEvidenceItem(logItemDeleted:Model_ERALogItem):void {
+				evidenceManagement.deleteEvidenceItem(logItemDeleted);
+			}
+			
 			
 			public function showNoCases():void {
 				var label2:Label = new Label();
@@ -45,9 +54,10 @@
 				var hgroup:HGroup = new HGroup();
 				hgroup.percentHeight = 100;
 				hgroup.percentWidth = 100;
+				hgroup.paddingTop = 100;
 				hgroup.verticalAlign = VerticalAlign.MIDDLE
 				room.addElement(hgroup);
-
+				
 				var vgroup:VGroup = new VGroup();
 				vgroup.horizontalAlign = HorizontalAlign.CENTER;
 				vgroup.percentWidth = 100;
@@ -55,7 +65,8 @@
 				
 				var label3:Label = new Label();
 				label3.text = "No cases found";
-				hgroup.addElement(label3);
+				label3.setStyle("fontSize", "16");
+				vgroup.addElement(label3);
 				
 				if(caseNav.height != 0) {
 					// Hide the case nav cause we dont have any cases
@@ -93,17 +104,22 @@
 				
 				// Add all the Cases
 				casePanelContent.removeAllElements();
-				if(caseArray.length == 0) {
-					var label2:Label = new Label();
-					label2.text = "No cases found";
-					label2.setStyle('color', '0xFFFFFF');
-					casePanelContent.removeAllElements();
-					casePanelContent.addElement(label2);
-				}
+
 				for each(var eraCase:Model_ERACase in caseArray) {
 					var someLabel:Text = new Text();
 					someLabel.setStyle('color', '0xFFFFFF');
-					someLabel.htmlText = "<a href='#case/" + eraCase.base_asset_id + "'>" + eraCase.rmCode + "</a>";
+					var researcherFirstName:String = (eraCase.researchersArray[0] as Model_ERAUser).firstName;
+					var researcherLastName:String = (eraCase.researchersArray[0] as Model_ERAUser).lastName;
+					var researcherMultiple:String = "";
+					if(eraCase.researchersArray.length > 1) {
+						researcherMultiple = " (+" + (eraCase.researchersArray.length - 1) + ")";
+					}
+					
+					if(eraCase.base_asset_id != CaseController.currentERACase.base_asset_id) {
+						someLabel.htmlText = "<a href='#case/" + eraCase.base_asset_id + "'>" +researcherLastName + ", " + researcherFirstName + researcherMultiple + " (RM " + eraCase.rmCode + ")</a>";
+					} else {
+						someLabel.htmlText = "<a href='#case/" + eraCase.base_asset_id + "'><b>" +researcherLastName + ", " + researcherFirstName + researcherMultiple + " (RM " + eraCase.rmCode + ")</b></a>";
+					}
 					casePanelContent.addElement(someLabel);
 				}
 				
@@ -131,8 +147,11 @@
 	<!-- The Case Panel -->
 	<s:BorderContainer  id="casePanel" backgroundColor="0x000000" borderVisible="false" height="100%" width="0" resizeEffect="Resize">
 		<s:VGroup width="100%" height="100%">
-			<s:DropDownList id="caseERADropdown" chromeColor="0x000000" contentBackgroundColor="0x000000" color="0xFFFFFF" width="100%">
-			</s:DropDownList>
+			<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+				<s:Label color="0xFFFFFF" text="ERA Case List" fontSize="20" />
+				<s:DropDownList id="caseERADropdown" chromeColor="0x000000" contentBackgroundColor="0x000000" color="0xFFFFFF" width="100%">
+				</s:DropDownList>
+			</s:VGroup>
 			<s:VGroup id="casePanelContent" paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
 				<s:Label color="0xFFFFFF">
 					Loading...
@@ -169,10 +188,10 @@
 			<s:VGroup horizontalAlign="center" height="100%" width="100%">
 				<s:HGroup height="100%" verticalAlign="middle" gap="20">
 					<components:RoomIcon roomName="Evidence Manager" />
-					<components:RoomIcon roomName="Evidence Room" alpha="0.5" />
-					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" />
-					<components:RoomIcon roomName="Screening Room" alpha="0.5" />
-					<components:RoomIcon roomName="Exhibit" alpha="0.5"/>
+					<components:RoomIcon roomName="Evidence Box" alpha="0.5" unavailable="true" />
+					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" unavailable="true" />
+					<components:RoomIcon roomName="Screening Lab" alpha="0.5" unavailable="true" />
+					<components:RoomIcon roomName="Exhibition" alpha="0.5" unavailable="true" />
 				</s:HGroup>
 			</s:VGroup>
 		</s:BorderContainer>

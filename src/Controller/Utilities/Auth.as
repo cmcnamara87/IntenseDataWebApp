@@ -20,6 +20,8 @@ package Controller.Utilities {
 		private var isSystemAdministrator:Boolean = false;
 		private var isUser:Boolean = false;
 		
+		public var userRoleArray:Array = new Array();
+		
 		//Singleton protection
 		public function Auth(enforcer:SingletonEnforcer) {
 			super();
@@ -91,13 +93,20 @@ package Controller.Utilities {
 			for each(var role:XML in rolesXML) {
 				trace("role is", role.@type, role);
 				if(role.@type == "role") {
+					// Save all the users role in an array, for checking later
+					userRoleArray.push(role);
+					
 					trace("matches a role");
-					if(role == "iduser") {
+					//if(role == "iduser") {
+					if(role == "ERA-user") {
 						trace("ID USER FOUND");
 						isUser = true;
 					}
 					if(role == "system-administrator") {
 						isSystemAdministrator = true;
+					}
+					if(role == "sys_admin") {
+						isSystemAdministrator = true;	
 					}
 				}
 			}

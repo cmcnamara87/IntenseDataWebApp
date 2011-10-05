@@ -49,8 +49,8 @@
 					var object:Object = new Object();
 					object.data = eraCase;
 					
-					var researcherUsername:String = (eraCase.researchersArray[0] as Model_ERAUser).username;
-					object.label = eraCase.rmCode + " (" + researcherUsername + ")";
+					var researcher:Model_ERAUser = (eraCase.researchersArray[0] as Model_ERAUser);
+					object.label = researcher.lastName + ", " + researcher.firstName + " (" + eraCase.rmCode + ")";
 					dropdownData.addItem(object);
 				}
 				currentCases.dataProvider = dropdownData;
@@ -322,7 +322,7 @@
 			protected function forCode_focusInHandler(event:FocusEvent):void
 			{
 				// TODO Auto-generated method stub
-				if(forCode.text == "FoR Code") {
+				if(forCode.text == "FoR Code (4 Digit)") {
 					forCode.text = "";
 				}
 			}
@@ -341,7 +341,7 @@
 			{
 				// TODO Auto-generated method stub
 				if(forCode.text == "") {
-					forCode.text = "FoR Code";
+					forCode.text = "FoR Code (4 Digit)";
 				}
 			}
 
@@ -419,8 +419,8 @@
 					<components:content>
 						<s:DropDownList id="qutSchool" width="100%">
 							<s:ArrayCollection>
-								<fx:Object data="MECA" label="M E C Arts" />
-								<fx:Object data="ASDA" label="ASDA BLAH" />
+								<fx:Object data="MECA" label="MECA" />
+								<fx:Object data="SOD" label="SOD" />
 							</s:ArrayCollection>
 						</s:DropDownList>
 					</components:content>
@@ -446,7 +446,7 @@
 				<components:FormGroup title="FoR">
 					<components:content>
 						<s:HGroup width="100%">
-							<s:TextInput id="forCode" text="FoR Code" borderAlpha="0.5" width="100%" focusIn="forCode_focusInHandler(event)" focusOut="forCode_focusOutHandler(event)"/>
+							<s:TextInput id="forCode" text="FoR Code (4 Digit)" borderAlpha="0.5" width="100%" focusIn="forCode_focusInHandler(event)" focusOut="forCode_focusOutHandler(event)"/>
 							<s:TextInput id="forPercentage" text="FoR Percentage" borderAlpha="0.5" width="100%" focusIn="forPercentage_focusInHandler(event)" focusOut="forPercentage_focusOutHandler(event)"/>
 							<s:Label text="%" />
 							<s:Button id="addFor" label="Add FoR" click="addFor_clickHandler(event)" />

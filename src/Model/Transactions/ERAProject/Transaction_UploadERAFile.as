@@ -17,6 +17,7 @@ package Model.Transactions.ERAProject
 	public class Transaction_UploadERAFile
 	{
 		private var year:String;
+		private var logItemID:Number;
 		private var roomID:Number;
 		private var type:String;
 		private var title:String;
@@ -30,9 +31,10 @@ package Model.Transactions.ERAProject
 		
 		private var newFileID:Number;
 		
-		public function Transaction_UploadERAFile(year:String, roomID:Number, type:String, title:String, description:String, fileReference:FileReference, evidenceItem:EvidenceItem, connection:Connection, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function) {
+		public function Transaction_UploadERAFile(year:String, roomID:Number, logItemID:Number, type:String, title:String, description:String, fileReference:FileReference, evidenceItem:EvidenceItem, connection:Connection, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function) {
 			this.year = year;
 			this.roomID = roomID;
+			this.logItemID = logItemID;
 			this.type = type;
 			this.title = title;
 			this.description = description;
@@ -82,9 +84,6 @@ package Model.Transactions.ERAProject
 			argsXML.meta["r_media"].@id = "4";
 			argsXML.meta["r_media"]["transcoded"] = "false";
 			
-//			argsXML.related = "";
-//			argsXML.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
-
 			connection.uploadFile(fileReference, baseXML, null);
 		}
 		
@@ -116,7 +115,41 @@ package Model.Transactions.ERAProject
 				completeCallback(false);
 				return;
 			}
+			
+			var baseXML:XML = connection.packageRequest("asset.relationship.add", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			argsXML.id = newFileID;
+			argsXML.to = logItemID;
+			argsXML.to.@relationship = "logitem";
+			
+			connection.sendRequest(baseXML, addToLogItem);
+		}
+		
+		private function addToLogItem(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("adding relationship to log item", e)) == null) {
+				completeCallback(false);
+				return;
+			}
+			
+			// Give it a media class, this ia just a precaution
+			var baseXML:XML = connection.packageRequest("asset.class.add", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			argsXML.scheme = "recensio";
+			argsXML["class"] = "base/resource/media";
+			argsXML.id = newFileID;
+			
+			connection.sendRequest(baseXML, classAdded);
 
+		}
+		
+		private function classAdded(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("adding media class", e)) == null) {
+				completeCallback(false);
+				return;
+			}
+			
 			// Get out the ERA object
 			var baseXML:XML = connection.packageRequest("asset.get", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
@@ -128,7 +161,7 @@ package Model.Transactions.ERAProject
 		
 		private function eraFileRetrieved(e:Event):void {
 			var data:XML;
-			if((data = AppModel.getInstance().getData("getting era project", e)) == null) {
+			if((data = AppModel.getInstance().getData("getting era evidence item", e)) == null) {
 				completeCallback(false);
 			}
 			
