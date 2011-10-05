@@ -52,7 +52,7 @@ package Controller.Utilities {
 			},
 			{
 				url: 'applesauce',
-				title: 'Apple Sauce',
+				title: 'Profile View',
 				classname: AppSauce
 			},
 			{
