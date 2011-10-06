@@ -5,6 +5,7 @@
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
 			import Controller.IDEvent;
 			import Controller.Utilities.AssetLookup;
 			
@@ -13,10 +14,13 @@
 			import Model.Model_ERAEvidence;
 			import Model.Model_ERALogItem;
 			
+			import flashx.textLayout.tlf_internal;
+			
 			import mx.controls.Alert;
 			private var fileReference:FileReference;
 			
 			private var logItem:Model_ERALogItem;
+			public var allLogItemsArray2:Array = new Array();
 			
 			/*================================ EVENT LISTENERS ============================== */
 			
@@ -133,6 +137,32 @@
 			 */
 			protected function saveButton_clickHandler(event:MouseEvent):void
 			{
+				// Lets check if there is a file with this name already
+				trace("save button clicked, ", allLogItemsArray2.length);
+				for each(var logItem:Model_ERALogItem in allLogItemsArray2) {
+					trace("checking for match", title.text, ":", logItem.title);
+					if(logItem.title == title.text) {
+						AppController.layout.notificationBar.showError("A piece of evidence this name already exists. Please choose a different name.");
+						return;
+					}
+				}
+				
+				if(evidenceType.selectedIndex == -1) {
+					AppController.layout.notificationBar.showError("Please specify a type");
+					return;
+				}
+				
+				if(title.text == "" || title.text == "name") {
+					AppController.layout.notificationBar.showError("Please enter a name for the Evidence.");
+					return;
+				}
+				
+				if(description.text == "" || description.text == "description") {
+					AppController.layout.notificationBar.showError("Please enter a description for the Evidence.");
+					return;
+				}
+				
+				
 				// Disable the save button while we save
 				saveButton.label = "Saving...";
 				saveButton.enabled = false;
@@ -154,6 +184,21 @@
 			}
 
 			public function addLogItemData(logItem:Model_ERALogItem):void {
+				
+				// Look to see if the data is already in our array of stored log items
+				// if it is, pull it out
+				for(var i:Number = 0; i < allLogItemsArray2.length; i++) {
+					var searchedLogItems:Model_ERALogItem = allLogItemsArray2[i] as Model_ERALogItem;
+					trace("checking for removal of match", logItem.base_asset_id, ":", searchedLogItems.base_asset_id);
+					if(logItem.base_asset_id == searchedLogItems.base_asset_id) {
+						allLogItemsArray2.splice(i, 1);
+					}
+				}
+				
+				// Add the item (only going to be one copy now, because of the lines above);
+				allLogItemsArray2.push(logItem);
+//				
+				trace('all items', this.allLogItemsArray2);
 				
 				this.logItem = logItem;
 				
@@ -186,7 +231,12 @@
 				} else {
 					uploadButton.label = "Upload";
 				}
+				
 				returnedCheckbox.selected = logItem.returned;
+				
+				if(logItem.returned) {
+					collectedCheckbox.enabled = true;
+				}
 				collectedCheckbox.selected = logItem.collected;
 			}
 
@@ -236,32 +286,35 @@
 				}
 			}
 
-
-
-
-
-			protected function returnedCheckbox_clickHandler(event:MouseEvent):void
+			protected function collectedCheckbox_clickHandler(event:MouseEvent):void
 			{
+				checkCollectedBox(collectedCheckbox.selected);
+			}
+
+			public function checkCollectedBox(value:Boolean):void {
 				// TODO Auto-generated method stub
-				collectedCheckbox.enabled = returnedCheckbox.selected;
+				
+				var usefulEvent:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_LOG, true);
+				usefulEvent.data.logItemID = logItem.base_asset_id;
+				usefulEvent.data.elementName = "collected";
+				usefulEvent.data.value = value;
+				usefulEvent.data.evidenceItem = this;
+				dispatchEvent(usefulEvent);
+			}
+
+			protected function returnedCheckbox_changeHandler(event:Event):void
+			{
+				checkForCollectionBox(returnedCheckbox.selected);
+			}
+			
+			public function checkForCollectionBox(value:Boolean):void {
+				// TODO Auto-generated method stub
+				collectedCheckbox.enabled = value;
 				
 				var usefulEvent:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_LOG, true);
 				usefulEvent.data.logItemID = logItem.base_asset_id;
 				usefulEvent.data.elementName = "returned";
-				usefulEvent.data.value = (event.target as CheckBox).selected;
-				usefulEvent.data.evidenceItem = this;
-				dispatchEvent(usefulEvent);
-				
-			}
-
-
-			protected function collectedCheckbox_clickHandler(event:MouseEvent):void
-			{
-				// TODO Auto-generated method stub
-				var usefulEvent:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_LOG, true);
-				usefulEvent.data.logItemID = logItem.base_asset_id;
-				usefulEvent.data.elementName = "collected";
-				usefulEvent.data.value = (event.target as CheckBox).selected;
+				usefulEvent.data.value = value;
 				usefulEvent.data.evidenceItem = this;
 				dispatchEvent(usefulEvent);
 			}
@@ -277,8 +330,8 @@
 		<s:DropDownList id="evidenceType" width="200">
 			<s:ArrayList>
 				<fx:String>Audio</fx:String>
-				<fx:String>PDF</fx:String>
 				<fx:String>Images</fx:String>
+				<fx:String>PDF</fx:String>
 				<fx:String>Photos</fx:String>
 				<fx:String>Physical Object</fx:String>
 				<fx:String>Research Description</fx:String>
@@ -290,10 +343,10 @@
 		<s:TextInput id="description" width="300" text="description" color="0x888888" focusIn="description_focusInHandler(event)" focusOut="description_focusOutHandler(event)"/>
 		<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)" />
 		<s:HGroup id="actionGroup" visible="false" includeInLayout="false">
-			<s:CheckBox label="Useful" id="usefulCheckbox" change="usefulCheckbox_changeHandler(event)"/>
+			<s:CheckBox label="Accepted" id="usefulCheckbox" change="usefulCheckbox_changeHandler(event)"/>
 			<s:CheckBox label="Processed" id="processedCheckbox" enabled="false" click="processedCheckbox_clickHandler(event)"/>
 			<s:Button label="Upload" id="uploadButton" click="uploadButton_clickHandler(event)" enabled="false" />
-			<s:CheckBox id="returnedCheckbox" label="Return" click="returnedCheckbox_clickHandler(event)"/>
+			<s:CheckBox id="returnedCheckbox" label="Return" change="returnedCheckbox_changeHandler(event)" />
 			<s:CheckBox id="collectedCheckbox" label="Collected" click="collectedCheckbox_clickHandler(event)" enabled="false"/>
 		</s:HGroup>
 	</s:HGroup>

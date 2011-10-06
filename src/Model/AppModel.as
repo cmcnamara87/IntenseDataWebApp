@@ -17,6 +17,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_DeleteERALogItem;
 	import Model.Transactions.ERAProject.Transaction_DeleteERAProject;
 	import Model.Transactions.ERAProject.Transaction_DeleteERAUser;
+	import Model.Transactions.ERAProject.Transaction_ERAChangeUserPassword;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
 	import Model.Transactions.ERAProject.Transaction_GetAllLogItems;
 	import Model.Transactions.ERAProject.Transaction_GetAllRooms;
@@ -1635,6 +1636,12 @@ package Model {
 		}
 		public function getERAUser(username:String, callback:Function):void {
 			var getERAUser:Transaction_GetUser = new Transaction_GetUser(username, _connection, callback);
+		}
+		public function changeERAUserPassword(newPassword:String, callback:Function):void {
+			var username:String = Auth.getInstance().getUsername();
+			var oldPassword:String = Auth.getInstance().getPassword();
+			var whatever:Transaction_ERAChangeUserPassword = new Transaction_ERAChangeUserPassword(username, oldPassword, newPassword, _connection, callback);
+//			var changeUserERAPassword:Transaction_ChangeERAPassword = Transaction_ChangeERAPassword(username, password, newPassword, _connection, callback);  
 		}
 		public function getAllERACases(eraID:Number, callback:Function):void {
 			var getAllERACases:Transaction_GetAllCases = new Transaction_GetAllCases(eraID, _connection, callback);

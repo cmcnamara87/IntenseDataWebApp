@@ -11,6 +11,8 @@ package Controller.ERA.Admin
 	import flash.events.MouseEvent;
 	
 	import mx.collections.ArrayList;
+	import mx.controls.Alert;
+	import mx.events.CloseEvent;
 	
 	import spark.components.DropDownList;
 	import spark.components.Label;
@@ -120,6 +122,8 @@ package Controller.ERA.Admin
 			
 			return true;
 		}
+		
+		/* ====================================== UPDATE A CASE ===================================== */
 		private function saveChangesToCase(e:MouseEvent):void {
 			if(!validInputs()) {
 				return;
@@ -196,8 +200,9 @@ package Controller.ERA.Admin
 			
 			trace("selecting index", i);
 			caseCreatorView.currentCases.selectedIndex = i;
-			
 		}
+		/* ====================================== END OF UPDATE A CASE ===================================== */
+		
 		/* ====================================== CREATE A CASE ===================================== */
 		private function createCase(e:MouseEvent):void {
 			
@@ -264,8 +269,14 @@ package Controller.ERA.Admin
 		private function deleteCase(e:MouseEvent):void {
 			if(caseCreatorView.currentCases.selectedIndex == -1) return;
 			
-			var caseID:Number = (caseCreatorView.currentCases.selectedItem.data as Model_ERACase).base_asset_id;
-			AppModel.getInstance().deleteERACase(caseID, caseDeleted);
+			var myAlert:Alert = Alert.show(
+				"Are you sure you wish to this Case", "Delete Case", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
+					if (e.detail==Alert.OK) {
+						var caseID:Number = (caseCreatorView.currentCases.selectedItem.data as Model_ERACase).base_asset_id;
+						AppModel.getInstance().deleteERACase(caseID, caseDeleted);
+					}
+				}, null, Alert.CANCEL);
+			
 		}
 		private function caseDeleted(status:Boolean, caseID:Number):void {
 			if(!status) {

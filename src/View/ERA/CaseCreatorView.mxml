@@ -301,7 +301,7 @@
 				saveButton.includeInLayout = false;
 			}
 			public function exitCreationMode():void {
-				makeNewCase.enabled = false;
+				makeNewCase.enabled = true;
 				
 				currentCases.enabled = true;
 				deleteCaseButton.enabled = true;
@@ -464,6 +464,11 @@
 				<s:HGroup width="100%" paddingBottom="20">
 					<s:DropDownList id="currentCases" width="100%" change="{showCase(currentCases.selectedItem.data as Model_ERACase)}">
 					</s:DropDownList>	
+					<s:HGroup id="buttonGroup">
+						<s:Button label="Save Changes" chromeColor="0x8FAFF7" id="saveButton" />
+						<s:Button label="Save Case"  chromeColor="0x8FAFF7" id="createCaseButton" visible="false" includeInLayout="false" />
+						<s:Button label="Cancel" id="cancelButton" visible="false" includeInLayout="false" click="cancelButton_clickHandler(event)"/>
+					</s:HGroup>
 					<s:Button id="deleteCaseButton" label="Delete Case"/>
 				</s:HGroup>
 				<mx:HRule width="100%" chromeColor="0x000000" />
@@ -556,11 +561,7 @@
 					</components:content>
 				</components:FormGroup>
 				
-				<s:HGroup id="buttonGroup">
-					<s:Button label="Save Changes" chromeColor="0x8FAFF7" id="saveButton" />
-					<s:Button label="Save Case"  chromeColor="0x8FAFF7" id="createCaseButton" visible="false" includeInLayout="false" />
-					<s:Button label="Cancel" id="cancelButton" visible="false" includeInLayout="false" click="cancelButton_clickHandler(event)"/>
-				</s:HGroup>
+				
 				
 				
 			</s:VGroup>

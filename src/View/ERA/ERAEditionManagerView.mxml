@@ -72,7 +72,7 @@
 				
 				// Only enable the cancel button if we have things to go back to
 				// (so we already have some eras)
-				if(eras.dataProvider != null || eras.dataProvider.length > 0) {
+				if(eras.dataProvider != null && eras.dataProvider.length > 0) {
 					cancelButton.enabled = true;
 				} else {
 					cancelButton.enabled = false;
@@ -168,6 +168,27 @@
 								<fx:String>08</fx:String>
 								<fx:String>09</fx:String>
 								<fx:String>10</fx:String>
+								<fx:String>11</fx:String>
+								<fx:String>12</fx:String>
+								<fx:String>13</fx:String>
+								<fx:String>14</fx:String>
+								<fx:String>15</fx:String>
+								<fx:String>16</fx:String>
+								<fx:String>17</fx:String>
+								<fx:String>18</fx:String>
+								<fx:String>19</fx:String>
+								<fx:String>20</fx:String>
+								<fx:String>21</fx:String>
+								<fx:String>22</fx:String>
+								<fx:String>23</fx:String>
+								<fx:String>24</fx:String>
+								<fx:String>25</fx:String>
+								<fx:String>26</fx:String>
+								<fx:String>27</fx:String>
+								<fx:String>28</fx:String>
+								<fx:String>29</fx:String>
+								<fx:String>30</fx:String>
+								<fx:String>31</fx:String>
 							</s:ArrayList>
 						</s:DropDownList>
 						<s:Label text="Month">
@@ -184,12 +205,15 @@
 								<fx:String>Aug</fx:String>
 								<fx:String>Sep</fx:String>
 								<fx:String>Oct</fx:String>
+								<fx:String>Nov</fx:String>
+								<fx:String>Dec</fx:String>
 							</s:ArrayList>
 						</s:DropDownList>
 						<s:Label text="Year">
 						</s:Label>
 						<s:DropDownList id="year">
 							<s:ArrayList>
+								<fx:String>2009</fx:String>
 								<fx:String>2010</fx:String>
 								<fx:String>2011</fx:String>
 								<fx:String>2012</fx:String>

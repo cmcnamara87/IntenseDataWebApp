@@ -96,7 +96,11 @@ package Controller {
 		private function gotERAProjects(status:Boolean, eraProjectArray:Array):void {
 			if(eraProjectArray.length == 0) {
 				// There are no eras setup, so lets do that
-				Dispatcher.call("erasetup");
+				if(Auth.getInstance().isSysAdmin()) {
+					Dispatcher.call("erasetup");
+				} else {
+					Dispatcher.call("case");
+				}
 			} else {
 				// There are eras setup
 				// so lets save them

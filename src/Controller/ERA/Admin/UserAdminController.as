@@ -16,6 +16,8 @@ package Controller.ERA.Admin
 	import flash.events.MouseEvent;
 	
 	import mx.collections.ArrayList;
+	import mx.controls.Alert;
+	import mx.events.CloseEvent;
 	
 	import spark.components.DropDownList;
 	import spark.components.Label;
@@ -132,9 +134,16 @@ package Controller.ERA.Admin
 		
 		/* ========================================== DELETE A USER ========================================== */
 		private function deleteUser(e:IDEvent):void {
-			layout.notificationBar.showProcess("Deleting " + username);
 			var username:String = e.data.username;
-			AppModel.getInstance().deleteERAUser(username, userDeleted);
+			
+			var myAlert:Alert = Alert.show(
+				"Are you sure you wish to delete user: " + username, "Delete User", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
+					if (e.detail==Alert.OK) {
+						layout.notificationBar.showProcess("Deleting " + username);
+						
+						AppModel.getInstance().deleteERAUser(username, userDeleted);
+					}
+				}, null, Alert.CANCEL);
 		}
 		private function userDeleted(status:Boolean, username:String=""):void {
 			if(!status) {

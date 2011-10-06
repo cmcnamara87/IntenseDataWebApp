@@ -19,6 +19,6 @@
 	</s:Label>
 	<s:Label text="{forPercentage}%" width="50%">
 	</s:Label>
-	<s:Button label="X" width="50" id="deleteButton">
+	<s:Button label="Remove" width="80"  id="deleteButton">
 	</s:Button>
 </s:HGroup>

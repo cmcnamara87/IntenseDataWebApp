@@ -43,6 +43,6 @@
 	
 	<s:Label text="{firstName} {lastName} ({username})" width="100%">
 	</s:Label>
-	<s:Button label="X" width="50" id="deleteButton" click="deleteButton_clickHandler(event)">
+	<s:Button label="Remove" width="80" id="deleteButton" click="deleteButton_clickHandler(event)">
 	</s:Button>
 </s:HGroup>

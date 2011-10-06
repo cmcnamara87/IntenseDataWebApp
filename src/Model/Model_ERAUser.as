@@ -48,6 +48,25 @@ package Model {
 			}
 		}
 		
+		public static function getRoleDescription(role:String):String {
+			switch(role) {
+				case "sys_admin":
+					return "Users with access to all of the administration tools available and all cases.";
+				case "monitor":
+					return "Users with access to all cases, and view and comment in the Screening Lab and view the Exhibition.";
+				case "researcher":
+					return "A QUT Researcher account. These users have access to view and comment in the Screening Lab of cases they are assigned to. ";
+				case "production_manager":
+					return "Users with access to all cases they are assigned to for all sections.";
+				case "production_team":
+					return "Users with access to all cases they are assigned to for all sections except the Exhibition.";
+				case "viewer":
+					return "Users with access to all cases, and view and comment in the Screening Lab and view the Exhibition.";
+				default:
+					return "Unknown Role"
+			}
+		}
+		
 		private function firstLetterUpperCase(str:String) : String {
 			var firstChar:String = str.substr(0, 1); 
 			var restOfString:String = str.substr(1, str.length); 

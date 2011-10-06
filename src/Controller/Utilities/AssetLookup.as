@@ -26,11 +26,17 @@ package Controller.Utilities {
 		private static var Asseticon_video_clicked:Class;
 		private static var Asseticon_video_clicked_data:BitmapData = (new Asseticon_video_clicked as Bitmap).bitmapData;
 		
+		
+		// Flow chart arrows
 		[Embed(source="Assets/Template/left_arrow.jpg")]
 		private static var LeftArrowIconClass:Class;
-		
 		[Embed(source="Assets/Template/left_right_arrow.jpg")]
 		private static var LeftRightArrowIconClass:Class;
+		
+		// ERA cases arrow
+		[Embed(source="Assets/Template/era_case_arrow.jpg")]
+		private static var ERACaseArrow:Class;
+		
 		
 		[Embed(source="Assets/Template/assets/audio2.png")] 
 		private static var Asseticon_audio:Class;
@@ -343,6 +349,10 @@ package Controller.Utilities {
 		
 		public static function getLeftRightArrowIconClass():Class {
 			return LeftRightArrowIconClass;
+		}
+		
+		public static function getERACaseClass():Class {
+			return ERACaseArrow;
 		}
 		/**
 		 * Gets the icon for a certain button type.

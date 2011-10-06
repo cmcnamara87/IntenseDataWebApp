@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
-				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="30" backgroundColor="0xFFFFFF" hideEffect="{fadeOut}">
+				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="30" borderVisible="false" hideEffect="{fadeOut}">
 
 	<fx:Script>
 		<![CDATA[
+			[Bindable]
+			private var backgroundColor:uint = 0x8FAFF7;
+			
 			public function showPercentage(percentage:Number):void {
 				loadingBar.percentWidth = percentage;
+				backgroundColor += 0x000001;
 			}
 		]]>
 	</fx:Script>
@@ -14,7 +18,7 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:BorderContainer id="loadingBar" backgroundColor="0x8FAFF7" width="0" height="20">
+	<s:BorderContainer id="loadingBar" backgroundColor="{backgroundColor}" borderColor="0x000055" width="0" height="20">
 		<s:HGroup verticalAlign="middle">
 			<s:Label text="{loadingBar.percentWidth}%" textAlign="right" width="100%" color="0xFFFFFF"/>
 		</s:HGroup>

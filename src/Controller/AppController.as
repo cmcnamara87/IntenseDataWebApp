@@ -118,9 +118,13 @@ package Controller {
 		public static function updateERADropdownList():void {
 			layout.header.addERAProjects(AppController.eraProjectArray);	
 			if(AppController.eraProjectArray.length == 0) {
-				layout.header.adminToolButtons.enabled = false;
+				layout.header.eraDropDown.enabled = false;
+				layout.header.caseCreatorButton.enabled = false;
+				layout.header.userAdminButton.enabled = false;
 			} else {
-				layout.header.adminToolButtons.enabled = true;
+				layout.header.eraDropDown.enabled = true;
+				layout.header.caseCreatorButton.enabled = true;
+				layout.header.userAdminButton.enabled = true ;
 			}
 		}
 		
@@ -196,6 +200,11 @@ package Controller {
 				layout.header.adminToolButtons.includeInLayout = true;
 				layout.header.switchingModeButtonGroup.includeInLayout = true;
 				layout.header.switchingModeButtonGroup.visible = true;
+				if(eraProjectArray == null || eraProjectArray.length == 0) {
+					layout.header.eraDropDown.enabled = false;
+					layout.header.caseCreatorButton.enabled = false;
+					layout.header.userAdminButton.enabled = false;
+				}
 			} else {
 				layout.header.adminToolButtons.visible = false;
 				layout.header.adminToolButtons.includeInLayout = false;

@@ -12,6 +12,8 @@
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			
+			import spark.events.IndexChangeEvent;
+			
 			[Bindable]
 			public var role:String = "Role";
 			
@@ -93,12 +95,21 @@
 				// TODO Auto-generated method stub
 				if(allUsers.selectedIndex == -1) return;
 				
+				addUserButton.setStyle("chromeColor", 0xCCCCCC);
+				
 				var addUserToRole:IDEvent = new IDEvent(IDEvent.ERA_ADD_USER_TO_ROLE, true);
 				addUserToRole.data.eraUserData = allUsers.selectedItem.data;
 				addUserToRole.data.role = role;
 				addUserToRole.data.roleComponent = this;
 				this.dispatchEvent(addUserToRole);	
 			}
+
+			protected function allUsers_changeHandler(event:IndexChangeEvent):void
+			{
+				// TODO Auto-generated method stub
+				addUserButton.setStyle("chromeColor", 0x8FAFF7);
+			}
+
 		]]>
 	</fx:Script>
 
@@ -107,8 +118,9 @@
 	</fx:Declarations>
 	<s:Label id="roleTitle" text="{Model_ERAUser.getRolePrettyName(role)}" fontSize="15" fontWeight="bold" color="0x5e6469">
 	</s:Label>
+	<s:Label text="{Model_ERAUser.getRoleDescription(role)}" color="0x5e6469" />
 	<s:HGroup width="100%" paddingTop="5">
-		<s:DropDownList id="allUsers" width="100%">
+		<s:DropDownList id="allUsers" width="100%" change="allUsers_changeHandler(event)">
 		</s:DropDownList>
 		<s:Button label="Assign Role" id="addUserButton" click="addUserButton_clickHandler(event)">
 		</s:Button>

@@ -10,6 +10,7 @@ package Controller.ERA.Admin
 	import flash.events.MouseEvent;
 	
 	import mx.controls.Alert;
+	import mx.events.CloseEvent;
 	
 	import spark.components.DropDownList;
 	import spark.components.Label;
@@ -50,14 +51,19 @@ package Controller.ERA.Admin
 		 * The delete button was clicked. Delete the ERA
 		 * @param e
 		 * 
-		 */
+		 */		
 		private function deleteButtonClicked(e:MouseEvent):void {
 			if(eraSetupView.eras.selectedIndex == -1) {
 				return;
 			}
 			
-			layout.notificationBar.showProcess("Deleting ERA Edition");
-			AppModel.getInstance().deleteERAProject(eraSetupView.eras.selectedItem.data, eraDeleted);
+			var myAlert:Alert = Alert.show(
+				"Are you sure you wish to delete ERA Edition", "Delete ERA Edition", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
+					if (e.detail==Alert.OK) {
+						layout.notificationBar.showProcess("Deleting ERA Edition");
+						AppModel.getInstance().deleteERAProject(eraSetupView.eras.selectedItem.data, eraDeleted);
+					}
+				}, null, Alert.CANCEL);
 		}
 		/**
 		 * The ERA was deleted 
@@ -191,6 +197,8 @@ package Controller.ERA.Admin
 			return true;
 		}
 		
+		
+		/* ========================================== CREATE AN ERA ========================================== */
 		private function createButtonClicked(e:MouseEvent):void {
 			// Some basic validation stuff
 			if(!inputsValid()) {
@@ -238,7 +246,8 @@ package Controller.ERA.Admin
 			} else {
 				eraSetupView.myNotificationBar.showError("Era Failed to be Created");	
 			}
-			
 		}
+		/* ========================================== END OF CREATE AN ERA ========================================== */
 	}
+	
 }

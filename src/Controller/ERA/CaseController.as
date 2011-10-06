@@ -15,6 +15,7 @@ package Controller.ERA
 	import Model.Model_ERAUser;
 	
 	import View.ERA.CaseView;
+	import View.ERA.NoERAFound;
 	import View.ERA.components.EvidenceItem;
 	import View.ERA.components.NotificationBar;
 	
@@ -39,8 +40,13 @@ package Controller.ERA
 		{
 			// Create the View
 			caseView = new CaseView();
-			// Show the view
 			view = caseView;
+			
+			// Show the view
+			if(AppController.eraProjectArray == null || AppController.eraProjectArray.length == 0) {
+				view = new NoERAFound();
+			}
+			
 			super();
 		}
 		
@@ -58,7 +64,20 @@ package Controller.ERA
 		override public function init():void {
 			layout.header.adminToolButtons.visible = false;
 			layout.header.adminToolButtons.includeInLayout = false;
+			layout.header.productionToolsButton.setStyle('chromeColor', '0x000000');
+			
+			
+			if(Auth.getInstance().getPassword() == "changeme") {
+				Alert.show("Please change your password. To change your password, click your username in the top right corner.", "Change your password");
+			}
+			
+			if(AppController.eraProjectArray == null || AppController.eraProjectArray.length == 0) {
+				return;
+			}
+			
 			setupEventListeners();
+			
+			
 			getAllERACases();
 		}
 		
@@ -232,6 +251,8 @@ package Controller.ERA
 			var description:String = e.data.description;
 			var evidenceItem:EvidenceItem = e.data.evidenceItem;
 			
+			layout.notificationBar.showProcess("Saving Evidence...");
+			
 			AppModel.getInstance().createERALogItem(getRoomIndex(Model_ERARoom.EVIDENCE_MANAGEMENT).base_asset_id, type, title, description, evidenceItem, logItemSaved);
 		}
 		private function logItemSaved(status:Boolean, logItem:Model_ERALogItem=null, evidenceItem:EvidenceItem=null):void {
@@ -248,6 +269,8 @@ package Controller.ERA
 		/* ====================================== DELETE A LOG ITEM ===================================== */
 		private function deleteLogItem(e:IDEvent):void {
 			var logItem:Model_ERALogItem = e.data.logItem;
+			
+			layout.notificationBar.showProcess("Deleting Evidence...");
 			
 			AppModel.getInstance().deleteERALogItem(logItem, logItemDeleted);
 		}

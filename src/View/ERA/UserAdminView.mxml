@@ -134,11 +134,13 @@
 		<s:VGroup horizontalAlign="center" width="100%">
 			<!-- Content box -->
 			<s:VGroup width="960" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
-				<s:Label text="Current nQuisitor Users" fontSize="20" fontWeight="bold" color="0x5e6469">
-				</s:Label>
+				
 				
 				<!-- Create user panel -->
-				<s:VGroup id="createUserPanel" paddingTop="10" width="100%" includeInLayout="false" visible="false">
+				<s:VGroup id="createUserPanel" paddingTop="10" paddingBottom="10" width="100%" includeInLayout="false" visible="false">
+					<s:Label text="New nQuisitor User" fontSize="20" fontWeight="bold" color="0x5e6469">
+					</s:Label>
+					<mx:HRule width="100%" />
 					<s:HGroup verticalAlign="middle">
 						<s:Label text="QUT Email Address" width="150"></s:Label><s:TextInput id="qutUsername" width="250"></s:TextInput>
 					</s:HGroup>
@@ -148,23 +150,30 @@
 					<s:HGroup verticalAlign="middle">
 						<s:Label text="Last Name" width="150"></s:Label><s:TextInput id="lastName" width="250"></s:TextInput>
 					</s:HGroup>
-					<s:HGroup verticalAlign="middle">
+					<s:HGroup verticalAlign="middle" paddingBottom="10">
 						<s:Button id="createUserButton" label="Save" click="createUserButton_clickHandler(event)">
 						</s:Button>
 						<s:Button id="cancelUserButton" label="Cancel" click="cancelUserButton_clickHandler(event)">
 						</s:Button>
 					</s:HGroup>
+
 					<mx:HRule chromeColor="0x000000" width="100%" />
 				</s:VGroup>
 				<!-- End user panel -->
+				
+				<s:Label text="All Current nQuisitor Users" fontSize="20" fontWeight="bold" color="0x5e6469">
+				</s:Label>
 				
 				<s:VGroup id="allUsers" width="100%" height="100%" paddingTop="10" paddingBottom="20">
 					<s:Label text="loading" />
 				</s:VGroup>	
 				
 				<mx:HRule chromeColor="0x000000" width="100%" />
+			
+				<s:HGroup>
+				</s:HGroup>
 				
-				<s:Label text="Roles" fontSize="20" fontWeight="bold" color="0x5e6469">
+				<s:Label text="nQuisitor Role Delegation for {AppController.currentEraProject.year}" fontSize="20" fontWeight="bold" color="0x5e6469">
 				</s:Label>
 				<s:VGroup id="roles" width="100%" paddingTop="10">
 				</s:VGroup>

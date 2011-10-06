@@ -15,7 +15,13 @@
 			
 			private var noEvidence:Boolean = false;
 
+			private var logItemArray2:Array = new Array(); // Stores all the log items, so we can check for duplicates
+			
+			/**
+			 * Add all the lot items to the display
+			 */
 			public function addLogItems(logItemArray:Array):void {
+		
 				logItemList.removeAllElements();
 				
 				if(logItemArray == null) {
@@ -36,11 +42,19 @@
 				
 				for each(var logItem:Model_ERALogItem in logItemArray) {
 					var evidenceItem:EvidenceItem = new EvidenceItem();
-					logItemList.addElement(evidenceItem);				
+					
+					evidenceItem.allLogItemsArray2 = logItemArray2;
+					logItemList.addElement(evidenceItem);	
 					evidenceItem.addLogItemData(logItem);
+					
+					trace("Log Items Recorded:", logItemArray2);
 				}
 			}
+			/**
+			 * Removes an evidence item from the display
+			 */
 			public function deleteEvidenceItem(logItemDeleted:Model_ERALogItem):void {
+				// Look through each of the evidence items, and remove it from display
 				for(var i:Number = 0; i < logItemList.numElements; i++) {
 					var evidenceItem:EvidenceItem = logItemList.getElementAt(i) as EvidenceItem;
 					var evidenceItemID:Number = evidenceItem.getID();
@@ -52,6 +66,15 @@
 						}	
 					}
 				}
+				
+				// Look through the saved list, and remove it from there
+				for(i = 0; i < logItemArray2.length; i++) {
+					var logItem:Model_ERALogItem = logItemArray2[i] as Model_ERALogItem;
+					if(logItem.base_asset_id == logItemDeleted.base_asset_id) {
+						logItemArray2.splice(i, 1);
+						break;
+					}
+				}
 			}
 			
 			protected function makeNewItemButton_clickHandler(event:MouseEvent):void
@@ -60,7 +83,25 @@
 					logItemList.removeAllElements(); // removes the 'no evidence items stored' label
 				}
 				var evidenceItemNew:EvidenceItem = new EvidenceItem();
+				evidenceItemNew.allLogItemsArray2 = logItemArray2;
 				logItemList.addElement(evidenceItemNew);
+			}
+
+			protected function markAllForCollectionButton_clickHandler(event:MouseEvent):void
+			{
+				for(var i:Number = 0; i < logItemList.numElements; i++) {
+					var evidenceItem:EvidenceItem = logItemList.getElementAt(i) as EvidenceItem;
+					evidenceItem.checkForCollectionBox(true);
+				}
+			}
+
+
+			protected function markAllAsCollectedButton_clickHandler(event:MouseEvent):void
+			{
+				for(var i:Number = 0; i < logItemList.numElements; i++) {
+					var evidenceItem:EvidenceItem = logItemList.getElementAt(i) as EvidenceItem;
+					evidenceItem.checkCollectedBox(true);
+				}
 			}
 
 		]]>
@@ -73,18 +114,20 @@
 	<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
 		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
 			<s:VGroup width="100%">
-						<s:Label text="ERA {AppController.currentEraProject.year} / RM {CaseController.currentERACase.rmCode}" fontSize="12" color="0x828F9A">
+						<s:Label text="ERA {AppController.currentEraProject.year} / RM {CaseController.currentERACase.rmCode} - {CaseController.currentERACase.title}" fontSize="16" fontWeight="bold" color="0x828F9A">
 							<s:filters>
 								<s:DropShadowFilter distance="1" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
 							</s:filters>
 						</s:Label>
-						<s:Label text="Evidence Manager" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+						<s:Label text="RM {CaseController.currentERACase.rmCode} - Evidence Manager" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
 							<s:filters>
 								<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
 							</s:filters>
 						</s:Label>
 			</s:VGroup>
 			<s:Button id="makeNewItemButton" label="Add Evidence" cornerRadius="10" height="30" click="makeNewItemButton_clickHandler(event)"/>
+			<s:Button id="markAllForCollectionButton" label="Mark All as For Collection" cornerRadius="10" height="30" click="markAllForCollectionButton_clickHandler(event)"/>
+			<s:Button id="markAllAsCollectedButton" label="Mark All as Collected" cornerRadius="10" height="30" click="markAllAsCollectedButton_clickHandler(event)"/>
 		</s:HGroup>
 	</s:BorderContainer>
 	<!-- END OF TITLE BAR WITH CREATION BUTTON -->
@@ -92,7 +135,15 @@
 	<s:BorderContainer width="100%" height="100%" borderColor="0xFFFFFF">
 		<s:Scroller width="100%" height="100%">
 			<s:VGroup horizontalAlign="center">
-				<s:VGroup width="960" id="logItemList" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+				<s:HGroup width="1050" paddingTop="10">
+					<s:Label text="" width="42"/>
+					<s:Label text="Type" width="200" />
+					<s:Label text="Name" width="128" />
+					<s:Label text="Description" width="295" />
+					<s:Label text="Status" />
+				</s:HGroup>
+				<mx:HRule width="1050" />
+				<s:VGroup width="1050" id="logItemList" paddingBottom="10" paddingLeft="10" paddingRight="10">
 				</s:VGroup>	
 			</s:VGroup>
 		</s:Scroller>
