@@ -1,6 +1,7 @@
 package Module.Videoviewer {
 	
 	import Controller.Dispatcher;
+	import Controller.ERA.FileController;
 	
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
@@ -432,7 +433,7 @@ package Module.Videoviewer {
 				case "NetStream.Play.StreamNotFound":
 					trace("Media is currently being encoded, please try again later");
 					Alert.show("This Media is currently being transcoded. It will become available shortly.");
-					Dispatcher.call('browse');
+					Dispatcher.call('case/' + FileController.caseID + "/" + FileController.roomType);
 //					code = "Media is currently being encoded, please try again later";
 //					delegate.playFailed(code);
 					break;				
