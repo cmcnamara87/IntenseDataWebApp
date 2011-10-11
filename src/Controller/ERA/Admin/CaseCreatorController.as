@@ -65,18 +65,18 @@ package Controller.ERA.Admin
 			}
 			
 			// Get title
-			var title:String = caseCreatorView.title.text;
-			if(title == "") {
-				layout.notificationBar.showError("Please enter a Case Title.");
-				return false;
-			}
+//			var title:String = caseCreatorView.title.text;
+//			if(title == "") {
+//				layout.notificationBar.showError("Please enter a Case Title.");
+//				return false;
+//			}
 			
 			// Get QUT school
-			if(caseCreatorView.qutSchool.selectedIndex == -1) {
-				layout.notificationBar.showError("Please Select a QUT School");
-				return false;
-			}
-			var qutSchool:String = caseCreatorView.qutSchool.selectedItem.data;
+//			if(caseCreatorView.qutSchool.selectedIndex == -1) {
+//				layout.notificationBar.showError("Please Select a QUT School");
+//				return false;
+//			}
+//			var qutSchool:String = caseCreatorView.qutSchool.selectedItem.data;
 			
 			// get researchers
 			var researcherUsernames:Array = caseCreatorView.chosenResearchersArray;
@@ -87,38 +87,39 @@ package Controller.ERA.Admin
 			
 			// Get FoRs
 			var forArray:Array = caseCreatorView.chosenForsArray;
-			if(forArray.length == 0) {
-				layout.notificationBar.showError("Please Add at least one FoR");
-				return false;
-			}
+//			if(forArray.length == 0) {
+//				layout.notificationBar.showError("Please Add at least one FoR");
+//				return false;
+//			}
 			// Check taht the FORs add up to 100%
 			var totalPercentage:Number = 0;
 			for each(var forPair:Array in forArray) {
 				totalPercentage += Number(forPair[Model_ERACase.PERCENTAGE]);
 			}
-			if(totalPercentage != 100) {
+			// If there are FoRs, make sure they add up to 100%
+			if(forArray.length > 0 && totalPercentage != 100) {
 				layout.notificationBar.showError("Please make sure your FoR percentages add up to 100%");
 				return false;
 			}
 			
 			// Get Category array
-			var categoryArray:Array = caseCreatorView.chosenCategories;
-			if(categoryArray.length == 0) {
-				layout.notificationBar.showError("Please Add at least one Category.");
-				return false;
-			}
+//			var categoryArray:Array = caseCreatorView.chosenCategories;
+//			if(categoryArray.length == 0) {
+//				layout.notificationBar.showError("Please Add at least one Category.");
+//				return false;
+//			}
 			
-			var productionManagerArray:Array = caseCreatorView.chosenProductionManagersArray;
-			if(productionManagerArray.length == 0) {
-				layout.notificationBar.showError("Please enter at least one Production Manager.");
-				return false;
-			}
+//			var productionManagerArray:Array = caseCreatorView.chosenProductionManagersArray;
+//			if(productionManagerArray.length == 0) {
+//				layout.notificationBar.showError("Please enter at least one Production Manager.");
+//				return false;
+//			}
 			
-			var productionTeamArray:Array = caseCreatorView.chosenTeamMembersArray;
+			/*var productionTeamArray:Array = caseCreatorView.chosenTeamMembersArray;
 			if(productionTeamArray.length == 0) {
 				layout.notificationBar.showError("Please enter at least one Production Team Member.");
 				return false;
-			}
+			}*/
 			
 			return true;
 		}
@@ -216,7 +217,10 @@ package Controller.ERA.Admin
 			var title:String = caseCreatorView.title.text;
 			
 			// Get QUT school
-			var qutSchool:String = caseCreatorView.qutSchool.selectedItem.data;
+			var qutSchool:String = "";
+			if(caseCreatorView.qutSchool.selectedIndex != -1) {
+				qutSchool = caseCreatorView.qutSchool.selectedItem.data;
+			}
 			
 			// get researchers
 			var researcherUsernames:Array = caseCreatorView.chosenResearchersArray;

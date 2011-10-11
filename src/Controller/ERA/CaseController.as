@@ -270,6 +270,11 @@ package Controller.ERA
 		private function deleteLogItem(e:IDEvent):void {
 			var logItem:Model_ERALogItem = e.data.logItem;
 			
+			// If the log item hasnt been saved, ignore this request, since we dont need to 
+			// do anything with the database @see EvidenceManagementView
+			if(logItem == null) {
+				return;
+			}
 			layout.notificationBar.showProcess("Deleting Evidence...");
 			
 			AppModel.getInstance().deleteERALogItem(logItem, logItemDeleted);

@@ -40,7 +40,7 @@ package Controller {
 		public static function start(stage:Recensio_Flex_Beta):void {
 			connectToServer();
 			Dispatcher.stage = stage;
-			Router.getInstance().addEventListener(IDEvent.URL_CHANGED,URLChanged);
+			//Router.getInstance().addEventListener(IDEvent.URL_CHANGED,URLChanged);
 			Router.getInstance().start();
 			setupLayout();
 			addMonitor();

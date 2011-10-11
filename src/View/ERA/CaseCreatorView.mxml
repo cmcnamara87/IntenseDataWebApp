@@ -194,6 +194,7 @@
 				rmCode.text = eraCase.rmCode;
 				
 				// Show QUT School
+				qutSchool.selectedIndex = -1;
 				for(var i:Number = 0; i < qutSchool.dataProvider.length; i++) {
 					var object:Object = (qutSchool.dataProvider as ArrayCollection).getItemAt(i);
 					if(object.data == eraCase.qutSchool) {
@@ -271,11 +272,15 @@
 				rmCode.text = "";
 				qutSchool.selectedIndex = -1;
 				researcherList.removeAllElements();
+				allResearchers.selectedIndex = -1;
 				forList.removeAllElements();
 				categoryList.removeAllElements();
+				category.selectedIndex = -1;
 				title.text = "";
 				productionManagersList.removeAllElements();
+				allProductionManagers.selectedIndex = -1;
 				productionTeamMemberList.removeAllElements();
+				allProductionTeamMembers.selectedIndex = -1;
 				
 				// Clear all stored stuff
 				chosenResearchersArray = new Array();
@@ -331,6 +336,9 @@
 				// Add it to the saved list
 				chosenResearchersArray.push(researcherSelected);
 				renderResearchers();
+				
+				// Clear the dorpdown list
+				allResearchers.selectedIndex = -1;
 			}
 
 
@@ -339,7 +347,11 @@
 				// TODO Auto-generated method stub
 				var forPair:Array = new Array();
 				forPair[Model_ERACase.FOR_CODE] = forCode.text;
-				forPair[Model_ERACase.PERCENTAGE] = forPercentage.text;
+				if(forPercentage.text.substring(forPercentage.text.length - 1) == "%") {
+					forPair[Model_ERACase.PERCENTAGE] = forPercentage.text.substring(0, forPercentage.text.length - 1);
+				} else {
+					forPair[Model_ERACase.PERCENTAGE] = forPercentage.text;
+				}
 				
 				// save it and show it
 				chosenForsArray.push(forPair);
@@ -357,6 +369,9 @@
 				// Add it to the saved list
 				chosenCategories.push(categorySelected);
 				renderCategories();
+				
+				// Clear the dorpdown list
+				category.selectedIndex = -1;
 			}
 
 
@@ -370,6 +385,9 @@
 				// Add it to the saved list
 				chosenProductionManagersArray.push(managerSelected);
 				renderProductionManagers();
+				
+				// Clear the dropdown list
+				allProductionManagers.selectedIndex = -1
 			}
 
 
@@ -383,6 +401,9 @@
 				// Add it to the saved list
 				chosenTeamMembersArray.push(teamMemberSelected);
 				renderTeamMembers();
+				
+				// Clear the dropdown list
+				allProductionTeamMembers.selectedIndex = -1
 			}
 
 
@@ -542,7 +563,7 @@
 					<components:content>
 						<s:HGroup width="100%">
 							<s:DropDownList width="100%" id="allProductionManagers" />
-							<s:Button label="Add Production Mananger" id="addProductionManagerButton" click="addProductionManagerButton_clickHandler(event)"/>
+							<s:Button label="Add Production Manager" id="addProductionManagerButton" click="addProductionManagerButton_clickHandler(event)"/>
 						</s:HGroup>
 						<s:VGroup id="productionManagersList" width="100%">
 						</s:VGroup>

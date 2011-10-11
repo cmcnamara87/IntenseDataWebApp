@@ -100,9 +100,9 @@
 		<s:HGroup id="globalButtonGroup" visible="false" height="100%" paddingTop="5" paddingBottom="5" paddingRight="20" verticalAlign="middle">
 			
 			<s:HGroup id="switchingModeButtonGroup"  width="100%">
-				<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="adminToolsButton" height="20" label="Admin Tools" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
+				<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="adminToolsButton" height="20" label="Admin Manager" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
 				</s:Button>
-				<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="productionToolsButton" height="20" label="Production Tools" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
+				<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="productionToolsButton" height="20" label="Case Manager" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
 				</s:Button>
 			</s:HGroup>
 			

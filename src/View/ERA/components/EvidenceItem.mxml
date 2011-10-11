@@ -242,6 +242,12 @@
 
 			protected function deleteEvidence_clickHandler(event:MouseEvent):void
 			{
+				if(logItem == null) {
+//					trace(this.owner, "owner for evidence item");
+//					trace(this.parent, "parent for evidence item");
+					(this.parent as VGroup).removeElement(this);
+					return
+				}
 				var deleteEvent:IDEvent = new IDEvent(IDEvent.ERA_DELETE_LOG_ITEM, true);
 				deleteEvent.data.logItem = logItem;
 				dispatchEvent(deleteEvent);

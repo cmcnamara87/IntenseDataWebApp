@@ -102,6 +102,9 @@
 				addUserToRole.data.role = role;
 				addUserToRole.data.roleComponent = this;
 				this.dispatchEvent(addUserToRole);	
+				
+				// Clear the dropdown
+				allUsers.selectedIndex = -1;
 			}
 
 			protected function allUsers_changeHandler(event:IndexChangeEvent):void

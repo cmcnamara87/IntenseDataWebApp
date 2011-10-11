@@ -19,7 +19,7 @@ package Controller.Utilities {
 		private static var _instance:Router;
 		private var _bm:IBrowserManager;
 		// The first route that is loaded after login (if no previous)
-		public static var defaultURL:String = "browse";
+		public static var defaultURL:String = "case";
 		// The title for the default Route
 		private static var defaultTitle:String = "Intense Data - Browse";
 		
