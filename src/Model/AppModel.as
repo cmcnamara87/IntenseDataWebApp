@@ -19,10 +19,12 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_DeleteERAUser;
 	import Model.Transactions.ERAProject.Transaction_ERAChangeUserPassword;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
+	import Model.Transactions.ERAProject.Transaction_GetAllFiles;
 	import Model.Transactions.ERAProject.Transaction_GetAllLogItems;
 	import Model.Transactions.ERAProject.Transaction_GetAllRooms;
 	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
+	import Model.Transactions.ERAProject.Transaction_GetFile;
 	import Model.Transactions.ERAProject.Transaction_GetUser;
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
 	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
@@ -1684,8 +1686,14 @@ package Model {
 		public function getAllERALogItemsInRoom(roomID:Number, callback:Function):void {
 			var getERALogItems:Transaction_GetAllLogItems = new Transaction_GetAllLogItems(roomID, _connection, callback);
 		}
+		public function getAllERAFilesInRoom(roomID:Number, callback:Function):void {
+			var getERAFiles:Transaction_GetAllFiles = new Transaction_GetAllFiles(roomID, _connection, callback);
+		}
 		public function uploadERAFile(roomID:Number, logItemID:Number, type:String, title:String, description:String, fileReference:FileReference, evidenceItem:EvidenceItem, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
 			var uploadERAFile:Transaction_UploadERAFile = new Transaction_UploadERAFile(AppController.currentEraProject.year, roomID, logItemID, type, title, description, fileReference, evidenceItem, _connection, ioErrorCallback, progressCallback, completeCallback);
+		}
+		public function getERAFile(fileID:Number, callback:Function):void {
+			var getERAFile:Transaction_GetFile = new Transaction_GetFile(fileID, _connection, callback);
 		}
 			
 	}

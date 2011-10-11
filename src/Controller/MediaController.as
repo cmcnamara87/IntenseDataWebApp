@@ -369,7 +369,7 @@ package Controller {
 			// Get out the returned data
 			var data:XML = XML(e.target.data);
 			
-//			trace(data);
+			trace(data);
 			
 			var media:Model_Media = AppModel.getInstance().extractMedia(data);
 			

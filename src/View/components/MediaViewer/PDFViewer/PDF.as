@@ -1,6 +1,7 @@
 package View.components.MediaViewer.PDFViewer {
 	
 	import Controller.Dispatcher;
+	import Controller.ERA.FileController;
 	import Controller.IDEvent;
 	
 	import Lib.it.transitions.Tweener;
@@ -133,7 +134,7 @@ package View.components.MediaViewer.PDFViewer {
 				if(pageNumberBeingLoaded == 1) {
 					// We couldnt load the first page, probably means its still being transcoded
 					Alert.show("This PDF is still being transcoded so we can display it. It will become available shortly.");
-					Dispatcher.call('browse');
+					Dispatcher.call('case/' + FileController.caseID);
 				} else {
 					// There are no more pages to load, so lets stop trying.
 					// We've loaded the last page

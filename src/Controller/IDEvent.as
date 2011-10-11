@@ -163,6 +163,9 @@ package Controller {
 			public static var ERA_REMOVE_USER_FROM_ROLE:String = "era_removeUserFromRole";
 			public static var ERA_UPDATE_LOG:String = "era_UpdateLog";
 			public static var ERA_DELETE_LOG_ITEM:String = "era_deleteLogItem";
+			public static var ERA_SHOW_EVIDENCE_BOX:String = "era_showEvidenceBox";
+			public static var ERA_SHOW_EVIDENCE_MANAGEMENT:String = "era_showEvidenceManagement";
+			public static var ERA_SHOW_FILE:String = "era_showFile";
 			
 			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {

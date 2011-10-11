@@ -3,8 +3,9 @@ package Model {
 	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
 	
-	public class Model_ERAEvidence extends Model_Base {
+	public class Model_ERAFile extends Model_Base {
 		
+		public var rootMetaType:String;
 		public var type:String;
 		public var fileName:String;
 		public var fileType:String;
@@ -14,7 +15,7 @@ package Model {
 		public var meta_media_uri:String;
 		
 		
-		public function Model_ERAEvidence() {
+		public function Model_ERAFile() {
 			super();
 		}
 		
@@ -37,6 +38,8 @@ package Model {
 			this.description = eraEvidenceItem["description"];
 			
 			meta_media_uri = rawData.meta.r_media.uri;
+			
+			rootMetaType = AssetLookup.getCommonType(rawData.type);
 		}
 		
 		/**
@@ -47,11 +50,11 @@ package Model {
 		 */		
 		public function generateMediaURL():String {
 			trace("Generating Media URL");
-			if(type == "video") {
+			if(rootMetaType == "video") {
 				//return "rtmp://recensio.dyndns.org/vod/" + meta_media_uri
 				trace("Media Media URI:", meta_media_uri);
 				return meta_media_uri
-			} else if(type == "document") {
+			} else if(rootMetaType == "document") {
 				trace("******PDF URL IS", "http://"+Recensio_Flex_Beta.serverAddress+"/" + meta_media_uri);
 				return "http://"+Recensio_Flex_Beta.serverAddress+"/" + meta_media_uri;
 			} else {

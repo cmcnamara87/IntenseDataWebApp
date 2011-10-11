@@ -6,6 +6,7 @@ package Controller.Utilities {
 	import Controller.ERA.Admin.UserAdminController;
 	import Controller.ERA.AppSauce;
 	import Controller.ERA.CaseController;
+	import Controller.ERA.FileController;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -79,6 +80,11 @@ package Controller.Utilities {
 				url: 'case',
 				title: 'Case',
 				classname: CaseController
+			},
+			{
+				url: 'file',
+				title: 'File',
+				classname: FileController
 			}
 		);
 		
@@ -109,10 +115,10 @@ package Controller.Utilities {
 		public function getController(url:String):Class {
 			var newController:Class = null;
 			for(var i:Number=0; i<routes.length; i++) {
-				trace("looking at route", routes[i].url, url);
+//				trace("looking at route", routes[i].url, url);
 				if(routes[i].url == url) {
 					newController = routes[i].classname;
-					trace("MATCH FOUND", newController);
+//					trace("MATCH FOUND", newController);
 				}
 			}
 			return newController;

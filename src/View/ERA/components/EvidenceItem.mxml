@@ -11,7 +11,7 @@
 			
 			import Model.AppModel;
 			import Model.Model_Base;
-			import Model.Model_ERAEvidence;
+			import Model.Model_ERAFile;
 			import Model.Model_ERALogItem;
 			
 			import flashx.textLayout.tlf_internal;
@@ -36,18 +36,22 @@
 				fileReference = new FileReference();
 				fileReference.browse(AssetLookup.getFileTypes());
 				fileReference.addEventListener(Event.SELECT, onFileSelect);
+				fileReference.addEventListener(Event.CANCEL, fileSelectCancelled);
 
-				uploadButton.label = "Uploaded";
+				uploadButton.label = "Uploading...";
 				uploadButton.enabled = false;
 			}
 			
+			private function fileSelectCancelled(e:Event):void {
+				uploadButton.label = "Upload";
+				uploadButton.enabled = true;
+			}
 			/**
 			 * A file for upload was selected
 			 */
 			private function onFileSelect(e:Event):void {
 				uploadProgress.includeInLayout = true;
 				uploadProgress.visible = true;
-				
 				
 				var uploadEvent:IDEvent = new IDEvent(IDEvent.ERA_SAVE_FILE, true);
 				uploadEvent.data.type = evidenceType.selectedItem;
@@ -63,7 +67,7 @@
 //				AppModel.getInstance().startFileUpload(dataObject);
 			}
 			
-			public function showComplete(evidence:Model_ERAEvidence):void {
+			public function showComplete(evidence:Model_ERAFile):void {
 				uploadButton.label = "Upload Complete";
 				uploadButton.enabled = false;
 				uploadProgress.includeInLayout = false;
@@ -142,23 +146,23 @@
 				for each(var logItem:Model_ERALogItem in allLogItemsArray2) {
 					trace("checking for match", title.text, ":", logItem.title);
 					if(logItem.title == title.text) {
-						AppController.layout.notificationBar.showError("A piece of evidence this name already exists. Please choose a different name.");
+//						AppController.layout.notificationBar.showError("A piece of evidence this name already exists. Please choose a different name.");
 						return;
 					}
 				}
 				
 				if(evidenceType.selectedIndex == -1) {
-					AppController.layout.notificationBar.showError("Please specify a type");
+//					AppController.layout.notificationBar.showError("Please specify a type");
 					return;
 				}
 				
 				if(title.text == "" || title.text == "name") {
-					AppController.layout.notificationBar.showError("Please enter a name for the Evidence.");
+//					AppController.layout.notificationBar.showError("Please enter a name for the Evidence.");
 					return;
 				}
 				
 				if(description.text == "" || description.text == "description") {
-					AppController.layout.notificationBar.showError("Please enter a description for the Evidence.");
+//					AppController.layout.notificationBar.showError("Please enter a description for the Evidence.");
 					return;
 				}
 				
@@ -316,6 +320,10 @@
 			public function checkForCollectionBox(value:Boolean):void {
 				// TODO Auto-generated method stub
 				collectedCheckbox.enabled = value;
+				if(collectedCheckbox.selected && value == false) {
+					// we need to uncheck it
+					checkCollectedBox(false);
+				}
 				
 				var usefulEvent:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_LOG, true);
 				usefulEvent.data.logItemID = logItem.base_asset_id;
@@ -336,9 +344,9 @@
 		<s:DropDownList id="evidenceType" width="200">
 			<s:ArrayList>
 				<fx:String>Audio</fx:String>
-				<fx:String>Images</fx:String>
+				<fx:String>Image</fx:String>
 				<fx:String>PDF</fx:String>
-				<fx:String>Photos</fx:String>
+				<fx:String>Photo</fx:String>
 				<fx:String>Physical Object</fx:String>
 				<fx:String>Research Description</fx:String>
 				<fx:String>Research Statement</fx:String>
@@ -352,7 +360,7 @@
 			<s:CheckBox label="Accepted" id="usefulCheckbox" change="usefulCheckbox_changeHandler(event)"/>
 			<s:CheckBox label="Processed" id="processedCheckbox" enabled="false" click="processedCheckbox_clickHandler(event)"/>
 			<s:Button label="Upload" id="uploadButton" click="uploadButton_clickHandler(event)" enabled="false" />
-			<s:CheckBox id="returnedCheckbox" label="Return" change="returnedCheckbox_changeHandler(event)" />
+			<s:CheckBox id="returnedCheckbox" label="For Collection" change="returnedCheckbox_changeHandler(event)" />
 			<s:CheckBox id="collectedCheckbox" label="Collected" click="collectedCheckbox_clickHandler(event)" enabled="false"/>
 		</s:HGroup>
 	</s:HGroup>

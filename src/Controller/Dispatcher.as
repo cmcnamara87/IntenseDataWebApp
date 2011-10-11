@@ -86,6 +86,7 @@ package Controller {
 		// Called on first load
 		private static function init(e:Event):void {
 			URLChanged(new IDEvent(IDEvent.URL_CHANGED));
+			Router.getInstance().addEventListener(IDEvent.URL_CHANGED,URLChanged);
 		}
 		
 		// Called on logout

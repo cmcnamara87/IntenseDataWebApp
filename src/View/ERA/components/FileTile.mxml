@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100" gap="15" buttonMode="true" mouseOver="vgroup1_mouseOverHandler(event)" mouseOut="vgroup1_mouseOutHandler(event)" mouseDown="vgroup1_mouseDownHandler(event)" mouseUp="vgroup1_mouseUpHandler(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import Controller.Dispatcher;
+			import Controller.IDEvent;
+			import Controller.Utilities.Auth;
+			[Bindable]
+			public var title:String = "";
+			
+			[Bindable]
+			public var fileID:Number;
+		
+			public function loadURL(id:Number):void {
+				icon.source = 'http://' + Recensio_Flex_Beta.serverAddress + ':' + Recensio_Flex_Beta.serverPort + '/mflux/icon.mfjp?_skey=' + Auth.getInstance().getSessionID() + '&id=' + fileID + '&version=0&size=100'
+			}
+
+			protected function vgroup1_mouseDownHandler(event:MouseEvent):void
+			{
+				this.alpha = 0.5;
+			}
+
+
+			protected function vgroup1_mouseUpHandler(event:MouseEvent):void
+			{
+				this.alpha = 1;
+				var showFileEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_FILE, true);
+				showFileEvent.data.fileID = fileID;
+				trace("dispatching show file event");
+				this.dispatchEvent(showFileEvent);
+			}
+
+
+			protected function vgroup1_mouseOverHandler(event:MouseEvent):void
+			{
+				this.alpha = 0.8;
+				// TODO Auto-generated method stub
+			}
+
+
+			protected function vgroup1_mouseOutHandler(event:MouseEvent):void
+			{
+				this.alpha = 1;
+				// TODO Auto-generated method stub
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	
+	<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true"/>
+	<s:Label text="{title}" width="100%" textAlign="center" />
+</s:VGroup>

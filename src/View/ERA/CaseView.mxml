@@ -9,6 +9,7 @@
 		<![CDATA[
 			import Controller.AppController;
 			import Controller.ERA.CaseController;
+			import Controller.IDEvent;
 			import Controller.Utilities.AssetLookup;
 			import Controller.Utilities.Auth;
 			
@@ -17,11 +18,13 @@
 			import Model.Model_ERAProject;
 			import Model.Model_ERAUser;
 			
+			import View.ERA.components.EvidenceBox;
 			import View.ERA.components.EvidenceManagement;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.controls.Text;
+			import mx.core.UIComponent;
 			import mx.graphics.SolidColor;
 			
 			import spark.components.Label;
@@ -32,13 +35,32 @@
 			private var arrayTest:ArrayList = new ArrayList(aasdf);
 			
 			private var evidenceManagement:EvidenceManagement;
+			private var evidenceBox:EvidenceBox;
 			
 			public function showEvidenceManagement(logItemArray:Array):void {
+				for(var i:Number = 0; i < roomButtons.numElements; i++) {
+					roomButtons.getElementAt(i).alpha = 0.5;
+				}
+				evidenceManagementButton.alpha = 1;
+				
 				evidenceManagement = new EvidenceManagement();
 				room.removeAllElements();
 				room.addElement(evidenceManagement);
 				evidenceManagement.addLogItems(logItemArray);
 			}
+			public function showEvidenceBox(fileArray:Array):void {
+				for(var i:Number = 0; i < roomButtons.numElements; i++) {
+					roomButtons.getElementAt(i).alpha = 0.5;
+				}
+				evidenceBoxButton.alpha = 1;
+				
+				evidenceBox = new EvidenceBox();
+				room.removeAllElements();
+				room.addElement(evidenceBox);
+				evidenceBox.addFiles(fileArray);
+				
+			}
+			
 			public function deleteEvidenceItem(logItemDeleted:Model_ERALogItem):void {
 				evidenceManagement.deleteEvidenceItem(logItemDeleted);
 			}
@@ -140,6 +162,26 @@
 				}
 			}
 
+
+			protected function roomicon1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+
+			protected function evidenceBoxButton_clickHandler(event:MouseEvent):void
+			{
+				var showEvidenceBoxEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_EVIDENCE_BOX, true);
+				this.dispatchEvent(showEvidenceBoxEvent);
+			}
+
+
+			protected function evidenceManagementButton_clickHandler(event:MouseEvent):void
+			{
+				var showEvidenceManagementEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_EVIDENCE_MANAGEMENT, true);
+				this.dispatchEvent(showEvidenceManagementEvent);
+			}
+
 		]]>
 	</fx:Script>
 
@@ -192,10 +234,10 @@
 		<!-- START THE CASE NAV SECTION -->
 		<s:BorderContainer id="caseNav" backgroundColor="0x565656" width="100%" height="160" borderVisible="false" resizeEffect="Resize">
 			<s:VGroup horizontalAlign="center" height="100%" width="100%">
-				<s:HGroup height="100%" verticalAlign="middle" gap="10">
-					<components:RoomIcon roomName="Evidence Manager" />
+				<s:HGroup height="100%" verticalAlign="middle" gap="10" id="roomButtons">
+					<components:RoomIcon roomName="Evidence Manager" id="evidenceManagementButton" click="evidenceManagementButton_clickHandler(event)"/>
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Evidence Box" alpha="0.5" unavailable="true" />
+					<components:RoomIcon roomName="Evidence Box" alpha="0.5" id="evidenceBoxButton" click="evidenceBoxButton_clickHandler(event)" />
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
 					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" unavailable="true" />
 					<mx:Image source="{AssetLookup.getLeftRightArrowIconClass()}" width="46" height="72"></mx:Image>

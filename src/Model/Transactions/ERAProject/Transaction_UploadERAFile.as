@@ -3,7 +3,7 @@ package Model.Transactions.ERAProject
 	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
-	import Model.Model_ERAEvidence;
+	import Model.Model_ERAFile;
 	import Model.Utilities.Connection;
 	
 	import View.ERA.components.EvidenceItem;
@@ -165,7 +165,7 @@ package Model.Transactions.ERAProject
 				completeCallback(false);
 			}
 			
-			var eraEvidence:Model_ERAEvidence = new Model_ERAEvidence();
+			var eraEvidence:Model_ERAFile = new Model_ERAFile();
 			eraEvidence.setData(data.reply.result.asset[0]);
 			
 			completeCallback(true, eraEvidence, evidenceItem);

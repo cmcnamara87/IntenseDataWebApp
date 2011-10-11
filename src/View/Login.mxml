@@ -33,6 +33,6 @@
 	<s:HGroup paddingBottom="10" paddingLeft="80" paddingRight="10" paddingTop="5" verticalAlign="bottom">
 		<s:Label text="Powered by" />	
 		<mx:Image source="{idLogo}" width="200" height="19" click="image1_clickHandler(event)"></mx:Image>
-		<s:Label text="TM" />
+		<s:Label text="TM 2" />
 	</s:HGroup>
 </s:VGroup>

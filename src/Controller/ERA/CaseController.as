@@ -8,7 +8,7 @@ package Controller.ERA
 	
 	import Model.AppModel;
 	import Model.Model_ERACase;
-	import Model.Model_ERAEvidence;
+	import Model.Model_ERAFile;
 	import Model.Model_ERALogItem;
 	import Model.Model_ERAProject;
 	import Model.Model_ERARoom;
@@ -19,6 +19,7 @@ package Controller.ERA
 	import View.ERA.components.EvidenceItem;
 	import View.ERA.components.NotificationBar;
 	
+	import flash.events.Event;
 	import flash.net.FileReference;
 	
 	import mx.controls.Alert;
@@ -35,6 +36,10 @@ package Controller.ERA
 		public static var currentERACase:Model_ERACase = null;
 		private var roomArray:Array;
 		private var currentRoom:Model_ERARoom = null;
+		
+		// setup teh users permissions for the ucrrent case
+		private var isProductionManager:Boolean = false;
+		private var isTeamManager:Boolean = false;
 		
 		public function CaseController()
 		{
@@ -59,7 +64,13 @@ package Controller.ERA
 			caseView.addEventListener(IDEvent.ERA_UPDATE_LOG, updateLog);
 			// Listen for era being changed
 			caseView.caseERADropdown.addEventListener(IndexChangeEvent.CHANGE, eraChanged);
-			// Listen for file upload
+			
+			// Listen for changing to the evidence manager
+			caseView.addEventListener(IDEvent.ERA_SHOW_EVIDENCE_MANAGEMENT, showEvidenceManagement);				
+			// Listen for changing to the evidence box
+			caseView.addEventListener(IDEvent.ERA_SHOW_EVIDENCE_BOX, showEvidenceBox);
+			
+			caseView.addEventListener(IDEvent.ERA_SHOW_FILE, showFile);
 		}
 		override public function init():void {
 			layout.header.adminToolButtons.visible = false;
@@ -81,6 +92,60 @@ package Controller.ERA
 			getAllERACases();
 		}
 		
+		private function showFile(e:IDEvent):void {
+			trace("got a file", e.data.fileID);
+			var fileID:Number = e.data.fileID;
+			trace("displatching to", "file/" + caseID + "/" + currentRoom.roomType + "/" + fileID);
+			Dispatcher.call("file/" + caseID + "/" + currentRoom.roomType + "/" + fileID);
+		}
+		
+		
+		/*==================================== SHOW EVIDENCE MANAGEMENT ===========================================*/
+		private function showEvidenceManagement(e:Event=null):void {
+			// people who have access, are the sys admin,
+			trace("its an evidence management room");
+			
+			
+			if(Auth.getInstance().isSysAdmin() || isProductionManager || isTeamManager) {
+				currentRoom = this.getRoom(Model_ERARoom.EVIDENCE_MANAGEMENT);
+				trace("Access granted*******");
+				
+				// Change the url
+				Router.getInstance().setURL("case/" + caseID + "/" + Model_ERARoom.EVIDENCE_MANAGEMENT);
+				
+				caseView.showEvidenceManagement(null);
+				AppModel.getInstance().getAllERALogItemsInRoom(currentRoom.base_asset_id, gotAllLogItems);
+			} else {
+				trace("ACCESS REFUSED TO EVIDENCE MANAGER");
+			}
+		}
+		/* ====================================== GOT ALL THE LOG ITEMS ===================================== */
+		private function gotAllLogItems(status:Boolean, logItemArray:Array):void {
+			caseView.showEvidenceManagement(logItemArray);
+		}
+		/* ====================================== END OF GOT ALL THE LOG ITEMS ===================================== */
+		
+		
+		
+		/*==================================== SHOW EVIDENCE BOX ===========================================*/
+		private function showEvidenceBox(e:Event=null):void {
+			if(Auth.getInstance().isSysAdmin() || isProductionManager || isTeamManager) {
+				currentRoom = this.getRoom(Model_ERARoom.EVIDENCE_ROOM);
+				
+				// Change the url
+				Router.getInstance().setURL("case/" + caseID + "/" + Model_ERARoom.EVIDENCE_ROOM);
+				
+				caseView.showEvidenceBox(null);
+				AppModel.getInstance().getAllERAFilesInRoom(currentRoom.base_asset_id, gotAllFiles);
+			} else {
+				trace("ACCESS REFUSED TO EVIDENCE ROOM");
+			}
+		}
+		private function gotAllFiles(status:Boolean, fileArray:Array):void {
+			caseView.showEvidenceBox(fileArray);
+		}
+		/*======================================== END OF EVIDENCE BOX ========================================= */
+		
 		private function eraChanged(e:IndexChangeEvent):void {
 			var dropdownList:DropDownList = (e.target as DropDownList);
 			
@@ -94,12 +159,13 @@ package Controller.ERA
 			Dispatcher.call(currentURL);
 		}
 		
+		
 		/**
 		 * Gets all the Cases for the Current ERA submission 
 		 * 
 		 */
 		private function getAllERACases():void {
-			// Get out the current ID
+			// Get out the current for the case ID
 			if(Dispatcher.getArgs().length > 0) {
 				// THe case ID was given
 				caseID = Dispatcher.getArgs()[0];
@@ -151,91 +217,62 @@ package Controller.ERA
 				}
 			}
 			
+			// Add the cases for the view
+			// If the era case is emtpy, its going to display "no cases found"
+			caseView.addCases(eraCaseArray);
+			
 			// Just check that we found a case from all that shit up above
 			if(currentERACase != null) {
-				// If the era case is emtpy, its going to display "no cases found"
-				caseView.addCases(eraCaseArray);
-				
-				// We have an era case to show
+				// We have the current case
+				// now lets store all the permissions for the ucrrent case 
+				this.readCasePermissions();
+
 				// Get out all the rooms
 				AppModel.getInstance().getAllRoomsInCase(caseID, gotAllRooms);
-				// so lets load all the evidence for it
-				// so lets show the evidence management view
+			}
+		}
+		
+		private function readCasePermissions():void {
+			// production manager
+			isProductionManager = false;
+			for each(var user:Model_ERAUser in currentERACase.productionManagerArray) {
+				if(Auth.getInstance().getUsername() == user.username) {
+					isProductionManager = true;
+					break;
+				}
+			}
+			
+			// or production team
+			isTeamManager = false;
+			for each(var teamUser:Model_ERAUser in currentERACase.productionTeamArray) {
+				if(Auth.getInstance().getUsername() == teamUser.username) {
+					isTeamManager = true;
+					break;
+				}
 			}
 		}
 		private function gotAllRooms(status:Boolean, eraRoomArray:Array):void {
 			if(status) {
+				// Store all the rooms
 				this.roomArray = eraRoomArray;
-				currentRoom = this.getRoomIndex(roomType);
-				if(currentRoom != null) {
-					trace("Found rooms");
-					
-					// Do we have access to this room?
-					// ONLY LOOKING AT EVIDENCE MANAGER FOR NOW!!!!
-					// TODO ADD IN OTHER ROOMS
-					var canAccessRoom:Boolean = false;
-					trace("Checking for access");
-					if(roomType == Model_ERARoom.EVIDENCE_MANAGEMENT) {
-						// people who have access, are the sys admin,
-						trace("its an evidence management room");
-						if(Auth.getInstance().isSysAdmin()) {
-							canAccessRoom = true;
-						}
-						
-						// production manager
-						for each(var user:Model_ERAUser in currentERACase.productionManagerArray) {
-							if(Auth.getInstance().getUsername() == user.username) {
-								canAccessRoom = true;
-								trace("is a production manager");
-								break;
-							}
-						}
-						
-						// or production team
-						for each(var teamUser:Model_ERAUser in currentERACase.productionTeamArray) {
-							if(Auth.getInstance().getUsername() == teamUser.username) {
-								canAccessRoom = true;
-								trace("is a production team member");
-								break;
-							}
-						}
-					}
-					
-					
-					
-					if(canAccessRoom) {
-						trace("Access granted*******");
-						caseView.showEvidenceManagement(null);
-						loadRoomContents();
-					} else {
-						trace("access refused");
-					}
+				
+				switch(roomType) {
+					case Model_ERARoom.EVIDENCE_MANAGEMENT:
+						this.showEvidenceManagement();
+						break;
+					case Model_ERARoom.EVIDENCE_ROOM:
+						this.showEvidenceBox();
+						break;
+					default:
+						break;
 				}
 			} else {
 				layout.notificationBar.showError("No Rooms Found.");
 			}
 				
-		}
-		
-		/* ====================================== LOAD A ROOM CONTENT ===================================== */
-		private function loadRoomContents():void {
-			switch(roomType) {
-				case Model_ERARoom.EVIDENCE_MANAGEMENT:
-					AppModel.getInstance().getAllERALogItemsInRoom(currentRoom.base_asset_id, gotAllLogItems);
-					break;
-				default:
-					break;
-			}
-		}
-		/* ====================================== END OF LOAD A ROOM CONTENT ===================================== */
+		}	
 		
 		
-		
-		/* ====================================== GOT ALL THE LOG ITEMS ===================================== */
-		private function gotAllLogItems(status:Boolean, logItemArray:Array):void {
-			caseView.showEvidenceManagement(logItemArray);
-		}
-		/* ====================================== END OF GOT ALL THE LOG ITEMS ===================================== */
 		
 		
 		
@@ -253,7 +290,7 @@ package Controller.ERA
 			
 			layout.notificationBar.showProcess("Saving Evidence...");
 			
-			AppModel.getInstance().createERALogItem(getRoomIndex(Model_ERARoom.EVIDENCE_MANAGEMENT).base_asset_id, type, title, description, evidenceItem, logItemSaved);
+			AppModel.getInstance().createERALogItem(getRoom(Model_ERARoom.EVIDENCE_MANAGEMENT).base_asset_id, type, title, description, evidenceItem, logItemSaved);
 		}
 		private function logItemSaved(status:Boolean, logItem:Model_ERALogItem=null, evidenceItem:EvidenceItem=null):void {
 			if(!status) {
@@ -324,7 +361,7 @@ package Controller.ERA
 			
 			layout.notificationBar.showProcess("Uploading file...");
 			
-			AppModel.getInstance().uploadERAFile(getRoomIndex(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, logItemID, type, title, description, file, evidenceItem, uploadIOError, uploadProgress, uploadComplete); 
+			AppModel.getInstance().uploadERAFile(getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, logItemID, type, title, description, file, evidenceItem, uploadIOError, uploadProgress, uploadComplete); 
 		}
 		private function uploadIOError():void {
 			layout.notificationBar.showError("Failed to Upload file.");
@@ -332,7 +369,7 @@ package Controller.ERA
 		private function uploadProgress(percentage:Number, evidenceItem:EvidenceItem):void {
 			evidenceItem.showProgress(percentage);
 		}
-		private function uploadComplete(status:Boolean, eraEvidence:Model_ERAEvidence=null, evidenceItem:EvidenceItem=null):void {
+		private function uploadComplete(status:Boolean, eraEvidence:Model_ERAFile=null, evidenceItem:EvidenceItem=null):void {
 			if(status) {
 				layout.notificationBar.showGood("Upload Complete");
 				evidenceItem.showComplete(eraEvidence);
@@ -343,7 +380,7 @@ package Controller.ERA
 		/* ====================================== END OF SAVE A FILE ===================================== */
 		
 		
-		private function getRoomIndex(roomType:String):Model_ERARoom {
+		private function getRoom(roomType:String):Model_ERARoom {
 			for(var i:Number = 0; i < roomArray.length; i++) {
 				var room:Model_ERARoom = (roomArray[i] as Model_ERARoom);
 				trace("room type", room.roomType);
