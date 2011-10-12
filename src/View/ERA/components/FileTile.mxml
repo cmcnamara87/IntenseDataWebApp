@@ -7,7 +7,9 @@
 		<![CDATA[
 			import Controller.Dispatcher;
 			import Controller.IDEvent;
+			import Controller.Utilities.AssetLookup;
 			import Controller.Utilities.Auth;
+			
 			[Bindable]
 			public var title:String = "";
 			
@@ -16,9 +18,16 @@
 			
 			[Bindable]
 			public var fileID:Number;
+			
+			[Bindable]
+			public var rootMetaType:String;
 		
 			public function loadURL(id:Number):void {
-				icon.source = 'http://' + Recensio_Flex_Beta.serverAddress + ':' + Recensio_Flex_Beta.serverPort + '/mflux/icon.mfjp?_skey=' + Auth.getInstance().getSessionID() + '&id=' + fileID + '&version=0&size=100'
+				if(rootMetaType == "image") {
+					icon.source = 'http://' + Recensio_Flex_Beta.serverAddress + ':' + Recensio_Flex_Beta.serverPort + '/mflux/icon.mfjp?_skey=' + Auth.getInstance().getSessionID() + '&id=' + fileID + '&version=0&size=100'
+				} else {
+					icon.source = AssetLookup.getAssetImageClass(rootMetaType);
+				}
 			}
 
 			protected function vgroup1_mouseDownHandler(event:MouseEvent):void
@@ -59,5 +68,5 @@
 	
 	
 	<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="{description}"/>
-	<s:Label text="{title}" width="100%" textAlign="center" />
+	<s:Label text="{title} (JPG)" width="100%" textAlign="center" />
 </s:VGroup>

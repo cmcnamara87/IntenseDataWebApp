@@ -40,6 +40,17 @@ package Controller.Utilities {
 		// ERA room icons
 		[Embed(source="Assets/Template/evidence_manager_icon.png")]
 		public static var EvidenceManagerIcon:Class;
+		[Embed(source="Assets/Template/evidence_box_icon.png")]
+		public static var EvidenceBoxIcon:Class;
+		[Embed(source="Assets/Template/forensic_lab_icon.png")]
+		public static var ForensicLabIcon:Class;
+		[Embed(source="Assets/Template/screening_lab_icon.png")]
+		public static var ScreeningLabIcon:Class;
+		[Embed(source="Assets/Template/exhibition_icon.png")]
+		public static var ExhibitionIcon:Class;
+		[Embed(source="Assets/Template/post_mortem_icon.png")]
+		public static var PostMortemIcon:Class;
+		
 		
 		[Embed(source="Assets/Template/assets/audio2.png")] 
 		private static var Asseticon_audio:Class;

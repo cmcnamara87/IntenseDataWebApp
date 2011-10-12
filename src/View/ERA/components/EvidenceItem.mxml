@@ -43,7 +43,8 @@
 				}
 				
 				fileReference = new FileReference();
-				fileReference.browse(AssetLookup.getFileFilter(logItem.type));
+//				fileReference.browse(AssetLookup.getFileFilter(logItem.type));
+				fileReference.browse(AssetLookup.getFileTypes());
 				fileReference.addEventListener(Event.SELECT, onFileSelect);
 				fileReference.addEventListener(Event.CANCEL, fileSelectCancelled);
 
@@ -209,7 +210,6 @@
 				// if it is, pull it out
 				for(var i:Number = 0; i < allLogItemsArray2.length; i++) {
 					var searchedLogItems:Model_ERALogItem = allLogItemsArray2[i] as Model_ERALogItem;
-					trace("checking for removal of match", logItem.base_asset_id, ":", searchedLogItems.base_asset_id);
 					if(logItem.base_asset_id == searchedLogItems.base_asset_id) {
 						allLogItemsArray2.splice(i, 1);
 					}
@@ -218,7 +218,6 @@
 				// Add the item (only going to be one copy now, because of the lines above);
 				allLogItemsArray2.push(logItem);
 //				
-				trace('all items', this.allLogItemsArray2);
 				
 				this.logItem = logItem;
 				
