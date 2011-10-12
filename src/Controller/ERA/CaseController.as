@@ -95,8 +95,14 @@ package Controller.ERA
 		private function showFile(e:IDEvent):void {
 			trace("got a file", e.data.fileID);
 			var fileID:Number = e.data.fileID;
-			trace("displatching to", "file/" + caseID + "/" + currentRoom.roomType + "/" + fileID);
-			Dispatcher.call("file/" + caseID + "/" + currentRoom.roomType + "/" + fileID);
+			var roomType:String = "";
+			if(e.data.roomType) {
+				roomType = e.data.roomType;
+			} else {
+				roomType = currentRoom.roomType;
+			} 
+			trace("displatching to", "file/" + caseID + "/" + roomType + "/" + fileID);
+			Dispatcher.call("file/" + caseID + "/" + roomType + "/" + fileID);
 		}
 		
 		

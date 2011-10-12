@@ -146,6 +146,41 @@ package Controller.Utilities {
 			super();
 		}
 		
+		public static function getFileFilter(type:String):Array {
+//			<fx:String>Audio</fx:String>
+//				<fx:String>Image</fx:String>
+//				<fx:String>PDF</fx:String>
+//				<fx:String>Photo</fx:String>
+//				<fx:String>Physical Object</fx:String>
+//				<fx:String>Research Description</fx:String>
+//				<fx:String>Research Statement</fx:String>
+//				<fx:String>Video</fx:String>
+			switch(type) {
+				case "Audio":
+					var audioFilters:FileFilter = new FileFilter("Audio (mp3)","*.mp3");
+					return new Array(audioFilters);
+					break;
+				case "Image":
+					var imageFilters:FileFilter = new FileFilter("Image (gif, jpg, jpeg, bmp, png, tif)","*.gif, *.jpg, *.jpeg, *.bmp, *.png, *.tif");
+					return new Array(imageFilters);
+					break;
+				case "PDF":
+				case "Research Description":
+				case "Research Statement":
+					var docFilters:FileFilter = new FileFilter("PDF (pdf)","*.pdf");
+					return new Array(docFilters);
+				case "Video":
+					var videoFilters:FileFilter = new FileFilter("Video (mp4, avi)","*.mp4, *.avi");
+					return new Array(videoFilters);
+					break;
+				default:
+					break;
+			}
+			
+			var docFilters:FileFilter = new FileFilter("PDF (pdf)","*.pdf");
+			return new Array(docFilters); 
+		}
+		
 		//Returns the appropriate module loader (in src/View/ModuleWrapper)
 		public static function getClass(type:String):Class {
 			switch(type) {

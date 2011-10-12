@@ -13,6 +13,7 @@
 			import Model.Model_Base;
 			import Model.Model_ERAFile;
 			import Model.Model_ERALogItem;
+			import Model.Model_ERARoom;
 			
 			import flashx.textLayout.tlf_internal;
 			
@@ -33,8 +34,16 @@
 			 */
 			protected function uploadButton_clickHandler(event:MouseEvent):void
 			{
+				if(logItem.uploaded) {
+					var showFileEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_FILE, true);
+					showFileEvent.data.fileID = logItem.dataItemID;
+					showFileEvent.data.roomType = Model_ERARoom.EVIDENCE_ROOM;
+					dispatchEvent(showFileEvent);
+					return;
+				}
+				
 				fileReference = new FileReference();
-				fileReference.browse(AssetLookup.getFileTypes());
+				fileReference.browse(AssetLookup.getFileFilter(logItem.type));
 				fileReference.addEventListener(Event.SELECT, onFileSelect);
 				fileReference.addEventListener(Event.CANCEL, fileSelectCancelled);
 
@@ -68,8 +77,8 @@
 			}
 			
 			public function showComplete(evidence:Model_ERAFile):void {
-				uploadButton.label = "Upload Complete";
-				uploadButton.enabled = false;
+				uploadButton.label = "View";
+				uploadButton.enabled = true;
 				uploadProgress.includeInLayout = false;
 				uploadProgress.visible = false;
 				logItem.uploaded = true;
@@ -88,8 +97,15 @@
 			 */
 			protected function cancelUploadButton_clickHandler(event:MouseEvent):void
 			{
+				fileReference.cancel();
+				
 				uploadProgress.includeInLayout = false;
 				uploadProgress.visible = false;
+				
+				uploadButton.label = "Upload";
+				uploadButton.enabled = true;
+				
+				
 			}
 
 			/**
@@ -229,12 +245,21 @@
 					uploadButton.enabled = true;
 				}
 				
-				if(logItem.uploaded) {
-					uploadButton.label = "Uploaded";
+				if(logItem.type == "Physical Object") {
+					// its a physical object, so you cant upload it
+					uploadButton.label = "Disabled";
 					uploadButton.enabled = false;
 				} else {
-					uploadButton.label = "Upload";
+					
+					if(logItem.uploaded) {
+						uploadButton.label = "View";
+					} else {
+						uploadButton.label = "Upload";
+					}
+					
 				}
+				
+				
 				
 				returnedCheckbox.selected = logItem.returned;
 				
@@ -318,7 +343,6 @@
 			}
 			
 			public function checkForCollectionBox(value:Boolean):void {
-				// TODO Auto-generated method stub
 				collectedCheckbox.enabled = value;
 				if(collectedCheckbox.selected && value == false) {
 					// we need to uncheck it
@@ -346,7 +370,6 @@
 				<fx:String>Audio</fx:String>
 				<fx:String>Image</fx:String>
 				<fx:String>PDF</fx:String>
-				<fx:String>Photo</fx:String>
 				<fx:String>Physical Object</fx:String>
 				<fx:String>Research Description</fx:String>
 				<fx:String>Research Statement</fx:String>
@@ -366,6 +389,6 @@
 	</s:HGroup>
 	<s:HGroup id="uploadProgress" width="100%" visible="false" includeInLayout="false">
 		<components1:LoadingBar id="progressBar" width="100%" />
-		<s:Button width="50" label="X" id="cancelUploadButton" click="cancelUploadButton_clickHandler(event)"/>
+		<s:Button width="70" label="Cancel" id="cancelUploadButton" click="cancelUploadButton_clickHandler(event)"/>
 	</s:HGroup>
 </s:VGroup>
