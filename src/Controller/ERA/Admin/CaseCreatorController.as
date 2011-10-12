@@ -144,7 +144,10 @@ package Controller.ERA.Admin
 			var title:String = caseCreatorView.title.text;
 			
 			// Get QUT school
-			var qutSchool:String = caseCreatorView.qutSchool.selectedItem.data;
+			var qutSchool:String = "";
+			if(caseCreatorView.qutSchool.selectedIndex != -1) {
+				var qutSchool:String = caseCreatorView.qutSchool.selectedItem.data;
+			}
 			
 			// get researchers
 			var researcherUsernames:Array = caseCreatorView.chosenResearchersArray;

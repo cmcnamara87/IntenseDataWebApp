@@ -68,14 +68,19 @@ package Model.Transactions.ERAProject
 			// Setup the era meta-data
 			argsXML.meta.@action = "replace";
 			argsXML.meta["ERA-case"]["RM_code"] = this.rmCode;
-			argsXML.meta["ERA-case"]["title"] = this.title;
+			
+			if(this.title != "") {
+				argsXML.meta["ERA-case"]["title"] = this.title;
+			}
 			
 			// setup the researchers
 			for each(var researcher:Model_ERAUser in researcherArray) {
 				argsXML.meta["ERA-case"].appendChild(XML("<researcher_username><username>" + researcher.username + "</username><first_name>"+researcher.firstName+"</first_name><last_name>"+researcher.lastName+"</last_name></researcher_username>"));
 			}
 			
-			argsXML.meta["ERA-case"]["qut_school"] = this.qutSchool;
+			if(this.qutSchool != "") {
+				argsXML.meta["ERA-case"]["qut_school"] = this.qutSchool;
+			}
 			
 			// setup for codes/percentages
 			for each(var forElementArray:Array in forArray) {

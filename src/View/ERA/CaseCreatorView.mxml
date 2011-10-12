@@ -53,7 +53,7 @@
 					object.data = eraCase;
 					
 					var researcher:Model_ERAUser = (eraCase.researchersArray[0] as Model_ERAUser);
-					object.label = researcher.lastName + ", " + researcher.firstName + " (" + eraCase.rmCode + ")";
+					object.label = researcher.lastName + ", " + researcher.firstName + " (RM " + eraCase.rmCode + ")";
 					dropdownData.addItem(object);
 				}
 				currentCases.dataProvider = dropdownData;

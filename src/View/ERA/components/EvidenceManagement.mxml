@@ -95,6 +95,7 @@
 
 			protected function markAllForCollectionButton_clickHandler(event:MouseEvent):void
 			{
+				if(logItemArray2.length == 0) return;
 				for(var i:Number = 0; i < logItemList.numElements; i++) {
 					var evidenceItem:EvidenceItem = logItemList.getElementAt(i) as EvidenceItem;
 					evidenceItem.checkForCollectionBox(true);
@@ -104,6 +105,8 @@
 
 			protected function markAllAsCollectedButton_clickHandler(event:MouseEvent):void
 			{
+				if(logItemArray2.length == 0) return;
+				
 				for(var i:Number = 0; i < logItemList.numElements; i++) {
 					var evidenceItem:EvidenceItem = logItemList.getElementAt(i) as EvidenceItem;
 					evidenceItem.checkCollectedBox(true);

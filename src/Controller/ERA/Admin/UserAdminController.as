@@ -95,7 +95,7 @@ package Controller.ERA.Admin
 			
 			AppModel.getInstance().createERAUser(qutUsername, firstName, lastName, eraUserCreated);
 		}
-		private function eraUserCreated(status:Boolean, eraUser:Model_ERAUser):void {
+		private function eraUserCreated(status:Boolean, eraUser:Model_ERAUser=null):void {
 			if(status) {
 				layout.notificationBar.showGood("User Created");
 				
