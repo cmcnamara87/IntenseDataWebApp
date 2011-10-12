@@ -69,10 +69,10 @@ package Module.AudioViewer
 		public function AudioAnnotateWave()
 		{
 			super();
-			if(BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
+//			if(BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
 				// If we are looking at the original files, dont listen for drawing annotations
 				this.addEventListener(MouseEvent.MOUSE_DOWN,startAnnotation);
-			}
+//			}
 			this.addEventListener(Event.ADDED_TO_STAGE,loadView);
 			this.addEventListener(Event.RESIZE,resize);
 			

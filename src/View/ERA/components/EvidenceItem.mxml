@@ -369,6 +369,7 @@
 				<fx:String>Audio</fx:String>
 				<fx:String>Image</fx:String>
 				<fx:String>PDF</fx:String>
+				<fx:String>Office Documents</fx:String>
 				<fx:String>Physical Object</fx:String>
 				<fx:String>Research Description</fx:String>
 				<fx:String>Research Statement</fx:String>

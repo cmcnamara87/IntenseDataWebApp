@@ -38,9 +38,7 @@
 			private var evidenceBox:EvidenceBox;
 			
 			public function showEvidenceManagement(logItemArray:Array):void {
-				for(var i:Number = 0; i < roomButtons.numElements; i++) {
-					roomButtons.getElementAt(i).alpha = 1;
-				}
+				showRoomsAsNotSelected();
 				evidenceManagementButton.alpha = 1;
 				
 				evidenceManagement = new EvidenceManagement();
@@ -48,10 +46,13 @@
 				room.addElement(evidenceManagement);
 				evidenceManagement.addLogItems(logItemArray);
 			}
-			public function showEvidenceBox(fileArray:Array):void {
+			private function showRoomsAsNotSelected():void {
 				for(var i:Number = 0; i < roomButtons.numElements; i++) {
-					roomButtons.getElementAt(i).alpha = 0.5;
+					roomButtons.getElementAt(i).alpha = 1;
 				}
+			}
+			public function showEvidenceBox(fileArray:Array):void {
+				
 				evidenceBoxButton.alpha = 1;
 				
 				evidenceBox = new EvidenceBox();

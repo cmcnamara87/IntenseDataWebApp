@@ -9,6 +9,7 @@ package Module.AudioViewer
 	import Module.AudioViewer.AudioAnnotateWave;
 	import Module.ImageViewer.ImageAnnotation;
 	
+	import View.ERA.FileView;
 	import View.MediaView;
 	import View.components.Annotation.AnnotationBox;
 	import View.components.MediaViewer.MediaViewer;
@@ -50,7 +51,7 @@ package Module.AudioViewer
 		public var visualisation:String = 'line';
 		//public var autoplay:Boolean = false;
 		public var autoplay:Boolean = false; // true;
-		public var annotationSave:Function = MediaView.saveAnnotationFunction;
+		public var annotationSave:Function = FileView.saveAnnotationFunction;// MediaView.saveAnnotationFunction;
 		public var annotationDelete:Function;
 		
 		public var borderWidth:Number = 2;

@@ -412,7 +412,7 @@ package Controller.ERA {
 			
 			// Copy the access from the parent media asset, to the annotation
 			// TODO race issue here, if  we exit the media, before the saving is done
-			AppModel.getInstance().copyAccess(currentAssetID, annotationID);
+//			AppModel.getInstance().copyAccess(currentAssetID, annotationID);
 			
 			// Set the class for this annotation to be Annotation
 			AppModel.getInstance().setAnnotationClassForID(annotationID, function(e:Event):void {

@@ -142,11 +142,12 @@ package Controller.Utilities {
 		
 		//File formats that can be uploaded
 //		private static var allFilters:FileFilter = new FileFilter("All Accepted File Types", "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;*.mp3;*.wma;*.wavDocument;*.pdf;*.swf;");
-		private static var allFilters:FileFilter = new FileFilter("All Accepted File Types", "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;*.mp3;*.pdf;");//*.swf;");
+		private static var allFilters:FileFilter = new FileFilter("All Accepted File Types", "*.jpg;*.gif;*.png;*.jpeg;*.bmp;*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;*.mp3;*.pdf;*.doc;*.docx;*.ppt;");//*.swf;");
 		private static var imageFilters:FileFilter = new FileFilter("Images (jpg, gif, png, jpeg)","*.jpg;*.gif;*.png;*.jpeg;*.bmp");
 		private static var videoFilters:FileFilter = new FileFilter("Video (mov, flv, mp4, avi, mpg, mpeg)","*.mov;*.flv;*.mp4;*.avi;*.mpg;*.mpeg;");
 		private static var audioFilters:FileFilter = new FileFilter("Audio (mp3)","*.mp3;");
 		private static var documentFilters:FileFilter = new FileFilter("Document (pdf, swf)","*.pdf;");//*.swf");
+		private static var officeDocsFilters:FileFilter = new FileFilter("Office Documents (doc, docx, ppt)","*.doc;*.docx;*.ppt;");
 		
 		//Types of creative work types and subtypes
 		public static var creativeworktypeLookup:ArrayCollection = new ArrayCollection(
@@ -245,7 +246,20 @@ package Controller.Utilities {
 				case 'application/x-shockwave-flash':
 					type = 'document';
 					break;
+				case "application/msword":
+					type = 'document';
+					break;
+				case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+					type = 'document';
+					break;
+				case "application/vnd.ms-powerpoint":
+					type = "document";
+					break;
+				case "application/x-shockwave-flash":
+					type = "document";
+					break;
 				default:
+					trace("real type is", realType);
 					throw new Error(realType+" is not a valid type");
 			}
 			return type;
@@ -473,7 +487,9 @@ package Controller.Utilities {
 				case "mp3" : mimeType ="audio/mp3"; break;
 				case "wav" : mimeType ="audio/wav"; break;
 				case "wma" : mimeType ="audio/wma"; break;		
-				
+				case "doc" : mimeType = "application/msword"; break;
+				case "docx": mimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; break;
+				case "ppt" : mimeType = "application/vnd.ms-powerpoint"; break;
 				case "swf" : mimeType = "application/x-shockwave-flash"; break;
 			}
 			

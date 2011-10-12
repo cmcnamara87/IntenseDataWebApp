@@ -12,6 +12,8 @@ package Model {
 		public var title:String;
 		public var description:String;
 		
+		public var fileExt:String = "Unknown";
+		
 		public var meta_media_uri:String;
 		
 		
@@ -39,7 +41,11 @@ package Model {
 			
 			meta_media_uri = rawData.meta.r_media.uri;
 			
-			rootMetaType = AssetLookup.getCommonType(rawData.type);
+			this.rootMetaType = AssetLookup.getCommonType(rawData.type);
+			
+			if(rawData.content.type.@ext) {
+				this.fileExt = rawData.content.type.@ext;
+			}
 		}
 		
 		/**

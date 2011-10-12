@@ -4,6 +4,7 @@ package Module.Videoviewer {
 	import Controller.IDEvent;
 	import Controller.MediaController;
 	
+	import View.ERA.FileView;
 	import View.MediaView;
 	import View.components.MediaViewer.MediaViewer;
 	import View.components.MediaViewer.MediaViewerInterface;
@@ -32,7 +33,7 @@ package Module.Videoviewer {
 	public class Videoview extends MediaViewer implements MediaViewerInterface {
 		
 		private var testMode:Boolean = false;
-		public var annotationSave:Function = MediaView.saveAnnotationFunction; 
+		public var annotationSave:Function = FileView.saveAnnotationFunction; 
 		public var annotationDelete:Function;
 		public var autoplay:Boolean = true;
 		private var newAnnotation:NewVideoAnnotation;
@@ -101,10 +102,10 @@ package Module.Videoviewer {
 			_UI.timeline.delegate = this;
 			
 			// Listening for MouseDown/Up to create annotations
-			if(BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
+//			if(BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
 				// Only listen, if we arent looking at an original asset
 				_screen.getOverlay().addEventListener(MouseEvent.MOUSE_DOWN, annotationCreationBegin);
-			}
+//			}
 			
 			trace('overlay size ', _screen.getOverlay().width, _screen.getOverlay().height);
 			resizeUI();

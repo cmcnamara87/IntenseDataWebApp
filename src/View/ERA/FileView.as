@@ -181,7 +181,7 @@ package View.ERA
 				
 			// Add toolbar
 			var myToolbar:Toolbar = new Toolbar();
-			//this.addElement(myToolbar);
+//			this.addElement(myToolbar);
 			
 			// Add a Back button
 //			myToolbar.addElement(backButton = IDGUI.makeButton("Back"));
@@ -206,14 +206,20 @@ package View.ERA
 			// TODO fix this when refactored
 			addAnnotationButton.visible = false;
 			addAnnotationButton.enabled = false;
-			myToolbar.addElement(addAnnotationButton);
+			addAnnotationButton.setStyle("cornerRadius", "10");
+			addAnnotationButton.setStyle("chromeColor", "0xFFFFFF");
+			addAnnotationButton.height = 30;
+			hGroup1.addElement(addAnnotationButton);
 			
 			// Add Hide Annotations Button
 			hideShowAnnotationButton = IDGUI.makeButton("Hide Annotations");
 			// Make it not visible, same as above
 			hideShowAnnotationButton.visible = false;
 			hideShowAnnotationButton.enabled = false;
-			myToolbar.addElement(hideShowAnnotationButton);
+			hideShowAnnotationButton.setStyle("cornerRadius", "10");
+			hideShowAnnotationButton.setStyle("chromeColor", "0xFFFFFF");
+			hideShowAnnotationButton.height = 30;
+			hGroup1.addElement(hideShowAnnotationButton);
 			
 			var addAnnotationEditDetailsLine:Line = IDGUI.makeLine()
 //			myToolbar.addElement(addAnnotationEditDetailsLine);
@@ -221,6 +227,8 @@ package View.ERA
 			deleteAssetButton = new IDButton("Delete File", false, false);
 			deleteAssetButton.enabled = false;
 			deleteAssetButton.visible = false;
+			
+			
 			
 //			myToolbar.addElement(deleteAssetButton);
 			
@@ -231,7 +239,7 @@ package View.ERA
 			// Add Edit Details button
 			editDetailsButton = IDGUI.makeButton('Edit Details');
 			editDetailsButton.enabled = false;
-			myToolbar.addElement(editDetailsButton);
+//			myToolbar.addElement(editDetailsButton);
 			
 			// Add Share buttons
 			shareButton = IDGUI.makeButton('Share');
@@ -240,17 +248,23 @@ package View.ERA
 			
 			viewsButton = new IDButton('Participants');
 			viewsButton.enabled = false;
-			myToolbar.addElement(viewsButton);
+//			myToolbar.addElement(viewsButton);
 			
 			// Add annotations button
 			annotationListButton = IDGUI.makeButton('Annotation List');
 			annotationListButton.enabled = false;
-			myToolbar.addElement(annotationListButton);
+			annotationListButton.setStyle("cornerRadius", "10");
+			annotationListButton.setStyle("chromeColor", "0xFFFFFF");
+			annotationListButton.height = 30;
+			hGroup1.addElement(annotationListButton);
 			
 			// Add comments button
 			commentsButton = IDGUI.makeButton('Comments');
 			commentsButton.enabled = false;
-			myToolbar.addElement(commentsButton);
+			commentsButton.setStyle("cornerRadius", "10");
+			commentsButton.setStyle("chromeColor", "0xFFFFFF");
+			commentsButton.height = 30;
+			hGroup1.addElement(commentsButton);
 			
 			
 			var downloadLine:Line = IDGUI.makeLine();
@@ -259,7 +273,8 @@ package View.ERA
 			downloadButton = IDGUI.makeButton('Download');
 			downloadButton.visible = false;
 			downloadButton.enabled = false;
-			myToolbar.addElement(downloadButton);
+			downloadButton.includeInLayout = false;
+			hGroup1.addElement(downloadButton);
 			
 			
 			// Group HGroup for Viewer and Panels
@@ -276,9 +291,9 @@ package View.ERA
 			myMediaLinkPanel.addMedia(BrowserController.currentCollectionAssets);
 			this.addElement(myMediaLinkPanel);
 			
-			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
-				this.hideButtonsForPureAssetView();	
-			}
+//			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
+//				this.hideButtonsForPureAssetView();	
+//			}
 			// Add Event Listeners
 			deleteAssetButton.addEventListener(MouseEvent.CLICK, deleteAssetButtonClicked);
 			addAnnotationButton.addEventListener(MouseEvent.CLICK, addAnnotationButtonClicked);
@@ -329,7 +344,7 @@ package View.ERA
 			trace("Media Data Loaded");
 			this.mediaData = mediaData;
 			
-			eraInfo.text = "ERA " + AppController.currentEraProject.year + " / RM " + FileController.rmCode;
+			eraInfo.text = "ERA " + AppController.currentEraProject.year + " / RM " + FileController.rmCode + " / Evidence Box";
 			titleLabel.text = mediaData.title + " - File Viewer";
 			setHeading(mediaData.description);
 			
@@ -386,9 +401,9 @@ package View.ERA
 			}
 			
 			setupButtonsAccess();
-			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
-				this.hideButtonsForPureAssetView();	
-			}
+//			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
+//				this.hideButtonsForPureAssetView();	
+//			}
 		}
 		
 		private function hideButtonsForPureAssetView():void {
@@ -497,9 +512,9 @@ package View.ERA
 			myAnnotationListPanel.addAnnotations(annotationsArray);
 			annotationListButton.label = "Annotation List (" + annotationsArray.length + ")";
 			// Add annotation to viewer
-			if(mediaViewer && BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
+//			if(mediaViewer && BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
 				mediaViewer.addAnnotations(annotationsArray);
-			}
+//			}
 		}
 		
 		public function unlockSharingPanelUsers():void {

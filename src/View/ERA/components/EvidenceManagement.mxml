@@ -44,7 +44,7 @@
 					return;
 				}
 				
-				
+				logItemArray.sortOn(["type"], [Array.CASEINSENSITIVE]);
 				
 				for each(var logItem:Model_ERALogItem in logItemArray) {
 					var evidenceItem:EvidenceItem = new EvidenceItem();
@@ -90,7 +90,7 @@
 				}
 				var evidenceItemNew:EvidenceItem = new EvidenceItem();
 				evidenceItemNew.allLogItemsArray2 = logItemArray2;
-				logItemList.addElement(evidenceItemNew);
+				logItemList.addElementAt(evidenceItemNew, 0);
 			}
 
 			protected function markAllForCollectionButton_clickHandler(event:MouseEvent):void

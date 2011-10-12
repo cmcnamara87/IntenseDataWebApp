@@ -362,6 +362,7 @@ package View.components.MediaViewer
 		
 		override public function addAnnotations(annotationsArray:Array):void {
 			trace("Adding Annotatio");
+			trace("*********** ADDING ANNOTATIONS");
 			media.addAnnotations(annotationsArray);
 			this.hideAnnotationTextOverlay();
 		}

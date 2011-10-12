@@ -103,7 +103,7 @@ package Model.Transactions
 			this.commentID = dataXML.reply.result.id;
 
 			// Copy the ACLs from the parent asset, to the comment
-			var transaction:Transaction_CopyAccess = new Transaction_CopyAccess(commentParentID, commentID, false, _connection);
+//			var transaction:Transaction_CopyAccess = new Transaction_CopyAccess(commentParentID, commentID, false, _connection);
 			
 			// Add the 'Annotation' Classification to the comment asset
 			var args:Object = new Object();

@@ -622,7 +622,7 @@ package Model {
 					
 					var new_id:Number = dataXML.reply.result.id;
 					AppModel.getInstance().setAnnotationClassForID(new_id);
-					AppModel.getInstance().copyAccess(assetData.parentID, new_id);
+					//AppModel.getInstance().copyAccess(assetData.parentID, new_id);
 				}
 			})) {
 				trace("ALL GOOD");
