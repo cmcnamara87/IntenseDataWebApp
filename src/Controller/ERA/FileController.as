@@ -55,6 +55,7 @@ package Controller.ERA {
 		
 		public static var roomType:String;
 		public static var caseID:Number;
+		public static var rmCode:String;
 		
 		//Calls the superclass, sets the AssetID
 		public function FileController() {
@@ -75,14 +76,15 @@ package Controller.ERA {
 			
 			// Get out the assets ID
 			trace("number of args", Dispatcher.getArgs().length, Dispatcher.getArgs());
-			if(Dispatcher.getArgs().length != 3) {
+			if(Dispatcher.getArgs().length != 4) {
 				Dispatcher.call('case');
 				return;
 			}
 			
 			caseID = Dispatcher.getArgs()[0];
-			roomType = Dispatcher.getArgs()[1];
-			currentAssetID = Dispatcher.getArgs()[2];
+			rmCode = unescape(Dispatcher.getArgs()[1]);
+			roomType = Dispatcher.getArgs()[2];
+			currentAssetID = Dispatcher.getArgs()[3];
 			trace("Media Asset ID:", currentAssetID);
 			
 			

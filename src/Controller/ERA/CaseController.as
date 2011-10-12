@@ -101,8 +101,10 @@ package Controller.ERA
 			} else {
 				roomType = currentRoom.roomType;
 			} 
-			trace("displatching to", "file/" + caseID + "/" + roomType + "/" + fileID);
-			Dispatcher.call("file/" + caseID + "/" + roomType + "/" + fileID);
+			
+			
+			trace("displatching to", "file/" + caseID + "/" + escape(currentERACase.rmCode) + "/" + roomType + "/" + fileID);
+			Dispatcher.call("file/" + caseID + "/" + escape(currentERACase.rmCode) + "/" + roomType + "/" + fileID);
 		}
 		
 		

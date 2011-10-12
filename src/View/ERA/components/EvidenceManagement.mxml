@@ -125,9 +125,9 @@
 							</s:filters>-->
 						</s:Label>
 			</s:VGroup>
-			<s:Button id="makeNewItemButton" label="Add Evidence" cornerRadius="10" height="30" click="makeNewItemButton_clickHandler(event)"/>
-			<s:Button id="markAllForCollectionButton" label="Mark All as For Collection" cornerRadius="10" height="30" click="markAllForCollectionButton_clickHandler(event)"/>
-			<s:Button id="markAllAsCollectedButton" label="Mark All as Collected" cornerRadius="10" height="30" click="markAllAsCollectedButton_clickHandler(event)"/>
+			<s:Button id="makeNewItemButton" label="Add Evidence" chromeColor="0xe4e5e6" cornerRadius="10" height="30" click="makeNewItemButton_clickHandler(event)"/>
+			<s:Button id="markAllForCollectionButton" label="Mark All as For Collection" chromeColor="0xe4e5e6" cornerRadius="10" height="30" click="markAllForCollectionButton_clickHandler(event)"/>
+			<s:Button id="markAllAsCollectedButton" label="Mark All as Collected" chromeColor="0xe4e5e6" cornerRadius="10" height="30" click="markAllAsCollectedButton_clickHandler(event)"/>
 		</s:HGroup>
 	</s:BorderContainer>
 	<!-- END OF TITLE BAR WITH CREATION BUTTON -->

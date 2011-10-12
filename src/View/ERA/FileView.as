@@ -1,5 +1,6 @@
 package View.ERA
 {
+	import Controller.AppController;
 	import Controller.BrowserController;
 	import Controller.Dispatcher;
 	import Controller.ERA.FileController;
@@ -99,6 +100,9 @@ package View.ERA
 		
 		private var commentCount:Number = 0;
 		
+		private var titleLabel:Label;
+		private var eraInfo:Label;
+		
 		// Can remove the save annotation function after redoing the modules, only there for dekkers code
 		public function FileView(saveAnnotationFunction:Function)
 		{
@@ -132,22 +136,28 @@ package View.ERA
 			hGroup1.paddingRight = 20;
 			titleBar.addElement(hGroup1);
 			
+			backButton = new Button();
+			backButton.label = "Back";
+			backButton.setStyle("cornerRadius", "10");
+			backButton.height = 30;
+			hGroup1.addElement(backButton);
+				
 			var vGroup1:VGroup = new VGroup();
 			vGroup1.percentWidth = 100;
 			hGroup1.addElement(vGroup1);
 			
-			var eraInfo:Label = new Label();
+			eraInfo = new Label();
 			eraInfo.setStyle('fontSize', '16');
 			eraInfo.setStyle('fontWeight', 'bold');
 			eraInfo.setStyle('color', '0x828F9A');
-			eraInfo.text = "ERA INFO";
+			eraInfo.text = "Loading...";
 			vGroup1.addElement(eraInfo);
 			
-			var titleLabel:Label = new Label();
+			titleLabel = new Label();
 			titleLabel.setStyle('fontSize', '30');
 			titleLabel.setStyle('fontWeight', 'bold');
 			titleLabel.setStyle('color', '0x5e6469');
-			titleLabel.text = "File";
+			titleLabel.text = "Loading...";
 			vGroup1.addElement(titleLabel);
 			
 			this.addElement(titleBar);
@@ -171,12 +181,12 @@ package View.ERA
 				
 			// Add toolbar
 			var myToolbar:Toolbar = new Toolbar();
-			this.addElement(myToolbar);
+			//this.addElement(myToolbar);
 			
 			// Add a Back button
-			myToolbar.addElement(backButton = IDGUI.makeButton("Back"));
+//			myToolbar.addElement(backButton = IDGUI.makeButton("Back"));
 			// Disable the back button until the asset has loaded (solves some deallocing problems)
-			backButton.enabled = false;
+//			backButton.enabled = false;
 			
 			// Create a heading for the toolbar
 			heading = new Label();
@@ -319,7 +329,9 @@ package View.ERA
 			trace("Media Data Loaded");
 			this.mediaData = mediaData;
 			
-			setHeading(mediaData.title);
+			eraInfo.text = "ERA " + AppController.currentEraProject.year + " / RM " + FileController.rmCode;
+			titleLabel.text = mediaData.title + " - File Viewer";
+			setHeading(mediaData.description);
 			
 //			myEditPanel.addDetails(mediaData);
 			
