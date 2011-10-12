@@ -12,6 +12,9 @@
 			public var title:String = "";
 			
 			[Bindable]
+			public var description:String = "";
+			
+			[Bindable]
 			public var fileID:Number;
 		
 			public function loadURL(id:Number):void {
@@ -55,6 +58,6 @@
 	</fx:Declarations>
 	
 	
-	<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true"/>
+	<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="{description}"/>
 	<s:Label text="{title}" width="100%" textAlign="center" />
 </s:VGroup>

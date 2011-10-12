@@ -40,6 +40,8 @@ package View.ERA
 	import flash.net.navigateToURL;
 	import flash.text.TextField;
 	
+	import flashx.textLayout.formats.VerticalAlign;
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.controls.Text;
@@ -116,6 +118,57 @@ package View.ERA
 			myLayout.gap = 0;
 			this.layout = myLayout;
 			
+			var titleBar:BorderContainer = new BorderContainer();
+			titleBar.height = 80;
+			titleBar.percentWidth = 100;
+			titleBar.backgroundFill = new SolidColor(0xe4e5e6);
+			titleBar.borderStroke = new SolidColorStroke(0xe4e5e6);
+			
+			var hGroup1:HGroup = new HGroup();
+			hGroup1.verticalAlign = VerticalAlign.MIDDLE;
+			hGroup1.percentHeight = 100;
+			hGroup1.percentWidth = 100;
+			hGroup1.paddingLeft = 20;
+			hGroup1.paddingRight = 20;
+			titleBar.addElement(hGroup1);
+			
+			var vGroup1:VGroup = new VGroup();
+			vGroup1.percentWidth = 100;
+			hGroup1.addElement(vGroup1);
+			
+			var eraInfo:Label = new Label();
+			eraInfo.setStyle('fontSize', '16');
+			eraInfo.setStyle('fontWeight', 'bold');
+			eraInfo.setStyle('color', '0x828F9A');
+			eraInfo.text = "ERA INFO";
+			vGroup1.addElement(eraInfo);
+			
+			var titleLabel:Label = new Label();
+			titleLabel.setStyle('fontSize', '30');
+			titleLabel.setStyle('fontWeight', 'bold');
+			titleLabel.setStyle('color', '0x5e6469');
+			titleLabel.text = "File";
+			vGroup1.addElement(titleLabel);
+			
+			this.addElement(titleBar);
+			
+			/*<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
+				<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
+					<s:VGroup width="100%">
+						<s:Label text="ERA {AppController.currentEraProject.year} / RM {CaseController.currentERACase.rmCode} - {CaseController.currentERACase.title}" fontSize="16" fontWeight="bold" color="0x828F9A">
+							<s:filters>
+								<s:DropShadowFilter distance="1" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+							</s:filters>
+						</s:Label>
+						<s:Label text="RM {CaseController.currentERACase.rmCode} - Evidence Box" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+							<s:filters>
+								<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+							</s:filters>
+						</s:Label>
+					</s:VGroup>
+				</s:HGroup>
+			</s:BorderContainer>*/
+				
 			// Add toolbar
 			var myToolbar:Toolbar = new Toolbar();
 			this.addElement(myToolbar);
