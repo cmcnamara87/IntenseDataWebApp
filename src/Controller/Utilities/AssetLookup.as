@@ -37,6 +37,9 @@ package Controller.Utilities {
 		[Embed(source="Assets/Template/era_case_arrow.jpg")]
 		private static var ERACaseArrow:Class;
 		
+		// ERA room icons
+		[Embed(source="Assets/Template/evidence_manager_icon.png")]
+		public static var EvidenceManagerIcon:Class;
 		
 		[Embed(source="Assets/Template/assets/audio2.png")] 
 		private static var Asseticon_audio:Class;

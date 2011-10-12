@@ -86,7 +86,7 @@ package View.Element {
 			notification.text = notificationString;
 			var textFormat:TextFormat = new TextFormat();
 			textFormat.font = "Helvetica";
-			textFormat.color = 0xFF0000;
+			textFormat.color = 0xFFFFFF;
 			textFormat.size = 16;
 			notification.setTextFormat(textFormat);
 		}
