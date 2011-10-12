@@ -17,6 +17,10 @@
 
 			private var logItemArray2:Array = new Array(); // Stores all the log items, so we can check for duplicates
 			
+			private function sortBy(metaData:String):void {
+				// Sort the log items
+				logItemArray2.sortOn([metaData], [Array.CASEINSENSITIVE]);
+			}
 			/**
 			 * Add all the lot items to the display
 			 */
@@ -40,6 +44,8 @@
 					return;
 				}
 				
+				
+				
 				for each(var logItem:Model_ERALogItem in logItemArray) {
 					var evidenceItem:EvidenceItem = new EvidenceItem();
 					
@@ -47,7 +53,7 @@
 					logItemList.addElement(evidenceItem);	
 					evidenceItem.addLogItemData(logItem);
 					
-					trace("Log Items Recorded:", logItemArray2);
+//					trace("Log Items Recorded:", logItemArray2);
 				}
 			}
 			/**

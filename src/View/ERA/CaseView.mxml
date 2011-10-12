@@ -39,7 +39,7 @@
 			
 			public function showEvidenceManagement(logItemArray:Array):void {
 				for(var i:Number = 0; i < roomButtons.numElements; i++) {
-					roomButtons.getElementAt(i).alpha = 0.5;
+					roomButtons.getElementAt(i).alpha = 1;
 				}
 				evidenceManagementButton.alpha = 1;
 				
