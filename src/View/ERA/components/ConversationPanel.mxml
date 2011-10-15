@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   width="300" height="100%" borderVisible="false" backgroundColor="0xEEEEEE" resizeEffect="Resize" >
+
+	<fx:Script>
+		<![CDATA[
+			import Controller.IDEvent;
+			import Controller.Utilities.Auth;
+			
+			import Model.Model_ERAConversation;
+			public function addConversation(conversationArray:Array):void {
+				conversationList.removeAllElements();
+
+				for each(var conversation:Model_ERAConversation in conversationArray) {
+					var comment:Comment = new Comment();
+					comment.commentID = conversation.base_asset_id;
+					// @todo make the comment method always get the user details
+					if(conversation.userDetails) {
+						comment.userFullName = conversation.userDetails.firstName + " " + conversation.userDetails.lastName;
+					} else {
+						comment.userFullName = conversation.creatorUsername;
+					}
+					comment.mtime = conversation.base_mtime;
+					comment.text = conversation.text;
+					
+					// check if its a reply, or a regular comment
+					comment.isReply = conversation.isReply;
+					if(conversation.isReply) {
+						// find its parent comment
+						for(var i:Number = 0; i < conversationList.numElements; i++) {
+							var foundComment:Comment = conversationList.getElementAt(i) as Comment;
+							if(foundComment.commentID == conversation.inReplyToID) {
+								foundComment.replies.addElement(comment);
+							}
+						}
+					} else {
+						conversationList.addElementAt(comment, 0);
+					}
+				}
+			}
+			
+			protected function newComment_focusInHandler(event:FocusEvent):void
+			{
+				if(newComment.text == "Write a Comment") {
+					newComment.setStyle('color', '0x000000');
+					newComment.text = "";
+				}
+			}
+			
+			
+			protected function newComment_focusOutHandler(event:FocusEvent):void
+			{
+				if(newComment.text == "") {
+					newComment.setStyle('color', '0x888888');
+					newComment.text = "Write a Comment";
+				}
+			}
+
+			protected function postCommentButton_clickHandler(event:MouseEvent):void
+			{
+				// tell controller to post the comment
+				if(newComment.text == "") return;
+				
+				// Create a comment
+				var comment:Comment = new Comment();
+				comment.text = newComment.text;
+				comment.userFullName = Auth.getInstance().getUserDetails().firstName + " " + Auth.getInstance().getUserDetails().lastName;
+				conversationList.addElementAt(comment, 0);
+				
+				var newCommentEvent:IDEvent = new IDEvent(IDEvent.ERA_SAVE_COMMENT, true);
+				newCommentEvent.data.text = newComment.text;
+				newCommentEvent.data.replyToID = 0;
+				this.dispatchEvent(newCommentEvent);
+				
+				newComment.setStyle('color', '0x888888');
+				newComment.text = "Write a Comment";
+			}
+
+
+			protected function clearCommentButton_clickHandler(event:MouseEvent):void
+			{
+				newComment.setStyle('color', '0x888888');
+				newComment.text = "Write a Comment";
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:VGroup width="100%" height="100%" gap="0">
+		<mx:HRule width="100%" />
+		<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+			<s:Label color="0x0000BB" fontWeight="bold" text="{Auth.getInstance().getUserDetails().firstName} {Auth.getInstance().getUserDetails().lastName}" />
+			<s:TextArea color="0x888888" height="50" id="newComment" text="Write a Comment" width="100%" focusIn="newComment_focusInHandler(event)" focusOut="newComment_focusOutHandler(event)">
+			</s:TextArea>
+			<s:HGroup width="100%">
+				<s:Button label="Post" chromeColor="0xFFFFFF" cornerRadius="10" width="100%" id="postCommentButton" click="postCommentButton_clickHandler(event)"/>
+				<s:Button label="Clear" chromeColor="0xFFFFFF" cornerRadius="10" width="100%" id="clearCommentButton" click="clearCommentButton_clickHandler(event)"/>
+			</s:HGroup>
+		</s:VGroup>
+		<mx:HRule width="100%" />
+		<s:Scroller width="100%" height="100%">
+			<s:VGroup id="conversationList" width="100%">
+			</s:VGroup>	
+		</s:Scroller>		
+	</s:VGroup>
+
+	
+</s:BorderContainer>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" xmlns:components="View.ERA.components.*" gap="0" xmlns:components1="View.components.*" >
+
+	<fx:Script>
+		<![CDATA[
+			import Controller.IDEvent;
+			import Controller.Utilities.Auth;
+			[Bindable]
+			public var mtime:String;
+			
+			[Bindable]
+			public var commentID:Number;
+			
+			[Bindable]
+			public var userFullName:String;
+			
+			[Bindable]
+			public var text:String;
+			
+			[Bindable]
+			public var isReply:Boolean = false;
+			
+			protected function replyButton_clickHandler(event:MouseEvent):void
+			{
+				newReplyBox.visible = true;
+				newReplyBox.includeInLayout = true;
+			}
+			
+			protected function newComment_focusInHandler(event:FocusEvent):void
+			{
+				if(newComment.text == "Write a Comment") {
+					newComment.setStyle('color', '0x000000');
+					newComment.text = "";
+				}
+			}
+			
+			
+			protected function newComment_focusOutHandler(event:FocusEvent):void
+			{
+				if(newComment.text == "") {
+					newComment.setStyle('color', '0x888888');
+					newComment.text = "Write a Comment";
+				}
+			}
+			
+			protected function postCommentButton_clickHandler(event:MouseEvent):void
+			{
+				// tell controller to post the comment
+				if(newComment.text == "") return;
+				
+				// Create a comment
+				var comment:Comment = new Comment();
+				comment.text = newComment.text;
+				comment.isReply = true;
+				comment.userFullName = Auth.getInstance().getUserDetails().firstName + " " + Auth.getInstance().getUserDetails().lastName;
+				replies.addElement(comment);
+				
+				var newCommentEvent:IDEvent = new IDEvent(IDEvent.ERA_SAVE_COMMENT, true);
+				newCommentEvent.data.text = newComment.text;
+				newCommentEvent.data.replyToID = commentID;
+				this.dispatchEvent(newCommentEvent);
+				
+				newComment.setStyle('color', '0x888888');
+				newComment.text = "Write a Comment";
+				
+				newReplyBox.visible = false;
+				newReplyBox.includeInLayout = false;
+			}
+			
+			
+			protected function clearCommentButton_clickHandler(event:MouseEvent):void
+			{
+				newComment.setStyle('color', '0x888888');
+				newComment.text = "Write a Comment";
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" >
+		<s:Label text="{userFullName}" color="0x0000FF" fontWeight="bold"/>
+		<mx:Text width="100%" text="{text}"/>
+		<s:HGroup width="100%" visible="{!isReply}" includeInLayout="{!isReply}">
+			<s:Button id="replyButton" label="Reply" width="100%" cornerRadius="10" chromeColor="0xFFFFFF" click="replyButton_clickHandler(event)"/>
+			<s:Button id="editButton" label="Edit" width="100%" cornerRadius="10" chromeColor="0xFFFFFF"/>
+			<s:Button id="deleteButton" label="Delete" width="100%" cornerRadius="10" chromeColor="0xFFFFFF"/>
+		</s:HGroup>	
+	</s:VGroup>
+	
+	<mx:HRule width="100%" />
+	<s:HGroup width="100%" visible="{!isReply}" includeInLayout="{!isReply}" gap="0">
+		<mx:Canvas width="20" height="100%" backgroundColor="0xDDDDDD" />
+		<s:VGroup width="100%" gap="0">
+			
+			<s:VGroup id="replies" width="100%">
+				
+			</s:VGroup>
+			
+			<s:VGroup id="newReplyBox" visible="false" includeInLayout="false" width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+				<s:Label color="0x0000BB" fontWeight="bold" text="{Auth.getInstance().getUserDetails().firstName} {Auth.getInstance().getUserDetails().lastName}" />
+				<s:TextArea color="0x888888" height="50" id="newComment" text="Write a Comment" width="100%" focusIn="newComment_focusInHandler(event)" focusOut="newComment_focusOutHandler(event)">
+				</s:TextArea>
+				<s:HGroup width="100%">
+					<s:Button label="Post" chromeColor="0xFFFFFF" cornerRadius="10" width="100%" id="postCommentButton" click="postCommentButton_clickHandler(event)"/>
+					<s:Button label="Clear" chromeColor="0xFFFFFF" cornerRadius="10" width="100%" id="clearCommentButton" click="clearCommentButton_clickHandler(event)"/>
+				</s:HGroup>
+			</s:VGroup>
+			<mx:HRule width="100%" />
+		</s:VGroup>
+
+	</s:HGroup>
+</s:VGroup>

@@ -513,8 +513,9 @@ package View.ERA
 			annotationListButton.label = "Annotation List (" + annotationsArray.length + ")";
 			// Add annotation to viewer
 //			if(mediaViewer && BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
+			if(mediaViewer) {
 				mediaViewer.addAnnotations(annotationsArray);
-//			}
+			}
 		}
 		
 		public function unlockSharingPanelUsers():void {

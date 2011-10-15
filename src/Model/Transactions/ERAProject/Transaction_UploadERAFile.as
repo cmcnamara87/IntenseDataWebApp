@@ -18,7 +18,8 @@ package Model.Transactions.ERAProject
 	{
 		private var year:String;
 		private var logItemID:Number;
-		private var roomID:Number;
+		private var evidenceRoomID:Number;
+		private var forensicLabID:Number;
 		private var type:String;
 		private var title:String;
 		private var description:String;
@@ -31,9 +32,10 @@ package Model.Transactions.ERAProject
 		
 		private var newFileID:Number;
 		
-		public function Transaction_UploadERAFile(year:String, roomID:Number, logItemID:Number, type:String, title:String, description:String, fileReference:FileReference, evidenceItem:EvidenceItem, connection:Connection, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function) {
+		public function Transaction_UploadERAFile(year:String, evidenceRoomID:Number, forensicLabID:Number, logItemID:Number, type:String, title:String, description:String, fileReference:FileReference, evidenceItem:EvidenceItem, connection:Connection, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function) {
 			this.year = year;
-			this.roomID = roomID;
+			this.evidenceRoomID = evidenceRoomID;
+			this.forensicLabID = forensicLabID;
 			this.logItemID = logItemID;
 			this.type = type;
 			this.title = title;
@@ -73,6 +75,11 @@ package Model.Transactions.ERAProject
 			argsXML.meta["ERA-evidence"]["file_name"] = fileReference.name;
 			argsXML.meta["ERA-evidence"]["title"] = this.title;
 			argsXML.meta["ERA-evidence"]["description"] = this.description;
+			// make sure this file is set to active
+			argsXML.meta["ERA-evidence"]["version"] = 0;
+			argsXML.meta["ERA-evidence"]["hot"] = true;
+			argsXML.meta["ERA-evidence"]["checked_out"] = false;
+			
 			
 			// Keeping some of the OLD mediaflux stuff
 			// just makes things easier
@@ -103,15 +110,31 @@ package Model.Transactions.ERAProject
 			var baseXML:XML = connection.packageRequest("asset.relationship.add", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			argsXML.id = newFileID;
-			argsXML.to = roomID;
+			argsXML.to = evidenceRoomID;
 			argsXML.to.@relationship = "room";
 			
-			connection.sendRequest(baseXML, addedToRoom);
+			connection.sendRequest(baseXML, addedEvidenceRoom);
 		}
 		
-		private function addedToRoom(e:Event):void {
+		private function addedEvidenceRoom(e:Event):void {
 			var data:XML;
-			if((data = AppModel.getInstance().getData("adding relationship to room", e)) == null) {
+			if((data = AppModel.getInstance().getData("adding relationship to evidnece room", e)) == null) {
+				completeCallback(false);
+				return;
+			}
+			
+			var baseXML:XML = connection.packageRequest("asset.relationship.add", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			argsXML.id = newFileID;
+			argsXML.to = forensicLabID;
+			argsXML.to.@relationship = "room";
+			
+			connection.sendRequest(baseXML, addedForensicLabRoom);
+		}
+		
+		private function addedForensicLabRoom(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("adding relationship to forensic lab", e)) == null) {
 				completeCallback(false);
 				return;
 			}

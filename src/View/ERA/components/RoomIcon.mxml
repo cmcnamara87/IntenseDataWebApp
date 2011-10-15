@@ -2,16 +2,29 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  horizontalAlign="center" gap="15" dragDrop="vgroup1_dragDropHandler(event)"
-		  buttonMode="true">
+		  horizontalAlign="center" gap="15"
+		  buttonMode="true"
+		  dragEnter="vgroup1_dragEnterHandler(event)"
+		  dragDrop="vgroup1_dragDropHandler(event)"
+		  >
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.ERA.CaseController;
+			import Controller.IDEvent;
 			import Controller.Utilities.AssetLookup;
 			
+			import Model.Model_ERARoom;
+			
+			import mx.core.IUIComponent;
+			import mx.core.UIComponent;
 			import mx.events.DragEvent;
+			import mx.managers.DragManager;
+			
+			import spark.components.TileGroup;
 			[Bindable]
 			public var roomName:String = "";
+			[Bindable]
 			public var roomType:String = "";
 
 			[Bindable]
@@ -22,7 +35,22 @@
 			
 			protected function vgroup1_dragDropHandler(event:DragEvent):void
 			{
-				// TODO Auto-generated method stub
+				var fileMoveEvent:IDEvent = new IDEvent(IDEvent.ERA_MOVE_FILE, true);
+				fileMoveEvent.data.fileID = (event.dragInitiator as FileTile).fileID;
+				fileMoveEvent.data.moveToRoomType = this.roomType;
+				this.dispatchEvent(fileMoveEvent);
+				
+				(event.dragInitiator.parent as TileGroup).removeElement(event.dragInitiator as FileTile);
+			}
+
+
+			protected function vgroup1_dragEnterHandler(event:DragEvent):void
+			{
+				// make it so that you cannot drag items into the evidence manager, or evidence box
+				if(roomType == Model_ERARoom.EVIDENCE_MANAGEMENT || roomType == Model_ERARoom.EVIDENCE_ROOM) return;
+				
+				DragManager.acceptDragDrop(event.currentTarget as IUIComponent);
+				DragManager.showFeedback( DragManager.MOVE );
 			}
 
 		]]>
@@ -31,13 +59,13 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Group width="70" height="70">
+	<!--<s:Group width="70" height="70">
 		
 		<mx:Image source="{icon}" width="70" height="70" horizontalAlign="center" maintainAspectRatio="true"/>
-		<!--<s:Label x="18" text="x" fontSize="70" fontWeight="bold" color="0xFF0000" visible="{unavailable}" includeInLayout="{unavailable}"/>-->
-	</s:Group>
+		<s:Label x="18" text="x" fontSize="70" fontWeight="bold" color="0xFF0000" visible="{unavailable}" includeInLayout="{unavailable}"/>
+	</s:Group>-->
 	
-	<!--<s:BorderContainer backgroundColor="0x434343" borderVisible="false" height="70" width="70" visible="true" includeInLayout="true">
+	<s:BorderContainer backgroundColor="0x434343" borderVisible="false" height="70" width="70" visible="true" includeInLayout="true">
 		
 		<s:VGroup width="100%" height="100%" horizontalAlign="center">
 	
@@ -45,7 +73,7 @@
 		<s:filters>
 			<s:DropShadowFilter distance="1" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
 		</s:filters>
-	</s:BorderContainer>-->
+	</s:BorderContainer>
 	<s:Label text="{roomName}" fontSize="18" color="0xcfcfcf" width="100%" textAlign="center">
 		<s:filters>
 			<s:DropShadowFilter distance="1" angle="270" color="0x000000" blurX="0" blurY="0"/>
