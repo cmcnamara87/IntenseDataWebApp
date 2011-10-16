@@ -66,6 +66,7 @@
 				var uploadEvent:IDEvent = new IDEvent(IDEvent.ERA_SAVE_FILE, true);
 				uploadEvent.data.type = evidenceType.selectedItem;
 				uploadEvent.data.title = title.text;
+				uploadEvent.data.version = 0;
 				uploadEvent.data.description = description.text;
 				uploadEvent.data.evidenceItem = this;
 				uploadEvent.data.fileReference = fileReference;

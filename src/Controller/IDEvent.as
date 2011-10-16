@@ -157,6 +157,7 @@ package Controller {
 			// Call when we are initially saving a evidence log item
 			public static var ERA_SAVE_LOG_ITEM:String = "id_saveLogItem";
 			public static var ERA_SAVE_FILE:String = "id_saveFile";
+			public static var ERA_DOWNLOAD_FILE:String = "era_downloadFile";
 			// Delete user in user admin
 			public static var ERA_DELETE_USER:String = "era_deleteUser";
 			// remove the user from a role

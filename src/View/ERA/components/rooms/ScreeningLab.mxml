@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" gap="0">
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" gap="0" xmlns:components="View.ERA.components.*">
 	<fx:Script>
 		<![CDATA[
 			import Controller.AppController;
@@ -20,12 +20,8 @@
 			private var fileArray:Array = new Array(); // Stores all the forensic lab items
 			
 			public function addConversation(conversationArray):void {
-				showConversationButton.label = "Conversation (" + conversationArray.length + ")";
-				for each(var conversation:Model_ERAConversation in conversationArray) {
-					var label:Label = new Label();
-					label.text = conversation.creatorUsername + " " + conversation.text;
-					conversationList.addElement(label);
-				}
+				showConversationButton.label = "Comments (" + conversationArray.length + ")";
+				conversationPanel.addConversation(conversationArray);
 			}
 			/**
 			 * Add all the lot items to the display
@@ -157,7 +153,7 @@
 		
 	</s:BorderContainer>
 	
-	<s:HGroup width="100%" height="100%">
+	<s:HGroup width="100%" height="100%" gap="0">
 		<s:BorderContainer width="100%" height="100%" borderVisible="false">
 			<s:Scroller width="100%" height="100%">
 				<s:VGroup width="100%" height="100%" paddingBottom="20" paddingLeft="40" paddingRight="20" paddingTop="20">
@@ -166,15 +162,9 @@
 				
 			</s:Scroller>
 		</s:BorderContainer>
-		<s:BorderContainer width="300" height="100%" borderVisible="false" backgroundColor="0xEEEEEE" visible="{showConversationButton.selected}" includeInLayout="{showConversationButton.selected}">
-			<s:VGroup width="100%" height="100%">
-				<s:Label text="{Auth.getInstance().getUserDetails().firstName} {Auth.getInstance().getUserDetails().lastName}" />
-				<s:TextInput id="newComment" width="100%">
-				</s:TextInput>
-				<s:VGroup id="conversationList">
-				</s:VGroup>	
-			</s:VGroup>
-		</s:BorderContainer>
+		
+		<!-- conversation part -->
+		<components:ConversationPanel id="conversationPanel" width="{showConversationButton.selected ? 300 : 0}" />
 	</s:HGroup>
 
 </s:VGroup>

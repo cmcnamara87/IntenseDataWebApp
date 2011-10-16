@@ -86,9 +86,9 @@
 		<s:Label text="{userFullName}" color="0x0000FF" fontWeight="bold"/>
 		<mx:Text width="100%" text="{text}"/>
 		<s:HGroup width="100%" visible="{!isReply}" includeInLayout="{!isReply}">
-			<s:Button id="replyButton" label="Reply" width="100%" cornerRadius="10" chromeColor="0xFFFFFF" click="replyButton_clickHandler(event)"/>
-			<s:Button id="editButton" label="Edit" width="100%" cornerRadius="10" chromeColor="0xFFFFFF"/>
-			<s:Button id="deleteButton" label="Delete" width="100%" cornerRadius="10" chromeColor="0xFFFFFF"/>
+			<s:Button id="replyButton" label="Reply" width="100%" cornerRadius="10" click="replyButton_clickHandler(event)"/>
+			<s:Button id="editButton" label="Edit" width="100%" cornerRadius="10" />
+			<s:Button id="deleteButton" label="Delete" width="100%" cornerRadius="10" />
 		</s:HGroup>	
 	</s:VGroup>
 	

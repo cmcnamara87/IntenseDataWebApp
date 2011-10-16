@@ -20,24 +20,23 @@ package Model {
 		// Sets the specific data for the collection type
 		override protected function setSpecificData():void {
 			this.roomType = rawData.meta["ERA-room"]["room_type"];
+			this.roomTitle = getPrettyRoomName(roomType);
+		}
+		
+		public static function  getPrettyRoomName(roomType:String):String {
 			switch(roomType) {
 				case EVIDENCE_MANAGEMENT:
-					roomTitle = "Evidence Management";
-					break;
+					return "Evidence Management";
 				case EVIDENCE_ROOM:
-					roomTitle = "Evidence Room";
-					break;
+					return "Evidence Room";
 				case FORENSIC_LAB:
-					roomTitle = "Forensic Lab";
-					break;
+					return "Forensic Lab";
 				case SCREENING_ROOM:
-					roomTitle = "Screening Room";
-					break;
+					return "Screening Room";
 				case EXHIBIT:
-					roomTitle = "Exhibit";
-					break;
+					return "Exhibit";
 				default:
-					break;
+					return "Unknown";
 			}
 		}
 	}

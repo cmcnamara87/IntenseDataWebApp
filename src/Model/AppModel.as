@@ -31,11 +31,13 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
 	import Model.Transactions.ERAProject.Transaction_MoveFile;
 	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
+	import Model.Transactions.ERAProject.Transaction_UpdateCheckoutStatus;
 	import Model.Transactions.ERAProject.Transaction_UpdateERACase;
 	import Model.Transactions.ERAProject.Transaction_UpdateERAProject;
 	import Model.Transactions.ERAProject.Transaction_UpdateFileTemperature;
 	import Model.Transactions.ERAProject.Transaction_UpdateLogItemBooleanValue;
 	import Model.Transactions.ERAProject.Transaction_UploadERAFile;
+	import Model.Transactions.ERAProject.Transaction_UploadFileVersion;
 	import Model.Transactions.Share.Transaction_SetUserAssetShare;
 	import Model.Transactions.Transaction_ChangePassword;
 	import Model.Transactions.Transaction_CloneMedia;
@@ -224,13 +226,14 @@ package Model {
 		 * @return 
 		 * 
 		 */		
-		public function getThisAssetsCommentary(assetID:Number, callback:Function):void {
-			trace("AppModel getThisAssetsCommentary: Getting Commentary for Asset", assetID);
+		public function getThisAssetsCommentary(objectID:Number, roomID:Number, callback:Function):void {
+			trace("AppModel getThisAssetsCommentary: Getting Commentary for Asset", objectID);
 			
 			var args:Object = new Object();
 			
+			
 			args.where = "namespace = recensio and r_base/active = true and class >= 'recensio:base/resource/annotation' " +
-				"and related to{is_child} (id="+assetID+")";
+				"and related to{room} (id=" + roomID + ") and related to{object} (id=" + objectID + ")";
 			
 			// By default, asset.query limits it to 100 results
 			// this means we will get them all TODO change this so it paginates basically
@@ -370,10 +373,10 @@ package Model {
 		 * @param callback			The function to call when the datbase call is complete
 		 * 
 		 */		
-		public function saveNewComment(commentText:String, commentParentID:Number, 
+		public function saveNewComment(commentText:String, roomID:Number, objectID:Number, 
 									   replyingToID:Number,
 									   newCommentObject:NewComment, callback:Function):void {
-			var saveCommentTransaction:Transaction_SaveNewComment = new Transaction_SaveNewComment(_connection, commentText, commentParentID, replyingToID,
+			var saveCommentTransaction:Transaction_SaveNewComment = new Transaction_SaveNewComment(_connection, commentText, roomID, objectID, replyingToID,
 																									newCommentObject, callback);
 		}
 		
@@ -1693,8 +1696,11 @@ package Model {
 		public function getAllERAFilesInRoom(roomID:Number, callback:Function):void {
 			var getERAFiles:Transaction_GetAllFiles = new Transaction_GetAllFiles(roomID, _connection, callback);
 		}
-		public function uploadERAFile(evidenceRoomID:Number, forensicLabID:Number, logItemID:Number, type:String, title:String, description:String, fileReference:FileReference, evidenceItem:EvidenceItem, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
-			var uploadERAFile:Transaction_UploadERAFile = new Transaction_UploadERAFile(AppController.currentEraProject.year, evidenceRoomID, forensicLabID, logItemID, type, title, description, fileReference, evidenceItem, _connection, ioErrorCallback, progressCallback, completeCallback);
+		public function uploadERAFile(evidenceRoomID:Number, forensicLabID:Number, logItemID:Number, type:String, title:String, description:String, version:Number, fileReference:FileReference, evidenceItem:EvidenceItem, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
+			var uploadERAFile:Transaction_UploadERAFile = new Transaction_UploadERAFile(AppController.currentEraProject.year, evidenceRoomID, forensicLabID, logItemID, type, title, description, version, fileReference, evidenceItem, _connection, ioErrorCallback, progressCallback, completeCallback);
+		}
+		public function uploadERAFileVersion(roomID:Number, oldFileID:Number, originalFileID:Number, type:String, title:String, description:String, fileReference:FileReference, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
+			var uploadERAVersion:Transaction_UploadFileVersion = new Transaction_UploadFileVersion(AppController.currentEraProject.year, roomID, oldFileID, originalFileID, type, title, description, fileReference, _connection, ioErrorCallback, progressCallback, completeCallback);
 		}
 		public function getERAFile(fileID:Number, callback:Function):void {
 			var getERAFile:Transaction_GetFile = new Transaction_GetFile(fileID, _connection, callback);
@@ -1705,7 +1711,10 @@ package Model {
 		public function updateERAFileTemperature(fileID:Number, hot:Boolean, callback:Function):void {
 			var updateERAFile:Transaction_UpdateFileTemperature = new Transaction_UpdateFileTemperature(fileID, hot, _connection, callback);
 		}
-		
+		public function updateERAFileCheckOutStatus(fileID:Number, checkedOut:Boolean, callback:Function):void {
+			var updateERAFile:Transaction_UpdateCheckoutStatus = new Transaction_UpdateCheckoutStatus(fileID, checkedOut, Auth.getInstance().getUsername(), _connection, callback);
+		}
+			
 		public function createERAConversation(objectID:Number, roomID:Number, inReplyToID:Number, text:String, callback:Function):void {
 			var createERAConversation:Transaction_CreateConversation = new Transaction_CreateConversation(AppController.currentEraProject.year, objectID, roomID, inReplyToID, text, _connection, callback);
 		}

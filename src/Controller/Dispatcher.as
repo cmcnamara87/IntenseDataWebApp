@@ -110,6 +110,10 @@ package Controller {
 			Dispatcher.call(Router.getInstance().getURLFragment());
 		}
 		
+		public static function showFile(caseID:Number, rmCode:String, roomType:String, roomID:Number, fileID:Number):void {
+			Dispatcher.call("file/" + caseID + "/" + escape(rmCode) + "/" + roomType + "/" + roomID + "/"  + fileID);
+		}
+		
 		// Loads a new controller
 		public static function call(url:String):void {
 			if(!Auth.getInstance().hasSession()) {

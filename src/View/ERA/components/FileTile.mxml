@@ -6,8 +6,7 @@
 		  mouseOut="vgroup1_mouseOutHandler(event)" 
 		  mouseDown="vgroup1_mouseDownHandler(event)" 
 		  mouseUp="vgroup1_mouseUpHandler(event)"
-		  mouseMove="vgroup1_mouseMoveHandler(event)"
-		  enabled="{!checkedOut}">
+		  mouseMove="vgroup1_mouseMoveHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
@@ -33,6 +32,9 @@
 			
 			[Bindable]
 			public var ext:String;
+			
+			[Bindable]
+			public var version:Number = 0;;
 			
 			[Bindable]
 			public var rootMetaType:String;
@@ -96,6 +98,6 @@
 	</fx:Declarations>
 	
 	
-	<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="{description}"/>
-	<s:Label text="{title} ({ext})" width="100%" textAlign="center" />
+	<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="{description}" alpha="{checkedOut ? 0.5 : 1}" />
+	<s:Label text="{title}_{version} ({ext})" width="100%" textAlign="center" />
 </s:VGroup>

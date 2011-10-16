@@ -63,6 +63,8 @@
 					fileTile.rootMetaType = file.rootMetaType;
 					fileTile.ext = file.fileExt;
 					fileTile.description = file.description;
+					fileTile.version = file.version;
+					fileTile.checkedOut = file.checkedOut;
 					fileTile.loadURL(file.base_asset_id);
 					if(file.hot) {
 						hotFileGroup.addElement(fileTile);
@@ -199,6 +201,50 @@
 
 			
 
+
+			protected function searchInput_keyUpHandler(event:KeyboardEvent):void
+			{
+				var searchText:String = searchInput.text;
+				
+				if(searchText == "") {
+					// Reveal all
+					for(var i:Number = 0; i < coldFileGroup.numElements; i++) {
+						var fileTile:FileTile = coldFileGroup.getElementAt(i) as FileTile;
+						fileTile.visible = true;
+						fileTile.includeInLayout = true;
+					}
+					for(var i:Number = 0; i < hotFileGroup.numElements; i++) {
+						var fileTile:FileTile = hotFileGroup.getElementAt(i) as FileTile;
+						fileTile.visible = true;
+						fileTile.includeInLayout = true;
+					}
+					return;
+				}
+				
+				// Something behinds all, lets hide some of them				
+				for(var i:Number = 0; i < hotFileGroup.numElements; i++) {
+					var fileTile:FileTile = hotFileGroup.getElementAt(i) as FileTile;
+					if(fileTile.title.indexOf(searchText) != -1) {
+						fileTile.visible = true;
+						fileTile.includeInLayout = true;
+					} else {
+						fileTile.visible = false;
+						fileTile.includeInLayout = false;
+					}
+				}
+				
+				for(var i:Number = 0; i < coldFileGroup.numElements; i++) {
+					var fileTile:FileTile = coldFileGroup.getElementAt(i) as FileTile;
+					if(fileTile.title.indexOf(searchText) != -1) {
+						fileTile.visible = true;
+						fileTile.includeInLayout = true;
+					} else {
+						fileTile.visible = false;
+						fileTile.includeInLayout = false;
+					}
+				}
+			}
+
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -220,36 +266,46 @@
 	
 	<!-- Filter buttons -->
 	<s:BorderContainer width="100%" height="40" borderVisible="false" backgroundColor="0xEEEFF1" id="filterButtonsGroup">
-		<s:HGroup verticalAlign="middle" paddingBottom="10" paddingLeft="20" paddingRight="10" paddingTop="10">
+		<s:HGroup verticalAlign="middle" paddingBottom="10" paddingLeft="20" paddingRight="10" paddingTop="10" width="100%">
 			<s:Label text="Filter By Type:" color="0x828F9A"/>
 			<s:HGroup id="typeFiltersButtons">
+				<s:Label text="Loading..." color="0x828F9A"/>
 			</s:HGroup>
+			<s:Label text="      Search:" color="0x828F9A"/>
+			<s:TextInput width="100%" borderColor="0xBBBBBB" id="searchInput" keyUp="searchInput_keyUpHandler(event)"/>
 		</s:HGroup>
 	</s:BorderContainer>
 	<!-- Filter buttons -->
 	
-	<s:HGroup width="100%" height="100%">
+	<s:HGroup width="100%" height="100%" gap="0">
 		<!-- File browser part -->
 		<s:BorderContainer width="100%" height="100%" borderVisible="false">
-			<s:Scroller width="100%" height="100%">
-				<s:VGroup width="100%" height="100%"> <!-- paddingBottom="20" paddingLeft="40" paddingRight="20" paddingTop="20"> -->
-					<s:BorderContainer width="100%" backgroundColor="0xFFFFFF" borderVisible="false"  dragDrop="hotFileGroup_dragDropHandler(event)"  dragExit="bordercontainer1_dragExitHandler(event)" dragEnter="hotFileGroup_dragEnterHandler(event)">
-						<s:VGroup width="100%" paddingBottom="20" paddingLeft="50" paddingRight="20" paddingTop="20">
-							<s:Label width="100%" text="Hot Files" color="0x999999" textAlign="center"/>
-							<mx:HRule width="100%" />
-							<s:TileGroup id="hotFileGroup" width="100%" height="50%" verticalGap="20" horizontalGap="20" />
-						</s:VGroup>	
-					</s:BorderContainer>
+			<s:HGroup width="100%" height="100%" gap="0">
+				<s:Scroller width="100%" height="100%">
+					<s:Group  width="100%" height="100%">
+						<s:BorderContainer width="100%" height="100%" backgroundColor="0xFFFFFF" borderVisible="false"  dragDrop="hotFileGroup_dragDropHandler(event)"  dragExit="bordercontainer1_dragExitHandler(event)" dragEnter="hotFileGroup_dragEnterHandler(event)">
+							<s:VGroup width="100%" height="100%" paddingBottom="20" paddingLeft="50" paddingRight="20" paddingTop="20">
+								<s:Label width="100%" text="Hot Files" color="0x999999" textAlign="center" fontSize="14"/>
+								<mx:HRule width="100%" />
+								<s:TileGroup id="hotFileGroup" width="100%" height="100%" verticalGap="20" horizontalGap="20" />
+							</s:VGroup>	
+						</s:BorderContainer>
+					</s:Group>
 					
-					<s:BorderContainer width="100%" backgroundColor="0xFFFFFF" minHeight="200" borderVisible="false" dragDrop="coldFileGroup_dragDropHandler(event)" dragExit="coldFileGroup_dragExitHandler(event)" dragEnter="coldFileGroup_dragEnterHandler(event)">
-						<s:VGroup width="100%" paddingBottom="20" paddingLeft="50" paddingRight="20" paddingTop="20">
-							<s:Label width="100%" text="Cold Files" color="0x999999" textAlign="center"/>
-							<mx:HRule width="100%" />
-							<s:TileGroup id="coldFileGroup" width="100%" height="100%" verticalGap="20" horizontalGap="20" />
-						</s:VGroup>
-					</s:BorderContainer>
-				</s:VGroup>
-			</s:Scroller>
+				</s:Scroller>
+				<s:Scroller width="500" height="100%">
+					<s:Group width="100%" height="100%">
+						<s:BorderContainer width="100%" height="100%" backgroundColor="0xFFFFFF" borderVisible="false" dragDrop="coldFileGroup_dragDropHandler(event)" dragExit="coldFileGroup_dragExitHandler(event)" dragEnter="coldFileGroup_dragEnterHandler(event)">
+							<s:VGroup width="100%" height="100%" paddingBottom="20" paddingLeft="50" paddingRight="20" paddingTop="20">
+								<s:Label width="100%" text="Cold Files" color="0x999999" textAlign="center" fontSize="14"/>
+								<mx:HRule width="100%" />
+								<s:TileGroup id="coldFileGroup" width="100%" height="100%" verticalGap="20" horizontalGap="20" />
+							</s:VGroup>
+						</s:BorderContainer>
+					</s:Group>
+					
+				</s:Scroller>
+			</s:HGroup>
 		</s:BorderContainer>
 		
 		<!-- conversation part -->

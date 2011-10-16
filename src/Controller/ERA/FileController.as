@@ -1,5 +1,6 @@
 package Controller.ERA {
 	
+	import Controller.AppController;
 	import Controller.CollabController;
 	import Controller.Dispatcher;
 	import Controller.IDEvent;
@@ -27,6 +28,9 @@ package Controller.ERA {
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.net.FileReference;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
 	import flash.utils.setTimeout;
 	
 	import mx.controls.Alert;
@@ -53,9 +57,10 @@ package Controller.ERA {
 		private static var currentAssetID:Number = 0;		// The ID of the media asset we are viewing.
 		public static var currentMediaData:Model_ERAFile;
 		
-		public static var roomType:String;
-		public static var caseID:Number;
-		public static var rmCode:String;
+		public static var roomType:String; // the type of hte room we are in
+		public static var caseID:Number; // the id of the case we are in
+		public static var rmCode:String; // the code for hte rm we are in
+		public static var roomID:Number; // the id of the room we are in
 		
 		//Calls the superclass, sets the AssetID
 		public function FileController() {
@@ -76,7 +81,7 @@ package Controller.ERA {
 			
 			// Get out the assets ID
 			trace("number of args", Dispatcher.getArgs().length, Dispatcher.getArgs());
-			if(Dispatcher.getArgs().length != 4) {
+			if(Dispatcher.getArgs().length != 5) {
 				Dispatcher.call('case');
 				return;
 			}
@@ -84,7 +89,8 @@ package Controller.ERA {
 			caseID = Dispatcher.getArgs()[0];
 			rmCode = unescape(Dispatcher.getArgs()[1]);
 			roomType = Dispatcher.getArgs()[2];
-			currentAssetID = Dispatcher.getArgs()[3];
+			roomID = Dispatcher.getArgs()[3];
+			currentAssetID = Dispatcher.getArgs()[4];
 			trace("Media Asset ID:", currentAssetID);
 			
 			
@@ -119,8 +125,74 @@ package Controller.ERA {
 			// Listen for Asset being deleted
 			mediaView.addEventListener(IDEvent.MEDIA_ASSET_DELETE_BUTTON_CLICKED, deleteAssetButtonClicked);
 			
+			// Listen for version being upload
+			mediaView.addEventListener(IDEvent.ERA_SAVE_FILE, saveFile);
+			// Listne for a file being downloaded
+			mediaView.addEventListener(IDEvent.ERA_DOWNLOAD_FILE, downloadFile);
+			
 			
 		}
+		
+		/* =================================== UPLOAD A NEW VERSION ========================================= */
+		private function saveFile(e:IDEvent):void {
+			var file:FileReference = e.data.fileReference;
+			
+			layout.notificationBar.showProcess("Uploading file...");
+			
+			// get out the room IDs
+//			trace("ROOM IDS ARE: EVIDNECE ROOM", getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, "FORENSIC LAB", getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id);
+			trace("ORIGINAL FILE ID IS", currentMediaData.originalFileID);
+
+			AppModel.getInstance().uploadERAFileVersion(roomID, currentMediaData.base_asset_id, currentMediaData.originalFileID, 
+				currentMediaData.type, currentMediaData.title, currentMediaData.description, file, 
+				uploadIOError, uploadProgress, uploadComplete);
+		}
+		private function uploadIOError():void {
+			layout.notificationBar.showError("Failed to Upload file.");
+		}
+		private function uploadProgress(percentage:Number):void {
+			mediaView.uploadNewVersionButton.label = "Uploaded " + percentage + "%";
+		}
+		private function uploadComplete(status:Boolean, eraEvidence:Model_ERAFile=null):void {
+			if(status) {
+				layout.notificationBar.showGood("Upload Complete");
+				Dispatcher.showFile(caseID, rmCode, roomType, roomID, eraEvidence.base_asset_id);
+			} else {
+				Alert.show("Upload failed");
+			}
+		}
+		/* =================================== END OF UPLOAD A NEW VERSION ========================================= */
+		
+		
+		/* =================================== DOWNLOAD A FILE ========================================= */
+		private function downloadFile(e:IDEvent):void {
+			var fileID:Number = e.data.fileID;
+			
+			// We need to mark the file as downloaded, then let the user download it
+			// set the download button as 'preparing for download' while we change it status to 'checked out'
+			mediaView.downloadButton.label = "Preparing for Download";
+			mediaView.downloadButton.enabled = false;
+			
+			// Tell the database to mark it as 'checked out'
+			AppModel.getInstance().updateERAFileCheckOutStatus(fileID, true, fileCheckedOut);
+		}
+		private function fileCheckedOut(status:Boolean):void {
+			if(!status) {
+				layout.notificationBar.showError("Sorry, Could not checkout the file for download");
+				return;
+			}
+			
+			mediaView.downloadButton.label = "Checked out by " + Auth.getInstance().getUserDetails().firstName + " " + Auth.getInstance().getUserDetails().lastName;
+			mediaView.downloadButton.enabled = false;
+			
+			// Download it now
+			var url:String = currentMediaData.getDownloadURL();
+			var req:URLRequest = new URLRequest(url);
+			navigateToURL(req, 'Download');
+		}
+		/* =================================== END OF DOWNLOAD A FILE ========================================= */
+		
+		
 		
 		/* ================ FUNCTIONS THAT CALL THE DATABASE ================ */
 		private function loadMediaAsset():void {
@@ -168,7 +240,7 @@ package Controller.ERA {
 		private function saveComment(e:IDEvent):void {
 			trace('Saving comment: ', e.data.commentText, 'in reply to asset:', currentAssetID, 'reply to comment:', e.data.replyingToID);
 			
-			AppModel.getInstance().saveNewComment(	e.data.commentText, currentAssetID, e.data.replyingToID,
+			AppModel.getInstance().saveNewComment(	e.data.commentText, roomID, currentAssetID, e.data.replyingToID,
 				e.data.newCommentObject, commentSaved);
 			
 		}
@@ -185,7 +257,7 @@ package Controller.ERA {
 		
 		private function saveEditedComment(e:IDEvent):void {
 			AppModel.getInstance().editComment(e.data.commentID, e.data.commentText, function(e:Event):void {
-				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 			});
 		}
 		
@@ -305,7 +377,7 @@ package Controller.ERA {
 		
 		// TODO REMOVE THIS FUNCTION (ONLY SO WE CAN UPDATE ANNOTATIONS FROM DEKKERS CODE
 		private function getAnnotations():void {
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 		}
 		
 		private function deleteAnnotation(e:IDEvent):void {
@@ -364,7 +436,7 @@ package Controller.ERA {
 			mediaView.addMediaData(media);
 			
 			// Gets out the Commentary Data for hte asset (that is, comments and annotations
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 			
 			
 			// Get out the People data
@@ -376,7 +448,7 @@ package Controller.ERA {
 		
 		private function loadPanelData():void {
 			// Gets out the Commentary Data for hte asset (that is, comments and annotations
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 			
 			// Get out the People data
 //			AppModel.getInstance().getPeople(currentMediaData.meta_users_access, peopleCollectionLoaded);
@@ -418,7 +490,7 @@ package Controller.ERA {
 			AppModel.getInstance().setAnnotationClassForID(annotationID, function(e:Event):void {
 				// After setting the annotation class, get all the commentary for this media asset
 				// And reload them so they show on the asset.
-				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);	
+				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);	
 			});
 			
 			// So lets just get out all the annotations/comments again
@@ -429,7 +501,7 @@ package Controller.ERA {
 		}
 		
 		public function annotationDeleted(e:Event):void {
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 		}
 		
 		private function mediaDetailsUpdated(e:Event):void {

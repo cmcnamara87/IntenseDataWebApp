@@ -18,6 +18,7 @@ package Model {
 		
 		public var hot:Boolean = true; // if the file is hot or cold (active or inactive)
 		public var version:Number = 0; // the number to append to the end of the file name
+		public var originalFileID:Number = 0; // the id of the origianl file it was a version of
 		public var checkedOut:Boolean = false; // if the file has been downloaded (and its awaiting upload)
 		public var checkedOutUsername:String = ""; // the username of the person who checked out the file
 		
@@ -61,6 +62,16 @@ package Model {
 			if(eraEvidenceItem["version"]) {
 				this.version = eraEvidenceItem["version"];
 			}
+			
+			// show if this item has been uploaded
+			// we know its been uploaded, if it has a relationship to its data item
+			var originalFileNumber:Number = Number(rawData.related.(@type=="originalfile").to);
+			if(originalFileNumber > 0) {
+				originalFileID = originalFileNumber;
+			} else {
+				originalFileID = this.base_asset_id;
+			}
+			
 			if(eraEvidenceItem["checked_out"]) {
 				this.checkedOut = eraEvidenceItem["checked_out"] == "true";
 				if(this.checkedOut) {
@@ -104,6 +115,7 @@ package Model {
 			mediaURL = mediaURL + "_skey=" + Auth.getInstance().getSessionID();
 			mediaURL = mediaURL + "&id=" + this.base_asset_id;
 			mediaURL = mediaURL + "&version=" + this.base_asset_version;
+			mediaURL = mediaURL + "&filename=" + this.fileName;
 			mediaURL = mediaURL + "&disposition=" + "attachment";
 			return mediaURL;
 		}

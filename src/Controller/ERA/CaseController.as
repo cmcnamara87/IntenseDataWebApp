@@ -118,7 +118,7 @@ package Controller.ERA
 			
 			
 			trace("displatching to", "file/" + caseID + "/" + escape(currentERACase.rmCode) + "/" + roomType + "/" + fileID);
-			Dispatcher.call("file/" + caseID + "/" + escape(currentERACase.rmCode) + "/" + roomType + "/" + fileID);
+			Dispatcher.showFile(caseID, currentERACase.rmCode, roomType, currentRoom.base_asset_id, fileID);
 		}
 		
 		/* ======================================= MOVE FILE TO DIFFERENT ROOM ======================================= */
@@ -389,6 +389,10 @@ package Controller.ERA
 						break;
 					case Model_ERARoom.FORENSIC_LAB:
 						this.showForensicLab();
+						break;
+					case Model_ERARoom.SCREENING_ROOM:
+						this.showScreeningLab();
+						break;
 					default:
 						break;
 				}
@@ -483,6 +487,7 @@ package Controller.ERA
 			var type:String = e.data.type;
 			var title:String = e.data.title;
 			var description:String = e.data.description;
+			var version:Number = e.data.version;
 			var logItemID:Number = e.data.logItemID;
 			
 			layout.notificationBar.showProcess("Uploading file...");
@@ -490,7 +495,7 @@ package Controller.ERA
 			// get out the room IDs
 			trace("ROOM IDS ARE: EVIDNECE ROOM", getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, "FORENSIC LAB", getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id);
 			
-			AppModel.getInstance().uploadERAFile(getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id, logItemID, type, title, description, file, evidenceItem, uploadIOError, uploadProgress, uploadComplete); 
+			AppModel.getInstance().uploadERAFile(getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id, logItemID, type, title, description, version, file, evidenceItem, uploadIOError, uploadProgress, uploadComplete); 
 		}
 		private function uploadIOError():void {
 			layout.notificationBar.showError("Failed to Upload file.");

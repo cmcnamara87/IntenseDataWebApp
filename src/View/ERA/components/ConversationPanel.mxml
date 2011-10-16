@@ -2,7 +2,7 @@
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
-				   width="300" height="100%" borderVisible="false" backgroundColor="0xEEEEEE" resizeEffect="Resize" >
+				   width="300" height="100%" backgroundColor="0xFFFFFF" borderColor="0xCCCCCC" resizeEffect="Resize" >
 
 	<fx:Script>
 		<![CDATA[
@@ -93,16 +93,18 @@
 	</fx:Declarations>
 	
 	<s:VGroup width="100%" height="100%" gap="0">
-		<mx:HRule width="100%" />
-		<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
-			<s:Label color="0x0000BB" fontWeight="bold" text="{Auth.getInstance().getUserDetails().firstName} {Auth.getInstance().getUserDetails().lastName}" />
-			<s:TextArea color="0x888888" height="50" id="newComment" text="Write a Comment" width="100%" focusIn="newComment_focusInHandler(event)" focusOut="newComment_focusOutHandler(event)">
-			</s:TextArea>
-			<s:HGroup width="100%">
-				<s:Button label="Post" chromeColor="0xFFFFFF" cornerRadius="10" width="100%" id="postCommentButton" click="postCommentButton_clickHandler(event)"/>
-				<s:Button label="Clear" chromeColor="0xFFFFFF" cornerRadius="10" width="100%" id="clearCommentButton" click="clearCommentButton_clickHandler(event)"/>
-			</s:HGroup>
-		</s:VGroup>
+		<s:BorderContainer backgroundColor="0xEEEEEE" width="100%" borderVisible="false">
+			<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+				<s:Label color="0x0000BB" fontWeight="bold" text="{Auth.getInstance().getUserDetails().firstName} {Auth.getInstance().getUserDetails().lastName}" />
+				<s:TextArea color="0x888888" height="50" id="newComment" text="Write a Comment" width="100%" focusIn="newComment_focusInHandler(event)" focusOut="newComment_focusOutHandler(event)">
+				</s:TextArea>
+				<s:HGroup width="100%">
+					<s:Button label="Post" chromeColor="0xFFFFFF" cornerRadius="10" width="100%" id="postCommentButton" click="postCommentButton_clickHandler(event)"/>
+					<s:Button label="Clear" chromeColor="0xFFFFFF" cornerRadius="10" width="100%" id="clearCommentButton" click="clearCommentButton_clickHandler(event)"/>
+				</s:HGroup>
+			</s:VGroup>
+		</s:BorderContainer>
+		
 		<mx:HRule width="100%" />
 		<s:Scroller width="100%" height="100%">
 			<s:VGroup id="conversationList" width="100%">
