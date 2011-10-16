@@ -226,17 +226,17 @@ package Controller {
 			var height:Number = e.data.height;
 			var annotationText:String = e.data.annotationText;
 			
-			AppModel.getInstance().saveNewBoxAnnotation(
-				currentAssetID,
-				xCoor,
-				yCoor,
-				width,
-				height,
-				0,
-				0,
-				annotationText,
-				newAnnotationSaved
-			);
+//			AppModel.getInstance().saveNewBoxAnnotation(
+//				currentAssetID,
+//				xCoor,
+//				yCoor,
+//				width,
+//				height,
+//				0,
+//				0,
+//				annotationText,
+//				newAnnotationSaved
+//			);
 		}
 		
 		private function saveNewPenAnnotation(e:IDEvent):void {
@@ -244,12 +244,12 @@ package Controller {
 			// Unpack the event data
 			var path:String = e.data.path;
 			var text:String = e.data.text;
-			AppModel.getInstance().saveNewPenAnnotation(
-				currentAssetID,
-				path,
-				text,
-				newAnnotationSaved
-			);
+//			AppModel.getInstance().saveNewPenAnnotation(
+//				currentAssetID,
+//				path,
+//				text,
+//				newAnnotationSaved
+//			);
 		}
 		
 		private function saveNewHighlightAnnotation(e:IDEvent):void {
@@ -261,16 +261,16 @@ package Controller {
 			var endTextIndex:Number = e.data.endTextIndex;
 			var text:String = e.data.text;
 			
-			AppModel.getInstance().saveNewHighlightAnnotation(
-				currentAssetID,
-				xCoor,
-				yCoor,
-				page1,
-				startTextIndex,
-				endTextIndex,
-				text,
-				newAnnotationSaved
-			)
+//			AppModel.getInstance().saveNewHighlightAnnotation(
+//				currentAssetID,
+//				xCoor,
+//				yCoor,
+//				page1,
+//				startTextIndex,
+//				endTextIndex,
+//				text,
+//				newAnnotationSaved
+//			)
 		}
 		
 		// DEKKERS ANNOTATION CODE TODO REMOVE THIS FUNCTION

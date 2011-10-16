@@ -432,15 +432,18 @@ package Model {
 		 * @param callback		The function to call when the saving is complete.
 		 * 
 		 */
-		public function saveNewPenAnnotation(mediaAssetID:Number, path:String, text:String, callback:Function):void {
+		public function saveNewPenAnnotation(mediaAssetID:Number, roomID:Number, path:String, text:String, callback:Function):void {
 			trace("- App Model: Saving Pen annotation...");	
 			var args:Object = new Object();
 			args.namespace = "recensio";
 			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
 			
 			// Set the annotations parent media asset
-			baseXML.service.args["related"]["to"] = mediaAssetID;
-			baseXML.service.args["related"]["to"].@relationship = "is_child";
+//			baseXML.service.args["related"]["to"] = mediaAssetID;
+//			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			baseXML.service.args.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
+			baseXML.service.args.related.appendChild(XML('<to relationship="object">' + mediaAssetID + '</to>'));
+			
 			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
 			baseXML.service.args["meta"]["r_base"]["active"] = "true";
 			
@@ -472,15 +475,17 @@ package Model {
 			
 		}
 		
-		public function saveNewHighlightAnnotation(mediaAssetID:Number, xCoor:Number, yCoor:Number, page1:Number, startTextIndex:Number, 
+		public function saveNewHighlightAnnotation(mediaAssetID:Number, roomID:Number, xCoor:Number, yCoor:Number, page1:Number, startTextIndex:Number, 
 													endTextIndex:Number, text:String, callback:Function):void {
 			var args:Object = new Object();
 			args.namespace = "recensio";
 			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
 			
 			// Set the annotations parent media asset
-			baseXML.service.args["related"]["to"] = mediaAssetID;
-			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			baseXML.service.args.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
+			baseXML.service.args.related.appendChild(XML('<to relationship="object">' + mediaAssetID + '</to>'));
+//			baseXML.service.args["related"]["to"] = mediaAssetID;
+//			baseXML.service.args["related"]["to"].@relationship = "is_child";
 			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
 			baseXML.service.args["meta"]["r_base"]["active"] = "true";
 			
@@ -532,7 +537,7 @@ package Model {
 		 * @param callback			The function to call when the anntoation is saved
 		 * 
 		 */		
-		public function saveNewBoxAnnotation(	mediaAssetID:Number, xCoor:Number, yCoor:Number,
+		public function saveNewBoxAnnotation(	mediaAssetID:Number, roomID:Number, xCoor:Number, yCoor:Number,
 											annotationWidth:Number, annotationHeight:Number,
 											startTime:Number, endTime:Number,
 											annotationText:String, callback:Function):void {
@@ -543,8 +548,12 @@ package Model {
 			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
 			
 			// Set the annotations parent media asset
-			baseXML.service.args["related"]["to"] = mediaAssetID;
-			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			baseXML.service.args.related = "";
+			baseXML.service.args.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
+			baseXML.service.args.related.appendChild(XML('<to relationship="object">' + mediaAssetID + '</to>'));
+			
+//			baseXML.service.args["related"]["to"] = mediaAssetID;
+//			baseXML.service.args["related"]["to"].@relationship = "is_child";
 			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
 			baseXML.service.args["meta"]["r_base"]["active"] = "true";
 			

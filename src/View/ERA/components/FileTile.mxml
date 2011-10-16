@@ -61,7 +61,7 @@
 			
 			protected function vgroup1_mouseMoveHandler(event:MouseEvent):void
 			{
-				if(!mouseDown) return;
+				if(!mouseDown) return; // only do this if we are moving the mouse, after holding it down (aka dragging)
 				DragManager.doDrag(event.currentTarget as IUIComponent, null, event);
 				this.alpha = 0.5;
 			}

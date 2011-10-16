@@ -62,6 +62,8 @@
 					fileTile.rootMetaType = file.rootMetaType;
 					fileTile.ext = file.fileExt;
 					fileTile.description = file.description;
+					fileTile.checkedOut = false;
+					fileTile.version = file.version;
 					fileTile.loadURL(file.base_asset_id);
 					fileGroup.addElement(fileTile);
 				}

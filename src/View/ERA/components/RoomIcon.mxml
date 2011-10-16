@@ -6,6 +6,7 @@
 		  buttonMode="true"
 		  dragEnter="vgroup1_dragEnterHandler(event)"
 		  dragDrop="vgroup1_dragDropHandler(event)"
+		  dragExit="vgroup1_dragExitHandler(event)"
 		  >
 
 	<fx:Script>
@@ -51,6 +52,14 @@
 				
 				DragManager.acceptDragDrop(event.currentTarget as IUIComponent);
 				DragManager.showFeedback( DragManager.MOVE );
+				
+				this.alpha = 1;
+			}
+
+
+			protected function vgroup1_dragExitHandler(event:DragEvent):void
+			{
+				this.alpha = 0.5
 			}
 
 		]]>

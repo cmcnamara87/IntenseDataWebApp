@@ -292,6 +292,7 @@ package Controller.ERA {
 			
 			AppModel.getInstance().saveNewBoxAnnotation(
 				currentAssetID,
+				roomID,
 				xCoor,
 				yCoor,
 				width,
@@ -310,6 +311,7 @@ package Controller.ERA {
 			var text:String = e.data.text;
 			AppModel.getInstance().saveNewPenAnnotation(
 				currentAssetID,
+				roomID,
 				path,
 				text,
 				newAnnotationSaved
@@ -327,6 +329,7 @@ package Controller.ERA {
 			
 			AppModel.getInstance().saveNewHighlightAnnotation(
 				currentAssetID,
+				roomID,
 				xCoor,
 				yCoor,
 				page1,
