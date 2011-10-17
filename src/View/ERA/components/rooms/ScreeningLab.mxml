@@ -144,7 +144,7 @@
 			<s:VGroup width="100%" paddingTop="10">
 				<s:Label text="ERA {AppController.currentEraProject.year} / RM {CaseController.currentERACase.rmCode} - {CaseController.currentERACase.title}" fontSize="16" fontWeight="bold" color="0x828F9A">
 				</s:Label>
-				<s:Label text="RM {CaseController.currentERACase.rmCode} - Screening Lab" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+				<s:Label text="RM {CaseController.currentERACase.rmCode} - Review Lab" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
 				</s:Label>
 			</s:VGroup>
 			<s:ToggleButton id="showConversationButton" chromeColor="0xFFFFFF" cornerRadius="10" label="Conversation (0)" height="30" />

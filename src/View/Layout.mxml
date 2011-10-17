@@ -7,12 +7,16 @@
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.Utilities.Auth;
+			
 			import Model.Model_ERANotification;
 			
 			import mx.controls.Text;
 			public function addNotifications(notificationsArray:Array):void {
 				notificationList.removeAllElements();
 				for each(var notificationData:Model_ERANotification in notificationsArray) {
+					//if(notificationData.username == Auth.getInstance().getUsername()) return;
+					
 					var notification:Text = new Text();
 					notification.percentWidth = 100;
 					if(notificationData.type == Model_ERANotification.FILE_UPLOADED) {

@@ -285,7 +285,7 @@
 					<s:Group  width="100%" height="100%">
 						<s:BorderContainer width="100%" height="100%" backgroundColor="0xFFFFFF" borderVisible="false"  dragDrop="hotFileGroup_dragDropHandler(event)"  dragExit="bordercontainer1_dragExitHandler(event)" dragEnter="hotFileGroup_dragEnterHandler(event)">
 							<s:VGroup width="100%" height="100%" paddingBottom="20" paddingLeft="50" paddingRight="20" paddingTop="20">
-								<s:Label width="100%" text="Hot Files" color="0x999999" textAlign="center" fontSize="14"/>
+								<s:Label width="100%" text="Active" color="0x999999" textAlign="center" fontSize="14"/>
 								<mx:HRule width="100%" />
 								<s:TileGroup id="hotFileGroup" width="100%" height="100%" verticalGap="20" horizontalGap="20" />
 							</s:VGroup>	
@@ -297,7 +297,7 @@
 					<s:Group width="100%" height="100%">
 						<s:BorderContainer width="100%" height="100%" backgroundColor="0xFFFFFF" borderVisible="false" dragDrop="coldFileGroup_dragDropHandler(event)" dragExit="coldFileGroup_dragExitHandler(event)" dragEnter="coldFileGroup_dragEnterHandler(event)">
 							<s:VGroup width="100%" height="100%" paddingBottom="20" paddingLeft="50" paddingRight="20" paddingTop="20">
-								<s:Label width="100%" text="Cold Files" color="0x999999" textAlign="center" fontSize="14"/>
+								<s:Label width="100%" text="Inactive" color="0x999999" textAlign="center" fontSize="14"/>
 								<mx:HRule width="100%" />
 								<s:TileGroup id="coldFileGroup" width="100%" height="100%" verticalGap="20" horizontalGap="20" />
 							</s:VGroup>

@@ -308,9 +308,9 @@
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
 					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" id="forensicLabButton"  roomType="{Model_ERARoom.FORENSIC_LAB}" icon="{AssetLookup.ForensicLabIcon}" click="forensicLabButton_clickHander(event)" />
 					<mx:Image source="{AssetLookup.getLeftRightArrowIconClass()}" width="46" height="72"></mx:Image>
-					<components:RoomIcon roomName="Screening Lab" alpha="0.5" id="screeningLabButton"  roomType="{Model_ERARoom.SCREENING_ROOM}" icon="{AssetLookup.ScreeningLabIcon}" click="screeningLabButton_clickHander(event)" />
+					<components:RoomIcon roomName="Review Lab" alpha="0.5" id="screeningLabButton"  roomType="{Model_ERARoom.SCREENING_ROOM}" icon="{AssetLookup.ScreeningLabIcon}" click="screeningLabButton_clickHander(event)" />
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Exhibition" alpha="0.5"  id="exhibitionButton"  unavailable="true" roomType="{Model_ERARoom.EXHIBIT}" icon="{AssetLookup.ExhibitionIcon}" click="exhibitionButton_clickHandler(event)"/>
+					<components:RoomIcon roomName="Exhibition" alpha="0.5"  id="exhibitionButton"  unavailable="false" roomType="{Model_ERARoom.EXHIBIT}" icon="{AssetLookup.ExhibitionIcon}" click="exhibitionButton_clickHandler(event)"/>
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass() }"  width="46" height="34"></mx:Image>
 					<components:RoomIcon roomName="Post Mortem" alpha="0.5" id="postMortemButton" unavailable="true" icon="{AssetLookup.PostMortemIcon}" />
 				</s:HGroup>
