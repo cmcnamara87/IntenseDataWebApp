@@ -284,7 +284,7 @@ package Controller {
 			AppModel.getInstance().getThisCollectionsMediaAssets(collectionID, collectionMediaLoaded);
 			
 			// Get the Commentary for this collection
-			AppModel.getInstance().getThisAssetsCommentary(collectionID, collectionCommentsLoaded);
+//			AppModel.getInstance().getThisAssetsCommentary(collectionID, collectionCommentsLoaded);
 			
 			// Get the sharing access for this collection
 			AppModel.getInstance().getAccess(collectionID, sharingDataLoaded);
@@ -1010,8 +1010,8 @@ package Controller {
 		private function saveComment(e:IDEvent):void {
 			trace('Saving comment: ', e.data.commentText, 'in reply to asset:', currentCollectionID, 'reply to comment:', e.data.replyingToID);
 			
-			AppModel.getInstance().saveNewComment(	e.data.commentText, currentCollectionID, e.data.replyingToID,
-													e.data.newCommentObject, commentSaved);
+//			AppModel.getInstance().saveNewComment(	e.data.commentText, currentCollectionID, e.data.replyingToID,
+//													e.data.newCommentObject, commentSaved);
 		}
 		
 		private function saveEditedComment(e:IDEvent):void {

@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100" gap="15" buttonMode="true" mouseOver="vgroup1_mouseOverHandler(event)" mouseOut="vgroup1_mouseOutHandler(event)" mouseDown="vgroup1_mouseDownHandler(event)" mouseUp="vgroup1_mouseUpHandler(event)">
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100" gap="15" buttonMode="true" 
+		  mouseOver="vgroup1_mouseOverHandler(event)" 
+		  mouseOut="vgroup1_mouseOutHandler(event)" 
+		  mouseDown="vgroup1_mouseDownHandler(event)" 
+		  mouseUp="vgroup1_mouseUpHandler(event)"
+		  mouseMove="vgroup1_mouseMoveHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
@@ -10,7 +15,10 @@
 			import Controller.Utilities.AssetLookup;
 			import Controller.Utilities.Auth;
 			
-			[Bindable]
+			import mx.core.IUIComponent;
+			import mx.managers.DragManager;
+			
+			[Bindable] 
 			public var title:String = "";
 			
 			[Bindable]
@@ -26,7 +34,18 @@
 			public var ext:String;
 			
 			[Bindable]
+			public var version:Number = 0;;
+			
+			[Bindable]
 			public var rootMetaType:String;
+			
+			[Bindable]
+			public var checkedOut:Boolean = false;
+			
+			[Bindable]
+			public var dragEnabled:Boolean = true;
+			
+			private var mouseDown:Boolean = false;
 		
 			public function loadURL(id:Number):void {
 				//if(rootMetaType == "image") {
@@ -38,6 +57,21 @@
 
 			protected function vgroup1_mouseDownHandler(event:MouseEvent):void
 			{
+				mouseDown = true;
+				
+			}
+
+			
+			protected function vgroup1_mouseMoveHandler(event:MouseEvent):void
+			{
+				if(!dragEnabled) return;
+				if(!mouseDown) return; // only do this if we are moving the mouse, after holding it down (aka dragging)
+				var dragProxy:Image = new Image();
+				dragProxy.height= 100;
+				dragProxy.width= 100; 
+				dragProxy.source = AssetLookup.getAssetImageClass(rootMetaType);
+				
+				DragManager.doDrag(event.currentTarget as IUIComponent, null, event, dragProxy);
 				this.alpha = 0.5;
 			}
 
@@ -45,6 +79,7 @@
 			protected function vgroup1_mouseUpHandler(event:MouseEvent):void
 			{
 				this.alpha = 1;
+				mouseDown = false;
 				var showFileEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_FILE, true);
 				showFileEvent.data.fileID = fileID;
 				trace("dispatching show file event");
@@ -64,7 +99,6 @@
 				this.alpha = 1;
 				// TODO Auto-generated method stub
 			}
-
 		]]>
 	</fx:Script>
 
@@ -73,6 +107,6 @@
 	</fx:Declarations>
 	
 	
-	<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="{description}"/>
-	<s:Label text="{title} ({ext})" width="100%" textAlign="center" />
+	<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="{description}" alpha="{checkedOut ? 0.5 : 1}" />
+	<s:Label text="{title}{version > 0 ? '_' + version : ''} ({ext})" width="100%" textAlign="center" />
 </s:VGroup>

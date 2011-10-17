@@ -5,9 +5,11 @@ package View.ERA
 	import Controller.Dispatcher;
 	import Controller.ERA.FileController;
 	import Controller.IDEvent;
+	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
 	
 	import Model.Model_ERAFile;
+	import Model.Model_ERARoom;
 	import Model.Model_Media;
 	
 	import Module.AudioViewer.AudioView;
@@ -37,6 +39,7 @@ package View.ERA
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.net.FileReference;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	import flash.text.TextField;
@@ -82,9 +85,11 @@ package View.ERA
 		private var heading:Label;	// The title of the media
 		
 		private var backButton:Button;
-		private var downloadButton:Button;
+		public var downloadButton:Button;
 		private var addAnnotationButton:Button;
 		private var hideShowAnnotationButton:Button;
+		public var uploadNewVersionButton:Button;
+		public var unlockFileButton:Button;
 		private var deleteAssetButton:IDButton;
 		private var editDetailsButton:Button;
 		private var shareButton:Button;
@@ -101,7 +106,9 @@ package View.ERA
 		private var commentCount:Number = 0;
 		
 		private var titleLabel:Label;
-		private var eraInfo:Label;
+		private var eraInfo:Text;
+		
+		private var fileReference:FileReference;
 		
 		// Can remove the save annotation function after redoing the modules, only there for dekkers code
 		public function FileView(saveAnnotationFunction:Function)
@@ -146,7 +153,7 @@ package View.ERA
 			vGroup1.percentWidth = 100;
 			hGroup1.addElement(vGroup1);
 			
-			eraInfo = new Label();
+			eraInfo = new Text();
 			eraInfo.setStyle('fontSize', '16');
 			eraInfo.setStyle('fontWeight', 'bold');
 			eraInfo.setStyle('color', '0x828F9A');
@@ -259,23 +266,28 @@ package View.ERA
 			hGroup1.addElement(annotationListButton);
 			
 			// Add comments button
-			commentsButton = IDGUI.makeButton('Comments');
+			commentsButton = IDGUI.makeMenuButton('Comments');
 			commentsButton.enabled = false;
-			commentsButton.setStyle("cornerRadius", "10");
-			commentsButton.setStyle("chromeColor", "0xFFFFFF");
-			commentsButton.height = 30;
 			hGroup1.addElement(commentsButton);
 			
 			
 			var downloadLine:Line = IDGUI.makeLine();
 //			myToolbar.addElement(downloadLine);
 			
-			downloadButton = IDGUI.makeButton('Download');
-			downloadButton.visible = false;
+			// Download and checkout the file
+			downloadButton = IDGUI.makeMenuButton('Download');
 			downloadButton.enabled = false;
-			downloadButton.includeInLayout = false;
 			hGroup1.addElement(downloadButton);
 			
+			// Unlock the file
+			unlockFileButton = IDGUI.makeMenuButton("Unlock File", false, false);
+			unlockFileButton.enabled = false;
+			hGroup1.addElement(unlockFileButton);
+			
+			// Upload a new version
+			uploadNewVersionButton = IDGUI.makeMenuButton('Upload New Version');
+			uploadNewVersionButton.enabled = false;
+			hGroup1.addElement(uploadNewVersionButton);
 			
 			// Group HGroup for Viewer and Panels
 			viewerAndPanels = new HGroup();
@@ -302,12 +314,17 @@ package View.ERA
 			shareButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
 			annotationListButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
 			commentsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
+			
+			uploadNewVersionButton.addEventListener(MouseEvent.CLICK, uploadNewVersionClicked);
+			unlockFileButton.addEventListener(MouseEvent.CLICK, unlockFileClicked);
 			// Listen for annotation list item mouseover
 			this.addEventListener(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, annotationListItemMouseOver);
 			this.addEventListener(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOUT, annotationListItemMouseOut);
 			
 			backButton.addEventListener(MouseEvent.CLICK, backButtonClicked);
 			downloadButton.addEventListener(MouseEvent.CLICK, downloadButtonClicked);
+			downloadButton.addEventListener(MouseEvent.MOUSE_OVER, downloadButtonMouseOver);
+			downloadButton.addEventListener(MouseEvent.MOUSE_OUT, downloadButtonMouseOut);
 			
 			viewsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
 			
@@ -344,9 +361,15 @@ package View.ERA
 			trace("Media Data Loaded");
 			this.mediaData = mediaData;
 			
-			eraInfo.text = "ERA " + AppController.currentEraProject.year + " / RM " + FileController.rmCode + " / Evidence Box";
-			titleLabel.text = mediaData.title + " - File Viewer";
-			setHeading(mediaData.description);
+			// Setup the title
+			eraInfo.htmlText = "ERA " + AppController.currentEraProject.year + " / RM " + FileController.rmCode + " / " + Model_ERARoom.getPrettyRoomName(FileController.roomType) + " / " + "File Viewer";
+			if(mediaData.version != 0) {
+				titleLabel.text = mediaData.title + " (" + mediaData.version + ")";
+			} else {
+				titleLabel.text = mediaData.title;
+			}
+//			setHeading(mediaData.description);
+			
 			
 //			myEditPanel.addDetails(mediaData);
 			
@@ -377,7 +400,6 @@ package View.ERA
 				default:
 					mediaViewer = new MediaViewer();
 			}
-			//			mediaViewer = new MediaViewer();
 			
 			mediaViewer.percentHeight = 100;
 			mediaViewer.percentWidth = 100;
@@ -404,6 +426,72 @@ package View.ERA
 //			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
 //				this.hideButtonsForPureAssetView();	
 //			}
+		}
+		
+		private function setupButtonsAccess():void {
+			// Enable all the buttons since we have loaded the data now
+			editDetailsButton.enabled = true;
+			hideShowAnnotationButton.enabled = true;
+			//			shareButton.enabled = true;
+			shareButton.includeInLayout = false;
+			shareButton.visible = false;
+			annotationListButton.enabled = true;
+			commentsButton.enabled = true;
+			viewsButton.enabled = true;
+			
+			
+			trace("- File access permissions:", mediaData.access_modify_content);
+			if(mediaData.access_modify_content) {
+				// We have modify access to the file, so we enable adding annotations
+				addAnnotationButton.enabled = true;
+				downloadButton.enabled = true;
+				uploadNewVersionButton.enabled = true;
+			}
+			
+			
+			// Setup if the file is checked out
+			if(mediaData.checkedOut) {
+				
+				// the file is chcecked out, not by you
+				downloadButton.label = "Checked out by " + mediaData.checkedOutUsername;
+				downloadButton.alpha = 0.5;
+				
+				// it is checked out, only the checked out user can reupload it
+				if(mediaData.checkedOutUsername == Auth.getInstance().getUsername()) {
+					//					unlockFileButton.visible = true;
+					//					unlockFileButton.includeInLayout = true;
+					//					unlockFileButton.enabled = true;
+					uploadNewVersionButton.enabled = true;
+				} else {
+					
+					
+					uploadNewVersionButton.visible = false;
+					uploadNewVersionButton.includeInLayout = false;
+					unlockFileButton.visible = false;
+					unlockFileButton.includeInLayout = false;
+				}
+			} else {
+				// its not checked out
+				// enable the upload button
+				uploadNewVersionButton.enabled = true;
+			}
+			
+			
+			// The delete button should be enabled, provided its been shared via the asset
+			// and not via the collection 
+			//			if(mediaData.meta_media_access_level == SharingPanel.READWRITE || 
+			//				mediaData.meta_media_access_level == SharingPanel.READ) {
+			// We have read-write or read access to the file itself
+			// not through a collection
+			//				deleteAssetButton.enabled = true;
+			//			} 
+			
+			//			}
+			
+			mySharingPanel.setUserAccess(mediaData.access_modify_content);
+			myAnnotationListPanel.setUserAccess(mediaData.access_modify_content);
+			myEditPanel.setUserAccess(mediaData.access_modify_content);
+			myCommentsPanel.setUserAccess(mediaData.access_modify_content);
 		}
 		
 		private function hideButtonsForPureAssetView():void {
@@ -433,43 +521,12 @@ package View.ERA
 				deleteAssetButton.visible = false;
 				deleteAssetButton.includeInLayout = false;
 			}
+			
+
 		}
 		
 		
-		private function setupButtonsAccess():void {
-			// Enable all the buttons since we have loaded the data now
-			editDetailsButton.enabled = true;
-			hideShowAnnotationButton.enabled = true;
-			//			shareButton.enabled = true;
-			shareButton.includeInLayout = false;
-			shareButton.visible = false;
-			annotationListButton.enabled = true;
-			commentsButton.enabled = true;
-			viewsButton.enabled = true;
-			
-			trace("- File access permissions:", mediaData.access_modify_content);
-			if(mediaData.access_modify_content) {
-				// We have modify access to the file, so we enable adding annotations
-				addAnnotationButton.enabled = true;
-				downloadButton.enabled = true;
-			}
-			
-			// The delete button should be enabled, provided its been shared via the asset
-			// and not via the collection 
-//			if(mediaData.meta_media_access_level == SharingPanel.READWRITE || 
-//				mediaData.meta_media_access_level == SharingPanel.READ) {
-				// We have read-write or read access to the file itself
-				// not through a collection
-//				deleteAssetButton.enabled = true;
-//			} 
-			
-			//			}
-			
-			mySharingPanel.setUserAccess(mediaData.access_modify_content);
-			myAnnotationListPanel.setUserAccess(mediaData.access_modify_content);
-			myEditPanel.setUserAccess(mediaData.access_modify_content);
-			myCommentsPanel.setUserAccess(mediaData.access_modify_content);
-		}
+		
 		
 		/**
 		 * Called by Controller when the sharing info for the asset has been loaded.
@@ -513,8 +570,9 @@ package View.ERA
 			annotationListButton.label = "Annotation List (" + annotationsArray.length + ")";
 			// Add annotation to viewer
 //			if(mediaViewer && BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
+			if(mediaViewer) {
 				mediaViewer.addAnnotations(annotationsArray);
-//			}
+			}
 		}
 		
 		public function unlockSharingPanelUsers():void {
@@ -592,6 +650,47 @@ package View.ERA
 			}
 		}
 		
+		private function unlockFileClicked(e:MouseEvent):void {
+			
+		}
+		
+		private function uploadNewVersionClicked(e:MouseEvent):void {
+			fileReference = new FileReference();
+			//				fileReference.browse(AssetLookup.getFileFilter(logItem.type));
+			fileReference.browse(AssetLookup.getFileTypes());
+			fileReference.addEventListener(Event.SELECT, onFileSelect);
+//			fileReference.addEventListener(Event.CANCEL, fileSelectCancelled);
+		}
+		
+		
+		/**
+		 * A file for upload was selected
+		 */
+		private function onFileSelect(e:Event):void {
+			var uploadEvent:IDEvent = new IDEvent(IDEvent.ERA_SAVE_FILE, true);
+			uploadEvent.data.type = mediaData.type;
+			uploadEvent.data.title = mediaData.title;
+			uploadEvent.data.version = mediaData.version + 1;
+			uploadEvent.data.description = mediaData.description;
+//			uploadEvent.data.evidenceItem = this;
+			uploadEvent.data.fileReference = fileReference;
+//			uploadEvent.data.logItemID = logItem.base_asset_id;
+			
+			uploadNewVersionButton.enabled = false;
+			
+			dispatchEvent(uploadEvent);
+		}
+		
+		/**
+		 * Mark new version as uploaded. This version can now be downloaded again.  
+		 * 
+		 */		
+		private function newVersionUploaded():void {
+			downloadButton.enabled = true;
+			downloadButton.label = "Download";
+			mediaData.checkedOut = false;
+		}
+
 		private function panelButtonClicked(event:MouseEvent):void {
 			
 			// Get out the button taht was clicked
@@ -654,18 +753,37 @@ package View.ERA
 		 * 
 		 */		
 		private function downloadButtonClicked(e:MouseEvent):void {
+			
 			var myAlert:Alert = Alert.show("Are you sure you wish to download this file?", "Download File", 
 				Alert.OK | Alert.CANCEL, null, 
 				function(e:CloseEvent):void {
 					if(e.detail == Alert.OK) {
-						var url:String = mediaData.getDownloadURL();
-						var req:URLRequest = new URLRequest(url);
-						navigateToURL(req, 'Download');
+						
+						var downloadEvent:IDEvent = new IDEvent(IDEvent.ERA_DOWNLOAD_FILE, true);
+						downloadEvent.data.fileID = mediaData.base_asset_id;
+						dispatchEvent(downloadEvent);
+						
 					}
 				}, 
 				null, Alert.CANCEL);
 			myAlert.height=100;
 			myAlert.width=300;
+		}
+		private function downloadButtonMouseOver(e:MouseEvent):void {
+			if(mediaData.checkedOut && mediaData.checkedOutUsername == Auth.getInstance().getUsername()) {
+				// if the file is checked out by the current user
+				// let them download it
+				downloadButton.alpha = 1;
+				downloadButton.label = "Download";
+			}
+		}
+		private function downloadButtonMouseOut(e:MouseEvent):void {
+			if(mediaData.checkedOut && mediaData.checkedOutUsername == Auth.getInstance().getUsername()) {
+				// if the file is checked out by the current user
+				// let them download it
+				downloadButton.alpha = 0.5;
+				downloadButton.label = "Checked out by " + mediaData.checkedOutUsername;
+			}
 		}
 		
 		/*========================== HELPER FUNCTIONS ======================= */

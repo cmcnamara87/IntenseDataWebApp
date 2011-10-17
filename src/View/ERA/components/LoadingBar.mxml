@@ -10,7 +10,7 @@
 			
 			public function showPercentage(percentage:Number):void {
 				loadingBar.percentWidth = percentage;
-				backgroundColor += 0x000001;
+				backgroundColor += 1;
 			}
 		]]>
 	</fx:Script>

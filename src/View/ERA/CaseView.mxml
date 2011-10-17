@@ -16,10 +16,14 @@
 			import Model.Model_ERACase;
 			import Model.Model_ERALogItem;
 			import Model.Model_ERAProject;
+			import Model.Model_ERARoom;
 			import Model.Model_ERAUser;
 			
-			import View.ERA.components.EvidenceBox;
-			import View.ERA.components.EvidenceManagement;
+			import View.ERA.components.rooms.EvidenceBox;
+			import View.ERA.components.rooms.EvidenceManagement;
+			import View.ERA.components.rooms.Exhibition;
+			import View.ERA.components.rooms.ForensicLab;
+			import View.ERA.components.rooms.ScreeningLab;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
@@ -34,32 +38,77 @@
 			private var aasdf:Array = new Array("helo", "world", "test", "this");
 			private var arrayTest:ArrayList = new ArrayList(aasdf);
 			
-			private var evidenceManagement:EvidenceManagement;
-			private var evidenceBox:EvidenceBox;
+			private var evidenceManagement:EvidenceManagement = null; // The evidence management view
+			private var evidenceBox:EvidenceBox = null; // the evidence box view
+			private var forensicLab:ForensicLab = null; // the forensic lab view
+			private var screeningLab:ScreeningLab = null; // the forensic lab view
+			private var exhibition:Exhibition = null;
 			
 			public function showEvidenceManagement(logItemArray:Array):void {
 				showRoomsAsNotSelected();
-				evidenceManagementButton.alpha = 1;
+				evidenceManagementButton.selected = true;
 				
-				evidenceManagement = new EvidenceManagement();
+				if(!evidenceManagement) evidenceManagement = new EvidenceManagement();
 				room.removeAllElements();
 				room.addElement(evidenceManagement);
 				evidenceManagement.addLogItems(logItemArray);
 			}
+			
 			private function showRoomsAsNotSelected():void {
-				for(var i:Number = 0; i < roomButtons.numElements; i++) {
-					roomButtons.getElementAt(i).alpha = 1;
-				}
+				evidenceManagementButton.selected = false;
+				evidenceBoxButton.selected = false;
+				forensicLabButton.selected = false;
+				screeningLabButton.selected = false;
+				exhibitionButton.selected = false
+//				for(var i:Number = 0; i < roomButtons.numElements; i++) {
+//					(roomButtons.getElementAt(i) as RoomIcon).selected = false;
+//				}
 			}
 			public function showEvidenceBox(fileArray:Array):void {
+				showRoomsAsNotSelected();
+				evidenceBoxButton.selected = true;
 				
-				evidenceBoxButton.alpha = 1;
-				
-				evidenceBox = new EvidenceBox();
+				if(!evidenceBox) evidenceBox = new EvidenceBox();
 				room.removeAllElements();
 				room.addElement(evidenceBox);
 				evidenceBox.addFiles(fileArray);
 				
+			}
+			public function showForensicLab(fileArray:Array):void {
+				showRoomsAsNotSelected();
+				forensicLabButton.selected = true;
+				
+				if(!forensicLab) forensicLab = new ForensicLab();
+				
+				room.removeAllElements();
+				room.addElement(forensicLab);
+				forensicLab.addFiles(fileArray);
+			}
+			public function showScreeningLab(fileArray:Array):void {
+				showRoomsAsNotSelected();
+				screeningLabButton.selected = true;
+				
+				if(!screeningLab) screeningLab = new ScreeningLab();
+				
+				room.removeAllElements();
+				room.addElement(screeningLab);
+				screeningLab.addFiles(fileArray);
+			}
+			public function showExhibition(fileArray:Array):void {
+				showRoomsAsNotSelected();
+				exhibitionButton.selected = true;
+				
+				if(!exhibition) exhibition = new Exhibition();
+				
+				room.removeAllElements();
+				room.addElement(exhibition);
+				exhibition.addFiles(fileArray);
+			}
+			public function addForensicLabConversation(conversationArray:Array):void {
+				forensicLab.addConversation(conversationArray);
+			}
+			public function addScreeningLabConversation(conversationArray:Array):void {
+				screeningLab.addConversation(conversationArray);
 			}
 			
 			public function deleteEvidenceItem(logItemDeleted:Model_ERALogItem):void {
@@ -182,6 +231,23 @@
 				var showEvidenceManagementEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_EVIDENCE_MANAGEMENT, true);
 				this.dispatchEvent(showEvidenceManagementEvent);
 			}
+			
+			protected function forensicLabButton_clickHander(event:MouseEvent):void {
+				var showForensicLabEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_FORENSIC_LAB, true);
+				this.dispatchEvent(showForensicLabEvent);
+			}
+			
+			protected function screeningLabButton_clickHander(event:MouseEvent):void {
+				var showScreeningLabEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_SCREENING_LAB, true);
+				this.dispatchEvent(showScreeningLabEvent);
+			}
+
+
+			protected function exhibitionButton_clickHandler(event:MouseEvent):void
+			{
+				var showExhibition:IDEvent = new IDEvent(IDEvent.ERA_SHOW_EXHIBITION, true);
+				this.dispatchEvent(showExhibition);
+			}
 
 		]]>
 	</fx:Script>
@@ -236,17 +302,17 @@
 		<s:BorderContainer id="caseNav" backgroundColor="0x565656" width="100%" height="160" borderVisible="false" resizeEffect="Resize">
 			<s:VGroup horizontalAlign="center" height="100%" width="100%">
 				<s:HGroup height="100%" verticalAlign="middle" gap="10" id="roomButtons">
-					<components:RoomIcon roomName="Evidence Manager" id="evidenceManagementButton" icon="{AssetLookup.EvidenceManagerIcon}" click="evidenceManagementButton_clickHandler(event)"/>
+					<components:RoomIcon roomName="Evidence Manager" id="evidenceManagementButton" roomType="{Model_ERARoom.EVIDENCE_MANAGEMENT}" icon="{AssetLookup.EvidenceManagerIcon}" click="evidenceManagementButton_clickHandler(event)"/>
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Evidence Box" alpha="0.5" id="evidenceBoxButton" icon="{AssetLookup.EvidenceBoxIcon}" click="evidenceBoxButton_clickHandler(event)" />
+					<components:RoomIcon roomName="Evidence Box" alpha="0.5" id="evidenceBoxButton"  roomType="{Model_ERARoom.EVIDENCE_ROOM}" icon="{AssetLookup.EvidenceBoxIcon}" click="evidenceBoxButton_clickHandler(event)" />
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" unavailable="true" icon="{AssetLookup.ForensicLabIcon}" />
+					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" id="forensicLabButton"  roomType="{Model_ERARoom.FORENSIC_LAB}" icon="{AssetLookup.ForensicLabIcon}" click="forensicLabButton_clickHander(event)" />
 					<mx:Image source="{AssetLookup.getLeftRightArrowIconClass()}" width="46" height="72"></mx:Image>
-					<components:RoomIcon roomName="Screening Lab" alpha="0.5" unavailable="true" icon="{AssetLookup.ScreeningLabIcon}" />
+					<components:RoomIcon roomName="Screening Lab" alpha="0.5" id="screeningLabButton"  roomType="{Model_ERARoom.SCREENING_ROOM}" icon="{AssetLookup.ScreeningLabIcon}" click="screeningLabButton_clickHander(event)" />
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Exhibition" alpha="0.5" unavailable="true" icon="{AssetLookup.ExhibitionIcon}" />
-					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Post Mortem" alpha="0.5" unavailable="true" icon="{AssetLookup.PostMortemIcon}" />
+					<components:RoomIcon roomName="Exhibition" alpha="0.5"  id="exhibitionButton"  unavailable="true" roomType="{Model_ERARoom.EXHIBIT}" icon="{AssetLookup.ExhibitionIcon}" click="exhibitionButton_clickHandler(event)"/>
+					<mx:Image source="{AssetLookup.getLeftArrowIconClass() }"  width="46" height="34"></mx:Image>
+					<components:RoomIcon roomName="Post Mortem" alpha="0.5" id="postMortemButton" unavailable="true" icon="{AssetLookup.PostMortemIcon}" />
 				</s:HGroup>
 			</s:VGroup>
 		</s:BorderContainer>

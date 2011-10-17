@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" gap="0" xmlns:components="View.components.*" xmlns:components1="View.ERA.components.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import View.ERA.components.FileTile;
+			import Controller.AppController;
+			import Controller.ERA.CaseController;
+			import Controller.Utilities.AssetLookup;
+			import Controller.Utilities.Auth;
+			
+			import Model.Model_ERAFile;
+			
+			import flashx.textLayout.formats.TextAlign;
+			
+			import mx.controls.Alert;
+			import mx.controls.Image;
+			
+			import spark.components.Button;
+			
+			private var fileArray:Array = new Array(); // Stores all the log items, so we can check for duplicates
+			
+			/**
+			 * Add all the lot items to the display
+			 */
+			public function addFiles(fileArray:Array):void {
+				
+				this.fileArray = fileArray;
+				
+				fileGroup.removeAllElements();
+				
+				if(fileArray == null) {
+					// We are still loading
+					var label:Label = new Label();
+					label.text = "Loading...";
+					fileGroup.addElement(label);
+					return;
+				}
+				
+				if(fileArray.length == 0) {
+					var label:Label = new Label();
+					label.text = "No Evidence Items Found.";
+					fileGroup.addElement(label);
+					return;
+				}
+				
+				typeFiltersButtons.removeAllElements();
+				var allFilterButton:Button=  new Button();
+				allFilterButton.label = "All";
+				allFilterButton.setStyle("chromeColor", "0xFFFFFF");
+				allFilterButton.setStyle("cornerRadius", "10");
+				allFilterButton.addEventListener(MouseEvent.CLICK, filterButtonClicked);
+				typeFiltersButtons.addElement(allFilterButton);
+				
+				for each(var file:Model_ERAFile in fileArray) {
+					var typeFilterButton:Button=  new Button();
+					typeFilterButton.label = file.type;
+					typeFilterButton.setStyle("chromeColor", "0xFFFFFF");
+					typeFilterButton.setStyle("cornerRadius", "10");
+					typeFilterButton.addEventListener(MouseEvent.CLICK, filterButtonClicked);
+					
+					var found:Boolean = false;
+					for(var i:Number = 0; i < typeFiltersButtons.numElements; i++) {
+						var button:Button = typeFiltersButtons.getElementAt(i) as Button;
+						if(button.label == file.type) found = true;
+					}
+					if(!found) {
+						typeFiltersButtons.addElement(typeFilterButton);
+					}
+				}
+				
+				for each(var file:Model_ERAFile in fileArray) {
+					var fileTile:FileTile = new FileTile();
+					fileTile.title = file.title;
+					fileTile.fileID = file.base_asset_id;
+					fileTile.type = file.type;
+					fileTile.rootMetaType = file.rootMetaType;
+					fileTile.ext = file.fileExt;
+					fileTile.description = file.description;
+					fileTile.loadURL(file.base_asset_id);
+					fileTile.dragEnabled = false;
+					fileGroup.addElement(fileTile);
+				}
+			}
+			
+			private function filterButtonClicked(e:MouseEvent):void {
+				
+				var showOnlyType:String = (e.target as Button).label;
+				
+				if(showOnlyType == "All") {
+					// Reveal all
+					for(var i:Number = 0; i < fileGroup.numElements; i++) {
+						var fileTile:FileTile = fileGroup.getElementAt(i) as FileTile;
+						fileTile.visible = true;
+						fileTile.includeInLayout = true;
+					}
+					return;
+				}
+				
+				// Something behinds all, lets hide some of them				
+				for(var i:Number = 0; i < fileGroup.numElements; i++) {
+					var fileTile:FileTile = fileGroup.getElementAt(i) as FileTile;
+					if(fileTile.type == showOnlyType) {
+						fileTile.visible = true;
+						fileTile.includeInLayout = true;
+					} else {
+						fileTile.visible = false;
+						fileTile.includeInLayout = false;
+					}
+				}
+				
+//				for(var j:Number = 0; j < typeFiltersButtons.numElements; j++) {
+//					var button:Button = typeFiltersButtons.getElementAt(i) as Button;
+//					button.setStyle('chromeColor', '0xFFFFFF');
+//				}
+//				
+//				(e.target as Button).setStyle('chromeColor', '0x8FAFF7');
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<!-- TITLE BAR WITH CREATION BUTTON -->
+	<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
+		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
+			<s:VGroup width="100%" paddingTop="10">
+				<s:Label text="ERA {AppController.currentEraProject.year} / RM {CaseController.currentERACase.rmCode} - {CaseController.currentERACase.title}" fontSize="16" fontWeight="bold" color="0x828F9A">
+					<!--<s:filters>
+						<s:DropShadowFilter distance="1" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+					</s:filters>-->
+				</s:Label>
+				<s:Label text="RM {CaseController.currentERACase.rmCode} - Evidence Box" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+					<!--<s:filters>
+						<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+					</s:filters>-->
+				</s:Label>
+			</s:VGroup>
+		</s:HGroup>
+	</s:BorderContainer>
+	<!-- END OF TITLE BAR WITH CREATION BUTTON -->
+	
+	<s:BorderContainer width="100%" height="40" borderVisible="false" backgroundColor="0xEEEFF1">
+		<s:HGroup verticalAlign="middle" paddingBottom="10" paddingLeft="20" paddingRight="10" paddingTop="10">
+			<s:Label text="Filter By Type:" color="0x828F9A"/>
+			<s:HGroup id="typeFiltersButtons">
+			</s:HGroup>
+		</s:HGroup>
+		
+	</s:BorderContainer>
+	
+	<s:BorderContainer width="100%" height="100%" borderVisible="false">
+		<s:Scroller width="100%" height="100%">
+			<s:VGroup width="100%" height="100%" paddingBottom="20" paddingLeft="40" paddingRight="20" paddingTop="20">
+				<s:TileGroup id="fileGroup" width="100%" height="100%" verticalGap="20" horizontalGap="20"/>	
+			</s:VGroup>
+			
+		</s:Scroller>
+	</s:BorderContainer>
+</s:VGroup>

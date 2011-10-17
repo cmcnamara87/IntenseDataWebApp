@@ -8,8 +8,10 @@ package Model {
 	import Model.Transactions.Access.Transaction_CopyAccess;
 	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
 	import Model.Transactions.ERAProject.Transaction_AddRoleToUser;
+	import Model.Transactions.ERAProject.Transaction_CreateConversation;
 	import Model.Transactions.ERAProject.Transaction_CreateERACase;
 	import Model.Transactions.ERAProject.Transaction_CreateERALogItem;
+	import Model.Transactions.ERAProject.Transaction_CreateERANotification;
 	import Model.Transactions.ERAProject.Transaction_CreateERAProject;
 	import Model.Transactions.ERAProject.Transaction_CreateERAUser;
 	import Model.Transactions.ERAProject.Transaction_CreateRoom;
@@ -19,19 +21,25 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_DeleteERAUser;
 	import Model.Transactions.ERAProject.Transaction_ERAChangeUserPassword;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
+	import Model.Transactions.ERAProject.Transaction_GetAllConversation;
 	import Model.Transactions.ERAProject.Transaction_GetAllFiles;
 	import Model.Transactions.ERAProject.Transaction_GetAllLogItems;
+	import Model.Transactions.ERAProject.Transaction_GetAllNotifications;
 	import Model.Transactions.ERAProject.Transaction_GetAllRooms;
 	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
 	import Model.Transactions.ERAProject.Transaction_GetFile;
 	import Model.Transactions.ERAProject.Transaction_GetUser;
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
+	import Model.Transactions.ERAProject.Transaction_MoveFile;
 	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
+	import Model.Transactions.ERAProject.Transaction_UpdateCheckoutStatus;
 	import Model.Transactions.ERAProject.Transaction_UpdateERACase;
 	import Model.Transactions.ERAProject.Transaction_UpdateERAProject;
+	import Model.Transactions.ERAProject.Transaction_UpdateFileTemperature;
 	import Model.Transactions.ERAProject.Transaction_UpdateLogItemBooleanValue;
 	import Model.Transactions.ERAProject.Transaction_UploadERAFile;
+	import Model.Transactions.ERAProject.Transaction_UploadFileVersion;
 	import Model.Transactions.Share.Transaction_SetUserAssetShare;
 	import Model.Transactions.Transaction_ChangePassword;
 	import Model.Transactions.Transaction_CloneMedia;
@@ -220,13 +228,14 @@ package Model {
 		 * @return 
 		 * 
 		 */		
-		public function getThisAssetsCommentary(assetID:Number, callback:Function):void {
-			trace("AppModel getThisAssetsCommentary: Getting Commentary for Asset", assetID);
+		public function getThisAssetsCommentary(objectID:Number, roomID:Number, callback:Function):void {
+			trace("AppModel getThisAssetsCommentary: Getting Commentary for Asset", objectID);
 			
 			var args:Object = new Object();
 			
+			
 			args.where = "namespace = recensio and r_base/active = true and class >= 'recensio:base/resource/annotation' " +
-				"and related to{is_child} (id="+assetID+")";
+				"and related to{room} (id=" + roomID + ") and related to{object} (id=" + objectID + ")";
 			
 			// By default, asset.query limits it to 100 results
 			// this means we will get them all TODO change this so it paginates basically
@@ -366,10 +375,10 @@ package Model {
 		 * @param callback			The function to call when the datbase call is complete
 		 * 
 		 */		
-		public function saveNewComment(commentText:String, commentParentID:Number, 
+		public function saveNewComment(commentText:String, roomID:Number, objectID:Number, 
 									   replyingToID:Number,
 									   newCommentObject:NewComment, callback:Function):void {
-			var saveCommentTransaction:Transaction_SaveNewComment = new Transaction_SaveNewComment(_connection, commentText, commentParentID, replyingToID,
+			var saveCommentTransaction:Transaction_SaveNewComment = new Transaction_SaveNewComment(_connection, commentText, roomID, objectID, replyingToID,
 																									newCommentObject, callback);
 		}
 		
@@ -425,15 +434,18 @@ package Model {
 		 * @param callback		The function to call when the saving is complete.
 		 * 
 		 */
-		public function saveNewPenAnnotation(mediaAssetID:Number, path:String, text:String, callback:Function):void {
+		public function saveNewPenAnnotation(mediaAssetID:Number, roomID:Number, path:String, text:String, callback:Function):void {
 			trace("- App Model: Saving Pen annotation...");	
 			var args:Object = new Object();
 			args.namespace = "recensio";
 			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
 			
 			// Set the annotations parent media asset
-			baseXML.service.args["related"]["to"] = mediaAssetID;
-			baseXML.service.args["related"]["to"].@relationship = "is_child";
+//			baseXML.service.args["related"]["to"] = mediaAssetID;
+//			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			baseXML.service.args.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
+			baseXML.service.args.related.appendChild(XML('<to relationship="object">' + mediaAssetID + '</to>'));
+			
 			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
 			baseXML.service.args["meta"]["r_base"]["active"] = "true";
 			
@@ -465,15 +477,17 @@ package Model {
 			
 		}
 		
-		public function saveNewHighlightAnnotation(mediaAssetID:Number, xCoor:Number, yCoor:Number, page1:Number, startTextIndex:Number, 
+		public function saveNewHighlightAnnotation(mediaAssetID:Number, roomID:Number, xCoor:Number, yCoor:Number, page1:Number, startTextIndex:Number, 
 													endTextIndex:Number, text:String, callback:Function):void {
 			var args:Object = new Object();
 			args.namespace = "recensio";
 			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
 			
 			// Set the annotations parent media asset
-			baseXML.service.args["related"]["to"] = mediaAssetID;
-			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			baseXML.service.args.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
+			baseXML.service.args.related.appendChild(XML('<to relationship="object">' + mediaAssetID + '</to>'));
+//			baseXML.service.args["related"]["to"] = mediaAssetID;
+//			baseXML.service.args["related"]["to"].@relationship = "is_child";
 			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
 			baseXML.service.args["meta"]["r_base"]["active"] = "true";
 			
@@ -525,7 +539,7 @@ package Model {
 		 * @param callback			The function to call when the anntoation is saved
 		 * 
 		 */		
-		public function saveNewBoxAnnotation(	mediaAssetID:Number, xCoor:Number, yCoor:Number,
+		public function saveNewBoxAnnotation(	mediaAssetID:Number, roomID:Number, xCoor:Number, yCoor:Number,
 											annotationWidth:Number, annotationHeight:Number,
 											startTime:Number, endTime:Number,
 											annotationText:String, callback:Function):void {
@@ -536,8 +550,12 @@ package Model {
 			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
 			
 			// Set the annotations parent media asset
-			baseXML.service.args["related"]["to"] = mediaAssetID;
-			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			baseXML.service.args.related = "";
+			baseXML.service.args.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
+			baseXML.service.args.related.appendChild(XML('<to relationship="object">' + mediaAssetID + '</to>'));
+			
+//			baseXML.service.args["related"]["to"] = mediaAssetID;
+//			baseXML.service.args["related"]["to"].@relationship = "is_child";
 			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
 			baseXML.service.args["meta"]["r_base"]["active"] = "true";
 			
@@ -590,12 +608,17 @@ package Model {
 		}
 		
 		// Saves an annotation
-		public function saveAnnotation(assetData:Object):void {
+		public function saveAnnotation(assetData:Object, roomID:Number):void {
 			var args:Object = new Object();
 			args.namespace = "recensio";
 			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
-			baseXML.service.args["related"]["to"] = assetData.parentID;
-			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			
+			baseXML.service.args.related = "";
+			baseXML.service.args.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
+			baseXML.service.args.related.appendChild(XML('<to relationship="object">' + assetData.parentID + '</to>'));
+			
+//			baseXML.service.args["related"]["to"] = assetData.parentID;
+//			baseXML.service.args["related"]["to"].@relationship = "is_child";
 			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
 			baseXML.service.args["meta"]["r_base"]["active"] = "true";
 			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
@@ -1689,11 +1712,37 @@ package Model {
 		public function getAllERAFilesInRoom(roomID:Number, callback:Function):void {
 			var getERAFiles:Transaction_GetAllFiles = new Transaction_GetAllFiles(roomID, _connection, callback);
 		}
-		public function uploadERAFile(roomID:Number, logItemID:Number, type:String, title:String, description:String, fileReference:FileReference, evidenceItem:EvidenceItem, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
-			var uploadERAFile:Transaction_UploadERAFile = new Transaction_UploadERAFile(AppController.currentEraProject.year, roomID, logItemID, type, title, description, fileReference, evidenceItem, _connection, ioErrorCallback, progressCallback, completeCallback);
+		public function uploadERAFile(evidenceRoomID:Number, forensicLabID:Number, logItemID:Number, type:String, title:String, description:String, version:Number, fileReference:FileReference, evidenceItem:EvidenceItem, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
+			var uploadERAFile:Transaction_UploadERAFile = new Transaction_UploadERAFile(AppController.currentEraProject.year, evidenceRoomID, forensicLabID, logItemID, type, title, description, version, fileReference, evidenceItem, _connection, ioErrorCallback, progressCallback, completeCallback);
+		}
+		public function uploadERAFileVersion(roomID:Number, oldFileID:Number, originalFileID:Number, type:String, title:String, description:String, fileReference:FileReference, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
+			var uploadERAVersion:Transaction_UploadFileVersion = new Transaction_UploadFileVersion(AppController.currentEraProject.year, roomID, oldFileID, originalFileID, type, title, description, fileReference, _connection, ioErrorCallback, progressCallback, completeCallback);
 		}
 		public function getERAFile(fileID:Number, callback:Function):void {
 			var getERAFile:Transaction_GetFile = new Transaction_GetFile(fileID, _connection, callback);
+		}
+		public function moveERAFile(fileID:Number, fromRoomID:Number, toRoomID:Number, toRoomType:String, callback:Function):void {
+			var moveERAFile:Transaction_MoveFile = new Transaction_MoveFile(fileID, fromRoomID, toRoomID, toRoomType, _connection, callback);
+		}
+		public function updateERAFileTemperature(fileID:Number, hot:Boolean, callback:Function):void {
+			var updateERAFile:Transaction_UpdateFileTemperature = new Transaction_UpdateFileTemperature(fileID, hot, _connection, callback);
+		}
+		public function updateERAFileCheckOutStatus(fileID:Number, checkedOut:Boolean, callback:Function):void {
+			var updateERAFile:Transaction_UpdateCheckoutStatus = new Transaction_UpdateCheckoutStatus(fileID, checkedOut, Auth.getInstance().getUsername(), _connection, callback);
+		}
+			
+		public function createERAConversation(objectID:Number, roomID:Number, inReplyToID:Number, text:String, callback:Function):void {
+			var createERAConversation:Transaction_CreateConversation = new Transaction_CreateConversation(AppController.currentEraProject.year, objectID, roomID, inReplyToID, text, _connection, callback);
+		}
+		public function getAllConversationOnOject(objectID:Number, roomID:Number, callback:Function):void {
+			var getConverstion:Transaction_GetAllConversation = new Transaction_GetAllConversation(AppController.currentEraProject.year, objectID, roomID, _connection, callback);
+		}
+		
+		public function getAllNotifications(callback:Function):void {
+			var getAllNotifications:Transaction_GetAllNotifications = new Transaction_GetAllNotifications(_connection, callback);
+		}
+		public function createERANotification(year:String, username:String, firstName:String, lastName:String, type:String, caseID:Number=0, roomID:Number=0, fileID:Number=0, commentID:Number=0) {
+			var createERANotification:Transaction_CreateERANotification = new Transaction_CreateERANotification(year, username, firstName, lastName, type, _connection, caseID, roomID, fileID, commentID);
 		}
 			
 	}

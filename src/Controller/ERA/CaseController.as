@@ -8,6 +8,7 @@ package Controller.ERA
 	
 	import Model.AppModel;
 	import Model.Model_ERACase;
+	import Model.Model_ERAConversation;
 	import Model.Model_ERAFile;
 	import Model.Model_ERALogItem;
 	import Model.Model_ERAProject;
@@ -34,7 +35,7 @@ package Controller.ERA
 		private var caseID:Number = 0; // The Mflux ID for the current case
 		private var roomType:String;
 		public static var currentERACase:Model_ERACase = null;
-		private var roomArray:Array;
+		private var roomArray:Array = new Array();
 		private var currentRoom:Model_ERARoom = null;
 		
 		// setup teh users permissions for the ucrrent case
@@ -69,8 +70,22 @@ package Controller.ERA
 			caseView.addEventListener(IDEvent.ERA_SHOW_EVIDENCE_MANAGEMENT, showEvidenceManagement);				
 			// Listen for changing to the evidence box
 			caseView.addEventListener(IDEvent.ERA_SHOW_EVIDENCE_BOX, showEvidenceBox);
+			// Listen for changing to the forensic lab
+			caseView.addEventListener(IDEvent.ERA_SHOW_FORENSIC_LAB, showForensicLab);
+			caseView.addEventListener(IDEvent.ERA_SHOW_SCREENING_LAB, showScreeningLab);
+			caseView.addEventListener(IDEvent.ERA_SHOW_EXHIBITION, showExhibition);
 			
+			// Show one of the files
 			caseView.addEventListener(IDEvent.ERA_SHOW_FILE, showFile);
+			
+			// Move files between the different rooms
+			caseView.addEventListener(IDEvent.ERA_MOVE_FILE, moveFile);
+			
+			// Change the temperature of the file
+			caseView.addEventListener(IDEvent.ERA_CHANGE_FILE_TEMPERATURE, changeTemperature);
+			
+			// Listne for comment creation
+			caseView.addEventListener(IDEvent.ERA_SAVE_COMMENT, saveComment);
 		}
 		override public function init():void {
 			layout.header.adminToolButtons.visible = false;
@@ -104,10 +119,47 @@ package Controller.ERA
 			
 			
 			trace("displatching to", "file/" + caseID + "/" + escape(currentERACase.rmCode) + "/" + roomType + "/" + fileID);
-			Dispatcher.call("file/" + caseID + "/" + escape(currentERACase.rmCode) + "/" + roomType + "/" + fileID);
+			Dispatcher.showFile(caseID, currentERACase.rmCode, roomType, currentRoom.base_asset_id, fileID);
 		}
 		
+		/* ======================================= MOVE FILE TO DIFFERENT ROOM ======================================= */
+		private function moveFile(e:IDEvent):void {
+			var fileID:Number = e.data.fileID;
+			trace('move file id is', fileID);
+			// move from and to
+			var moveToRoomType = e.data.moveToRoomType;
+			trace('move to room type', moveToRoomType);
+			
+			AppModel.getInstance().moveERAFile(fileID, currentRoom.base_asset_id, this.getRoom(moveToRoomType).base_asset_id, moveToRoomType, fileMoved);
+		}
+		private function fileMoved(status:Boolean):void {
+			if(status) {
+				layout.notificationBar.showGood("File Moved");
+			} else {
+				layout.notificationBar.showError("Failed to Move File");
+			}
+		}
+		/* ======================================== END OF MOVE FILE TO DIFFERENT ROOM =============================== */
+		private function changeTemperature(e:IDEvent):void {
+			var fileID:Number = e.data.fileID;
+			var hot:Boolean = e.data.hot;
+			AppModel.getInstance().updateERAFileTemperature(fileID, hot, temperatureChanged);
+		}
+		private function temperatureChanged(status:Boolean):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to Changed temperature");
+			}
+		}
 		
+		private function saveComment(e:IDEvent):void {
+			var text:String = e.data.text;
+			var replyToID:Number = e.data.replyToID;
+			
+			AppModel.getInstance().createERAConversation(currentRoom.base_asset_id, currentRoom.base_asset_id, replyToID, text, commentSaved);
+		}
+		private function commentSaved(status:Boolean, comment:Model_ERAConversation):void {
+			
+		}
 		/*==================================== SHOW EVIDENCE MANAGEMENT ===========================================*/
 		private function showEvidenceManagement(e:Event=null):void {
 			// people who have access, are the sys admin,
@@ -116,6 +168,7 @@ package Controller.ERA
 			
 			if(Auth.getInstance().isSysAdmin() || isProductionManager || isTeamManager) {
 				currentRoom = this.getRoom(Model_ERARoom.EVIDENCE_MANAGEMENT);
+				if(!currentRoom) return;
 				trace("Access granted*******");
 				
 				// Change the url
@@ -134,6 +187,89 @@ package Controller.ERA
 		/* ====================================== END OF GOT ALL THE LOG ITEMS ===================================== */
 		
 		
+		/*==================================== SHOW FORENSIC LAB ===========================================*/
+		private function showForensicLab(e:Event=null):void {
+			// @todo add use permission checking
+			
+			currentRoom = this.getRoom(Model_ERARoom.FORENSIC_LAB);
+			if(!currentRoom) return;
+			
+			// Change the url
+			Router.getInstance().setURL("case/" + caseID + "/" + Model_ERARoom.FORENSIC_LAB);
+			
+			caseView.showForensicLab(null);
+			AppModel.getInstance().getAllERAFilesInRoom(currentRoom.base_asset_id, gotAllForensicLabFiles);
+			
+			AppModel.getInstance().getAllConversationOnOject(currentRoom.base_asset_id, currentRoom.base_asset_id, forensicLabCommentsRetrieved);
+		}
+		private function gotAllForensicLabFiles(status:Boolean, fileArray:Array):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to get forensic lab files");
+				return;
+			}
+			caseView.showForensicLab(fileArray);
+		}
+		private function forensicLabCommentsRetrieved(status:Boolean, commentArray:Array):void {
+			caseView.addForensicLabConversation(commentArray);
+		}
+		/*==================================== END OF SHOW FORENSIC LAB ===========================================*/
+		
+		
+		private function showExhibition(e:Event=null):void {
+			// @todo add use permission checking
+			currentRoom = this.getRoom(Model_ERARoom.EXHIBIT);
+			
+			// Change the url
+			Router.getInstance().setURL("case/" + caseID + "/" + Model_ERARoom.EXHIBIT);
+			
+			// Show the screening lab
+			caseView.showExhibition(null);
+			// Get all the files in the screening lab
+			AppModel.getInstance().getAllERAFilesInRoom(currentRoom.base_asset_id, gotExhibitionFiles);
+		}
+		private function gotExhibitionFiles(status:Boolean, fileArray:Array):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to get forensic lab files");
+				return;
+			}
+			caseView.showExhibition(fileArray);
+		}
+		/*==================================== SHOW SCREENING BOX ===========================================*/
+		private function showScreeningLab(e:Event=null):void {
+			// @todo add use permission checking
+			
+			currentRoom = this.getRoom(Model_ERARoom.SCREENING_ROOM);
+			
+			// Change the url
+			Router.getInstance().setURL("case/" + caseID + "/" + Model_ERARoom.SCREENING_ROOM);
+			
+			// Show the screening lab
+			caseView.showScreeningLab(null);
+			// Get all the files in the screening lab
+			AppModel.getInstance().getAllERAFilesInRoom(currentRoom.base_asset_id, gotAllScreeningLabFiles);
+			// get all the conversation for the screening lab
+			AppModel.getInstance().getAllConversationOnOject(currentRoom.base_asset_id, currentRoom.base_asset_id, screeningLabCommentsRetrieved);
+		}
+		private function gotAllScreeningLabFiles(status:Boolean, fileArray:Array):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to get forensic lab files");
+				return;
+			}
+			caseView.showScreeningLab(fileArray);
+		}
+		private function screeningLabCommentsRetrieved(status:Boolean, conversationArray:Array=null):void {
+			if(!status) {
+				// failed to get comments
+				layout.notificationBar.showError("Failed to get conversation");
+				return;
+			}
+			
+			// Add the comments to the view
+			caseView.addScreeningLabConversation(conversationArray);
+
+		}
+		/*==================================== END OF SHOW SCREENING BOX ===========================================*/
+		
 		
 		/*==================================== SHOW EVIDENCE BOX ===========================================*/
 		private function showEvidenceBox(e:Event=null):void {
@@ -144,12 +280,12 @@ package Controller.ERA
 				Router.getInstance().setURL("case/" + caseID + "/" + Model_ERARoom.EVIDENCE_ROOM);
 				
 				caseView.showEvidenceBox(null);
-				AppModel.getInstance().getAllERAFilesInRoom(currentRoom.base_asset_id, gotAllFiles);
+				AppModel.getInstance().getAllERAFilesInRoom(currentRoom.base_asset_id, gotAllEvidenceRoomFiles);
 			} else {
 				trace("ACCESS REFUSED TO EVIDENCE ROOM");
 			}
 		}
-		private function gotAllFiles(status:Boolean, fileArray:Array):void {
+		private function gotAllEvidenceRoomFiles(status:Boolean, fileArray:Array):void {
 			caseView.showEvidenceBox(fileArray);
 		}
 		/*======================================== END OF EVIDENCE BOX ========================================= */
@@ -271,6 +407,15 @@ package Controller.ERA
 					case Model_ERARoom.EVIDENCE_ROOM:
 						this.showEvidenceBox();
 						break;
+					case Model_ERARoom.FORENSIC_LAB:
+						this.showForensicLab();
+						break;
+					case Model_ERARoom.SCREENING_ROOM:
+						this.showScreeningLab();
+						break;
+					case Model_ERARoom.EXHIBIT:
+						this.showExhibition();
+						break;
 					default:
 						break;
 				}
@@ -365,11 +510,15 @@ package Controller.ERA
 			var type:String = e.data.type;
 			var title:String = e.data.title;
 			var description:String = e.data.description;
+			var version:Number = e.data.version;
 			var logItemID:Number = e.data.logItemID;
 			
 			layout.notificationBar.showProcess("Uploading file...");
 			
-			AppModel.getInstance().uploadERAFile(getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, logItemID, type, title, description, file, evidenceItem, uploadIOError, uploadProgress, uploadComplete); 
+			// get out the room IDs
+			trace("ROOM IDS ARE: EVIDNECE ROOM", getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, "FORENSIC LAB", getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id);
+			
+			AppModel.getInstance().uploadERAFile(getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id, logItemID, type, title, description, version, file, evidenceItem, uploadIOError, uploadProgress, uploadComplete); 
 		}
 		private function uploadIOError():void {
 			layout.notificationBar.showError("Failed to Upload file.");
@@ -391,7 +540,6 @@ package Controller.ERA
 		private function getRoom(roomType:String):Model_ERARoom {
 			for(var i:Number = 0; i < roomArray.length; i++) {
 				var room:Model_ERARoom = (roomArray[i] as Model_ERARoom);
-				trace("room type", room.roomType);
 				if(room.roomType == roomType) {
 					return room;
 				}

@@ -7,12 +7,20 @@ package Model {
 		
 		public var rootMetaType:String;
 		public var type:String;
-		public var fileName:String;
-		public var fileType:String;
-		public var title:String;
+		public var fileName:String; // the name of the file (the original file name)
+		public var fileType:String; // the type of the file (from the evidence manager drop down list)
+		public var title:String; // the title for the file
 		public var description:String;
 		
-		public var fileExt:String = "Unknown";
+		public var fileExt:String = "Unknown"; // the file extension
+		
+		public var fileSize:Number; // the file size in bytes
+		
+		public var hot:Boolean = true; // if the file is hot or cold (active or inactive)
+		public var version:Number = 0; // the number to append to the end of the file name
+		public var originalFileID:Number = 0; // the id of the origianl file it was a version of
+		public var checkedOut:Boolean = false; // if the file has been downloaded (and its awaiting upload)
+		public var checkedOutUsername:String = ""; // the username of the person who checked out the file
 		
 		public var meta_media_uri:String;
 		
@@ -43,8 +51,32 @@ package Model {
 			
 			this.rootMetaType = AssetLookup.getCommonType(rawData.type);
 			
-			if(rawData.content.type.@ext) {
+			if(rawData.content) {
 				this.fileExt = rawData.content.type.@ext;
+				this.fileSize = rawData.content.size;
+			}
+			
+			if(eraEvidenceItem["hot"]) {
+				this.hot = eraEvidenceItem["hot"] == "true";
+			}
+			if(eraEvidenceItem["version"]) {
+				this.version = eraEvidenceItem["version"];
+			}
+			
+			// show if this item has been uploaded
+			// we know its been uploaded, if it has a relationship to its data item
+			var originalFileNumber:Number = Number(rawData.related.(@type=="originalfile").to);
+			if(originalFileNumber > 0) {
+				originalFileID = originalFileNumber;
+			} else {
+				originalFileID = this.base_asset_id;
+			}
+			
+			if(eraEvidenceItem["checked_out"]) {
+				this.checkedOut = eraEvidenceItem["checked_out"] == "true";
+				if(this.checkedOut) {
+					this.checkedOutUsername = eraEvidenceItem["checked_out_username"];
+				}
 			}
 		}
 		
@@ -83,6 +115,7 @@ package Model {
 			mediaURL = mediaURL + "_skey=" + Auth.getInstance().getSessionID();
 			mediaURL = mediaURL + "&id=" + this.base_asset_id;
 			mediaURL = mediaURL + "&version=" + this.base_asset_version;
+			mediaURL = mediaURL + "&filename=" + this.fileName;
 			mediaURL = mediaURL + "&disposition=" + "attachment";
 			return mediaURL;
 		}

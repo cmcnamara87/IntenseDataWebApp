@@ -231,7 +231,8 @@ package Controller {
 		 */		
 		private static function getNotifications():void {
 			trace("Getting Notifications");
-			AppModel.getInstance().getNotifications(gotNotifications);
+			AppModel.getInstance().getAllNotifications(gotNotifications);
+//			AppModel.getInstance().getNotifications(gotNotifications);
 		}
 		
 		/**
@@ -242,24 +243,19 @@ package Controller {
 		 * @param e
 		 * 
 		 */		
-		private static function gotNotifications(e:Event):void {
-			var dataXML:XML = XML(e.target.data);
-			if(AppModel.getInstance().callFailed("getting notifications", e)) {
-				return;
-			}
+		private static function gotNotifications(status:Boolean, notificationsArray:Array=null):void {
+			if(!status) return;
 		
-			// Save the notifications, and get the notification count
-			notificationsArray = AppModel.getInstance().extractAssetsFromXML(dataXML, Model_Notification);
 			notificationsArray = notificationsArray.reverse();
 			layout.header.notificationButton.label = notificationsArray.length + "";
 			if(notificationsArray.length > 0) {
-//				layout.header.notificationButton.setStyle('color', "0xFF8800");
-//				layout.header.notificationButton.setStyle('font-weight', "bold");
+				layout.header.notificationButton.setStyle('chromeColor', "0x8FAFF7");
+				layout.header.notificationButton.setStyle('font-weight', "bold");
 			} else {
-//				layout.header.notificationButton.setStyle('color', "0xEEEEEE");
-//				layout.header.notificationButton.setStyle('font-weight', "normal");
+				layout.header.notificationButton.setStyle('chromeColor', "0xFFFFFF");
+				layout.header.notificationButton.setStyle('font-weight', "normal");
 			}
-			layout.notificationPanel.addNotifications(notificationsArray);
+			layout.addNotifications(notificationsArray);
 		}
 		
 		/**
@@ -272,7 +268,8 @@ package Controller {
 //			layout.notificationPanel.x = layout.header.notificationButton.x;
 			if(notificationsArray) {
 				layout.header.notificationButton.label = notificationsArray.length + "";
-				layout.notificationPanel.addNotifications(notificationsArray);
+				layout.addNotifications(notificationsArray);
+//				layout.notificationPanel.addNotifications(notificationsArray);
 			} else {
 				trace("Something went wrong, and we dont have any notifications stored");
 			}

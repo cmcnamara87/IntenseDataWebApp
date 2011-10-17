@@ -176,8 +176,8 @@ package Controller {
 		private function saveComment(e:IDEvent):void {
 			trace('Saving comment: ', e.data.commentText, 'in reply to asset:', currentAssetID, 'reply to comment:', e.data.replyingToID);
 			
-			AppModel.getInstance().saveNewComment(	e.data.commentText, currentAssetID, e.data.replyingToID,
-				e.data.newCommentObject, commentSaved);
+//			AppModel.getInstance().saveNewComment(	e.data.commentText, currentAssetID, e.data.replyingToID,
+//				e.data.newCommentObject, commentSaved);
 			
 		}
 		
@@ -193,7 +193,7 @@ package Controller {
 		
 		private function saveEditedComment(e:IDEvent):void {
 			AppModel.getInstance().editComment(e.data.commentID, e.data.commentText, function(e:Event):void {
-				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+//				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 			});
 		}
 		
@@ -226,17 +226,17 @@ package Controller {
 			var height:Number = e.data.height;
 			var annotationText:String = e.data.annotationText;
 			
-			AppModel.getInstance().saveNewBoxAnnotation(
-				currentAssetID,
-				xCoor,
-				yCoor,
-				width,
-				height,
-				0,
-				0,
-				annotationText,
-				newAnnotationSaved
-			);
+//			AppModel.getInstance().saveNewBoxAnnotation(
+//				currentAssetID,
+//				xCoor,
+//				yCoor,
+//				width,
+//				height,
+//				0,
+//				0,
+//				annotationText,
+//				newAnnotationSaved
+//			);
 		}
 		
 		private function saveNewPenAnnotation(e:IDEvent):void {
@@ -244,12 +244,12 @@ package Controller {
 			// Unpack the event data
 			var path:String = e.data.path;
 			var text:String = e.data.text;
-			AppModel.getInstance().saveNewPenAnnotation(
-				currentAssetID,
-				path,
-				text,
-				newAnnotationSaved
-			);
+//			AppModel.getInstance().saveNewPenAnnotation(
+//				currentAssetID,
+//				path,
+//				text,
+//				newAnnotationSaved
+//			);
 		}
 		
 		private function saveNewHighlightAnnotation(e:IDEvent):void {
@@ -261,16 +261,16 @@ package Controller {
 			var endTextIndex:Number = e.data.endTextIndex;
 			var text:String = e.data.text;
 			
-			AppModel.getInstance().saveNewHighlightAnnotation(
-				currentAssetID,
-				xCoor,
-				yCoor,
-				page1,
-				startTextIndex,
-				endTextIndex,
-				text,
-				newAnnotationSaved
-			)
+//			AppModel.getInstance().saveNewHighlightAnnotation(
+//				currentAssetID,
+//				xCoor,
+//				yCoor,
+//				page1,
+//				startTextIndex,
+//				endTextIndex,
+//				text,
+//				newAnnotationSaved
+//			)
 		}
 		
 		// DEKKERS ANNOTATION CODE TODO REMOVE THIS FUNCTION
@@ -305,7 +305,7 @@ package Controller {
 					items[i].annotationType = 2;
 				}
 				items[i].parentID = currentAssetID;
-				AppModel.getInstance().saveAnnotation(items[i]);
+//				AppModel.getInstance().saveAnnotation(items[i]);
 			}
 			
 			setTimeout(getAnnotations, 1500);
@@ -313,7 +313,7 @@ package Controller {
 		
 		// TODO REMOVE THIS FUNCTION (ONLY SO WE CAN UPDATE ANNOTATIONS FROM DEKKERS CODE
 		private function getAnnotations():void {
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+//			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 		}
 		
 		private function deleteAnnotation(e:IDEvent):void {
@@ -379,7 +379,7 @@ package Controller {
 			mediaView.addMediaData(media);
 			
 			// Gets out the Commentary Data for hte asset (that is, comments and annotations
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+//			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 			
 			
 			// Get out the People data
@@ -391,7 +391,7 @@ package Controller {
 		
 		private function loadPanelData():void {
 			// Gets out the Commentary Data for hte asset (that is, comments and annotations
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+//			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 			
 			// Get out the People data
 			AppModel.getInstance().getPeople(currentMediaData.meta_users_access, peopleCollectionLoaded);
@@ -433,7 +433,7 @@ package Controller {
 			AppModel.getInstance().setAnnotationClassForID(annotationID, function(e:Event):void {
 				// After setting the annotation class, get all the commentary for this media asset
 				// And reload them so they show on the asset.
-				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);	
+//				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);	
 			});
 			
 			// So lets just get out all the annotations/comments again
@@ -444,7 +444,7 @@ package Controller {
 		}
 		
 		public function annotationDeleted(e:Event):void {
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
+//			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, mediasCommentaryLoaded);
 		}
 		
 		private function mediaDetailsUpdated(e:Event):void {

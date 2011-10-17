@@ -22,6 +22,11 @@ package Controller.ERA
 		
 		//Protection to ensure controllers take advantage of the init method
 		override public function init():void {
+			layout.header.adminToolButtons.visible = false;
+			layout.header.adminToolButtons.includeInLayout = false;
+			layout.header.productionToolsButton.setStyle('chromeColor', '0x222222');
+			layout.header.profileButton.setStyle("chromeColor", '0x000000');
+			
 			setupEventListeners();
 		}
 		

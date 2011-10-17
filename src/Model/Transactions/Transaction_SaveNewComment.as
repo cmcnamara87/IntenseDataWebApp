@@ -1,9 +1,12 @@
 package Model.Transactions
 {
+	import Controller.AppController;
 	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
 	import Model.Model_Commentary;
+	import Model.Model_ERANotification;
+	import Model.Transactions.Access.Transaction_CopyAccess;
 	import Model.Utilities.Connection;
 	
 	import View.components.Panels.Comments.NewComment;
@@ -11,7 +14,6 @@ package Model.Transactions
 	import flash.events.Event;
 	
 	import mx.controls.Alert;
-	import Model.Transactions.Access.Transaction_CopyAccess;
 
 	public class Transaction_SaveNewComment
 	{
@@ -23,16 +25,27 @@ package Model.Transactions
 		private var commentID:Number; // The ID of the comment after it has been saved
 		private var commentParentID:Number; // The ID of the asset we are commenting on.
 		
-		public function Transaction_SaveNewComment(_connection:Connection, commentText:String, commentParentID:Number, replyingToID:Number,
-												   newCommentObject:NewComment, callback:Function):void
-		{
-			// Save the callback and newCommentObject
+		private var roomID:Number; // the room we are commenting in
+		private var objectID:Number; // the object we are commenting on
+		
+//		public function Transaction_SaveNewComment(_connection:Connection, commentText:String, commentParentID:Number, replyingToID:Number,
+//												   newCommentObject:NewComment, callback:Function):void
+//		{
+		public function Transaction_SaveNewComment(_connection:Connection, commentText:String, roomID:Number, objectID:Number, replyingToID:Number,
+   												   newCommentObject:NewComment, callback:Function):void
+   		{
+		
+		// Save the callback and newCommentObject
 			this.callback = callback;
 			this.newCommentObject = newCommentObject;
 			this.replyingToID = replyingToID;
 			this.commentText = commentText;
 			this._connection = _connection;
 			this.commentParentID = commentParentID;
+			
+			this.roomID = roomID;
+			this.objectID = objectID;
+			
 			// Save the comment
 			saveComment(commentText, commentParentID);
 				
@@ -45,8 +58,11 @@ package Model.Transactions
 			var baseXML:XML = _connection.packageRequest('asset.create', args, true);
 			
 			// Set this comment, as a child of the collection/asset
-			baseXML.service.args["related"]["to"] = commentParentID;
-			baseXML.service.args["related"]["to"].@relationship = "is_child";
+//			baseXML.service.args["related"]["to"] = commentParentID;
+//			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			baseXML.service.args.related = "";
+			baseXML.service.args.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
+			baseXML.service.args.related.appendChild(XML('<to relationship="object">' + objectID + '</to>'));
 			
 			// TODO find out what these mean
 			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
@@ -113,9 +129,16 @@ package Model.Transactions
 			baseXML.service.args["id"] = commentID;
 			_connection.sendRequest(baseXML,null);
 			
+			sendNotification();
 			
 			trace("Comment Saved");
 			callback(commentID, commentText, newCommentObject);
+		}
+		
+		private function sendNotification():void {
+			AppModel.getInstance().createERANotification(AppController.currentEraProject.year, Auth.getInstance().getUsername(),
+				Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
+				Model_ERANotification.FILE_COMMENT, 0, roomID, objectID, commentID);
 		}
 	}
 }

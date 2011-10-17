@@ -69,6 +69,7 @@
 				var uploadEvent:IDEvent = new IDEvent(IDEvent.ERA_SAVE_FILE, true);
 				uploadEvent.data.type = evidenceType.selectedItem;
 				uploadEvent.data.title = title.text;
+				uploadEvent.data.version = 0;
 				uploadEvent.data.description = description.text;
 				uploadEvent.data.evidenceItem = this;
 				uploadEvent.data.fileReference = fileReference;
@@ -366,7 +367,7 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<s:HGroup verticalAlign="middle">
-		<s:Button id="deleteEvidence" label="X" width="30" click="deleteEvidence_clickHandler(event)"/>
+		<s:Button id="deleteEvidence" label="X" width="30" click="deleteEvidence_clickHandler(event)" cornerRadius="10" />
 		<s:DropDownList id="evidenceType" width="200">
 			<s:ArrayList>
 				<fx:String>Audio</fx:String>
@@ -381,17 +382,17 @@
 		</s:DropDownList>
 		<s:TextInput id="title" text="name" color="0x888888" focusIn="title_focusInHandler(event)" focusOut="title_focusOutHandler(event)"/>
 		<s:TextInput id="description" width="300" text="description" color="0x888888" focusIn="description_focusInHandler(event)" focusOut="description_focusOutHandler(event)"/>
-		<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)" />
+		<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)" cornerRadius="10"/>
 		<s:HGroup id="actionGroup" visible="false" includeInLayout="false">
 			<s:CheckBox label="Accepted" id="usefulCheckbox" change="usefulCheckbox_changeHandler(event)"/>
 			<s:CheckBox label="Processed" id="processedCheckbox" enabled="false" click="processedCheckbox_clickHandler(event)"/>
-			<s:Button label="Upload" id="uploadButton" click="uploadButton_clickHandler(event)" enabled="false" />
+			<s:Button label="Upload" id="uploadButton" click="uploadButton_clickHandler(event)" enabled="false" cornerRadius="10"/>
 			<s:CheckBox id="returnedCheckbox" label="For Collection" change="returnedCheckbox_changeHandler(event)" />
 			<s:CheckBox id="collectedCheckbox" label="Collected" click="collectedCheckbox_clickHandler(event)" enabled="false"/>
 		</s:HGroup>
 	</s:HGroup>
 	<s:HGroup id="uploadProgress" width="100%" visible="false" includeInLayout="false">
 		<components1:LoadingBar id="progressBar" width="100%" />
-		<s:Button width="70" label="Cancel" id="cancelUploadButton" click="cancelUploadButton_clickHandler(event)"/>
+		<s:Button width="70" label="Cancel" id="cancelUploadButton" click="cancelUploadButton_clickHandler(event)" chromeColor="0xFFFFFF" cornerRadius="10"/>
 	</s:HGroup>
 </s:VGroup>

@@ -115,7 +115,7 @@ package Model.Transactions.Access
 			trace("Transaction_ChangeAccess: This is a collection, changing access to commentary and assets");
 			// needs to do 2 things
 			// sets the acls for the comments on the collection
-			AppModel.getInstance().getThisAssetsCommentary(assetID, setCommentaryACLs);
+//			AppModel.getInstance().getThisAssetsCommentary(assetID, setCommentaryACLs);
 			// set the acls for the assets inside this collection
 			AppModel.getInstance().getThisCollectionsMediaAssets(assetID, setMediaSharing);
 		}

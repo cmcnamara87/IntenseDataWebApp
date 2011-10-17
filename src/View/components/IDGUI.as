@@ -20,6 +20,14 @@ package View.components
 			return button
 		}
 		
+		public static function makeMenuButton(label:String, visible:Boolean = true, includeInLayout:Boolean = true):IDButton {
+			var button:IDButton = new IDButton(label, visible, includeInLayout);
+			button.setStyle("cornerRadius", "10");
+			button.setStyle("chromeColor", "0xFFFFFF");
+			button.height = 30;
+			return button
+		}
+		
 		public static function makeToggleButton(label:String, state:Boolean = false, visible:Boolean = true, includeInLayout:Boolean = true):ToggleButton {
 			var button:ToggleButton = new ToggleButton();
 			button.label = label;

@@ -157,6 +157,7 @@ package Controller {
 			// Call when we are initially saving a evidence log item
 			public static var ERA_SAVE_LOG_ITEM:String = "id_saveLogItem";
 			public static var ERA_SAVE_FILE:String = "id_saveFile";
+			public static var ERA_DOWNLOAD_FILE:String = "era_downloadFile";
 			// Delete user in user admin
 			public static var ERA_DELETE_USER:String = "era_deleteUser";
 			// remove the user from a role
@@ -165,8 +166,13 @@ package Controller {
 			public static var ERA_DELETE_LOG_ITEM:String = "era_deleteLogItem";
 			public static var ERA_SHOW_EVIDENCE_BOX:String = "era_showEvidenceBox";
 			public static var ERA_SHOW_EVIDENCE_MANAGEMENT:String = "era_showEvidenceManagement";
+			public static var ERA_SHOW_FORENSIC_LAB:String = "era_showForensicLab";
+			public static var ERA_SHOW_SCREENING_LAB:String = "era_showScreeningLab";
+			public static var ERA_SHOW_EXHIBITION:String = "era_showExhibition";
 			public static var ERA_SHOW_FILE:String = "era_showFile";
-			
+			public static var ERA_MOVE_FILE:String = "era_moveFile";
+			public static var ERA_CHANGE_FILE_TEMPERATURE:String = "era_changeFileTemperate";
+			public static var ERA_SAVE_COMMENT:String = "era_saveComment";
 			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);

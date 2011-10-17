@@ -4,7 +4,6 @@ package Model.Transactions.ERAProject
 	
 	import Model.AppModel;
 	import Model.Model_ERAFile;
-	import Model.Model_ERANotification;
 	import Model.Utilities.Connection;
 	
 	import View.ERA.components.EvidenceItem;
@@ -14,19 +13,18 @@ package Model.Transactions.ERAProject
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.net.FileReference;
-
-	public class Transaction_UploadERAFile
+	
+	public class Transaction_UploadFileVersion
 	{
 		private var year:String;
-		private var logItemID:Number;
-		private var evidenceRoomID:Number;
-		private var forensicLabID:Number;
+		private var roomID:Number;
 		private var type:String;
 		private var title:String;
 		private var description:String;
 		private var version:Number;
+		private var oldFileID:Number;
+		private var originalFileID:Number;
 		private var fileReference:FileReference;
-		private var evidenceItem:EvidenceItem;
 		private var connection:Connection;
 		private var ioErrorCallback:Function;
 		private var progressCallback:Function;
@@ -35,17 +33,16 @@ package Model.Transactions.ERAProject
 		
 		private var newFileID:Number;
 		
-		public function Transaction_UploadERAFile(year:String, evidenceRoomID:Number, forensicLabID:Number, logItemID:Number, type:String, title:String, description:String, version:Number, fileReference:FileReference, evidenceItem:EvidenceItem, connection:Connection, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function) {
+		public function Transaction_UploadFileVersion(year:String, roomID:Number, oldFileID:Number, originalFileID:Number, type:String, title:String, description:String, fileReference:FileReference, connection:Connection, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function) {
 			this.year = year;
-			this.evidenceRoomID = evidenceRoomID;
-			this.forensicLabID = forensicLabID;
-			this.version = version; // todo remove version for upload (since its only ever for new files)
-			this.logItemID = logItemID;
+			this.roomID = roomID;
+			this.version = version;
 			this.type = type;
 			this.title = title;
+			this.oldFileID = oldFileID;
+			this.originalFileID = originalFileID;
 			this.description = description;
 			this.fileReference = fileReference;
-			this.evidenceItem = evidenceItem;
 			this.connection = connection;
 			this.ioErrorCallback = ioErrorCallback;
 			this.progressCallback = progressCallback;
@@ -55,16 +52,45 @@ package Model.Transactions.ERAProject
 			fileReference.addEventListener(ProgressEvent.PROGRESS, progressHandler);
 			fileReference.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 			fileReference.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadComplete);
+			
+			// Work out version
+			determineVersion();
 
-			uploadFile();
 		}
 		
 		private function progressHandler(event:ProgressEvent):void {
 			var percentProgress:Number = Math.round(event.bytesLoaded/event.bytesTotal*100);
-			progressCallback(percentProgress, evidenceItem);
+			progressCallback(percentProgress);
 		}
 		private function ioErrorHandler(event:IOErrorEvent):void {
-			ioErrorCallback(event, evidenceItem);
+			ioErrorCallback(event);
+		}
+		
+		/**
+		 * Get all the different files that have the same original files.
+		 * We are going to count these up, and that will be the version number 
+		 * 
+		 */
+		private function determineVersion():void {
+			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			
+			argsXML.where = "related to{originalfile} (id=" + originalFileID + ")";
+			
+			connection.sendRequest(baseXML, gotVersionedFiles);
+		}			
+		private function gotVersionedFiles(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("getting versioned files", e)) == null) {
+				completeCallback(false);
+				return;
+			}
+			
+			var idList:XMLList = data.reply.result.id;
+
+			this.version = idList.length() + 1;
+			
+			uploadFile();
 		}
 		
 		private function uploadFile():void {
@@ -73,14 +99,14 @@ package Model.Transactions.ERAProject
 			
 			// Create a namespace for this era
 			argsXML.namespace = "ERA/" + this.year;
-
+			
 			// Setup the era meta-data
 			argsXML.meta["ERA-evidence"]["type"] = this.type
 			argsXML.meta["ERA-evidence"]["file_name"] = fileReference.name;
 			argsXML.meta["ERA-evidence"]["title"] = this.title;
 			argsXML.meta["ERA-evidence"]["description"] = this.description;
 			// make sure this file is set to active
-			argsXML.meta["ERA-evidence"]["version"] = 0;
+			argsXML.meta["ERA-evidence"]["version"] = this.version;
 			argsXML.meta["ERA-evidence"]["hot"] = true;
 			argsXML.meta["ERA-evidence"]["checked_out"] = false;
 			
@@ -94,7 +120,7 @@ package Model.Transactions.ERAProject
 			argsXML.meta["r_media"]["file_title"] = this.title;
 			argsXML.meta["r_media"].@id = "4";
 			argsXML.meta["r_media"]["transcoded"] = "false";
-			
+
 			connection.uploadFile(fileReference, baseXML, null);
 		}
 		
@@ -111,50 +137,21 @@ package Model.Transactions.ERAProject
 			// It was successful, so lets get it out
 			newFileID = xml.reply.result.id;
 			
-			var baseXML:XML = connection.packageRequest("asset.relationship.add", new Object(), true);
+			var baseXML:XML = connection.packageRequest("asset.set", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
-			argsXML.id = newFileID;
-			argsXML.to = evidenceRoomID;
-			argsXML.to.@relationship = "room";
 			
-			connection.sendRequest(baseXML, addedEvidenceRoom);
+			// Setup the era meta-data
+			argsXML.id = newFileID;
+			argsXML.related = "";
+			argsXML.related.appendChild(XML('<to relationship="originalfile">' + oldFileID + '</to>'));
+			argsXML.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
+			
+			connection.sendRequest(baseXML, relationshipsAdded);		
 		}
 		
-		private function addedEvidenceRoom(e:Event):void {
+		private function relationshipsAdded(e:Event):void {
 			var data:XML;
-			if((data = AppModel.getInstance().getData("adding relationship to evidnece room", e)) == null) {
-				completeCallback(false);
-				return;
-			}
-			
-			var baseXML:XML = connection.packageRequest("asset.relationship.add", new Object(), true);
-			var argsXML:XMLList = baseXML.service.args;
-			argsXML.id = newFileID;
-			argsXML.to = forensicLabID;
-			argsXML.to.@relationship = "room";
-			
-			connection.sendRequest(baseXML, addedForensicLabRoom);
-		}
-		
-		private function addedForensicLabRoom(e:Event):void {
-			var data:XML;
-			if((data = AppModel.getInstance().getData("adding relationship to forensic lab", e)) == null) {
-				completeCallback(false);
-				return;
-			}
-			
-			var baseXML:XML = connection.packageRequest("asset.relationship.add", new Object(), true);
-			var argsXML:XMLList = baseXML.service.args;
-			argsXML.id = newFileID;
-			argsXML.to = logItemID;
-			argsXML.to.@relationship = "logitem";
-			
-			connection.sendRequest(baseXML, addToLogItem);
-		}
-		
-		private function addToLogItem(e:Event):void {
-			var data:XML;
-			if((data = AppModel.getInstance().getData("adding relationship to log item", e)) == null) {
+			if((data = AppModel.getInstance().getData("adding relationships", e)) == null) {
 				completeCallback(false);
 				return;
 			}
@@ -167,7 +164,7 @@ package Model.Transactions.ERAProject
 			argsXML.id = newFileID;
 			
 			connection.sendRequest(baseXML, classAdded);
-
+			
 		}
 		
 		private function classAdded(e:Event):void {
@@ -177,8 +174,25 @@ package Model.Transactions.ERAProject
 				return;
 			}
 			
-			// SEND THE NOTIFICATION
-			sendNotification();
+			// change the temperature of the old file to cold
+			AppModel.getInstance().updateERAFileTemperature(oldFileID, false, temperatureUpdated);
+		}
+		
+		private function temperatureUpdated(status:Boolean):void {
+			if(!status) {
+				completeCallback(false);
+				return;
+			}
+			
+			// make the old file as no longer checked out
+			AppModel.getInstance().updateERAFileCheckOutStatus(oldFileID, false, checkoutUpdated);
+		}
+		
+		private function checkoutUpdated(status:Boolean):void {
+			if(!status) {
+				completeCallback(false);
+				return;
+			}
 			
 			// Get out the ERA object
 			var baseXML:XML = connection.packageRequest("asset.get", new Object(), true);
@@ -198,14 +212,7 @@ package Model.Transactions.ERAProject
 			var eraEvidence:Model_ERAFile = new Model_ERAFile();
 			eraEvidence.setData(data.reply.result.asset[0]);
 			
-			completeCallback(true, eraEvidence, evidenceItem);
-		}
-		
-		private function sendNotification():void {
-			trace('sending notification', evidenceRoomID, newFileID);
-			AppModel.getInstance().createERANotification(year, Auth.getInstance().getUsername(),
-				Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
-				Model_ERANotification.FILE_UPLOADED, 0, evidenceRoomID, newFileID, 0);
+			completeCallback(true, eraEvidence);
 		}
 	}
 }

@@ -5,6 +5,7 @@
 
 	<fx:Script>
 		<![CDATA[
+			import View.ERA.components.EvidenceItem;
 			import Controller.AppController;
 			import Controller.ERA.CaseController;
 			import Controller.IDEvent;
@@ -135,9 +136,9 @@
 						</s:filters>-->
 					</s:Label>
 				</s:VGroup>
-				<s:Button id="makeNewItemButton" label="Add Evidence" chromeColor="0xe4e5e6" cornerRadius="10" height="30" click="makeNewItemButton_clickHandler(event)"/>
-				<s:Button id="markAllForCollectionButton" label="Mark All as For Collection" chromeColor="0xe4e5e6" cornerRadius="10" height="30" click="markAllForCollectionButton_clickHandler(event)"/>
-				<s:Button id="markAllAsCollectedButton" label="Mark All as Collected" chromeColor="0xe4e5e6" cornerRadius="10" height="30" click="markAllAsCollectedButton_clickHandler(event)"/>
+				<s:Button id="makeNewItemButton" label="Add Evidence" chromeColor="0xFFFFFF" cornerRadius="10" height="30" click="makeNewItemButton_clickHandler(event)"/>
+				<s:Button id="markAllForCollectionButton" label="Mark All as For Collection" chromeColor="0xFFFFFF" cornerRadius="10" height="30" click="markAllForCollectionButton_clickHandler(event)"/>
+				<s:Button id="markAllAsCollectedButton" label="Mark All as Collected" chromeColor="0xFFFFFF" cornerRadius="10" height="30" click="markAllAsCollectedButton_clickHandler(event)"/>
 				<!--<s:Button id="caseInfo" label="i" chromeColor="0xe4e5e6" cornerRadius="10" height="30"/>-->
 			</s:HGroup>
 		</s:VGroup>
@@ -145,19 +146,21 @@
 	<!-- END OF TITLE BAR WITH CREATION BUTTON -->
 	
 	<s:BorderContainer width="100%" height="100%" borderColor="0xFFFFFF">
-		<s:Scroller width="100%" height="100%">
-			<s:VGroup horizontalAlign="center">
-				<s:HGroup width="1050" paddingTop="10">
-					<s:Label text="" width="42"/>
-					<s:Label text="Type" width="200" />
-					<s:Label text="Name" width="128" />
-					<s:Label text="Description" width="295" />
-					<s:Label text="Status" />
-				</s:HGroup>
-				<mx:HRule width="1050" />
-				<s:VGroup width="1050" id="logItemList" paddingBottom="10" paddingLeft="10" paddingRight="10">
-				</s:VGroup>	
-			</s:VGroup>
-		</s:Scroller>
+		<s:VGroup width="100%" height="100%" horizontalAlign="center" >
+			<s:HGroup width="1200" paddingTop="10">
+				<s:Label text="" width="42"/>
+				<s:Label text="Type" width="200" />
+				<s:Label text="Name" width="128" />
+				<s:Label text="Description" width="295" />
+				<s:Label text="Status" />
+			</s:HGroup>
+			<mx:HRule width="1200" />
+			<s:Scroller width="100%" height="100%">
+				<s:VGroup width="100%" horizontalAlign="center" height="100%">
+					<s:VGroup width="1200" id="logItemList" paddingBottom="10" paddingLeft="10" paddingRight="10">
+					</s:VGroup>
+				</s:VGroup>
+			</s:Scroller>
+		</s:VGroup>
 	</s:BorderContainer>
 </s:VGroup>
