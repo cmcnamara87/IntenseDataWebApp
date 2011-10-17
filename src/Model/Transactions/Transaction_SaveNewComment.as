@@ -1,9 +1,11 @@
 package Model.Transactions
 {
+	import Controller.AppController;
 	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
 	import Model.Model_Commentary;
+	import Model.Model_ERANotification;
 	import Model.Transactions.Access.Transaction_CopyAccess;
 	import Model.Utilities.Connection;
 	
@@ -127,9 +129,16 @@ package Model.Transactions
 			baseXML.service.args["id"] = commentID;
 			_connection.sendRequest(baseXML,null);
 			
+			sendNotification();
 			
 			trace("Comment Saved");
 			callback(commentID, commentText, newCommentObject);
+		}
+		
+		private function sendNotification():void {
+			AppModel.getInstance().createERANotification(AppController.currentEraProject.year, Auth.getInstance().getUsername(),
+				Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
+				Model_ERANotification.FILE_COMMENT, 0, roomID, objectID, commentID);
 		}
 	}
 }

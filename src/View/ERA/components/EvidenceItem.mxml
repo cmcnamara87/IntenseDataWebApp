@@ -164,7 +164,7 @@
 				for each(var logItem:Model_ERALogItem in allLogItemsArray2) {
 					trace("checking for match", title.text, ":", logItem.title);
 					if(logItem.title == title.text) {
-						AppController.layout.notificationBar.showError("A piece of evidence this name already exists. Please choose a different name.");
+//						AppController.layout.notificationBar.showError("A piece of evidence this name already exists. Please choose a different name.");
 						return;
 					}
 				}

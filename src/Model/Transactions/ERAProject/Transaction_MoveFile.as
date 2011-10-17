@@ -74,11 +74,16 @@ package Model.Transactions.ERAProject
 		
 		private function sendNotification():void {
 			// only send the ontification, if we are moving the file to the screening lab
-			if(toRoomType != Model_ERARoom.SCREENING_ROOM) return;
 
-			AppModel.getInstance().createERANotification(AppController.currentEraProject.year, Auth.getInstance().getUsername(),
-				Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
-				Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB, 0, toRoomID, fileID, 0);
+			if(toRoomType == Model_ERARoom.SCREENING_ROOM) {
+				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, Auth.getInstance().getUsername(),
+					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
+					Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB, 0, toRoomID, fileID, 0);
+			} else if(toRoomType == Model_ERARoom.EXHIBIT) {
+				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, Auth.getInstance().getUsername(),
+					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
+					Model_ERANotification.FILE_MOVED_TO_EXHIBITION, 0, toRoomID, fileID, 0);
+			}
 		}
 	}
 }

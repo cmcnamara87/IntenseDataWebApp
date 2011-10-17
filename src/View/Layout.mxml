@@ -19,16 +19,27 @@
 						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
 
-						notification.htmlText = "<b>" + notificationData.fullName + "</b> uploaded <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> to <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						notification.htmlText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> uploaded <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> to <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						notificationList.addElement(notification);
 						
 					} else if (notificationData.type == Model_ERANotification.ROOM_COMMENT) {
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
-						notification.htmlText = "<b>" + notificationData.fullName + "</b> wrote \"" + notificationData.comment_room.text + "\" on <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>."; 
+						notification.htmlText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> wrote \"" + notificationData.comment_room.text + "\" on <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						
+						notificationList.addElement(notification);
 					} else if (notificationData.type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB) {
 						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
-						notification.htmlText = "<b>" + notificationData.fullName + "</b> moved <a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> to <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						notification.htmlText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> moved <a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> to <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						
+						notificationList.addElement(notification);
+					} else if (notificationData.type == Model_ERANotification.FILE_COMMENT) {
+						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
+						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
+						notification.htmlText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> wrote \"" + notificationData.comment_file.annotation_text + "\" on <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						
+						notificationList.addElement(notification);
 					}
-					notificationList.addElement(notification);
+				
 				}
 			}
 		]]>

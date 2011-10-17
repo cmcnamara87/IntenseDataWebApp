@@ -87,8 +87,8 @@
 		<mx:Text width="100%" text="{text}"/>
 		<s:HGroup width="100%" visible="{!isReply}" includeInLayout="{!isReply}">
 			<s:Button id="replyButton" label="Reply" width="100%" cornerRadius="10" click="replyButton_clickHandler(event)"/>
-			<s:Button id="editButton" label="Edit" width="100%" cornerRadius="10" />
-			<s:Button id="deleteButton" label="Delete" width="100%" cornerRadius="10" />
+			<s:Button id="editButton" label="Edit" width="100%" cornerRadius="10" visible="false" includeInLayout="false"/>
+			<s:Button id="deleteButton" label="Delete" width="100%" cornerRadius="10" visible="false" includeInLayout="false"/>
 		</s:HGroup>	
 	</s:VGroup>
 	

@@ -155,9 +155,11 @@
 				<s:Label text="Status" />
 			</s:HGroup>
 			<mx:HRule width="1200" />
-			<s:Scroller width="1200" height="100%">
-				<s:VGroup width="100%" id="logItemList" paddingBottom="10" paddingLeft="10" paddingRight="10">
-				</s:VGroup>	
+			<s:Scroller width="100%" height="100%">
+				<s:VGroup width="100%" horizontalAlign="center" height="100%">
+					<s:VGroup width="1200" id="logItemList" paddingBottom="10" paddingLeft="10" paddingRight="10">
+					</s:VGroup>
+				</s:VGroup>
 			</s:Scroller>
 		</s:VGroup>
 	</s:BorderContainer>

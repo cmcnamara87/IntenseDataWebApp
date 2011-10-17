@@ -73,6 +73,7 @@ package Controller.ERA
 			// Listen for changing to the forensic lab
 			caseView.addEventListener(IDEvent.ERA_SHOW_FORENSIC_LAB, showForensicLab);
 			caseView.addEventListener(IDEvent.ERA_SHOW_SCREENING_LAB, showScreeningLab);
+			caseView.addEventListener(IDEvent.ERA_SHOW_EXHIBITION, showExhibition);
 			
 			// Show one of the files
 			caseView.addEventListener(IDEvent.ERA_SHOW_FILE, showFile);
@@ -214,6 +215,25 @@ package Controller.ERA
 		/*==================================== END OF SHOW FORENSIC LAB ===========================================*/
 		
 		
+		private function showExhibition(e:Event=null):void {
+			// @todo add use permission checking
+			currentRoom = this.getRoom(Model_ERARoom.EXHIBIT);
+			
+			// Change the url
+			Router.getInstance().setURL("case/" + caseID + "/" + Model_ERARoom.EXHIBIT);
+			
+			// Show the screening lab
+			caseView.showExhibition(null);
+			// Get all the files in the screening lab
+			AppModel.getInstance().getAllERAFilesInRoom(currentRoom.base_asset_id, gotExhibitionFiles);
+		}
+		private function gotExhibitionFiles(status:Boolean, fileArray:Array):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to get forensic lab files");
+				return;
+			}
+			caseView.showExhibition(fileArray);
+		}
 		/*==================================== SHOW SCREENING BOX ===========================================*/
 		private function showScreeningLab(e:Event=null):void {
 			// @todo add use permission checking
@@ -393,6 +413,9 @@ package Controller.ERA
 					case Model_ERARoom.SCREENING_ROOM:
 						this.showScreeningLab();
 						break;
+					case Model_ERARoom.EXHIBIT:
+						this.showExhibition();
+						break;
 					default:
 						break;
 				}
@@ -517,7 +540,6 @@ package Controller.ERA
 		private function getRoom(roomType:String):Model_ERARoom {
 			for(var i:Number = 0; i < roomArray.length; i++) {
 				var room:Model_ERARoom = (roomArray[i] as Model_ERARoom);
-				trace("room type", room.roomType);
 				if(room.roomType == roomType) {
 					return room;
 				}

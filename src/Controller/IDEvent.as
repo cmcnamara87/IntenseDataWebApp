@@ -168,6 +168,7 @@ package Controller {
 			public static var ERA_SHOW_EVIDENCE_MANAGEMENT:String = "era_showEvidenceManagement";
 			public static var ERA_SHOW_FORENSIC_LAB:String = "era_showForensicLab";
 			public static var ERA_SHOW_SCREENING_LAB:String = "era_showScreeningLab";
+			public static var ERA_SHOW_EXHIBITION:String = "era_showExhibition";
 			public static var ERA_SHOW_FILE:String = "era_showFile";
 			public static var ERA_MOVE_FILE:String = "era_moveFile";
 			public static var ERA_CHANGE_FILE_TEMPERATURE:String = "era_changeFileTemperate";

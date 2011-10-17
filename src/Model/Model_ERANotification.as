@@ -17,6 +17,9 @@ package Model
 		public static const FILE_MOVED_TO_SCREENING_LAB:String = "file_moved_to_screening_lab";
 		// {user} moved {file name/id} to {room name/id} -> have file id, room id, room name (nothing needed)
 		
+		public static const FILE_MOVED_TO_EXHIBITION:String = "file_moved_to_exhibition";
+		// {user} moved {file name/id} to {room name/id} -> have file id, room id, room name (nothing needed)
+		
 		// file uploaded
 		public static const FILE_UPLOADED:String =  "file_uploaded";
 		// {user} uploaded {file name/id} to {room name/id} -> have file id, room id, room name (nothing needed)

@@ -80,6 +80,7 @@
 					fileTile.ext = file.fileExt;
 					fileTile.description = file.description;
 					fileTile.loadURL(file.base_asset_id);
+					fileTile.dragEnabled = false;
 					fileGroup.addElement(fileTile);
 				}
 			}

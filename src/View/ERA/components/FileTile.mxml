@@ -42,6 +42,9 @@
 			[Bindable]
 			public var checkedOut:Boolean = false;
 			
+			[Bindable]
+			public var dragEnabled:Boolean = true;
+			
 			private var mouseDown:Boolean = false;
 		
 			public function loadURL(id:Number):void {
@@ -61,8 +64,14 @@
 			
 			protected function vgroup1_mouseMoveHandler(event:MouseEvent):void
 			{
+				if(!dragEnabled) return;
 				if(!mouseDown) return; // only do this if we are moving the mouse, after holding it down (aka dragging)
-				DragManager.doDrag(event.currentTarget as IUIComponent, null, event);
+				var dragProxy:Image = new Image();
+				dragProxy.height= 100;
+				dragProxy.width= 100; 
+				dragProxy.source = AssetLookup.getAssetImageClass(rootMetaType);
+				
+				DragManager.doDrag(event.currentTarget as IUIComponent, null, event, dragProxy);
 				this.alpha = 0.5;
 			}
 

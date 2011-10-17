@@ -149,6 +149,42 @@
 					forList.addElement(forItem);
 					forItem.deleteButton.addEventListener(MouseEvent.CLICK, deleteFOR);
 				}
+				
+				// now lets make the 2 digit list
+				
+				var twoDigitalForArray:Array = new Array();
+				for each(var forPair:Array in chosenForsArray) {
+					// check if we already have the 2 digit code
+
+					var twoDigitalForCode:String = String(forPair[Model_ERACase.FOR_CODE]).substr(0, 2);
+					var twoDigitalForPercent:Number = forPair[Model_ERACase.PERCENTAGE];
+					
+					var found:Boolean = false;
+					for each(var twoDigitalForPair:Array in twoDigitalForArray) {
+						if(twoDigitalForPair[Model_ERACase.FOR_CODE] == twoDigitalForCode) {
+							twoDigitalForPair[Model_ERACase.PERCENTAGE] += twoDigitalForPercent;
+							found = true;
+						}
+					}
+					
+					if(!found) {
+						var array:Array = new Array();
+						array[Model_ERACase.FOR_CODE] = twoDigitalForCode;
+						array[Model_ERACase.PERCENTAGE] = twoDigitalForPercent;
+						twoDigitalForArray.push(array);
+
+					}
+				}
+				
+				for2DigitList.removeAllElements();
+				for each(forPair in twoDigitalForArray) {
+					var forItem:FORItem = new FORItem();
+					
+					forItem.forCode = forPair[Model_ERACase.FOR_CODE];
+					forItem.forPercentage = forPair[Model_ERACase.PERCENTAGE];
+					forItem.deleteButton.visible = false;
+					for2DigitList.addElement(forItem);
+				}
 			}
 			private function deleteFOR(e:MouseEvent):void {
 				var forItem:FORItem = e.target.owner as FORItem;
@@ -541,6 +577,8 @@
 							<s:Button id="addFor" label="Add FoR" click="addFor_clickHandler(event)" />
 						</s:HGroup>
 						<s:VGroup id="forList" width="100%">
+						</s:VGroup>
+						<s:VGroup id="for2DigitList" width="100%">
 						</s:VGroup>
 					</components:content>
 				</components:FormGroup>
