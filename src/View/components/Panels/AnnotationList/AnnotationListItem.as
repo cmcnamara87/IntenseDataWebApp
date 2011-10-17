@@ -121,6 +121,15 @@ package View.components.Panels.AnnotationList
 				comment.htmlText = IDGUI.getLinkHTML(annotationText);
 				comment.percentWidth = 100;
 				this.addElement(comment);
+				
+				var timestamp:Text = new Text();
+				timestamp.setStyle('color', '0x888888');
+				timestamp.percentWidth = 100;
+
+				var currDate:Date = new Date(mTime); //timestamp_in_seconds*1000 - if you use a result of PHP time function, which returns it in seconds, and Flash uses milliseconds
+				timestamp.text = (currDate.getHours() + ":" + currDate.getMinutes() + " - " + currDate.getDate() + "/" + (currDate.getMonth()+ 1) + "/" + currDate.getFullYear());
+				
+				this.addElement(timestamp);
 			}
 			
 			// Create a HGroup for the buttons

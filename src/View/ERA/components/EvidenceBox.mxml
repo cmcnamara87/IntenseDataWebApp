@@ -84,6 +84,7 @@
 			}
 			
 			private function filterButtonClicked(e:MouseEvent):void {
+				
 				var showOnlyType:String = (e.target as Button).label;
 				
 				if(showOnlyType == "All") {
@@ -107,6 +108,14 @@
 						fileTile.includeInLayout = false;
 					}
 				}
+				
+//				for(var j:Number = 0; j < typeFiltersButtons.numElements; j++) {
+//					var button:Button = typeFiltersButtons.getElementAt(i) as Button;
+//					button.setStyle('chromeColor', '0xFFFFFF');
+//				}
+//				
+//				(e.target as Button).setStyle('chromeColor', '0x8FAFF7');
+				
 			}
 			
 		]]>

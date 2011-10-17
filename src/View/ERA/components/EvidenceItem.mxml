@@ -43,7 +43,10 @@
 				}
 				
 				fileReference = new FileReference();
-//				fileReference.browse(AssetLookup.getFileFilter(logItem.type));
+				
+//				var typeArray:Array = AssetLookup.getFileFilter(logItem.type);
+//				trace("asset lookup type", typeArray[0]);
+//				fileReference.browse(typeArray);
 				fileReference.browse(AssetLookup.getFileTypes());
 				fileReference.addEventListener(Event.SELECT, onFileSelect);
 				fileReference.addEventListener(Event.CANCEL, fileSelectCancelled);

@@ -176,6 +176,7 @@ package Controller.Utilities {
 					return new Array(audioFilters);
 					break;
 				case "Image":
+					trace("getting image file filter");
 					var imageFilters:FileFilter = new FileFilter("Image (gif, jpg, jpeg, bmp, png, tif)","*.gif, *.jpg, *.jpeg, *.bmp, *.png, *.tif");
 					return new Array(imageFilters);
 					break;

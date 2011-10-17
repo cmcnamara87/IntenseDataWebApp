@@ -137,6 +137,16 @@ package View.components.Panels.Comments
 				if(commentText == "Comment Removed") {
 					comment.setStyle("fontStyle", "italic");
 				}
+				
+				var timestamp:Text = new Text();
+				timestamp.percentWidth = 100;
+				timestamp.text = mtime + "";
+				timestamp.setStyle('color', '0x888888');
+				
+				var currDate:Date = new Date(mtime); //timestamp_in_seconds*1000 - if you use a result of PHP time function, which returns it in seconds, and Flash uses milliseconds
+				timestamp.text = (currDate.getHours() + ":" + currDate.getMinutes() + " - " + currDate.getDate() + "/" + (currDate.getMonth()+ 1) + "/" + currDate.getFullYear());
+				
+				usernameAndComment.addElement(timestamp);
 			}
 				
 			// Create a HGroup for the buttons
