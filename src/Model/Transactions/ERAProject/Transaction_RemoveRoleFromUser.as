@@ -64,17 +64,48 @@ package Model.Transactions.ERAProject
 					return;
 				}				
 				
-				// Add another special role for hte sys admin
-				var baseXML:XML = connection.packageRequest("actor.revoke", new Object(), true);
+				// we need to see if hte user is still a sys-admin for any of the previous eras
+				//actor.describe :type user :name system:test@qut.edu.au
+				var baseXML:XML = connection.packageRequest("actor.describe", new Object(), true);
 				var argsXML:XMLList = baseXML.service.args;
-				
 				argsXML.type = "user";
 				argsXML.name = "system:" + username;
-				argsXML.role = Model_ERAUser.SYS_ADMIN;
-				argsXML.role.@type = "role";
-				
-				connection.sendRequest(baseXML, removeSpecialRole);
+				connection.sendRequest(baseXML, gotRoles);
 			}
+		}
+		
+		private function gotRoles(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("getting user roles", e)) == null) {
+				callback(false);
+				return;
+			} 
+			
+			var rolesXML:XMLList = data.reply.result.actor.role;
+			var sysAdminFound:Number = 0;
+			for each(var role:XML in rolesXML) {
+				var roleType:String = role.@type;
+				
+				var yearlessRole:String = roleType.substr(0, Model_ERAUser.SYS_ADMIN.length);
+				if(yearlessRole == Model_ERAUser.SYS_ADMIN) sysAdminFound++;
+			}
+			
+			if(sysAdminFound > 1) {
+				callback(true, username, roleComponent);
+				return;
+			}
+			
+			// Add another special role for hte sys admin
+			var baseXML:XML = connection.packageRequest("actor.revoke", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			
+			argsXML.type = "user";
+			argsXML.name = "system:" + username;
+			argsXML.role = Model_ERAUser.SYS_ADMIN;
+			argsXML.role.@type = "role";
+			
+			connection.sendRequest(baseXML, removeSpecialRole);
+		
 		}
 			
 		private function removeSpecialRole(e:Event):void {
