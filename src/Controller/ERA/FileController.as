@@ -372,7 +372,7 @@ package Controller.ERA {
 					items[i].annotationType = 2;
 				}
 				items[i].parentID = currentAssetID;
-				AppModel.getInstance().saveAnnotation(items[i]);
+				AppModel.getInstance().saveAnnotation(items[i], roomID);
 			}
 			
 			setTimeout(getAnnotations, 1500);

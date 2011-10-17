@@ -112,7 +112,7 @@
 				</s:stroke>
 			</s:Line>
 			
-			<s:Button chromeColor="0x8FAFF7" cornerRadius="10" color="0x222222" id="notificationButton" height="20" visible="false" includeInLayout="false" width="30" label="0" toolTip="Notifications">
+			<s:Button chromeColor="0x8FAFF7" cornerRadius="10" color="0x000000" id="notificationButton" height="20" width="30" label="0" toolTip="Notifications">
 			</s:Button>
 			<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="profileButton" height="20" label="Username" toolTip="Go to your Profile Page">
 			</s:Button>

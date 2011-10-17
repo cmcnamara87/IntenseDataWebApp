@@ -4,6 +4,7 @@ package Model.Transactions.ERAProject
 	
 	import Model.AppModel;
 	import Model.Model_ERAConversation;
+	import Model.Model_ERANotification;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
@@ -80,8 +81,10 @@ package Model.Transactions.ERAProject
 			var data:XML;
 			if((data = AppModel.getInstance().getData("getting era comment", e)) == null) {
 				callback(false, null);
+				return;
 			}
 			
+			sendNotification();
 			
 			var eraConversation:Model_ERAConversation = new Model_ERAConversation();
 			eraConversation.setData(data.reply.result.asset[0]);
@@ -90,6 +93,12 @@ package Model.Transactions.ERAProject
 			eraConversation.userDetails = Auth.getInstance().getUserDetails();
 			
 			callback(true, eraConversation);
+		}
+		
+		private function sendNotification():void {
+			AppModel.getInstance().createERANotification(year, Auth.getInstance().getUsername(),
+				Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
+				Model_ERANotification.ROOM_COMMENT, 0, roomID, 0, newCommentID);
 		}
 	}
 }

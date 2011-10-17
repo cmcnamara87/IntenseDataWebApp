@@ -11,6 +11,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_CreateConversation;
 	import Model.Transactions.ERAProject.Transaction_CreateERACase;
 	import Model.Transactions.ERAProject.Transaction_CreateERALogItem;
+	import Model.Transactions.ERAProject.Transaction_CreateERANotification;
 	import Model.Transactions.ERAProject.Transaction_CreateERAProject;
 	import Model.Transactions.ERAProject.Transaction_CreateERAUser;
 	import Model.Transactions.ERAProject.Transaction_CreateRoom;
@@ -23,6 +24,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetAllConversation;
 	import Model.Transactions.ERAProject.Transaction_GetAllFiles;
 	import Model.Transactions.ERAProject.Transaction_GetAllLogItems;
+	import Model.Transactions.ERAProject.Transaction_GetAllNotifications;
 	import Model.Transactions.ERAProject.Transaction_GetAllRooms;
 	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
@@ -606,12 +608,17 @@ package Model {
 		}
 		
 		// Saves an annotation
-		public function saveAnnotation(assetData:Object):void {
+		public function saveAnnotation(assetData:Object, roomID:Number):void {
 			var args:Object = new Object();
 			args.namespace = "recensio";
 			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
-			baseXML.service.args["related"]["to"] = assetData.parentID;
-			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			
+			baseXML.service.args.related = "";
+			baseXML.service.args.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
+			baseXML.service.args.related.appendChild(XML('<to relationship="object">' + assetData.parentID + '</to>'));
+			
+//			baseXML.service.args["related"]["to"] = assetData.parentID;
+//			baseXML.service.args["related"]["to"].@relationship = "is_child";
 			baseXML.service.args["meta"]["r_base"]["obtype"] = "4";
 			baseXML.service.args["meta"]["r_base"]["active"] = "true";
 			baseXML.service.args["meta"]["r_base"]["creator"] = Auth.getInstance().getUsername();
@@ -1714,8 +1721,8 @@ package Model {
 		public function getERAFile(fileID:Number, callback:Function):void {
 			var getERAFile:Transaction_GetFile = new Transaction_GetFile(fileID, _connection, callback);
 		}
-		public function moveERAFile(fileID:Number, fromRoomID:Number, toRoomID:Number, callback:Function):void {
-			var moveERAFile:Transaction_MoveFile = new Transaction_MoveFile(fileID, fromRoomID, toRoomID, _connection, callback);
+		public function moveERAFile(fileID:Number, fromRoomID:Number, toRoomID:Number, toRoomType:String, callback:Function):void {
+			var moveERAFile:Transaction_MoveFile = new Transaction_MoveFile(fileID, fromRoomID, toRoomID, toRoomType, _connection, callback);
 		}
 		public function updateERAFileTemperature(fileID:Number, hot:Boolean, callback:Function):void {
 			var updateERAFile:Transaction_UpdateFileTemperature = new Transaction_UpdateFileTemperature(fileID, hot, _connection, callback);
@@ -1729,6 +1736,13 @@ package Model {
 		}
 		public function getAllConversationOnOject(objectID:Number, roomID:Number, callback:Function):void {
 			var getConverstion:Transaction_GetAllConversation = new Transaction_GetAllConversation(AppController.currentEraProject.year, objectID, roomID, _connection, callback);
+		}
+		
+		public function getAllNotifications(callback:Function):void {
+			var getAllNotifications:Transaction_GetAllNotifications = new Transaction_GetAllNotifications(_connection, callback);
+		}
+		public function createERANotification(year:String, username:String, firstName:String, lastName:String, type:String, caseID:Number=0, roomID:Number=0, fileID:Number=0, commentID:Number=0) {
+			var createERANotification:Transaction_CreateERANotification = new Transaction_CreateERANotification(year, username, firstName, lastName, type, _connection, caseID, roomID, fileID, commentID);
 		}
 			
 	}

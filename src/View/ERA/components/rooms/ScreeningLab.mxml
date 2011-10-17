@@ -69,7 +69,14 @@
 				}
 				
 				totalFileSizeLabel.text = Math.ceil(totalFileSize / 1024 / 1024) + " MB";
-				
+				if((totalFileSize / 1024 / 1024) < 1) {
+					totalFileSizeLabel.text = "Less Than 1 MB";
+				}
+				if((Math.ceil(totalFileSize / 1024 / 1024)) > 30) {
+					totalFileSizeLabel.setStyle('color', '0xFF0000');
+				} else {
+					totalFileSizeLabel.setStyle('color', '0x5e6469');
+				}
 				renderFileFilters();
 			}
 			
@@ -147,7 +154,8 @@
 	
 	<s:BorderContainer width="100%" height="40" borderVisible="false" backgroundColor="0xEEEFF1">
 		<s:HGroup verticalAlign="middle" paddingBottom="10" paddingLeft="20" paddingRight="10" paddingTop="10">
-			<s:Label id="totalFileSizeLabel" />
+			<s:Label text="Total File Size:" color="0x828F9A"/>
+			<s:Label id="totalFileSizeLabel" color="0xFF0000" fontWeight="bold"/>
 			<s:Label text="Filter By Type:" color="0x828F9A"/>
 			<s:HGroup id="typeFiltersButtons">
 			</s:HGroup>

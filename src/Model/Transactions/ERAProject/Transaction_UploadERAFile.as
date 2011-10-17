@@ -4,6 +4,7 @@ package Model.Transactions.ERAProject
 	
 	import Model.AppModel;
 	import Model.Model_ERAFile;
+	import Model.Model_ERANotification;
 	import Model.Utilities.Connection;
 	
 	import View.ERA.components.EvidenceItem;
@@ -176,6 +177,9 @@ package Model.Transactions.ERAProject
 				return;
 			}
 			
+			// SEND THE NOTIFICATION
+			sendNotification();
+			
 			// Get out the ERA object
 			var baseXML:XML = connection.packageRequest("asset.get", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
@@ -195,6 +199,13 @@ package Model.Transactions.ERAProject
 			eraEvidence.setData(data.reply.result.asset[0]);
 			
 			completeCallback(true, eraEvidence, evidenceItem);
+		}
+		
+		private function sendNotification():void {
+			trace('sending notification', evidenceRoomID, newFileID);
+			AppModel.getInstance().createERANotification(year, Auth.getInstance().getUsername(),
+				Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
+				Model_ERANotification.FILE_UPLOADED, 0, evidenceRoomID, newFileID, 0);
 		}
 	}
 }

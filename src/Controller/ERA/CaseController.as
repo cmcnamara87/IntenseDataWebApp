@@ -129,7 +129,7 @@ package Controller.ERA
 			var moveToRoomType = e.data.moveToRoomType;
 			trace('move to room type', moveToRoomType);
 			
-			AppModel.getInstance().moveERAFile(fileID, currentRoom.base_asset_id, this.getRoom(moveToRoomType).base_asset_id, fileMoved);
+			AppModel.getInstance().moveERAFile(fileID, currentRoom.base_asset_id, this.getRoom(moveToRoomType).base_asset_id, moveToRoomType, fileMoved);
 		}
 		private function fileMoved(status:Boolean):void {
 			if(status) {

@@ -1,6 +1,11 @@
 package Model.Transactions.ERAProject
 {
+	import Controller.AppController;
+	import Controller.Utilities.Auth;
+	
 	import Model.AppModel;
+	import Model.Model_ERANotification;
+	import Model.Model_ERARoom;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
@@ -12,12 +17,14 @@ package Model.Transactions.ERAProject
 		private var toRoomID:Number;
 		private var connection:Connection;
 		private var callback:Function;
+		private var toRoomType:String;
 		
-		public function Transaction_MoveFile(fileID:Number, fromRoomID:Number, toRoomID:Number, connection:Connection, callback:Function)
+		public function Transaction_MoveFile(fileID:Number, fromRoomID:Number, toRoomID:Number, toRoomType:String, connection:Connection, callback:Function)
 		{
 			this.fileID = fileID;
 			this.fromRoomID = fromRoomID;
 			this.toRoomID = toRoomID;
+			this.toRoomType = toRoomType;
 			this.connection = connection;
 			this.callback = callback;
 			
@@ -60,7 +67,18 @@ package Model.Transactions.ERAProject
 				return;
 			}
 			
+			sendNotification();
+			
 			callback(true);
+		}
+		
+		private function sendNotification():void {
+			// only send the ontification, if we are moving the file to the screening lab
+			if(toRoomType != Model_ERARoom.SCREENING_ROOM) return;
+
+			AppModel.getInstance().createERANotification(AppController.currentEraProject.year, Auth.getInstance().getUsername(),
+				Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
+				Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB, 0, toRoomID, fileID, 0);
 		}
 	}
 }

@@ -7,6 +7,7 @@
 		  dragEnter="vgroup1_dragEnterHandler(event)"
 		  dragDrop="vgroup1_dragDropHandler(event)"
 		  dragExit="vgroup1_dragExitHandler(event)"
+		  alpha="{selected ? 1 : 0.5}"
 		  >
 
 	<fx:Script>
@@ -34,6 +35,9 @@
 			[Bindable]
 			public var icon:Class = AssetLookup.EvidenceManagerIcon;
 			
+			[Bindable]
+			public var selected:Boolean = false;
+			
 			protected function vgroup1_dragDropHandler(event:DragEvent):void
 			{
 				var fileMoveEvent:IDEvent = new IDEvent(IDEvent.ERA_MOVE_FILE, true);
@@ -42,13 +46,17 @@
 				this.dispatchEvent(fileMoveEvent);
 				
 				(event.dragInitiator.parent as TileGroup).removeElement(event.dragInitiator as FileTile);
+				
+				this.alpha = 0.5;
 			}
 
 
 			protected function vgroup1_dragEnterHandler(event:DragEvent):void
 			{
 				// make it so that you cannot drag items into the evidence manager, or evidence box
-				if(roomType == Model_ERARoom.EVIDENCE_MANAGEMENT || roomType == Model_ERARoom.EVIDENCE_ROOM) return;
+				if(roomType == Model_ERARoom.EVIDENCE_MANAGEMENT || roomType == Model_ERARoom.EVIDENCE_ROOM || roomType == Model_ERARoom.POST_MORTEM) return;
+				
+				if(selected) return;
 				
 				DragManager.acceptDragDrop(event.currentTarget as IUIComponent);
 				DragManager.showFeedback( DragManager.MOVE );

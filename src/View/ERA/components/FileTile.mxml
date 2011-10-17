@@ -99,5 +99,5 @@
 	
 	
 	<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="{description}" alpha="{checkedOut ? 0.5 : 1}" />
-	<s:Label text="{title}_{version} ({ext})" width="100%" textAlign="center" />
+	<s:Label text="{title}{version > 0 ? '_' + version : ''} ({ext})" width="100%" textAlign="center" />
 </s:VGroup>

@@ -305,7 +305,7 @@ package Controller {
 					items[i].annotationType = 2;
 				}
 				items[i].parentID = currentAssetID;
-				AppModel.getInstance().saveAnnotation(items[i]);
+//				AppModel.getInstance().saveAnnotation(items[i]);
 			}
 			
 			setTimeout(getAnnotations, 1500);
