@@ -24,7 +24,7 @@ package Controller.ERA
 		override public function init():void {
 			layout.header.adminToolButtons.visible = false;
 			layout.header.adminToolButtons.includeInLayout = false;
-			layout.header.productionToolsButton.setStyle('chromeColor', '0xEEEEEE');
+			layout.header.productionToolsButton.setStyle('chromeColor', '0x222222');
 			layout.header.profileButton.setStyle("chromeColor", '0x000000');
 			
 			setupEventListeners();

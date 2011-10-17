@@ -1,6 +1,7 @@
 package Model.Transactions.ERAProject
 {
 	import Model.AppModel;
+	import Model.Model_ERAUser;
 	import Model.Utilities.Connection;
 	
 	import View.ERA.components.ERARole;
@@ -42,7 +43,9 @@ package Model.Transactions.ERAProject
 			
 			argsXML.type = "user";
 			argsXML.name = "system:" + username;
+	
 			argsXML.role = role + "_" + year;
+			
 			argsXML.role.@type = "role";
 			
 			trace("remove role from user", baseXML);
@@ -56,9 +59,33 @@ package Model.Transactions.ERAProject
 				return;
 			} else {
 				// TODO work out what happens for 'sys-admin' role (non-year version)
-				callback(true, username, roleComponent);
-				return;
+				if(role != Model_ERAUser.SYS_ADMIN) {
+					callback(true, username, roleComponent);
+					return;
+				}				
+				
+				// Add another special role for hte sys admin
+				var baseXML:XML = connection.packageRequest("actor.revoke", new Object(), true);
+				var argsXML:XMLList = baseXML.service.args;
+				
+				argsXML.type = "user";
+				argsXML.name = "system:" + username;
+				argsXML.role = Model_ERAUser.SYS_ADMIN;
+				argsXML.role.@type = "role";
+				
+				connection.sendRequest(baseXML, removeSpecialRole);
 			}
+		}
+			
+		private function removeSpecialRole(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("remove sys-admin role", e)) == null) {
+				callback(false);
+				return;
+			} 
+			
+			callback(true, username, roleComponent);
+			return;
 		}
 	}
 }
