@@ -111,12 +111,16 @@ package Model.Transactions.ERAProject
 				argsXML.related.appendChild(XML('<to relationship="notification_room">' + this.roomID + '</to>'));
 			}
 			if(this.fileID != 0) {
-				trace("asdfasdfasdf**********", fileID);
 				argsXML.related.appendChild(XML('<to relationship="notification_file">' + this.fileID + '</to>'));
 			}
 			if(this.commentID != 0) {
 				argsXML.related.appendChild(XML('<to relationship="notification_comment">' + this.commentID + '</to>'));
 			}
+			
+			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.SYS_ADMIN + "_" + year + '</actor><access>read-write</access></acl>'));
+			
+//			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.VIEWER + "_" + year + '</actor><access>read-write</access></acl>'));
+			
 			
 			// Set up access for production managers
 			for each(var productionManager:Model_ERAUser in eraCase.productionManagerArray) {
@@ -135,6 +139,11 @@ package Model.Transactions.ERAProject
 					if(researcher.username == Auth.getInstance().getUsername()) continue;
 					argsXML.appendChild(XML('<acl><actor type="user">system:' + researcher.username + '</actor><access>read-write</access></acl>'));
 				}
+			}
+			
+			if(type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB) {
+				// Notify the monitor when fiels are ready to be screened
+				argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.MONITOR + "_" + year + '</actor><access>read-write</access></acl>'));
 			}
 
 			trace("era notification", argsXML);
