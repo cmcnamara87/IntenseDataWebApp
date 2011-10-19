@@ -7,20 +7,25 @@
 		  dragEnter="vgroup1_dragEnterHandler(event)"
 		  dragDrop="vgroup1_dragDropHandler(event)"
 		  dragExit="vgroup1_dragExitHandler(event)"
-		  alpha="{selected ? 1 : 0.5}"
+		  alpha="{selected ? 1 : 0.5}" xmlns:components="View.ERA.components.*"
+		  creationComplete="vgroup1_creationCompleteHandler(event)"
+		  removedFromStage="vgroup1_removedFromStageHandler(event)"
 		  >
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
 			import Controller.ERA.CaseController;
 			import Controller.IDEvent;
 			import Controller.Utilities.AssetLookup;
 			
 			import Model.Model_ERARoom;
 			
+			import mx.controls.Alert;
 			import mx.core.IUIComponent;
 			import mx.core.UIComponent;
 			import mx.events.DragEvent;
+			import mx.events.FlexEvent;
 			import mx.managers.DragManager;
 			
 			import spark.components.TileGroup;
@@ -28,6 +33,18 @@
 			public var roomName:String = "";
 			[Bindable]
 			public var roomType:String = "";
+			
+			private var _roomData:Model_ERARoom;
+			
+			[Bindable]
+			private var notificationCount:Number = 0;
+			
+			public function set roomData(roomData:Model_ERARoom):void {
+				this._roomData = roomData;
+				
+				notificationCount = roomData.notificationCount;
+			}
+			
 
 			[Bindable]
 			public var unavailable:Boolean = false;
@@ -70,27 +87,51 @@
 				this.alpha = 0.5
 			}
 
+
+			protected function vgroup1_creationCompleteHandler(event:FlexEvent):void
+			{
+				AppController.layout.addEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
+			}
+			
+			private function eraNotificationsUpdated(e:Event):void {
+				if(!_roomData) return; // we havnet set any room data info yet
+				_roomData.updateNotificationCount();
+				this.notificationCount = _roomData.notificationCount;
+				trace("Updating Room", roomName, "notification count", this.notificationCount);
+				notificationBadge.notificationCount = this.notificationCount;
+			}
+
+			protected function vgroup1_removedFromStageHandler(event:Event):void
+			{
+				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+			}
+
 		]]>
 	</fx:Script>
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Group width="70" height="70">
+	<!--<s:Group width="70" height="70">
 		
 		<mx:Image source="{icon}" width="70" height="70" horizontalAlign="center" maintainAspectRatio="true"/>
 		<s:Label x="18" text="x" fontSize="70" fontWeight="bold" color="0xFF0000" visible="{unavailable}" includeInLayout="{unavailable}"/>
+	</s:Group>-->
+	<s:Group width="70" height="70">		
+		<s:BorderContainer backgroundColor="0x434343" borderVisible="false" height="70" width="70" visible="true" includeInLayout="true">
+			
+			<s:VGroup width="100%" height="100%" horizontalAlign="center">
+				
+			</s:VGroup>
+			<s:filters>
+				<s:DropShadowFilter distance="1" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+			</s:filters>
+		</s:BorderContainer>
+		
+		<components:NotificationBadge id="notificationBadge" top="-10" left="60" notificationCount="{notificationCount}" />
 	</s:Group>
 	
-	<!--<s:BorderContainer backgroundColor="0x434343" borderVisible="false" height="70" width="70" visible="true" includeInLayout="true">
-		
-		<s:VGroup width="100%" height="100%" horizontalAlign="center">
-	
-		</s:VGroup>
-		<s:filters>
-			<s:DropShadowFilter distance="1" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
-		</s:filters>
-	</s:BorderContainer>-->
 	<s:Label text="{roomName}" fontSize="18" color="0xcfcfcf" width="100%" textAlign="center">
 		<s:filters>
 			<s:DropShadowFilter distance="1" angle="270" color="0x000000" blurX="0" blurY="0"/>

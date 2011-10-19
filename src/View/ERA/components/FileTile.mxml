@@ -6,7 +6,7 @@
 		  mouseOut="vgroup1_mouseOutHandler(event)" 
 		  mouseDown="vgroup1_mouseDownHandler(event)" 
 		  mouseUp="vgroup1_mouseUpHandler(event)"
-		  mouseMove="vgroup1_mouseMoveHandler(event)">
+		  mouseMove="vgroup1_mouseMoveHandler(event)" xmlns:components="View.ERA.components.*">
 
 	<fx:Script>
 		<![CDATA[
@@ -15,14 +15,18 @@
 			import Controller.Utilities.AssetLookup;
 			import Controller.Utilities.Auth;
 			
+			import Model.Model_ERAFile;
+			
 			import mx.core.IUIComponent;
 			import mx.managers.DragManager;
+			
+			private var _fileData:Model_ERAFile;
 			
 			[Bindable] 
 			public var title:String = "";
 			
 			[Bindable]
-			public var description:String = "";
+			private var description:String = "";
 			
 			[Bindable]
 			public var fileID:Number;
@@ -31,16 +35,34 @@
 			public var type:String;
 			
 			[Bindable]
-			public var ext:String;
+			private var ext:String;
 			
 			[Bindable]
-			public var version:Number = 0;;
+			private var version:Number = 0;;
 			
 			[Bindable]
-			public var rootMetaType:String;
+			private var rootMetaType:String;
 			
 			[Bindable]
-			public var checkedOut:Boolean = false;
+			private var checkedOut:Boolean = false;
+			
+			[Bindable]
+			private var notificationCount:Number = 0;
+			
+			public function set fileData(fileData:Model_ERAFile):void {
+				this._fileData = fileData;
+				
+				title =  fileData.title;
+				description = fileData.description;
+				fileID = fileData.base_asset_id;
+				type = fileData.type;
+				ext = fileData.fileExt;
+				version = fileData.version;
+				rootMetaType = fileData.rootMetaType;
+				checkedOut = fileData.checkedOut;
+
+				notificationCount = fileData.notificationCount;
+			}
 			
 			[Bindable]
 			public var dragEnabled:Boolean = true;
@@ -106,7 +128,10 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
+	<s:Group width="100" height="100">
+		<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="{description}" alpha="{checkedOut ? 0.5 : 1}" />
+		<components:NotificationBadge left="75" notificationCount="{notificationCount}" />		
+	</s:Group>
 	
-	<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="{description}" alpha="{checkedOut ? 0.5 : 1}" />
 	<s:Label text="{title}{version > 0 ? '_v' + version : ''} ({ext})" width="100%" textAlign="center" />
 </s:VGroup>

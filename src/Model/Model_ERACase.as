@@ -1,4 +1,5 @@
 package Model {
+	import Controller.AppController;
 	
 	public class Model_ERACase extends Model_Base {
 		
@@ -37,6 +38,10 @@ package Model {
 		
 		public static const FOR_CODE = "for_code";
 		public static const PERCENTAGE = "percentage";
+		
+		public var notificationCount:Number = 0;
+		public var notificationArray:Array = new Array();
+		
 		public function Model_ERACase() {
 			super();
 		}
@@ -93,6 +98,25 @@ package Model {
 				productionTeam.firstName = productionTeamXML["first_name"];
 				productionTeam.lastName = productionTeamXML["last_name"];
 				productionTeamArray.push(productionTeam);
+			}
+			
+			updateNotificationCount();
+		}
+		
+		public function updateNotificationCount():void {		
+			// Count up the number of notifications this file has
+//			trace("###### notification count", AppController.notificationsArray);
+			this.notificationCount = 0;
+			for each(var notificationData:Model_ERANotification in AppController.notificationsArray) {
+
+				if(!notificationData.eraCase) continue;
+				
+//				trace("###### looking for notification match");
+				if(notificationData.eraCase.base_asset_id == this.base_asset_id) {
+//					trace("######### found notification match"); 
+					this.notificationCount++;
+					this.notificationArray.push(notificationData);
+				}
 			}
 		}
 	}

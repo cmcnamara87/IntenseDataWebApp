@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" backgroundColor="0xD9F0FF" borderVisible="false"
+				   >
+
+	<fx:Script>
+		<![CDATA[
+			import Controller.IDEvent;
+			
+			import Model.Model_ERANotification;
+			
+			import mx.controls.Alert;
+			import mx.controls.Text;
+			
+			import spark.components.Label;
+			
+			
+			private var _notificationData:Model_ERANotification;
+
+			[Bindable]
+			private var notificationText:String;
+			[Bindable]
+			private var timeStamp:String;
+			
+			public function set notificationData(notificationData:Model_ERANotification):void {
+				_notificationData = notificationData;
+				
+				if(notificationData.read) {
+					this.setStyle("backgroundColor", "0xFFFFFF");
+				}
+				
+				switch(notificationData.type) {
+					case Model_ERANotification.FILE_UPLOADED:
+						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
+						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
+						
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> uploaded <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> to <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						
+						break;
+					case Model_ERANotification.ROOM_COMMENT:
+						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> wrote \"" + notificationData.comment_room.text + "\" on <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						
+						break;
+					case Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB:
+						//						case Model_ERANotification.FILE_MOVED_TO_EXHIBITION:
+					case Model_ERANotification.FILE_MOVED_TO_FORENSIC_LAB:
+						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> moved <a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> to <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						break;
+					case Model_ERANotification.FILE_MOVED_TO_EXHIBITION:
+						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/";
+						fileURL += escape(notificationData.eraCase.rmCode) + "/";
+						fileURL += notificationData.room.roomType + "/";
+						fileURL += notificationData.room.base_asset_id + "/";
+						fileURL += notificationData.file.base_asset_id;
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> moved <a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> to <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						break;
+					case Model_ERANotification.FILE_COMMENT:
+						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
+						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> commented \"" + notificationData.comment_file.annotation_text + "\" on <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						
+						break
+					case Model_ERANotification.ANNOTATION:
+						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
+						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
+						if(notificationData.comment_file.annotation_text != "") {
+							notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> annotated \"" + notificationData.comment_file.annotation_text + "\" on <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						} else {
+							notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> annotated on <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						}
+						
+						break;
+					case Model_ERANotification.EVIDENCE_COLLECTED:
+						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> marked " + notificationData.logItem.title + " as collected by a researcher in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						break;
+					case Model_ERANotification.EVIDENCE_READY_FOR_COLLECTION:
+						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> marked " + notificationData.logItem.title + " as ready for collection in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						break;
+					default:
+						notificationText = notificationData.type;
+						break;
+				}			
+				trace("Notification text is", notificationText);
+				timeStamp = notificationData.creationDateStamp;
+			}
+
+			protected function markAsReadButton_clickHandler(event:MouseEvent):void
+			{
+				// mark the notification as read (tell the controller)
+				var notificationReadEvent:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_NOTIFICATION_READ_STATUS, true);
+				notificationReadEvent.data.readStatus = true;
+				notificationReadEvent.data.notificationID = _notificationData.base_asset_id;
+				dispatchEvent(notificationReadEvent);
+				
+				_notificationData.read = true;
+				this.setStyle("backgroundColor", 0xFFFFFF);
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:VGroup id="notificationList" width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="0">
+		<mx:Text htmlText="{notificationText}" width="100%" />
+		<s:HGroup width="100%">
+			<s:Button label="Mark as Read" height="20" fontSize="10" id="markAsReadButton" click="markAsReadButton_clickHandler(event)" />
+			<mx:Text text="{timeStamp}" width="100%" color="0x888888" fontSize="10" textAlign="right"/>
+		</s:HGroup>
+		
+	</s:VGroup>	
+</mx:Canvas>

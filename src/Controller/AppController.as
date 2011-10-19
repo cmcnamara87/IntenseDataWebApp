@@ -3,6 +3,7 @@ package Controller {
 	import Controller.Utilities.Router;
 	
 	import Model.AppModel;
+	import Model.Model_ERANotification;
 	import Model.Model_ERAProject;
 	import Model.Model_Notification;
 	
@@ -36,11 +37,14 @@ package Controller {
 		protected var showLogoutButton:Boolean = true;
 		
 		// Store current notifications for hte user
-		private static var notificationsArray:Array;
+		public static var notificationsArray:Array;
 		
 		public static var eraProjectArray:Array = new Array(); // an array of all the era projects in the system
 		public static var currentEraProject:Model_ERAProject; // the current era project we are looking at
 //		public static var ERARoles:Array = new Array("sys_admin", "monitor", "researcher", "production_manager", "production_team", "viewer");
+		
+		
+		private static var notificationTimer:Timer = new Timer(30000);
 		
 		public function AppController() {
 			setLogoutButton();
@@ -52,14 +56,19 @@ package Controller {
 				setupEventListeners();
 			});
 			
+			notificationTimer.addEventListener(TimerEvent.TIMER, updateNotifications);
+			
 			// The content has finished loading
 			// means we have gone to another page, so lets update whats on the buttons
 			layout.content.addEventListener(FlexEvent.CONTENT_CREATION_COMPLETE, function(e:FlexEvent):void {
 				setupButtons();
 			});
 			
+			layout.addEventListener(IDEvent.ERA_CHANGE_NOTIFICATION_READ_STATUS, notificationStatusChanged);
+			
 			super();
 		}
+	
 		
 		private static function setupEventListeners():void {
 			layout.header.logoutButton.addEventListener(MouseEvent.CLICK, logoutButtonClicked);
@@ -87,6 +96,12 @@ package Controller {
 			Dispatcher.logout();
 		}
 		private static function notificationButtonClicked(e:MouseEvent):void {
+			if(AppController.notificationsArray.length == 0) {
+				hideNotifications();
+				return;
+			}
+			
+			
 			if(layout.notificationPanel.visible == false) {
 				showNotifications();
 			} else {
@@ -210,6 +225,7 @@ package Controller {
 				layout.header.adminToolButtons.includeInLayout = false;
 				layout.header.switchingModeButtonGroup.includeInLayout = false;
 				layout.header.switchingModeButtonGroup.visible = false;
+				layout.notificationPanel.visible = false;
 			}
 			if(Auth.getInstance().getSessionID() != "") {
 				// Only if we have logged in, show the buttons
@@ -222,7 +238,26 @@ package Controller {
 				
 				layout.header.visible = true;
 				layout.header.includeInLayout = true;
+				
+				// Set the notification timer (if its not already started)
+//				notificationTimer.start();
 			}
+		}
+		
+		private static function notificationStatusChanged(e:IDEvent):void {
+			var notificationID:Number = e.data.notificationID;
+			var readStatus:Boolean = e.data.readStatus;
+
+			AppModel.getInstance().updateNotificationReadStatus(notificationID, readStatus, notificationReadStatusUpdated);
+		}
+		private static function notificationReadStatusUpdated(status:Boolean):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to mark as read");
+			}
+		}
+		
+		private static function updateNotifications(e:TimerEvent):void {
+			getNotifications();
 		}
 		
 		/**
@@ -230,9 +265,8 @@ package Controller {
 		 * 
 		 */		
 		private static function getNotifications():void {
-			trace("Getting Notifications");
+			trace("@@@@@@@@@@@@@@@@@ Getting Notifications");
 			AppModel.getInstance().getAllNotifications(gotNotifications);
-//			AppModel.getInstance().getNotifications(gotNotifications);
 		}
 		
 		/**
@@ -244,18 +278,28 @@ package Controller {
 		 * 
 		 */		
 		private static function gotNotifications(status:Boolean, notificationsArray:Array=null):void {
+			trace("@@@@@@@@@@@@@@@@@ Got Notifications");
 			if(!status) return;
-		
-			notificationsArray = notificationsArray.reverse();
+			
+			// strip out the read ones
+			var someArray:Array = new Array();
+			for each(var notificationData:Model_ERANotification in notificationsArray) {
+				if(!notificationData.read) {
+					someArray.push(notificationData);		
+				}
+			}
+			AppController.notificationsArray = someArray.reverse(); 
+
 			layout.header.notificationButton.label = notificationsArray.length + "";
-			if(notificationsArray.length > 0) {
-				layout.header.notificationButton.setStyle('chromeColor', "0x8FAFF7");
+			if(AppController.notificationsArray.length > 0) {
+				layout.header.notificationButton.setStyle('chromeColor', "0xFF8800");
 				layout.header.notificationButton.setStyle('font-weight', "bold");
 			} else {
-				layout.header.notificationButton.setStyle('chromeColor', "0xFFFFFF");
+				layout.header.notificationButton.setStyle('chromeColor', "0x000000");
 				layout.header.notificationButton.setStyle('font-weight', "normal");
 			}
-			layout.addNotifications(notificationsArray);
+			layout.addNotifications(AppController.notificationsArray);
+			layout.header.notificationButton.label = AppController.notificationsArray.length + "";
 		}
 		
 		/**
@@ -266,13 +310,13 @@ package Controller {
 		private static function showNotifications():void {
 			layout.notificationPanel.visible = true;
 //			layout.notificationPanel.x = layout.header.notificationButton.x;
-			if(notificationsArray) {
-				layout.header.notificationButton.label = notificationsArray.length + "";
-				layout.addNotifications(notificationsArray);
+//			if(notificationsArray) {
+//				layout.header.notificationButton.label = notificationsArray.length + "";
+//				layout.addNotifications(notificationsArray);
 //				layout.notificationPanel.addNotifications(notificationsArray);
-			} else {
-				trace("Something went wrong, and we dont have any notifications stored");
-			}
+//			} else {
+//				trace("Something went wrong, and we dont have any notifications stored");
+//			}
 		}
 		
 		private static function hideNotifications():void {

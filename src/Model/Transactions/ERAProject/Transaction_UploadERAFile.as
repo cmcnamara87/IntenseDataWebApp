@@ -203,9 +203,9 @@ package Model.Transactions.ERAProject
 		
 		private function sendNotification():void {
 			trace('sending notification', evidenceRoomID, newFileID);
-			AppModel.getInstance().createERANotification(year, Auth.getInstance().getUsername(),
+			AppModel.getInstance().createERANotification(year, evidenceRoomID, Auth.getInstance().getUsername(),
 				Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
-				Model_ERANotification.FILE_UPLOADED, 0, evidenceRoomID, newFileID, 0);
+				Model_ERANotification.FILE_UPLOADED, 0, newFileID, 0);
 		}
 	}
 }

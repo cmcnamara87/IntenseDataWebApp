@@ -13,6 +13,7 @@ package Controller.ERA {
 	import Model.AppModel;
 	import Model.Model_Commentary;
 	import Model.Model_ERAFile;
+	import Model.Model_ERANotification;
 	import Model.Model_Media;
 	
 	import Module.AudioViewer.AudioView;
@@ -488,6 +489,11 @@ package Controller.ERA {
 			// Copy the access from the parent media asset, to the annotation
 			// TODO race issue here, if  we exit the media, before the saving is done
 //			AppModel.getInstance().copyAccess(currentAssetID, annotationID);
+			
+			AppModel.getInstance().createERANotification(AppController.currentEraProject.year, roomID, Auth.getInstance().getUsername(),
+				Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
+				Model_ERANotification.ANNOTATION, caseID, currentAssetID, annotationID);
+			
 			
 			// Set the class for this annotation to be Annotation
 			AppModel.getInstance().setAnnotationClassForID(annotationID, function(e:Event):void {

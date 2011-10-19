@@ -24,7 +24,7 @@ package Model.Transactions.ERAProject
 		private var fileID:Number;
 		private var commentID:Number;
 		
-		public function Transaction_CreateERANotification(year:String, username:String, firstName:String, lastName:String, type:String, connection:Connection, caseID:Number=0, roomID:Number=0, fileID:Number=0, commentID:Number=0)
+		public function Transaction_CreateERANotification(year:String, roomID:Number, username:String, firstName:String, lastName:String, type:String, connection:Connection, caseID:Number=0, fileID:Number=0, commentID:Number=0)
 		{
 			this.username = username;
 			this.firstName = firstName;
@@ -104,12 +104,12 @@ package Model.Transactions.ERAProject
 
 			// Set the notifications relationship to other assets
 			argsXML.related = "";
-			
+		
+			// Add compulsory room and case erlationships
 			argsXML.related.appendChild(XML('<to relationship="notification_case">' + this.caseID + '</to>'));
-			
-			if(this.roomID != 0) {
-				argsXML.related.appendChild(XML('<to relationship="notification_room">' + this.roomID + '</to>'));
-			}
+			argsXML.related.appendChild(XML('<to relationship="notification_room">' + this.roomID + '</to>'));
+
+			// add option file and comment relationships
 			if(this.fileID != 0) {
 				argsXML.related.appendChild(XML('<to relationship="notification_file">' + this.fileID + '</to>'));
 			}
@@ -117,6 +117,9 @@ package Model.Transactions.ERAProject
 				argsXML.related.appendChild(XML('<to relationship="notification_comment">' + this.commentID + '</to>'));
 			}
 			
+			//Setup who to notify
+			
+			// Setup the access for the admin for the year
 			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.SYS_ADMIN + "_" + year + '</actor><access>read-write</access></acl>'));
 			
 //			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.VIEWER + "_" + year + '</actor><access>read-write</access></acl>'));
@@ -141,12 +144,12 @@ package Model.Transactions.ERAProject
 				}
 			}
 			
-			if(type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB) {
-				// Notify the monitor when fiels are ready to be screened
+			if(type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB || Model_ERANotification.FILE_MOVED_TO_EXHIBITION) {
+				// Notify the monitor when fiels are ready to be screened or exhibited
 				argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.MONITOR + "_" + year + '</actor><access>read-write</access></acl>'));
 			}
 
-			trace("era notification", argsXML);
+			//trace("era notification", argsXML);
 			// todo mail goes in here!!
 			connection.sendRequest(baseXML, notificationCreated);
 		}

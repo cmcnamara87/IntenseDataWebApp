@@ -12,6 +12,10 @@ package Model {
 		public var collected:Boolean = false;
 		public var dataItemID:Number = 0;
 		
+		public static const USEFUL:String = "useful";
+		public static const PROCESSED:String = "processed";
+		public static const FOR_COLLECTION:String = "returned";
+		public static const COLLECTED:String = "collected";
 		
 		public function Model_ERALogItem() {
 			super();

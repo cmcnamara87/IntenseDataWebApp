@@ -52,14 +52,7 @@
 					
 					// Create the file tile
 					var fileTile:FileTile = new FileTile();
-					fileTile.title = file.title;
-					fileTile.fileID = file.base_asset_id;
-					fileTile.type = file.type;
-					fileTile.rootMetaType = file.rootMetaType;
-					fileTile.ext = file.fileExt;
-					fileTile.description = file.description;
-					fileTile.checkedOut = false;
-					fileTile.version = file.version;
+					fileTile.fileData = file;
 					fileTile.loadURL(file.base_asset_id);
 					fileGroup.addElement(fileTile);
 				}

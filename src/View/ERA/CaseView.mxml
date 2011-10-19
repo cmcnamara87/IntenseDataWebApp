@@ -19,6 +19,7 @@
 			import Model.Model_ERARoom;
 			import Model.Model_ERAUser;
 			
+			import View.ERA.components.CaseListItem;
 			import View.ERA.components.rooms.EvidenceBox;
 			import View.ERA.components.rooms.EvidenceManagement;
 			import View.ERA.components.rooms.Exhibition;
@@ -43,6 +44,32 @@
 			private var forensicLab:ForensicLab = null; // the forensic lab view
 			private var screeningLab:ScreeningLab = null; // the forensic lab view
 			private var exhibition:Exhibition = null;
+			
+			/**
+			 * Adds data to all the rooms for the  case
+			 * @param roomDataArray	The Room data
+			 */
+			public function addRoomData(roomDataArray:Array):void {
+				for each(var roomData:Model_ERARoom in roomDataArray) {
+					switch(roomData.roomType) {
+						case Model_ERARoom.EVIDENCE_MANAGEMENT:
+							evidenceManagementButton.roomData = roomData;
+							break;
+						case Model_ERARoom.EVIDENCE_ROOM:
+							evidenceBoxButton.roomData = roomData;
+							break;
+						case Model_ERARoom.FORENSIC_LAB:
+							forensicLabButton.roomData = roomData;
+							break;
+						case Model_ERARoom.SCREENING_ROOM:
+							screeningLabButton.roomData = roomData;
+							break;
+						case Model_ERARoom.EXHIBIT:
+							exhibitionButton.roomData = roomData;
+							break;
+					}
+				}
+			}
 			
 			public function showEvidenceManagement(logItemArray:Array):void {
 				showRoomsAsNotSelected();
@@ -174,27 +201,20 @@
 				caseERADropdown.dataProvider = eraNameArray;
 				caseERADropdown.selectedIndex = selectedIndex;
 			}
+			
+			/**
+			 * Add cases to the view
+			 * @param caseArray	Array of @see Model_ERACase
+			 */
 			public function addCases(caseArray:Array):void {
 				
 				// Add all the Cases
 				casePanelContent.removeAllElements();
 
 				for each(var eraCase:Model_ERACase in caseArray) {
-					var someLabel:Text = new Text();
-					someLabel.setStyle('color', '0xFFFFFF');
-					var researcherFirstName:String = (eraCase.researchersArray[0] as Model_ERAUser).firstName;
-					var researcherLastName:String = (eraCase.researchersArray[0] as Model_ERAUser).lastName;
-					var researcherMultiple:String = "";
-					if(eraCase.researchersArray.length > 1) {
-						researcherMultiple = " (+" + (eraCase.researchersArray.length - 1) + ")";
-					}
-					
-					if(eraCase.base_asset_id != CaseController.currentERACase.base_asset_id) {
-						someLabel.htmlText = "<a href='#case/" + eraCase.base_asset_id + "'>" +researcherLastName + ", " + researcherFirstName + researcherMultiple + " (RM " + eraCase.rmCode + ")</a>";
-					} else {
-						someLabel.htmlText = "<a href='#case/" + eraCase.base_asset_id + "'><b>" +researcherLastName + ", " + researcherFirstName + researcherMultiple + " (RM " + eraCase.rmCode + ")</b></a>";
-					}
-					casePanelContent.addElement(someLabel);
+					var caseListItem:CaseListItem = new CaseListItem();
+					caseListItem.caseData = eraCase;
+					casePanelContent.addElement(caseListItem);
 				}
 				
 				caseNav.height = 160;
@@ -263,7 +283,7 @@
 				<s:DropDownList id="caseERADropdown" chromeColor="0x000000" contentBackgroundColor="0x000000" color="0xFFFFFF" width="100%">
 				</s:DropDownList>
 			</s:VGroup>
-			<s:VGroup id="casePanelContent" paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+			<s:VGroup id="casePanelContent" width="100%" gap="0">
 				<s:Label color="0xFFFFFF">
 					Loading...
 				</s:Label>

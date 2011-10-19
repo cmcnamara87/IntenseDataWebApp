@@ -1,4 +1,5 @@
 package Model {
+	import Controller.AppController;
 	
 	public class Model_ERARoom extends Model_Base {
 		
@@ -15,6 +16,9 @@ package Model {
 		
 		public static const ROOM_TYPE_ARRAY:Array = new Array(EVIDENCE_MANAGEMENT, EVIDENCE_ROOM, FORENSIC_LAB, SCREENING_ROOM, EXHIBIT, POST_MORTEM);
 		
+		public var notificationCount:Number = 0;
+		public var notificationArray:Array = new Array();
+		
 		public function Model_ERARoom() {
 			super();
 		}
@@ -24,6 +28,22 @@ package Model {
 			this.roomType = rawData.meta["ERA-room"]["room_type"];
 			this.roomTitle = getPrettyRoomName(roomType);
 			this.caseID = rawData.related.(@type=="case").to;
+			
+			updateNotificationCount();
+		}
+		
+		public function updateNotificationCount():void {
+			// Count up the number of notifications this file has
+			this.notificationCount = 0;
+			
+			for each(var notificationData:Model_ERANotification in AppController.notificationsArray) {
+				if(!notificationData.room) continue;
+				
+				if(notificationData.room.base_asset_id == this.base_asset_id) {
+					this.notificationCount++;
+					this.notificationArray.push(notificationData);
+				}
+			}
 		}
 		
 		public static function  getPrettyRoomName(roomType:String):String {

@@ -1,4 +1,5 @@
 package Model {
+	import Controller.AppController;
 	import Controller.Dispatcher;
 	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
@@ -24,6 +25,8 @@ package Model {
 		
 		public var meta_media_uri:String;
 		
+		public var notificationCount:Number = 0;
+		public var notificationArray:Array = new Array();
 		
 		public function Model_ERAFile() {
 			super();
@@ -76,6 +79,16 @@ package Model {
 				this.checkedOut = eraEvidenceItem["checked_out"] == "true";
 				if(this.checkedOut) {
 					this.checkedOutUsername = eraEvidenceItem["checked_out_username"];
+				}
+			}
+			
+			// Count up the number of notifications this file has
+			for each(var notificationData:Model_ERANotification in AppController.notificationsArray) {
+				if(!notificationData.file) continue;
+				
+				if(notificationData.file.base_asset_id == this.base_asset_id) {
+					this.notificationCount++;
+					this.notificationArray.push(notificationData);
 				}
 			}
 		}

@@ -8,13 +8,13 @@ package Model.Transactions.ERAProject
 	
 	import flash.events.Event;
 	
-	public class Transaction_GetAllFiles
+	public class Transaction_GetAllFilesInRoom
 	{
 		private var connection:Connection;
 		private var callback:Function;
 		private var roomID:Number;
 		
-		public function Transaction_GetAllFiles(roomID:Number, connection:Connection, callback:Function)
+		public function Transaction_GetAllFilesInRoom(roomID:Number, connection:Connection, callback:Function)
 		{
 			this.connection = connection;
 			this.callback = callback;

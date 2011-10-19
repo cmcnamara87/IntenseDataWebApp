@@ -147,7 +147,7 @@ package Controller.ERA
 		}
 		private function temperatureChanged(status:Boolean):void {
 			if(!status) {
-				layout.notificationBar.showError("Failed to Changed temperature");
+				layout.notificationBar.showError("Failed to Changed Activity Level");
 			}
 		}
 		
@@ -400,6 +400,9 @@ package Controller.ERA
 				// Store all the rooms
 				this.roomArray = eraRoomArray;
 				
+				// Add give the room data to the view
+				caseView.addRoomData(eraRoomArray);
+				
 				switch(roomType) {
 					case Model_ERARoom.EVIDENCE_MANAGEMENT:
 						this.showEvidenceManagement();
@@ -488,7 +491,7 @@ package Controller.ERA
 			var value:Boolean = e.data.value;
 			var evidenceItem:EvidenceItem = e.data.evidenceItem;
 			
-			AppModel.getInstance().updateLogItemBooleanValue(logItemID, elementName, value, evidenceItem, logItemUpdated);
+			AppModel.getInstance().updateLogItemBooleanValue(AppController.currentEraProject.year, currentRoom.base_asset_id, logItemID, elementName, value, evidenceItem, logItemUpdated);
 			
 //			AppModel.getInstance().updateERALogItem();
 		}

@@ -11,6 +11,7 @@ package Controller.Utilities {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
+	import mx.controls.Alert;
 	import mx.events.BrowserChangeEvent;
 	import mx.managers.BrowserManager;
 	import mx.managers.IBrowserManager;
@@ -78,12 +79,12 @@ package Controller.Utilities {
 			},
 			{
 				url: 'case',
-				title: 'Case',
+				title: 'Case Manager',
 				classname: CaseController
 			},
 			{
 				url: 'file',
-				title: 'File',
+				title: 'File Viewer',
 				classname: FileController
 			}
 		);
@@ -152,7 +153,7 @@ package Controller.Utilities {
 			_bm.setFragment(newURL);
 			for(var i:Number=0; i<routes.length; i++) {
 				if(routes[i].url == getURL()) {
-					newTitle = "Intense Data :: "+routes[i].title;
+					newTitle = Recensio_Flex_Beta.NAME + " :: "+routes[i].title;
 				}
 			}
 			_bm.setTitle(newTitle);
@@ -160,6 +161,7 @@ package Controller.Utilities {
 		
 		// Called when the URL is manually changed by the user
 		private function urlChanged(e:BrowserChangeEvent):void {
+			trace("***********************THE URL HAS CHANGED!!!!!!***************************");
 			this.dispatchEvent(new IDEvent(IDEvent.URL_CHANGED));
 		}
 	}

@@ -22,7 +22,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_ERAChangeUserPassword;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
 	import Model.Transactions.ERAProject.Transaction_GetAllConversation;
-	import Model.Transactions.ERAProject.Transaction_GetAllFiles;
+	import Model.Transactions.ERAProject.Transaction_GetAllFilesInRoom;
 	import Model.Transactions.ERAProject.Transaction_GetAllLogItems;
 	import Model.Transactions.ERAProject.Transaction_GetAllNotifications;
 	import Model.Transactions.ERAProject.Transaction_GetAllRooms;
@@ -38,6 +38,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_UpdateERAProject;
 	import Model.Transactions.ERAProject.Transaction_UpdateFileTemperature;
 	import Model.Transactions.ERAProject.Transaction_UpdateLogItemBooleanValue;
+	import Model.Transactions.ERAProject.Transaction_UpdateNotificationReadStatus;
 	import Model.Transactions.ERAProject.Transaction_UploadERAFile;
 	import Model.Transactions.ERAProject.Transaction_UploadFileVersion;
 	import Model.Transactions.Share.Transaction_SetUserAssetShare;
@@ -1559,7 +1560,7 @@ package Model {
 				trace(functionName + ": FAILED", e.target.data);
 				return null;
 			}
-			trace(functionName + ": SUCCESS", e.target.data);
+			//trace(functionName + ": SUCCESS", e.target.data);
 			return dataXML;
 		}
 		
@@ -1703,14 +1704,14 @@ package Model {
 		public function deleteERALogItem(logItem:Model_ERALogItem, callback:Function):void {
 			var deleteERALogItem:Transaction_DeleteERALogItem = new Transaction_DeleteERALogItem(logItem, _connection, callback);
 		}
-		public function updateLogItemBooleanValue(logItemID:Number, elementName:String, value:Boolean, evidenceItem:EvidenceItem, callback:Function):void {
-			var updateLogItemBooleanValue:Transaction_UpdateLogItemBooleanValue = new Transaction_UpdateLogItemBooleanValue(logItemID, elementName, value, evidenceItem, _connection, callback);
+		public function updateLogItemBooleanValue(year:String, roomID:Number, logItemID:Number, elementName:String, value:Boolean, evidenceItem:EvidenceItem, callback:Function):void {
+			var updateLogItemBooleanValue:Transaction_UpdateLogItemBooleanValue = new Transaction_UpdateLogItemBooleanValue(year, roomID, logItemID, elementName, value, evidenceItem, _connection, callback);
 		}
 		public function getAllERALogItemsInRoom(roomID:Number, callback:Function):void {
 			var getERALogItems:Transaction_GetAllLogItems = new Transaction_GetAllLogItems(roomID, _connection, callback);
 		}
 		public function getAllERAFilesInRoom(roomID:Number, callback:Function):void {
-			var getERAFiles:Transaction_GetAllFiles = new Transaction_GetAllFiles(roomID, _connection, callback);
+			var getERAFiles:Transaction_GetAllFilesInRoom = new Transaction_GetAllFilesInRoom(roomID, _connection, callback);
 		}
 		public function uploadERAFile(evidenceRoomID:Number, forensicLabID:Number, logItemID:Number, type:String, title:String, description:String, version:Number, fileReference:FileReference, evidenceItem:EvidenceItem, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
 			var uploadERAFile:Transaction_UploadERAFile = new Transaction_UploadERAFile(AppController.currentEraProject.year, evidenceRoomID, forensicLabID, logItemID, type, title, description, version, fileReference, evidenceItem, _connection, ioErrorCallback, progressCallback, completeCallback);
@@ -1741,8 +1742,15 @@ package Model {
 		public function getAllNotifications(callback:Function):void {
 			var getAllNotifications:Transaction_GetAllNotifications = new Transaction_GetAllNotifications(_connection, callback);
 		}
-		public function createERANotification(year:String, username:String, firstName:String, lastName:String, type:String, caseID:Number=0, roomID:Number=0, fileID:Number=0, commentID:Number=0) {
-			var createERANotification:Transaction_CreateERANotification = new Transaction_CreateERANotification(year, username, firstName, lastName, type, _connection, caseID, roomID, fileID, commentID);
+		public function createERANotification(year:String, roomID:Number, username:String, firstName:String, lastName:String, type:String, caseID:Number=0, fileID:Number=0, commentID:Number=0) {
+			var createERANotification:Transaction_CreateERANotification = new Transaction_CreateERANotification(year, roomID, username, firstName, lastName, type, _connection, caseID, fileID, commentID);
+		}
+		public function updateNotificationReadStatus(notificationID:Number, readStatus:Boolean, callback:Function):void {
+			var updateNotificationReadStatus:Transaction_UpdateNotificationReadStatus = new Transaction_UpdateNotificationReadStatus(
+				notificationID,
+				readStatus,
+				_connection,
+				callback);
 		}
 			
 	}

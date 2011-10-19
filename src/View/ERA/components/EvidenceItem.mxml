@@ -130,7 +130,7 @@
 				
 				var usefulEvent:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_LOG, true);
 				usefulEvent.data.logItemID = logItem.base_asset_id;
-				usefulEvent.data.elementName = "useful";
+				usefulEvent.data.elementName = Model_ERALogItem.USEFUL;
 				usefulEvent.data.value = (event.target as CheckBox).selected;
 				usefulEvent.data.evidenceItem = this;
 				dispatchEvent(usefulEvent);
@@ -149,7 +149,7 @@
 				
 				var usefulEvent:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_LOG, true);
 				usefulEvent.data.logItemID = logItem.base_asset_id;
-				usefulEvent.data.elementName = "processed";
+				usefulEvent.data.elementName = Model_ERALogItem.PROCESSED;
 				usefulEvent.data.value = (event.target as CheckBox).selected;
 				usefulEvent.data.evidenceItem = this;
 				dispatchEvent(usefulEvent);
@@ -334,7 +334,7 @@
 				
 				var usefulEvent:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_LOG, true);
 				usefulEvent.data.logItemID = logItem.base_asset_id;
-				usefulEvent.data.elementName = "collected";
+				usefulEvent.data.elementName = Model_ERALogItem.COLLECTED;
 				usefulEvent.data.value = value;
 				usefulEvent.data.evidenceItem = this;
 				dispatchEvent(usefulEvent);
@@ -354,7 +354,7 @@
 				
 				var usefulEvent:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_LOG, true);
 				usefulEvent.data.logItemID = logItem.base_asset_id;
-				usefulEvent.data.elementName = "returned";
+				usefulEvent.data.elementName = Model_ERALogItem.FOR_COLLECTION;
 				usefulEvent.data.value = value;
 				usefulEvent.data.evidenceItem = this;
 				dispatchEvent(usefulEvent);

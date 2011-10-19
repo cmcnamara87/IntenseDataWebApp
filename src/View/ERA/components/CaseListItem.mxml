@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%"
+				   backgroundColor="0x111111"
+				   mouseOut="canvas1_mouseOutHandler(event)"
+				   mouseOver="canvas1_mouseOverHandler(event)"
+				   click="canvas1_clickHandler(event)" xmlns:components="View.ERA.components.*"
+				   creationComplete="canvas1_creationCompleteHandler(event)"
+				   removedFromStage="canvas1_removedFromStageHandler(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import Controller.AppController;
+			import Controller.Dispatcher;
+			import Controller.ERA.CaseController;
+			import Controller.IDEvent;
+			
+			import Model.Model_ERACase;
+			import Model.Model_ERAUser;
+			
+			import mx.events.FlexEvent;
+			
+			private var _eraCaseData:Model_ERACase;
+			private var researcherArray:Array = new Array();
+			
+			[Bindable]
+			public var selected:Boolean = false;
+			
+			public function set caseData(eraCaseData:Model_ERACase):void {
+				this._eraCaseData = eraCaseData;
+				this.researcherArray = eraCaseData.researchersArray;
+				
+				// Make sure its alphabetical
+				researcherArray.sortOn(["lastName", "firstName"], [Array.CASEINSENSITIVE]);
+				
+				if(researcherArray.length < 1) return;
+				
+				// Set the researcher name
+				var firstResearcher:Model_ERAUser = researcherArray[0] as Model_ERAUser;
+				researcherName = firstResearcher.lastName + " " + firstResearcher.firstName;
+				
+				// Set the RM code
+				rmCode = eraCaseData.rmCode;
+				
+				// Set the title
+				title = eraCaseData.title;
+				
+				if(eraCaseData.base_asset_id == CaseController.currentERACase.base_asset_id) {
+					this.selected = true;
+					this.setStyle("backgroundColor", 0x333333);
+				}
+				
+				this.notificationCount = eraCaseData.notificationCount;
+				/*
+				var someLabel:Text = new Text();
+				someLabel.setStyle('color', '0xFFFFFF');
+				var researcherFirstName:String = (eraCase.researchersArray[0] as Model_ERAUser).firstName;
+				var researcherLastName:String = (eraCase.researchersArray[0] as Model_ERAUser).lastName;
+				var researcherMultiple:String = "";
+				if(eraCase.researchersArray.length > 1) {
+				researcherMultiple = " (+" + (eraCase.researchersArray.length - 1) + ")";
+				}
+				
+				if(eraCase.base_asset_id != CaseController.currentERACase.base_asset_id) {
+				someLabel.htmlText = "<a href='#case/" + eraCase.base_asset_id + "'>" +researcherLastName + ", " + researcherFirstName + researcherMultiple + " (RM " + eraCase.rmCode + ")</a>";
+				} else {
+				someLabel.htmlText = "<a href='#case/" + eraCase.base_asset_id + "'><b>" +researcherLastName + ", " + researcherFirstName + researcherMultiple + " (RM " + eraCase.rmCode + ")</b></a>";
+				}
+				*/
+			}
+			[Bindable]
+			private var title:String = "";
+			[Bindable]
+			private var researcherName:String = "";
+			[Bindable]
+			private var rmCode:String = "";
+			
+			[Bindable]
+			private var notificationCount:Number = 0;
+
+			protected function canvas1_mouseOutHandler(event:MouseEvent):void
+			{
+				if(this.selected) {
+					this.setStyle("backgroundColor", 0x333333);
+				} else {
+					this.setStyle("backgroundColor", 0x111111);
+				}
+			}
+
+
+			protected function canvas1_mouseOverHandler(event:MouseEvent):void
+			{
+				this.setStyle("backgroundColor", 0x222222);
+			}
+
+
+			protected function canvas1_clickHandler(event:MouseEvent):void
+			{
+				Dispatcher.call("case/" + _eraCaseData.base_asset_id);
+			}
+
+
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				AppController.layout.addEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
+			}
+
+			private function eraNotificationsUpdated(e:Event):void {
+				_eraCaseData.updateNotificationCount();
+				this.notificationCount = _eraCaseData.notificationCount;
+				notificationBadge.notificationCount = this.notificationCount; 
+				trace("Updating ERA Case", _eraCaseData.title, "notification count", this.notificationCount);
+			}
+
+			protected function canvas1_removedFromStageHandler(event:Event):void
+			{
+				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, canvas1_removedFromStageHandler);
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:HGroup width="100%" paddingRight="10" verticalAlign="middle"> 
+		<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+			<s:Label text="{researcherName} - {title}" color="0xFFFFFF" width="100%" />
+			<s:Label text="RM {rmCode}" color="0xFFFFFF" width="100%" />
+		</s:VGroup>
+		<components:NotificationBadge id="notificationBadge" notificationCount="{this.notificationCount}" verticalCenter="0" />	
+	</s:HGroup>
+	
+</mx:Canvas>

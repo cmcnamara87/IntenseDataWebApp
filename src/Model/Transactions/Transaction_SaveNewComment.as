@@ -136,9 +136,9 @@ package Model.Transactions
 		}
 		
 		private function sendNotification():void {
-			AppModel.getInstance().createERANotification(AppController.currentEraProject.year, Auth.getInstance().getUsername(),
+			AppModel.getInstance().createERANotification(AppController.currentEraProject.year, roomID, Auth.getInstance().getUsername(),
 				Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
-				Model_ERANotification.FILE_COMMENT, 0, roomID, objectID, commentID);
+				Model_ERANotification.FILE_COMMENT, 0, objectID, commentID);
 		}
 	}
 }

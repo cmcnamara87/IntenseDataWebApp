@@ -73,12 +73,7 @@
 				
 				for each(var file:Model_ERAFile in fileArray) {
 					var fileTile:FileTile = new FileTile();
-					fileTile.title = file.title;
-					fileTile.fileID = file.base_asset_id;
-					fileTile.type = file.type;
-					fileTile.rootMetaType = file.rootMetaType;
-					fileTile.ext = file.fileExt;
-					fileTile.description = file.description;
+					fileTile.fileData = file;
 					fileTile.loadURL(file.base_asset_id);
 					fileTile.dragEnabled = false;
 					fileGroup.addElement(fileTile);

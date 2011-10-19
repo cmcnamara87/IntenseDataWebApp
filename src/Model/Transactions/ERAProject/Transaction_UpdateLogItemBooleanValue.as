@@ -1,7 +1,10 @@
 package Model.Transactions.ERAProject
 {
+	import Controller.Utilities.Auth;
+	
 	import Model.AppModel;
 	import Model.Model_ERALogItem;
+	import Model.Model_ERANotification;
 	import Model.Utilities.Connection;
 	
 	import View.ERA.components.EvidenceItem;
@@ -10,6 +13,8 @@ package Model.Transactions.ERAProject
 
 	public class Transaction_UpdateLogItemBooleanValue
 	{
+		private var year:String;
+		private var roomID:Number;
 		private var logItemID:Number;
 		private var elementName:String;
 		private var value:Boolean;
@@ -17,7 +22,9 @@ package Model.Transactions.ERAProject
 		private var evidenceItem:EvidenceItem;
 		private var callback:Function;
 	
-		public function Transaction_UpdateLogItemBooleanValue(logItemID:Number, elementName:String, value:Boolean, evidenceItem:EvidenceItem, _connection:Connection, callback:Function):void {
+		public function Transaction_UpdateLogItemBooleanValue(year:String, roomID:Number, logItemID:Number, elementName:String, value:Boolean, evidenceItem:EvidenceItem, _connection:Connection, callback:Function):void {
+			this.year = year;
+			this.roomID = roomID;
 			this.logItemID = logItemID;
 			this.elementName = elementName;
 			this.value = value;
@@ -61,6 +68,15 @@ package Model.Transactions.ERAProject
 			if((data = AppModel.getInstance().getData("getting updated log item", e)) == null) {
 				callback(false);
 				return
+			}
+			
+			// send notifications if they are marked as for collection or collected
+			if(elementName == Model_ERALogItem.FOR_COLLECTION) {
+				AppModel.getInstance().createERANotification(this.year, this.roomID, Auth.getInstance().getUsername(), 
+					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName, Model_ERANotification.EVIDENCE_READY_FOR_COLLECTION, 0, logItemID);
+			} else if (elementName == Model_ERALogItem.COLLECTED) {
+				AppModel.getInstance().createERANotification(this.year, this.roomID, Auth.getInstance().getUsername(), 
+					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName, Model_ERANotification.EVIDENCE_COLLECTED, 0, logItemID);
 			}
 			
 			var eraLogItem:Model_ERALogItem = new Model_ERALogItem();
