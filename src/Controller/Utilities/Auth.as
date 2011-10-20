@@ -150,6 +150,19 @@ package Controller.Utilities {
 			}
 		}
 		
+		/**
+		 * Checks if the current user has been assigned a particular role for a particular era year 
+		 * @param role
+		 * @return 
+		 * 
+		 */		
+		public function hasRoleForYear(role:String, year:String):Boolean {
+			for each(var userRole:String in userRoleArray) {
+				if(role + "_" + year == userRole) return true;
+			}
+			return false;
+		}
+		
 		//Resets all login information
 		public function logout(useConnection:Boolean):void {
 			// TODO this is a bug fix, since it seems to be logging in multipe times at once

@@ -29,7 +29,11 @@ package Model.Transactions.ERAProject
 			var argsXML:XMLList = baseXML.service.args;
 			
 			argsXML.domain = "system";		
-			argsXML.role = role + "_" + year;
+			if(year == "") {
+				argsXML.role = role;
+			} else {
+				argsXML.role = role + "_" + year;
+			}
 			argsXML.role.@type = "role"
 			
 			connection.sendRequest(baseXML, gotUsers);

@@ -93,7 +93,7 @@ package Model {
 			}
 			
 			// add all the production team members
-			for each(var productionTeamXML:XML in eraCase["production_manager_username"]) {
+			for each(var productionTeamXML:XML in eraCase["production_team_username"]) {
 				var productionTeam:Model_ERAUser = new Model_ERAUser();
 				productionTeam.username = productionTeamXML["username"];
 				productionTeam.firstName = productionTeamXML["first_name"];

@@ -1,5 +1,6 @@
 package Model.Transactions.ERAProject
 {
+	import Controller.AppController;
 	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
@@ -23,6 +24,7 @@ package Model.Transactions.ERAProject
 		private var roomID:Number;
 		private var fileID:Number;
 		private var commentID:Number;
+		private var eraCase:Model_ERACase;
 		
 		public function Transaction_CreateERANotification(year:String, roomID:Number, username:String, firstName:String, lastName:String, type:String, connection:Connection, caseID:Number=0, fileID:Number=0, commentID:Number=0)
 		{
@@ -84,7 +86,7 @@ package Model.Transactions.ERAProject
 			}
 			
 			
-			var eraCase:Model_ERACase = new Model_ERACase();
+			eraCase = new Model_ERACase();
 			eraCase.setData(data.reply.result.asset[0]);
 
 		
@@ -121,7 +123,6 @@ package Model.Transactions.ERAProject
 			
 			// Setup the access for the admin for the year
 			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.SYS_ADMIN + "_" + year + '</actor><access>read-write</access></acl>'));
-			
 //			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.VIEWER + "_" + year + '</actor><access>read-write</access></acl>'));
 			
 			
@@ -160,7 +161,10 @@ package Model.Transactions.ERAProject
 				return;
 			}
 			
+			var notificationID:Number = data.reply.result.id;
+			
 			// Send mail
+			AppModel.getInstance().sendMailFromNotification(notificationID);
 			
 		}
 	}

@@ -39,8 +39,9 @@ package Controller.ERA
 		private var currentRoom:Model_ERARoom = null;
 		
 		// setup teh users permissions for the ucrrent case
-		private var isProductionManager:Boolean = false;
+		public static var isProductionManager:Boolean = false;
 		private var isTeamManager:Boolean = false;
+		public static var isResearcher:Boolean = false;
 		
 		public function CaseController()
 		{
@@ -181,8 +182,10 @@ package Controller.ERA
 				
 				caseView.showEvidenceManagement(null);
 				AppModel.getInstance().getAllERALogItemsInRoom(currentRoom.base_asset_id, gotAllLogItems);
+				
+				
 			} else {
-				trace("ACCESS REFUSED TO EVIDENCE MANAGER");
+				caseView.showAccessDenied("Sorry, Evidence Management can only be accessed by the System Administrator or Production Team");
 			}
 		}
 		/* ====================================== GOT ALL THE LOG ITEMS ===================================== */
@@ -195,6 +198,10 @@ package Controller.ERA
 		/*==================================== SHOW FORENSIC LAB ===========================================*/
 		private function showForensicLab(e:Event=null):void {
 			// @todo add use permission checking
+			if(!(Auth.getInstance().isSysAdmin() || isProductionManager || isTeamManager)) {
+				caseView.showAccessDenied("Sorry, the Forensic Lab can only be accessed by the System Administrator or Production Team");
+				return;
+			}
 			
 			currentRoom = this.getRoom(Model_ERARoom.FORENSIC_LAB);
 			if(!currentRoom) return;
@@ -221,7 +228,12 @@ package Controller.ERA
 		
 		
 		private function showExhibition(e:Event=null):void {
-			// @todo add use permission checking
+			if(!(Auth.getInstance().isSysAdmin() || isProductionManager 
+				|| Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year))) {
+				caseView.showAccessDenied("Sorry, the Exhibition can only be accessed by the System Administrator, Production Manager or Monitor.");
+				return;
+			}
+			
 			currentRoom = this.getRoom(Model_ERARoom.EXHIBIT);
 			
 			// Change the url
@@ -241,7 +253,12 @@ package Controller.ERA
 		}
 		/*==================================== SHOW SCREENING BOX ===========================================*/
 		private function showScreeningLab(e:Event=null):void {
-			// @todo add use permission checking
+			if(!(Auth.getInstance().isSysAdmin() || isProductionManager || isResearcher 
+				|| Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year))) {
+				caseView.showAccessDenied("Sorry, the Screening Lab can only be accessed by the System Administrator, Production Manager, Researcher or Monitor");
+				return;
+			}
+			
 			
 			currentRoom = this.getRoom(Model_ERARoom.SCREENING_ROOM);
 			
@@ -278,17 +295,22 @@ package Controller.ERA
 		
 		/*==================================== SHOW EVIDENCE BOX ===========================================*/
 		private function showEvidenceBox(e:Event=null):void {
-			if(Auth.getInstance().isSysAdmin() || isProductionManager || isTeamManager) {
-				currentRoom = this.getRoom(Model_ERARoom.EVIDENCE_ROOM);
-				
-				// Change the url
-				Router.getInstance().setURL("case/" + caseID + "/" + Model_ERARoom.EVIDENCE_ROOM);
-				
-				caseView.showEvidenceBox(null);
-				AppModel.getInstance().getAllERAFilesInRoom(currentRoom.base_asset_id, gotAllEvidenceRoomFiles);
-			} else {
-				trace("ACCESS REFUSED TO EVIDENCE ROOM");
+			
+			if(!(Auth.getInstance().isSysAdmin() || isProductionManager || isTeamManager || isResearcher 
+				|| Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year))) {
+				caseView.showAccessDenied("Sorry, the Evidence Box can only be accessed by the System Administrator, Production Team, Researcher, and Monitor");
+				return;
 			}
+			
+			
+			currentRoom = this.getRoom(Model_ERARoom.EVIDENCE_ROOM);
+			
+			// Change the url
+			Router.getInstance().setURL("case/" + caseID + "/" + Model_ERARoom.EVIDENCE_ROOM);
+			
+			caseView.showEvidenceBox(null);
+			AppModel.getInstance().getAllERAFilesInRoom(currentRoom.base_asset_id, gotAllEvidenceRoomFiles);
+
 		}
 		private function gotAllEvidenceRoomFiles(status:Boolean, fileArray:Array):void {
 			caseView.showEvidenceBox(fileArray);
@@ -399,6 +421,15 @@ package Controller.ERA
 					break;
 				}
 			}
+			
+			isResearcher = false;
+			for each(var teamUser:Model_ERAUser in currentERACase.researchersArray) {
+				if(Auth.getInstance().getUsername() == teamUser.username) {
+					isResearcher = true;
+					break;
+				}
+			}
+			
 		}
 		private function gotAllRooms(status:Boolean, eraRoomArray:Array):void {
 			if(status) {

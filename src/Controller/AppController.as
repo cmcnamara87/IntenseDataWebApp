@@ -37,6 +37,7 @@ package Controller {
 		protected var showLogoutButton:Boolean = true;
 		
 		// Store current notifications for hte user
+		public static var allNotificationsArray:Array = new Array();
 		public static var notificationsArray:Array = new Array();
 		
 		public static var eraProjectArray:Array = new Array(); // an array of all the era projects in the system
@@ -44,7 +45,7 @@ package Controller {
 //		public static var ERARoles:Array = new Array("sys_admin", "monitor", "researcher", "production_manager", "production_team", "viewer");
 		
 		
-		private static var notificationTimer:Timer = new Timer(30000);
+		private static var notificationTimer:Timer = new Timer(60000);
 		
 		public function AppController() {
 			setLogoutButton();
@@ -281,6 +282,8 @@ package Controller {
 		private static function gotNotifications(status:Boolean, notificationsArray:Array=null):void {
 			trace("@@@@@@@@@@@@@@@@@ Got Notifications");
 			if(!status) return;
+			
+			allNotificationsArray = notificationsArray;
 			
 			// strip out the read ones
 			var unreadNotificationCount:Number = 0;

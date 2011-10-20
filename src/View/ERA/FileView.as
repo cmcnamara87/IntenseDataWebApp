@@ -363,10 +363,16 @@ package View.ERA
 			
 			// Setup the title
 			eraInfo.htmlText = "ERA " + AppController.currentEraProject.year + " / RM " + FileController.rmCode + " / " + Model_ERARoom.getPrettyRoomName(FileController.roomType) + " / " + "File Viewer";
+			titleLabel.text = mediaData.title;
+			
 			if(mediaData.version != 0) {
-				titleLabel.text = mediaData.title + " (" + mediaData.version + ")";
-			} else {
-				titleLabel.text = mediaData.title;
+				titleLabel.text += " v" + mediaData.version;
+			}
+			if(mediaData.screeningCount != 0) {
+				titleLabel.text += " s" + mediaData.screeningCount;
+			}
+			if(mediaData.exhibitionCount != 0) {
+				titleLabel.text += " e" + mediaData.exhibitionCount;
 			}
 //			setHeading(mediaData.description);
 			
@@ -476,6 +482,12 @@ package View.ERA
 				uploadNewVersionButton.enabled = true;
 			}
 			
+			if(FileController.roomType != Model_ERARoom.FORENSIC_LAB) {
+				downloadButton.visible = false;
+				downloadButton.includeInLayout = false;
+				uploadNewVersionButton.visible = false;
+				uploadNewVersionButton.includeInLayout = false;
+			}
 			
 			// The delete button should be enabled, provided its been shared via the asset
 			// and not via the collection 
@@ -609,7 +621,9 @@ package View.ERA
 				mediaViewer = null;
 			}
 //			if(BrowserController.mediaIDHistoryArray.length == 0) {
-				Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);	
+			var backEvent:IDEvent = new IDEvent(IDEvent.ERA_GO_BACK, true);
+			dispatchEvent(backEvent);
+					
 //			} else {
 //				var previousMediaID:Number = BrowserController.mediaIDHistoryArray.pop();
 //				trace("---------- GOING BACK TO", previousMediaID);

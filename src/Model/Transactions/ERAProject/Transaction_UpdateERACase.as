@@ -14,6 +14,7 @@ package Model.Transactions.ERAProject
 	
 	public class Transaction_UpdateERACase
 	{
+		private var year:String;
 		private var caseID:Number;
 		private var rmCode:String;
 		private var title:String;
@@ -29,7 +30,12 @@ package Model.Transactions.ERAProject
 		private var newERACaseID:Number;
 		private var roomBeingMadeIndex:Number; //the index for the room we are currently making in @see Model_ERARoom
 		
-		public function Transaction_UpdateERACase(caseID:Number,
+		// okay, all of these users need to have their notifications removed for this case
+		private var removedUserList:Array = new Array();
+		
+		
+		public function Transaction_UpdateERACase(year:String,
+												  caseID:Number,
 												  rmCode:String, 
 												  title:String,
 												  researcherArray:Array,
@@ -41,6 +47,7 @@ package Model.Transactions.ERAProject
 												  connection:Connection, 
 												  callback:Function)
 		{
+			this.year = year;
 			this.caseID = caseID;	
 			this.rmCode = rmCode;
 			this.title = title;
@@ -111,7 +118,104 @@ package Model.Transactions.ERAProject
 				callback(false, null);
 				return;
 			}
-				
+			
+			// Update the ACLS in case the users have changed
+			var baseXML:XML = connection.packageRequest("asset.acl.describe", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			argsXML.id = caseID;
+			
+			connection.sendRequest(baseXML, gettingACLS);
+		}
+		
+		private function gettingACLS(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("geting era acls", e)) == null) {
+				callback(false, null);
+				return;
+			}
+			
+			// we need to go through,  and find all the users we have removed
+			var aclList:XMLList = data.reply.result.asset.acl;
+			
+			for each(var aclXML:XML in aclList) {
+			
+				if(aclXML.actor.@type == "user") {
+					// we need to check if they are in the new list
+					var keepingUser:Boolean = false;
+					
+					for each(var researcher:Model_ERAUser in researcherArray) {
+						if(aclXML.actor == "system:" + researcher) keepingUser = true;
+					}
+					
+					for each(var productionManager:Model_ERAUser in productionManagerArray) {
+						if(aclXML.actor == "system:" + productionManager) keepingUser = true;
+					}
+					
+					for each(var productionTeam:Model_ERAUser in productionTeamArray) {
+						if(aclXML.actor == "system:" + productionTeam) keepingUser = true;
+					}
+					
+					if(!keepingUser) {
+						removedUserList.push(aclXML.actor);
+					}
+				}
+			}
+			
+			// Now remove everyones access, we will grant the new people access in a bit
+			var baseXML:XML = connection.packageRequest("asset.acl.revoke", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			argsXML.id = caseID;
+			
+			// only the researchers specified
+			for each(var aclXML:XML in aclList) {
+				if(aclXML.actor.@type == "user") {
+
+					argsXML.appendChild(XML('<acl><actor type="user">' + aclXML.actor + '</actor></acl>'));
+				}
+			}
+
+			trace('acls to remove', argsXML);
+			connection.sendRequest(baseXML, aclsRemoved);
+		}
+		
+		private function aclsRemoved(e:Event):void{
+			var data:XML;
+			if((data = AppModel.getInstance().getData("removing era acls", e)) == null) {
+				callback(false, null);
+				return;
+			}
+						
+			// Now grant the new acls
+			var baseXML:XML = connection.packageRequest("asset.acl.grant", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			argsXML.id = caseID;
+	
+			// only the researchers specified
+			for each(var researcher:Model_ERAUser in researcherArray) {
+				argsXML.appendChild(XML('<acl><actor type="user">system:' + researcher.username + '</actor><access>read-write</access></acl>'));
+			}
+			
+			// only the production managers specified
+			for each(var productionManager:Model_ERAUser in productionManagerArray) {
+				argsXML.appendChild(XML('<acl><actor type="user">system:' + productionManager.username + '</actor><access>read-write</access></acl>'));
+			}
+			
+			// only the production team specificed
+			for each(var productionTeam:Model_ERAUser in productionTeamArray) {
+				argsXML.appendChild(XML('<acl><actor type="user">system:' + productionTeam.username + '</actor><access>read-write</access></acl>'));
+			}
+			
+			trace('granting acls', argsXML);
+			connection.sendRequest(baseXML, aclsUpdated);
+		}
+		
+		private function aclsUpdated(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("updating era acls", e)) == null) {
+				callback(false, null);
+				return;
+			}
+			
 			// Get out the ERA object
 			var baseXML:XML = connection.packageRequest("asset.get", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
@@ -131,7 +235,52 @@ package Model.Transactions.ERAProject
 			var eraCase:Model_ERACase = new Model_ERACase();
 			eraCase.setData(data.reply.result.asset[0]);
 			
+			removeNotificationAccess();
+			
+			// Since we dont want to wait for all the notification stuff, we just return
 			callback(true, eraCase);
+		}
+		
+		private function removeNotificationAccess():void {
+			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			
+			argsXML.where = "type>=ERA/notification and related to{notification_case} (id=" + caseID + ")";
+			
+			connection.sendRequest(baseXML, gotNotifications);
+		}
+		
+		private function gotNotifications(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("got notifications", e)) == null) {
+				callback(false, null);
+				return
+			}
+			
+			for each(var caseID:Number in data.reply.result.id) {
+				//  remove access for this id
+				if(removedUserList.length > 0) {
+					
+					var baseXML:XML = connection.packageRequest("asset.acl.revoke", new Object(), true);
+					var argsXML:XMLList = baseXML.service.args;
+					argsXML.id = caseID;
+					
+					// only the researchers specified
+					for each(var username:String in removedUserList) {
+						argsXML.appendChild(XML('<acl><actor type="user">' + username + '</actor></acl>'));
+					}
+					
+					trace('acls to remove', argsXML);
+					connection.sendRequest(baseXML, notificationAccessRemoved);
+				}
+			}
+		}
+		
+		private function notificationAccessRemoved(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("removing notifications access", e)) == null) {
+				return
+			}
 		}
 	}
 }

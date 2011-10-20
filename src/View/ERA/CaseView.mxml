@@ -142,6 +142,14 @@
 				evidenceManagement.deleteEvidenceItem(logItemDeleted);
 			}
 			
+			public function showAccessDenied(text:String):void {
+				room.removeAllElements();
+				var message:Label = new Label();
+				message.text = text;
+				message.horizontalCenter = 0;
+				message.verticalCenter = 0;
+				room.addElement(message);
+			}
 			
 			public function showNoCases():void {
 				var label2:Label = new Label();
@@ -152,22 +160,12 @@
 				
 				room.removeAllElements();
 				
-				var hgroup:HGroup = new HGroup();
-				hgroup.percentHeight = 100;
-				hgroup.percentWidth = 100;
-				hgroup.paddingTop = 100;
-				hgroup.verticalAlign = VerticalAlign.MIDDLE
-				room.addElement(hgroup);
-				
-				var vgroup:VGroup = new VGroup();
-				vgroup.horizontalAlign = HorizontalAlign.CENTER;
-				vgroup.percentWidth = 100;
-				hgroup.addElement(vgroup);
-				
 				var label3:Label = new Label();
 				label3.text = "No cases found";
+				label3.horizontalCenter = 0;
+				label3.verticalCenter = 0;
 				label3.setStyle("fontSize", "16");
-				vgroup.addElement(label3);
+				room.addElement(label3);
 				
 				if(caseNav.height != 0) {
 					// Hide the case nav cause we dont have any cases
@@ -298,6 +296,7 @@
 			<s:Group height="100%" width="100%">
 				<!-- The Current Room -->
 				<s:Group height="100%" width="100%" id="room">
+					<s:Label fontSize="16" text="Loading..." horizontalCenter="0" verticalCenter="0" />
 				</s:Group>
 				<!-- End of the Current room -->
 				
@@ -332,7 +331,7 @@
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
 					<components:RoomIcon roomName="Exhibition" alpha="0.5"  id="exhibitionButton"  unavailable="false" roomType="{Model_ERARoom.EXHIBIT}" icon="{AssetLookup.ExhibitionIcon}" click="exhibitionButton_clickHandler(event)"/>
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass() }"  width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Post Mortem" alpha="0.5" id="postMortemButton" unavailable="true" icon="{AssetLookup.PostMortemIcon}" />
+					<components:RoomIcon roomName="Post Mortem" alpha="0.5" id="postMortemButton" unavailable="true" roomType="{Model_ERARoom.POST_MORTEM}" icon="{AssetLookup.PostMortemIcon}" />
 				</s:HGroup>
 			</s:VGroup>
 		</s:BorderContainer>

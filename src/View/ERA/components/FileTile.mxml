@@ -42,7 +42,13 @@
 			private var ext:String;
 			
 			[Bindable]
-			private var version:Number = 0;;
+			private var version:Number = 0;
+			
+			[Bindable]
+			private var screeningCount:Number = 0;
+			
+			[Bindable]
+			private var exhibitionCount:Number = 0;
 			
 			[Bindable]
 			private var rootMetaType:String;
@@ -66,6 +72,8 @@
 				checkedOut = fileData.checkedOut;
 
 				notificationCount = fileData.notificationCount;
+				screeningCount = fileData.screeningCount;
+				exhibitionCount = fileData.exhibitionCount;
 			}
 			
 			[Bindable]
@@ -157,5 +165,5 @@
 		<components:NotificationBadge id="notificationBadge" left="75" notificationCount="{notificationCount}" />		
 	</s:Group>
 	
-	<s:Label text="{title}{version > 0 ? '_v' + version : ''} ({ext})" width="100%" textAlign="center" />
+	<s:Label text="{title}{version > 0 ? '_v' + version : ''}{screeningCount > 0 ? '_r' + screeningCount : ''}{exhibitionCount > 0 ? '_e' + exhibitionCount : ''} ({ext})" width="100%" textAlign="center" />
 </s:VGroup>

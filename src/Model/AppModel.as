@@ -33,6 +33,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
 	import Model.Transactions.ERAProject.Transaction_MoveFile;
 	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
+	import Model.Transactions.ERAProject.Transaction_SendMail;
 	import Model.Transactions.ERAProject.Transaction_UpdateCheckoutStatus;
 	import Model.Transactions.ERAProject.Transaction_UpdateERACase;
 	import Model.Transactions.ERAProject.Transaction_UpdateERAProject;
@@ -1093,7 +1094,7 @@ package Model {
 			var assets:Array = new Array();
 			var assetsXML:XMLList = data.reply.result[path];
 			for each(var assetXML:XML in assetsXML) {
-				//trace("PARSING", assetType, assetXML);
+				trace("PARSING", assetType, assetXML);
 				var asset:Model_Base = new assetType();
 				asset.setData(assetXML);
 				assets.push(asset);
@@ -1690,7 +1691,7 @@ package Model {
 			var createERACase:Transaction_CreateERACase = new Transaction_CreateERACase(AppController.currentEraProject.base_asset_id, year, rmCode, title, researcherArray, qutSchool, forArray, categoryArray, productionManagerUsernameArray, productionTeamUsernameArray, _connection, callback);
 		}
 		public function updateERACase(caseID:Number, rmCode:String, title:String, researcherArray:Array, qutSchool:String, forArray:Array, categoryArray:Array, productionManagerArray:Array, productionTeamArray:Array, callback:Function):void {
-			var updateERACase:Transaction_UpdateERACase = new Transaction_UpdateERACase(caseID, rmCode, title, researcherArray, qutSchool, forArray, categoryArray, productionManagerArray, productionTeamArray, _connection, callback); 
+			var updateERACase:Transaction_UpdateERACase = new Transaction_UpdateERACase(AppController.currentEraProject.year, caseID, rmCode, title, researcherArray, qutSchool, forArray, categoryArray, productionManagerArray, productionTeamArray, _connection, callback); 
 		}
 		public function deleteERACase(caseID:Number, callback:Function):void {
 			var deleteERACase:Transaction_DeleteERACase = new Transaction_DeleteERACase(caseID, _connection, callback);
@@ -1757,7 +1758,10 @@ package Model {
 				_connection,
 				callback);
 		}
-			
+		public function sendMailFromNotification(notificationID:Number):void {
+			var sendMail:Transaction_SendMail = new Transaction_SendMail(_connection);
+			sendMail.sendMailFromNotification(notificationID);
+		}			
 	}
 		
 }

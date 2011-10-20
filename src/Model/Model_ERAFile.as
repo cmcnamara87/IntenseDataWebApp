@@ -27,6 +27,8 @@ package Model {
 		
 		public var notificationCount:Number = 0;
 		public var notificationArray:Array = new Array();
+		public var screeningCount:Number = 0;
+		public var exhibitionCount:Number;
 		
 		public function Model_ERAFile() {
 			super();
@@ -96,6 +98,23 @@ package Model {
 				if(notificationData.file.base_asset_id == this.base_asset_id) {
 					this.notificationCount++;
 					this.notificationArray.push(notificationData);
+				}
+			}
+			
+			this.screeningCount = 0;
+			for each(var notificationData:Model_ERANotification in AppController.allNotificationsArray) {
+				trace("looking at notification", notificationData.type);
+				if(notificationData.file.base_asset_id == this.base_asset_id && notificationData.type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB) {
+					
+					this.screeningCount++;
+				}
+			}
+			trace("screening count is", this.screeningCount);
+			
+			this.exhibitionCount = 0;
+			for each(var notificationData:Model_ERANotification in AppController.allNotificationsArray) {
+				if(notificationData.file.base_asset_id == this.base_asset_id && notificationData.type == Model_ERANotification.FILE_MOVED_TO_EXHIBITION) {
+					this.exhibitionCount++;
 				}
 			}
 		}

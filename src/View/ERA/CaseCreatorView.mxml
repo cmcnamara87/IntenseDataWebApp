@@ -142,6 +142,7 @@
 				forPercentage.text = "";
 				
 				forList.removeAllElements();
+				for2DigitList.removeAllElements();
 				for each(var forPair:Array in chosenForsArray) {
 					var forItem:FORItem = new FORItem();
 					forItem.forCode = forPair[Model_ERACase.FOR_CODE];

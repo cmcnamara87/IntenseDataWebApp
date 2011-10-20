@@ -14,6 +14,7 @@ package Controller.ERA {
 	import Model.Model_Commentary;
 	import Model.Model_ERAFile;
 	import Model.Model_ERANotification;
+	import Model.Model_ERARoom;
 	import Model.Model_Media;
 	
 	import Module.AudioViewer.AudioView;
@@ -131,7 +132,7 @@ package Controller.ERA {
 			// Listne for a file being downloaded
 			mediaView.addEventListener(IDEvent.ERA_DOWNLOAD_FILE, downloadFile);
 			
-			
+			mediaView.addEventListener(IDEvent.ERA_GO_BACK, goBack);
 		}
 		
 		/* =================================== UPLOAD A NEW VERSION ========================================= */
@@ -164,6 +165,43 @@ package Controller.ERA {
 		}
 		/* =================================== END OF UPLOAD A NEW VERSION ========================================= */
 		
+		private function goBack(e:IDEvent):void {
+			if(roomType != Model_ERARoom.SCREENING_ROOM) {
+				Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
+			} else {
+				// its the screening lab, so we need to ask 'do they want to save changes'
+				// if they are a reserachers
+				if(CaseController.isResearcher) {
+					var myAlert:Alert = Alert.show("Have you finished commenting on this file for Review?", "Finished Commenting?", Alert.YES | Alert.NO, null, finishedCommenting, null, Alert.YES);
+					myAlert.height = 100;
+					myAlert.width = 300;
+				}
+			}
+		}
+		
+		private function finishedCommenting(e:CloseEvent):void {
+			if (e.detail==Alert.YES) {
+				var myAlert:Alert = Alert.show("Do you approve of this file for ERA submission?", "File Approval", Alert.YES | Alert.NO, null, fileApproved, null, Alert.YES);
+				myAlert.height = 100;
+				myAlert.width = 300;
+			} else {
+				Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
+			}
+		}
+		
+		private function fileApproved(e:CloseEvent):void {
+			if(e.detail == Alert.YES) {
+				trace("finished commenting an approve", currentAssetID);
+				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, roomID, Auth.getInstance().getUsername(), 
+					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName, Model_ERANotification.FILE_APPROVED_BY_RESEARCHER, caseID, currentAssetID);
+			} else {
+				trace("finished commenting an DO NOT approve");
+				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, roomID, Auth.getInstance().getUsername(), 
+					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName, Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER, caseID, currentAssetID);
+			}
+			
+			Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
+		}
 		
 		/* =================================== DOWNLOAD A FILE ========================================= */
 		private function downloadFile(e:IDEvent):void {

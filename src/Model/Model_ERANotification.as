@@ -1,6 +1,8 @@
 package Model
 {
 	import Controller.Utilities.Auth;
+	
+	import flash.sampler.Sample;
 
 	public class Model_ERANotification extends Model_Base
 	{
@@ -34,6 +36,9 @@ package Model
 		
 		public static const EVIDENCE_COLLECTED:String = "evidence_collected";
 		// {user} marked {evidence name/id} evidence as collected in {room name/id} -> have evidence id, need evidence name, room id nad room name
+		
+		public static const FILE_APPROVED_BY_RESEARCHER:String = "file_approve_by_researcher";
+		public static const FILE_NOT_APPROVED_BY_RESEARCHER:String = "file_not_approve_by_researcher";
 		
 		public var type:String;
 		public var username:String;
@@ -101,7 +106,7 @@ package Model
 				if(this.type == EVIDENCE_COLLECTED || this.type == EVIDENCE_READY_FOR_COLLECTION) {
 					logItem = new Model_ERALogItem();
 					logItem.setData(rawData.related.(@type=="notification_file").asset[0]);
-				} else if(this.type == FILE_COMMENT || this.type == ANNOTATION || this.type == FILE_MOVED_TO_SCREENING_LAB || this.type == FILE_MOVED_TO_FORENSIC_LAB || this.type == FILE_MOVED_TO_EXHIBITION || this.type == FILE_UPLOADED) {
+				} else if(this.type == FILE_APPROVED_BY_RESEARCHER || this.type == FILE_NOT_APPROVED_BY_RESEARCHER || this.type == FILE_COMMENT || this.type == ANNOTATION || this.type == FILE_MOVED_TO_SCREENING_LAB || this.type == FILE_MOVED_TO_FORENSIC_LAB || this.type == FILE_MOVED_TO_EXHIBITION || this.type == FILE_UPLOADED) {
 					file = new Model_ERAFile();
 					file.setData(rawData.related.(@type=="notification_file").asset[0]);
 				}

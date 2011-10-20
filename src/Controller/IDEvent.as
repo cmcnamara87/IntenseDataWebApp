@@ -176,6 +176,7 @@ package Controller {
 			public static var ERA_NOTIFICATIONS_UPDATED:String = "era_notificationsUpdated";
 			public static var ERA_CHANGE_NOTIFICATION_READ_STATUS:String = "era_changeNotificationReadStatus";
 			public static var ERA_ERROR:String = "era_error";
+			public static var ERA_GO_BACK:String = "era_goBack";
 			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
