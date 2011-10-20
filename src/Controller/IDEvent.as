@@ -175,6 +175,7 @@ package Controller {
 			public static var ERA_SAVE_COMMENT:String = "era_saveComment";
 			public static var ERA_NOTIFICATIONS_UPDATED:String = "era_notificationsUpdated";
 			public static var ERA_CHANGE_NOTIFICATION_READ_STATUS:String = "era_changeNotificationReadStatus";
+			public static var ERA_ERROR:String = "era_error";
 			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);

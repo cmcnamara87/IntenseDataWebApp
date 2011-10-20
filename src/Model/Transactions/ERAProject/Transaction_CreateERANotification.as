@@ -157,10 +157,11 @@ package Model.Transactions.ERAProject
 		private function notificationCreated(e:Event):void {
 			var data:XML;
 			if((data = AppModel.getInstance().getData("creating era notification", e)) == null) {
-//				callback(false);
 				return;
 			}
-//			callback(true);
+			
+			// Send mail
+			
 		}
 	}
 }

@@ -86,6 +86,11 @@ package Controller.ERA
 			
 			// Listne for comment creation
 			caseView.addEventListener(IDEvent.ERA_SAVE_COMMENT, saveComment);
+			
+			// Listen for errors to show
+			caseView.addEventListener(IDEvent.ERA_ERROR, function(e:IDEvent):void {
+				layout.notificationBar.showError(e.data.error);
+			});
 		}
 		override public function init():void {
 			layout.header.adminToolButtons.visible = false;

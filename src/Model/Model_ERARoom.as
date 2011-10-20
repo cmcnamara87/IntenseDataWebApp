@@ -1,5 +1,6 @@
 package Model {
 	import Controller.AppController;
+	import Controller.Utilities.Auth;
 	
 	public class Model_ERARoom extends Model_Base {
 		
@@ -37,7 +38,7 @@ package Model {
 			this.notificationCount = 0;
 			
 			for each(var notificationData:Model_ERANotification in AppController.notificationsArray) {
-				if(!notificationData.room) continue;
+				if(!notificationData.room || notificationData.read) continue;
 				
 				if(notificationData.room.base_asset_id == this.base_asset_id) {
 					this.notificationCount++;

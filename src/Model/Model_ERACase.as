@@ -1,5 +1,6 @@
 package Model {
 	import Controller.AppController;
+	import Controller.Utilities.Auth;
 	
 	public class Model_ERACase extends Model_Base {
 		
@@ -109,7 +110,7 @@ package Model {
 			this.notificationCount = 0;
 			for each(var notificationData:Model_ERANotification in AppController.notificationsArray) {
 
-				if(!notificationData.eraCase) continue;
+				if(!notificationData.eraCase || notificationData.read) continue;
 				
 //				trace("###### looking for notification match");
 				if(notificationData.eraCase.base_asset_id == this.base_asset_id) {

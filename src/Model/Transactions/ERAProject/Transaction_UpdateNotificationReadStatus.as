@@ -20,7 +20,6 @@ package Model.Transactions.ERAProject
 			this.readStatus = readStatus;
 			this.connection = connection;
 			this.callback = callback;
-			
 			getNotification();
 		}
 		
@@ -50,7 +49,7 @@ package Model.Transactions.ERAProject
 
 			
 			argsXML.meta["ERA-notification"].appendChild(
-				XML('<read_by_users><username>' +  Auth.getInstance().getUsername() + '</username><read_status>true</read_status><date_read>now</date_read></read_by_users>')
+				XML('<read_by_users><username>' +  Auth.getInstance().getUsername() + '</username><read_status>' + readStatus + '</read_status><date_read>now</date_read></read_by_users>')
 			);
 				
 			var oldReadStatusList:XMLList = data.reply.result.asset.meta["ERA-notification"]["read_by_users"];
@@ -62,7 +61,7 @@ package Model.Transactions.ERAProject
 					);
 				}
 			}
-			
+			trace("xml", argsXML);
 			connection.sendRequest(baseXML, readStatusUpdated);		
 		}
 		

@@ -22,7 +22,8 @@
 				
 				notificationList.removeAllElements();
 				for each(var notificationData:Model_ERANotification in notificationsArray) {
-					//if(notificationData.username == Auth.getInstance().getUsername()) continue;
+//					if(notificationData.username == Auth.getInstance().getUsername()) continue;
+					
 					var notification:NotificationListItem = new NotificationListItem();
 					notification.notificationData = notificationData;
 					notificationList.addElement(notification);

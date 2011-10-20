@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
-				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" backgroundColor="0xD9F0FF" borderVisible="false"
+				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" backgroundColor="{read ? 0xFFFFFF : 0xD9F0FF}" borderVisible="false"
 				   >
 
 	<fx:Script>
@@ -23,12 +23,13 @@
 			[Bindable]
 			private var timeStamp:String;
 			
+			[Bindable]
+			private var read:Boolean;
+			
 			public function set notificationData(notificationData:Model_ERANotification):void {
 				_notificationData = notificationData;
 				
-				if(notificationData.read) {
-					this.setStyle("backgroundColor", "0xFFFFFF");
-				}
+				this.read = notificationData.read;
 				
 				switch(notificationData.type) {
 					case Model_ERANotification.FILE_UPLOADED:
@@ -91,14 +92,17 @@
 
 			protected function markAsReadButton_clickHandler(event:MouseEvent):void
 			{
+				this.read = !read;
+				
 				// mark the notification as read (tell the controller)
 				var notificationReadEvent:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_NOTIFICATION_READ_STATUS, true);
-				notificationReadEvent.data.readStatus = true;
+				notificationReadEvent.data.readStatus = this.read;
+				trace("changing read status to", this.read ? 'true' : 'false');
 				notificationReadEvent.data.notificationID = _notificationData.base_asset_id;
 				dispatchEvent(notificationReadEvent);
 				
-				_notificationData.read = true;
-				this.setStyle("backgroundColor", 0xFFFFFF);
+				_notificationData.read = this.read;
+				
 			}
 
 		]]>
@@ -110,7 +114,7 @@
 	<s:VGroup id="notificationList" width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="0">
 		<mx:Text htmlText="{notificationText}" width="100%" />
 		<s:HGroup width="100%">
-			<s:Button label="Mark as Read" height="20" fontSize="10" id="markAsReadButton" click="markAsReadButton_clickHandler(event)" />
+			<s:Button label="{read ? 'Mark as Not Read' : 'Mark as Read'}" height="20" fontSize="10" id="markAsReadButton" click="markAsReadButton_clickHandler(event)" />
 			<mx:Text text="{timeStamp}" width="100%" color="0x888888" fontSize="10" textAlign="right"/>
 		</s:HGroup>
 		

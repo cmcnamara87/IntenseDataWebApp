@@ -1072,6 +1072,7 @@ package Model {
 		
 		// Parse the results of a response
 		public function parseResults(data:XML,assetType:Class):Array {
+			trace("DATA IS", data);
 			var path:String = '';
 			switch(assetType) {
 				case Model_Media:
@@ -1090,6 +1091,7 @@ package Model {
 			var assets:Array = new Array();
 			var assetsXML:XMLList = data.reply.result[path];
 			for each(var assetXML:XML in assetsXML) {
+				//trace("PARSING", assetType, assetXML);
 				var asset:Model_Base = new assetType();
 				asset.setData(assetXML);
 				assets.push(asset);
@@ -1560,7 +1562,7 @@ package Model {
 				trace(functionName + ": FAILED", e.target.data);
 				return null;
 			}
-			//trace(functionName + ": SUCCESS", e.target.data);
+			trace(functionName + ": SUCCESS", e.target.data);
 			return dataXML;
 		}
 		
@@ -1746,6 +1748,7 @@ package Model {
 			var createERANotification:Transaction_CreateERANotification = new Transaction_CreateERANotification(year, roomID, username, firstName, lastName, type, _connection, caseID, fileID, commentID);
 		}
 		public function updateNotificationReadStatus(notificationID:Number, readStatus:Boolean, callback:Function):void {
+			trace('yoyo yo', readStatus ? 'yes' : 'no');
 			var updateNotificationReadStatus:Transaction_UpdateNotificationReadStatus = new Transaction_UpdateNotificationReadStatus(
 				notificationID,
 				readStatus,

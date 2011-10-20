@@ -37,7 +37,7 @@ package Controller {
 		protected var showLogoutButton:Boolean = true;
 		
 		// Store current notifications for hte user
-		public static var notificationsArray:Array;
+		public static var notificationsArray:Array = new Array();
 		
 		public static var eraProjectArray:Array = new Array(); // an array of all the era projects in the system
 		public static var currentEraProject:Model_ERAProject; // the current era project we are looking at
@@ -248,6 +248,7 @@ package Controller {
 			var notificationID:Number = e.data.notificationID;
 			var readStatus:Boolean = e.data.readStatus;
 
+			trace("notifiaction status", readStatus ? 'yes' : 'no');
 			AppModel.getInstance().updateNotificationReadStatus(notificationID, readStatus, notificationReadStatusUpdated);
 		}
 		private static function notificationReadStatusUpdated(status:Boolean):void {
@@ -282,16 +283,22 @@ package Controller {
 			if(!status) return;
 			
 			// strip out the read ones
+			var unreadNotificationCount:Number = 0;
+			
 			var someArray:Array = new Array();
 			for each(var notificationData:Model_ERANotification in notificationsArray) {
-				if(!notificationData.read) {
-					someArray.push(notificationData);		
+				if(notificationData.username != Auth.getInstance().getUsername()) {
+					// its not by the current user, so add it (only a problem for the sys-admin)
+					someArray.push(notificationData);	
+					
+					// if we havent read it, update the count
+					if(!notificationData.read) unreadNotificationCount++;
 				}
 			}
 			AppController.notificationsArray = someArray.reverse(); 
 
-			layout.header.notificationButton.label = notificationsArray.length + "";
-			if(AppController.notificationsArray.length > 0) {
+			layout.header.notificationButton.label = unreadNotificationCount + "";
+			if(unreadNotificationCount > 0) {
 				layout.header.notificationButton.setStyle('chromeColor', "0xFF8800");
 				layout.header.notificationButton.setStyle('font-weight', "bold");
 			} else {
@@ -299,7 +306,7 @@ package Controller {
 				layout.header.notificationButton.setStyle('font-weight', "normal");
 			}
 			layout.addNotifications(AppController.notificationsArray);
-			layout.header.notificationButton.label = AppController.notificationsArray.length + "";
+
 		}
 		
 		/**

@@ -17,9 +17,11 @@
 	</fx:Script>
 
 	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<!-- Place non-visual elements (e.g., services, value objects) here -->	
 	</fx:Declarations>
 	
 	<s:Label text="{notificationCount}" color="0xFFFFFF" fontWeight="bold" fontSize="12" horizontalCenter="0" verticalCenter="0"/>
-	
+	<s:filters>
+		<s:DropShadowFilter distance="1" angle="0" alpha="0.3" color="0x000000" blurX="10" blurY="10"/>
+	</s:filters>
 </s:BorderContainer>

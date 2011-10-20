@@ -82,9 +82,16 @@ package Model {
 				}
 			}
 			
+			updateNotificationCount();
+		}
+		
+		public function updateNotificationCount():void {
+			// Count up the number of notifications this file has
+			this.notificationCount = 0;
+			
 			// Count up the number of notifications this file has
 			for each(var notificationData:Model_ERANotification in AppController.notificationsArray) {
-				if(!notificationData.file) continue;
+				if(!notificationData.file || notificationData.read || notificationData.username == Auth.getInstance().getUsername()) continue;
 				
 				if(notificationData.file.base_asset_id == this.base_asset_id) {
 					this.notificationCount++;
@@ -92,6 +99,7 @@ package Model {
 				}
 			}
 		}
+		
 		
 		/**
 		 * Gets the URL to this media asset.

@@ -6,10 +6,13 @@
 		  mouseOut="vgroup1_mouseOutHandler(event)" 
 		  mouseDown="vgroup1_mouseDownHandler(event)" 
 		  mouseUp="vgroup1_mouseUpHandler(event)"
-		  mouseMove="vgroup1_mouseMoveHandler(event)" xmlns:components="View.ERA.components.*">
+		  mouseMove="vgroup1_mouseMoveHandler(event)" xmlns:components="View.ERA.components.*"
+		  creationComplete="vgroup1_creationCompleteHandler(event)"
+		  removedFromStage="vgroup1_removedFromStageHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
 			import Controller.Dispatcher;
 			import Controller.IDEvent;
 			import Controller.Utilities.AssetLookup;
@@ -18,6 +21,7 @@
 			import Model.Model_ERAFile;
 			
 			import mx.core.IUIComponent;
+			import mx.events.FlexEvent;
 			import mx.managers.DragManager;
 			
 			private var _fileData:Model_ERAFile;
@@ -121,6 +125,26 @@
 				this.alpha = 1;
 				// TODO Auto-generated method stub
 			}
+
+			protected function vgroup1_creationCompleteHandler(event:FlexEvent):void
+			{
+				AppController.layout.addEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
+			}
+
+			private function eraNotificationsUpdated(e:Event):void {
+				if(!_fileData) return; // we havnet set any room data info yet
+				_fileData.updateNotificationCount();
+				this.notificationCount = _fileData.notificationCount;
+				notificationBadge.notificationCount = this.notificationCount;
+			}
+			
+
+			protected function vgroup1_removedFromStageHandler(event:Event):void
+			{
+				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+			}
+
 		]]>
 	</fx:Script>
 
@@ -130,7 +154,7 @@
 	
 	<s:Group width="100" height="100">
 		<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="{description}" alpha="{checkedOut ? 0.5 : 1}" />
-		<components:NotificationBadge left="75" notificationCount="{notificationCount}" />		
+		<components:NotificationBadge id="notificationBadge" left="75" notificationCount="{notificationCount}" />		
 	</s:Group>
 	
 	<s:Label text="{title}{version > 0 ? '_v' + version : ''} ({ext})" width="100%" textAlign="center" />
