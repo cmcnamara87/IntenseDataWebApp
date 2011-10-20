@@ -444,6 +444,7 @@ package Model {
 			// Set the annotations parent media asset
 //			baseXML.service.args["related"]["to"] = mediaAssetID;
 //			baseXML.service.args["related"]["to"].@relationship = "is_child";
+			baseXML.service.args.related = "";
 			baseXML.service.args.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
 			baseXML.service.args.related.appendChild(XML('<to relationship="object">' + mediaAssetID + '</to>'));
 			
@@ -485,6 +486,7 @@ package Model {
 			var baseXML:XML = _connection.packageRequest('asset.create',args,true);
 			
 			// Set the annotations parent media asset
+			baseXML.service.args.related = "";
 			baseXML.service.args.related.appendChild(XML('<to relationship="room">' + roomID + '</to>'));
 			baseXML.service.args.related.appendChild(XML('<to relationship="object">' + mediaAssetID + '</to>'));
 //			baseXML.service.args["related"]["to"] = mediaAssetID;
