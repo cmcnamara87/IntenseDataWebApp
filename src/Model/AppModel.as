@@ -33,6 +33,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
 	import Model.Transactions.ERAProject.Transaction_MoveFile;
 	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
+	import Model.Transactions.ERAProject.Transaction_RemoveUserFromCase;
 	import Model.Transactions.ERAProject.Transaction_SendMail;
 	import Model.Transactions.ERAProject.Transaction_UpdateCheckoutStatus;
 	import Model.Transactions.ERAProject.Transaction_UpdateERACase;
@@ -1762,6 +1763,9 @@ package Model {
 			var sendMail:Transaction_SendMail = new Transaction_SendMail(_connection);
 			sendMail.sendMailFromNotification(notificationID);
 		}			
+		public function removeUserFromCase(caseID:Number, removeUsername:String, callback:Function):void {
+			var removeUserFromCase:Transaction_RemoveUserFromCase = new Transaction_RemoveUserFromCase(caseID, removeUsername, _connection, callback);
+		}
 	}
 		
 }

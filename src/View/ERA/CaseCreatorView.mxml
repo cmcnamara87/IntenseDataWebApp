@@ -311,6 +311,7 @@
 				researcherList.removeAllElements();
 				allResearchers.selectedIndex = -1;
 				forList.removeAllElements();
+				for2DigitList.removeAllElements();
 				categoryList.removeAllElements();
 				category.selectedIndex = -1;
 				title.text = "";
