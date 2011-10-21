@@ -56,7 +56,7 @@ package Model {
 				case FORENSIC_LAB:
 					return "Forensic Lab";
 				case SCREENING_ROOM:
-					return "Screening Room";
+					return "Review Lab";
 				case EXHIBIT:
 					return "Exhibit";
 				default:

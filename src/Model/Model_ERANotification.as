@@ -86,7 +86,9 @@ package Model
 			}
 			
 			this.eraCase = new Model_ERACase();
-			eraCase.setData(rawData.related.(@type=="notification_case").asset[0]);
+			if(rawData.related.(@type=="notification_case").asset.length() > 0) {
+				eraCase.setData(rawData.related.(@type=="notification_case").asset[0]);
+			}
 			
 			if(rawData.related.(@type=="notification_room")) {
 				// a room is given, lets store it
@@ -102,7 +104,7 @@ package Model
 					comment_room.setData(rawData.related.(@type=="notification_comment").asset[0]);
 				}
 			}
-			if(rawData.related.(@type=="notification_file")) {
+			if(rawData.related.(@type=="notification_file").asset.length() > 0) {
 				if(this.type == EVIDENCE_COLLECTED || this.type == EVIDENCE_READY_FOR_COLLECTION) {
 					logItem = new Model_ERALogItem();
 					logItem.setData(rawData.related.(@type=="notification_file").asset[0]);

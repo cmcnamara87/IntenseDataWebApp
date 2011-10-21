@@ -104,7 +104,7 @@ package Model {
 			this.screeningCount = 0;
 			for each(var notificationData:Model_ERANotification in AppController.allNotificationsArray) {
 				trace("looking at notification", notificationData.type);
-				if(notificationData.file.base_asset_id == this.base_asset_id && notificationData.type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB) {
+				if(notificationData.file && notificationData.file.base_asset_id == this.base_asset_id && notificationData.type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB) {
 					
 					this.screeningCount++;
 				}
@@ -113,7 +113,7 @@ package Model {
 			
 			this.exhibitionCount = 0;
 			for each(var notificationData:Model_ERANotification in AppController.allNotificationsArray) {
-				if(notificationData.file.base_asset_id == this.base_asset_id && notificationData.type == Model_ERANotification.FILE_MOVED_TO_EXHIBITION) {
+				if(notificationData.file && notificationData.file.base_asset_id == this.base_asset_id && notificationData.type == Model_ERANotification.FILE_MOVED_TO_EXHIBITION) {
 					this.exhibitionCount++;
 				}
 			}

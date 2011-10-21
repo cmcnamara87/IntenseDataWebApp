@@ -305,11 +305,10 @@ package Controller {
 				layout.header.notificationButton.setStyle('chromeColor', "0xFF8800");
 				layout.header.notificationButton.setStyle('font-weight', "bold");
 			} else {
-				layout.header.notificationButton.setStyle('chromeColor', "0x000000");
+				layout.header.notificationButton.setStyle('chromeColor', "0x222222");
 				layout.header.notificationButton.setStyle('font-weight', "normal");
 			}
 			layout.addNotifications(AppController.notificationsArray);
-
 		}
 		
 		/**

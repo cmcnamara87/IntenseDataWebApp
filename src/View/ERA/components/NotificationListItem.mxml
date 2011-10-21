@@ -21,7 +21,7 @@
 			private var _notificationData:Model_ERANotification;
 
 			[Bindable]
-			private var notificationText:String;
+			private var notificationText:String = "Notification Deleted.";
 			[Bindable]
 			private var timeStamp:String;
 			
@@ -38,6 +38,9 @@
 				switch(notificationData.type) {
 					case Model_ERANotification.FILE_APPROVED_BY_RESEARCHER:
 						trace("notification id is", notificationData.base_asset_id);
+						// check if its broken
+						if(!notificationData.eraCase || !notificationData.room || !notificationData.file) break;
+						
 						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/"; 
 						fileURL += escape(notificationData.eraCase.rmCode) + "/"; 
 						fileURL += notificationData.room.roomType + "/";
@@ -51,6 +54,10 @@
 						notificationText = "RM " + notificationData.eraCase.rmCode + " - Researcher <b>" + notificationData.fullName + "</b> approved file <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font> for ERA submission.";
 						break;
 					case Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER:
+						
+						// check if its broken
+						if(!notificationData.eraCase || !notificationData.room || !notificationData.file) break;
+						
 						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
 						if(fileURL == currentURL) fileURL = '';
@@ -59,6 +66,10 @@
 						break;
 					
 					case Model_ERANotification.FILE_UPLOADED:
+						
+						// check if its broken
+						if(!notificationData.eraCase || !notificationData.room || !notificationData.file) break;
+
 						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
 						if(fileURL == currentURL) fileURL = '';
@@ -67,32 +78,35 @@
 						
 						break;
 					case Model_ERANotification.ROOM_COMMENT:
+						
+						// check if its broken
+						if(!notificationData.eraCase || !notificationData.room || !notificationData.comment_room) break;
+						
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
 						if(roomURL == currentURL) roomURL = '';
 						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> wrote \"" + notificationData.comment_room.text + "\" on <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
 						
 						break;
 					case Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB:
-						//						case Model_ERANotification.FILE_MOVED_TO_EXHIBITION:
+					case Model_ERANotification.FILE_MOVED_TO_EXHIBITION:
 					case Model_ERANotification.FILE_MOVED_TO_FORENSIC_LAB:
+						
+						// check if its broken
+						if(!notificationData.eraCase || !notificationData.room || !notificationData.file) break;
+						
+						
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
 						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
 						if(fileURL == currentURL) fileURL = '';
 						if(roomURL == currentURL) roomURL = '';
 						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> moved <a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> to <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
 						break;
-					case Model_ERANotification.FILE_MOVED_TO_EXHIBITION:
-						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/";
-						fileURL += escape(notificationData.eraCase.rmCode) + "/";
-						fileURL += notificationData.room.roomType + "/";
-						fileURL += notificationData.room.base_asset_id + "/";
-						fileURL += notificationData.file.base_asset_id;
-						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
-						if(fileURL == currentURL) fileURL = '';
-						if(roomURL == currentURL) roomURL = '';
-						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> moved <a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> to <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
-						break;
+					
 					case Model_ERANotification.FILE_COMMENT:
+						
+						// check if its broken
+						if(!notificationData.eraCase || !notificationData.room || !notificationData.file || !notificationData.comment_file) break;
+						
 						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
 						if(fileURL == currentURL) fileURL = '';
@@ -101,6 +115,10 @@
 						
 						break
 					case Model_ERANotification.ANNOTATION:
+						
+						// check if its broken
+						if(!notificationData.eraCase || !notificationData.room || !notificationData.file || !notificationData.comment_file) break;
+						
 						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
 						if(fileURL == currentURL) fileURL = '';
@@ -113,11 +131,19 @@
 						
 						break;
 					case Model_ERANotification.EVIDENCE_COLLECTED:
+						
+						// check if its broken
+						if(!notificationData.eraCase || !notificationData.room || !notificationData.logItem) break;
+						
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
 						if(roomURL == currentURL) roomURL = '';
 						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> marked " + notificationData.logItem.title + " as collected by a researcher in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
 						break;
 					case Model_ERANotification.EVIDENCE_READY_FOR_COLLECTION:
+						
+						// check if its broken
+						if(!notificationData.eraCase || !notificationData.room || !notificationData.logItem) break;
+						
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
 						if(roomURL == currentURL) roomURL = '';
 						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> marked " + notificationData.logItem.title + " as ready for collection in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";

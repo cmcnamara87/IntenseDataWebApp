@@ -285,7 +285,7 @@ package View.ERA
 			hGroup1.addElement(unlockFileButton);
 			
 			// Upload a new version
-			uploadNewVersionButton = IDGUI.makeMenuButton('Upload New Version');
+			uploadNewVersionButton = IDGUI.makeMenuButton('Upload Revised Version');
 			uploadNewVersionButton.enabled = false;
 			hGroup1.addElement(uploadNewVersionButton);
 			

@@ -3,24 +3,22 @@
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   xmlns:mx="library://ns.adobe.com/flex/mx" width="22" height="22"
 				   cornerRadius="20"
-				   backgroundColor="0xFF8800"
+				   backgroundColor="{approved ? 0x009900 : 0xFF0000}"
 				   borderColor="0xFFFFFF"
-				   borderWeight="2"
-				   visible="{notificationCount>0}">
-
+				   borderWeight="2">
+	
 	<fx:Script>
 		<![CDATA[
 			[Bindable]
-			public var notificationCount:Number = 0;
-			public var notificationToolTip:String = "";
+			public var approved:Boolean = true;
 		]]>
 	</fx:Script>
-
+	
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->	
 	</fx:Declarations>
 	
-	<s:Label text="{notificationCount}" color="0xFFFFFF" fontWeight="bold" fontSize="12" horizontalCenter="0" verticalCenter="1"/>
+	<s:Label text="{approved ? '✔' : 'x'}" color="0xFFFFFF" fontWeight="bold" fontSize="12" horizontalCenter="0" verticalCenter="1"/>
 	<s:filters>
 		<s:DropShadowFilter distance="1" angle="0" alpha="0.3" color="0x000000" blurX="10" blurY="10"/>
 	</s:filters>

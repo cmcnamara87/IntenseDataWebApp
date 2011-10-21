@@ -175,6 +175,8 @@ package Controller.ERA {
 					var myAlert:Alert = Alert.show("Have you finished commenting on this file for Review?", "Finished Commenting?", Alert.YES | Alert.NO, null, finishedCommenting, null, Alert.YES);
 					myAlert.height = 100;
 					myAlert.width = 300;
+				} else {
+					Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
 				}
 			}
 		}
