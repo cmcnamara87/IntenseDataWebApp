@@ -123,7 +123,7 @@ package Controller.Utilities {
 					if(role == "system-administrator") {
 						isSystemAdministrator = true;
 					}
-					if(role == "sys_admin") {
+					if(role == "sys_admin") { // the sys-admin role for the era
 						trace("****************** FOUND SYS ADMIN *****************");
 						isSystemAdministrator = true;	
 					}

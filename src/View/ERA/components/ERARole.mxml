@@ -128,7 +128,7 @@
 		<s:Button label="Assign Role" id="addUserButton" click="addUserButton_clickHandler(event)">
 		</s:Button>
 	</s:HGroup>
-	<s:VGroup id="currentUsers" width="100%" paddingTop="10">
+	<s:VGroup id="currentUsers" width="100%" paddingTop="10" resizeEffect="Resize">
 	</s:VGroup>
 	<mx:HRule chromeColor="0x000000" width="100%" />
 </s:VGroup>

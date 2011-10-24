@@ -38,6 +38,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_UpdateCheckoutStatus;
 	import Model.Transactions.ERAProject.Transaction_UpdateERACase;
 	import Model.Transactions.ERAProject.Transaction_UpdateERAProject;
+	import Model.Transactions.ERAProject.Transaction_UpdateFileLockOutStatus;
 	import Model.Transactions.ERAProject.Transaction_UpdateFileTemperature;
 	import Model.Transactions.ERAProject.Transaction_UpdateLogItemBooleanValue;
 	import Model.Transactions.ERAProject.Transaction_UpdateNotificationReadStatus;
@@ -1076,7 +1077,7 @@ package Model {
 		
 		// Parse the results of a response
 		public function parseResults(data:XML,assetType:Class):Array {
-			trace("DATA IS", data);
+//			trace("DATA IS", data);
 			var path:String = '';
 			switch(assetType) {
 				case Model_Media:
@@ -1095,7 +1096,7 @@ package Model {
 			var assets:Array = new Array();
 			var assetsXML:XMLList = data.reply.result[path];
 			for each(var assetXML:XML in assetsXML) {
-				trace("PARSING", assetType, assetXML);
+//				trace("PARSING", assetType, assetXML);
 				var asset:Model_Base = new assetType();
 				asset.setData(assetXML);
 				assets.push(asset);
@@ -1566,7 +1567,7 @@ package Model {
 				trace(functionName + ": FAILED", e.target.data);
 				return null;
 			}
-			trace(functionName + ": SUCCESS", e.target.data);
+//			trace(functionName + ": SUCCESS", e.target.data);
 			return dataXML;
 		}
 		
@@ -1737,6 +1738,9 @@ package Model {
 		public function updateERAFileCheckOutStatus(fileID:Number, checkedOut:Boolean, callback:Function):void {
 			var updateERAFile:Transaction_UpdateCheckoutStatus = new Transaction_UpdateCheckoutStatus(fileID, checkedOut, Auth.getInstance().getUsername(), _connection, callback);
 		}
+		public function updateFileLockOutStatus(roomID:Number, notificationType:String, caseID:Number, fileID:Number, callback:Function):void {
+			var updateFile:Transaction_UpdateFileLockOutStatus = new Transaction_UpdateFileLockOutStatus(AppController.currentEraProject.year, roomID, Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName, notificationType, caseID, fileID, Auth.getInstance().getUsername(), _connection, callback);
+		}
 			
 		public function createERAConversation(objectID:Number, roomID:Number, inReplyToID:Number, text:String, callback:Function):void {
 			var createERAConversation:Transaction_CreateConversation = new Transaction_CreateConversation(AppController.currentEraProject.year, objectID, roomID, inReplyToID, text, _connection, callback);
@@ -1751,6 +1755,7 @@ package Model {
 		public function createERANotification(year:String, roomID:Number, username:String, firstName:String, lastName:String, type:String, caseID:Number=0, fileID:Number=0, commentID:Number=0) {
 			var createERANotification:Transaction_CreateERANotification = new Transaction_CreateERANotification(year, roomID, username, firstName, lastName, type, _connection, caseID, fileID, commentID);
 		}
+
 		public function updateNotificationReadStatus(notificationID:Number, readStatus:Boolean, callback:Function):void {
 			trace('yoyo yo', readStatus ? 'yes' : 'no');
 			var updateNotificationReadStatus:Transaction_UpdateNotificationReadStatus = new Transaction_UpdateNotificationReadStatus(

@@ -40,6 +40,9 @@ package Model
 		public static const FILE_APPROVED_BY_RESEARCHER:String = "file_approve_by_researcher";
 		public static const FILE_NOT_APPROVED_BY_RESEARCHER:String = "file_not_approve_by_researcher";
 		
+		public static const FILE_APPROVED_BY_MONITOR:String = "file_approved_by_monitor";
+		public static const FILE_NOT_APPROVED_BY_MONITOR:String = "file_not_approved_by_monitor";
+		
 		public var type:String;
 		public var username:String;
 		public var firstName:String;
@@ -90,12 +93,12 @@ package Model
 				eraCase.setData(rawData.related.(@type=="notification_case").asset[0]);
 			}
 			
-			if(rawData.related.(@type=="notification_room")) {
+			if(rawData.related.(@type=="notification_room").asset.length()) {
 				// a room is given, lets store it
 				room = new Model_ERARoom();
 				room.setData(rawData.related.(@type=="notification_room").asset[0]);
 			}
-			if(rawData.related.(@type=="notification_comment")) {
+			if(rawData.related.(@type=="notification_comment").asset.length()) {
 				if(this.type == FILE_COMMENT || this.type == ANNOTATION) {
 					comment_file = new Model_Commentary();
 					comment_file.setData(rawData.related.(@type=="notification_comment").asset[0]);
@@ -104,11 +107,11 @@ package Model
 					comment_room.setData(rawData.related.(@type=="notification_comment").asset[0]);
 				}
 			}
-			if(rawData.related.(@type=="notification_file").asset.length() > 0) {
+			if(rawData.related.(@type=="notification_file").asset.length()) {
 				if(this.type == EVIDENCE_COLLECTED || this.type == EVIDENCE_READY_FOR_COLLECTION) {
 					logItem = new Model_ERALogItem();
 					logItem.setData(rawData.related.(@type=="notification_file").asset[0]);
-				} else if(this.type == FILE_APPROVED_BY_RESEARCHER || this.type == FILE_NOT_APPROVED_BY_RESEARCHER || this.type == FILE_COMMENT || this.type == ANNOTATION || this.type == FILE_MOVED_TO_SCREENING_LAB || this.type == FILE_MOVED_TO_FORENSIC_LAB || this.type == FILE_MOVED_TO_EXHIBITION || this.type == FILE_UPLOADED) {
+				} else {//if(this.type == FILE_APPROVED_BY_RESEARCHER || this.type == FILE_NOT_APPROVED_BY_RESEARCHER || this.type == FILE_COMMENT || this.type == ANNOTATION || this.type == FILE_MOVED_TO_SCREENING_LAB || this.type == FILE_MOVED_TO_FORENSIC_LAB || this.type == FILE_MOVED_TO_EXHIBITION || this.type == FILE_UPLOADED) {
 					file = new Model_ERAFile();
 					file.setData(rawData.related.(@type=="notification_file").asset[0]);
 				}

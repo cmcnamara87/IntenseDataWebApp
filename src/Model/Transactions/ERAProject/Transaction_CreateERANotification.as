@@ -145,7 +145,7 @@ package Model.Transactions.ERAProject
 				}
 			}
 			
-			if(type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB || Model_ERANotification.FILE_MOVED_TO_EXHIBITION) {
+			if(type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB) {
 				// Notify the monitor when fiels are ready to be screened or exhibited
 				argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.MONITOR + "_" + year + '</actor><access>read-write</access></acl>'));
 			}
@@ -164,7 +164,7 @@ package Model.Transactions.ERAProject
 			var notificationID:Number = data.reply.result.id;
 			
 			// Send mail
-			AppModel.getInstance().sendMailFromNotification(notificationID);
+//			AppModel.getInstance().sendMailFromNotification(notificationID);
 			
 		}
 	}

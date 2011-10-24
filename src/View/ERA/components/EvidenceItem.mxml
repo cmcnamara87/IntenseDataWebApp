@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="View.components.*" xmlns:components1="View.ERA.components.*">
+		  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="View.components.*" xmlns:components1="View.ERA.components.*" gap="0"
+		  addedEffect="{fadeIn}"
+		  removedEffect="{fadeOut}">
 
 	<fx:Script>
 		<![CDATA[
@@ -63,7 +65,7 @@
 			 * A file for upload was selected
 			 */
 			private function onFileSelect(e:Event):void {
-				uploadProgress.includeInLayout = true;
+//				uploadProgress.includeInLayout = true;
 				uploadProgress.visible = true;
 				
 				var uploadEvent:IDEvent = new IDEvent(IDEvent.ERA_SAVE_FILE, true);
@@ -84,7 +86,7 @@
 			public function showComplete(evidence:Model_ERAFile):void {
 				uploadButton.label = "View";
 				uploadButton.enabled = true;
-				uploadProgress.includeInLayout = false;
+//				uploadProgress.includeInLayout = false;
 				uploadProgress.visible = false;
 				logItem.uploaded = true;
 				logItem.dataItemID = evidence.base_asset_id;
@@ -104,7 +106,7 @@
 			{
 				fileReference.cancel();
 				
-				uploadProgress.includeInLayout = false;
+//				uploadProgress.includeInLayout = false;
 				uploadProgress.visible = false;
 				
 				uploadButton.label = "Upload";
@@ -373,7 +375,14 @@
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:Resize heightTo="0" duration="200" id="resizeHide" />
+		<s:Resize heightTo="30" duration="200" id="resizeShow" />
+		
+		<s:Fade duration="200" alphaFrom="0" alphaTo="1" id="fadeIn" />   
+		<s:Fade duration="200" alphaFrom="1" alphaTo="0" id="fadeOut" />		
+		
 	</fx:Declarations>
+	
 	<s:HGroup verticalAlign="middle">
 		<s:Button id="deleteEvidence" label="X" width="30" click="deleteEvidence_clickHandler(event)" cornerRadius="10" />
 		<s:DropDownList id="evidenceType" width="200">
@@ -399,7 +408,7 @@
 			<s:CheckBox id="collectedCheckbox" label="Collected" click="collectedCheckbox_clickHandler(event)" enabled="false"/>
 		</s:HGroup>
 	</s:HGroup>
-	<s:HGroup id="uploadProgress" width="100%" visible="false" includeInLayout="false">
+	<s:HGroup id="uploadProgress" width="100%" visible="false" showEffect="{resizeShow}" hideEffect="{resizeHide}" height="0" paddingTop="10" paddingBottom="20">
 		<components1:LoadingBar id="progressBar" width="100%" />
 		<s:Button width="70" label="Cancel" id="cancelUploadButton" click="cancelUploadButton_clickHandler(event)" chromeColor="0xFFFFFF" cornerRadius="10"/>
 	</s:HGroup>

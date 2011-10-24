@@ -5,11 +5,7 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:VGroup width="100%" height="100%" verticalAlign="middle">
-		<s:HGroup horizontalAlign="center" width="100%">
-			<s:Label fontSize="16">
-				No ERA Editions found.
-			</s:Label>
-		</s:HGroup>
-	</s:VGroup>
+	<s:Label fontSize="16" horizontalCenter="0" verticalCenter="0">
+		No ERA Editions found.
+	</s:Label>
 </s:Group>

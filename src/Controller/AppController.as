@@ -214,8 +214,8 @@ package Controller {
 			if(Auth.getInstance().isSysAdmin()) {
 				layout.header.adminToolButtons.visible = true;
 				layout.header.adminToolButtons.includeInLayout = true;
-				layout.header.switchingModeButtonGroup.includeInLayout = true;
-				layout.header.switchingModeButtonGroup.visible = true;
+				layout.header.adminToolsButton.includeInLayout = true;
+				layout.header.adminToolsButton.visible = true;
 				if(eraProjectArray == null || eraProjectArray.length == 0) {
 					layout.header.eraDropDown.enabled = false;
 					layout.header.caseCreatorButton.enabled = false;
@@ -224,8 +224,8 @@ package Controller {
 			} else {
 				layout.header.adminToolButtons.visible = false;
 				layout.header.adminToolButtons.includeInLayout = false;
-				layout.header.switchingModeButtonGroup.includeInLayout = false;
-				layout.header.switchingModeButtonGroup.visible = false;
+				layout.header.adminToolsButton.includeInLayout = false;
+				layout.header.adminToolsButton.visible = false;
 				layout.notificationPanel.visible = false;
 			}
 			if(Auth.getInstance().getSessionID() != "") {

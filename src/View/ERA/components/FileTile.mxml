@@ -62,19 +62,86 @@
 			
 			public function set fileData(fileData:Model_ERAFile):void {
 				this._fileData = fileData;
-
-				title =  fileData.title;
-				description = fileData.description;
-				fileID = fileData.base_asset_id;
-				type = fileData.type;
-				ext = fileData.fileExt;
-				version = fileData.version;
-				rootMetaType = fileData.rootMetaType;
-				checkedOut = fileData.checkedOut;
-
-				notificationCount = fileData.notificationCount;
-				screeningCount = fileData.screeningCount;
-				exhibitionCount = fileData.exhibitionCount;
+				
+				updateGUI();
+			}
+			private function updateGUI():void {
+				title =  _fileData.title;
+				description = _fileData.description;
+				fileID = _fileData.base_asset_id;
+				type = _fileData.type;
+				ext = _fileData.fileExt;
+				version = _fileData.version;
+				rootMetaType = _fileData.rootMetaType;
+				checkedOut = _fileData.checkedOut;
+				
+				notificationCount = _fileData.notificationCount;
+				screeningCount = _fileData.screeningCount;
+				exhibitionCount = _fileData.exhibitionCount;
+				
+				notificationBadge.notificationCount = this.notificationCount;
+				
+				// If there are any researchers in the approval section
+				// make the tick visible, and make it approved
+				if(_fileData.researcherApproved.length || _fileData.researcherNotApproved.length || _fileData.monitorApproved.length || _fileData.monitorNotApproved.length) {
+					// make it visible
+					tickBadge.visible = true;
+					tickBadge.includeInLayout = true;
+					
+					// Lets make the tooltip
+					var approvedTooltip:String = "";
+					// its going to show all the users who have approved/disappoved
+					if(_fileData.researcherApproved.length) {
+						approvedTooltip += "<b>Approved By Researcher(s)</b>:\n";
+						for each(var researcherNameString:String in _fileData.researcherApproved) {
+							approvedTooltip += researcherNameString + "\n";
+						}
+						approvedTooltip += "\n";
+						tickBadge.show = true;
+						tickBadge.approved = true;
+					}
+					
+					
+					if(_fileData.researcherNotApproved.length) {
+						approvedTooltip += "Not Approved By Researcher(s):\n";
+						for each(var researcherNameString:String in _fileData.researcherNotApproved) {
+							approvedTooltip += researcherNameString + "\n";
+						}
+						approvedTooltip += "\n";
+						tickBadge.show = true;
+						tickBadge.approved = false;
+					}
+					
+					
+					// if the monitor approves or disapproves, it overwrites whatever the others have said basically (just for how it appears as either a x or a tick)
+					if(_fileData.monitorNotApproved.length) {
+						approvedTooltip += "Not Approved By Monitor(s):\n";
+						for each(var monitorNameString:String in _fileData.monitorNotApproved) {
+							approvedTooltip += monitorNameString + "\n";
+						}
+						approvedTooltip += "\n";
+						tickBadge.show = true;
+						tickBadge.approved = false;
+					}
+					
+					
+					if(_fileData.monitorApproved.length) {
+						approvedTooltip += "Approved By Monitor(s):\n";
+						for each(var monitorNameString:String in _fileData.monitorApproved) {
+							approvedTooltip += monitorNameString + "\n";
+						}
+						approvedTooltip += "\n";
+						
+						tickBadge.show = true;
+						tickBadge.approved = true;
+					}
+					
+					// Now lets attach the tooltip
+					tickBadge.toolTip = approvedTooltip;
+					
+				} else {
+					tickBadge.show = false;
+				}
 			}
 			
 			[Bindable]
@@ -143,8 +210,7 @@
 			private function eraNotificationsUpdated(e:Event):void {
 				if(!_fileData) return; // we havnet set any room data info yet
 				_fileData.updateNotificationCount();
-				this.notificationCount = _fileData.notificationCount;
-				notificationBadge.notificationCount = this.notificationCount;
+				this.updateGUI();
 			}
 			
 
@@ -162,9 +228,9 @@
 	</fx:Declarations>
 	
 	<s:Group width="100" height="100">
-		<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="{description}" alpha="{checkedOut ? 0.5 : 1}" />
+		<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="Description: {description}" alpha="{checkedOut ? 0.5 : 1}" />
 		<components:NotificationBadge id="notificationBadge" left="75" notificationCount="{notificationCount}" />		
-		<components:TickBadge horizontalCenter="0" />
+		<components:TickBadge horizontalCenter="0" id="tickBadge" show="false" />
 	</s:Group>
 	
 	<s:Label text="{title}{version > 0 ? '_v' + version : ''}{screeningCount > 0 ? '_r' + screeningCount : ''}{exhibitionCount > 0 ? '_e' + exhibitionCount : ''} ({ext})" width="100%" textAlign="center" />

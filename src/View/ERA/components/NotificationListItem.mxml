@@ -37,21 +37,15 @@
 				
 				switch(notificationData.type) {
 					case Model_ERANotification.FILE_APPROVED_BY_RESEARCHER:
-						trace("notification id is", notificationData.base_asset_id);
+//						trace("notification id is", notificationData.base_asset_id);
 						// check if its broken
 						if(!notificationData.eraCase || !notificationData.room || !notificationData.file) break;
 						
-						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/"; 
-						fileURL += escape(notificationData.eraCase.rmCode) + "/"; 
-						fileURL += notificationData.room.roomType + "/";
-						fileURL += notificationData.room.base_asset_id + "/";
-						trace("notification file", notificationData.file);
-						trace("notification room", notificationData.room);
-						fileURL += notificationData.file.base_asset_id;
+						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
 						if(fileURL == currentURL) fileURL = '';
 						if(roomURL == currentURL) roomURL = '';
-						notificationText = "RM " + notificationData.eraCase.rmCode + " - Researcher <b>" + notificationData.fullName + "</b> approved file <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font> for ERA submission.";
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - Researcher <b>" + notificationData.fullName + "</b> approved file <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font> for <font color='#00AA00'>ERA submission</font>.";
 						break;
 					case Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER:
 						
@@ -64,7 +58,28 @@
 						if(roomURL == currentURL) roomURL = '';
 						notificationText = "RM " + notificationData.eraCase.rmCode + " - Researcher <b>" + notificationData.fullName + "</b> did not approved file <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font> for ERA submission.";
 						break;
-					
+					case Model_ERANotification.FILE_APPROVED_BY_MONITOR:
+						//						trace("notification id is", notificationData.base_asset_id);
+						// check if its broken
+						if(!notificationData.eraCase || !notificationData.room || !notificationData.file) break;
+						
+						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
+						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
+						if(fileURL == currentURL) fileURL = '';
+						if(roomURL == currentURL) roomURL = '';
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - Monitor <b>" + notificationData.fullName + "</b> approved file <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font> for <font color='#00AA00'>ERA submission</font>.";
+						break;
+					case Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR:
+						
+						// check if its broken
+						if(!notificationData.eraCase || !notificationData.room || !notificationData.file) break;
+						
+						var fileURL:String = "#file/" + notificationData.eraCase.base_asset_id + "/" + escape(notificationData.eraCase.rmCode) + "/" + notificationData.room.roomType + "/" + notificationData.room.base_asset_id + "/"  + notificationData.file.base_asset_id;
+						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
+						if(fileURL == currentURL) fileURL = '';
+						if(roomURL == currentURL) roomURL = '';
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - Monitor <b>" + notificationData.fullName + "</b> did not approved file <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font> for ERA submission.";
+						break;
 					case Model_ERANotification.FILE_UPLOADED:
 						
 						// check if its broken
@@ -149,7 +164,7 @@
 						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> marked " + notificationData.logItem.title + " as ready for collection in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
 						break;
 					default:
-						notificationText = notificationData.type;
+						notificationText = "Unknown Notification";
 						break;
 				}			
 				trace("Notification text is", notificationText);

@@ -5,7 +5,7 @@ package Model {
 	import Controller.Utilities.Auth;
 	
 	public class Model_ERAFile extends Model_Base {
-		
+
 		public var rootMetaType:String;
 		public var type:String;
 		public var fileName:String; // the name of the file (the original file name)
@@ -29,6 +29,14 @@ package Model {
 		public var notificationArray:Array = new Array();
 		public var screeningCount:Number = 0;
 		public var exhibitionCount:Number;
+		
+		public var researcherApproved:Array = new Array();
+		public var researcherNotApproved:Array = new Array();
+		
+		public var monitorApproved:Array = new Array();
+		public var monitorNotApproved:Array = new Array();
+		
+		public var lockedOut:Boolean = false;
 		
 		public function Model_ERAFile() {
 			super();
@@ -84,6 +92,14 @@ package Model {
 				}
 			}
 			
+			if(eraEvidenceItem["locked_for_user"].length()) {
+				for each(var lockedUsername:String in eraEvidenceItem["locked_for_user"]) {
+					if(lockedUsername == Auth.getInstance().getUsername()) {
+						this.lockedOut = true;
+					}
+				}
+			}
+			
 			updateNotificationCount();
 		}
 		
@@ -102,21 +118,34 @@ package Model {
 			}
 			
 			this.screeningCount = 0;
-			for each(var notificationData:Model_ERANotification in AppController.allNotificationsArray) {
-				trace("looking at notification", notificationData.type);
-				if(notificationData.file && notificationData.file.base_asset_id == this.base_asset_id && notificationData.type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB) {
-					
-					this.screeningCount++;
-				}
-			}
-			trace("screening count is", this.screeningCount);
-			
 			this.exhibitionCount = 0;
 			for each(var notificationData:Model_ERANotification in AppController.allNotificationsArray) {
-				if(notificationData.file && notificationData.file.base_asset_id == this.base_asset_id && notificationData.type == Model_ERANotification.FILE_MOVED_TO_EXHIBITION) {
-					this.exhibitionCount++;
+				if(notificationData.file && notificationData.file.base_asset_id == this.base_asset_id) {
+					switch(notificationData.type) {
+						case Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB:
+							this.screeningCount++;
+							break;
+						case Model_ERANotification.FILE_MOVED_TO_EXHIBITION:
+							this.exhibitionCount++;
+							break;
+						case Model_ERANotification.FILE_APPROVED_BY_RESEARCHER:
+							this.researcherApproved.push(notificationData.firstName + " " + notificationData.lastName + " (" + notificationData.username + ")");
+							break;
+						case Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER:
+							this.researcherNotApproved.push(notificationData.firstName + " " + notificationData.lastName + " (" + notificationData.username + ")");
+							break;
+						case Model_ERANotification.FILE_APPROVED_BY_MONITOR:
+							this.monitorApproved.push(notificationData.firstName + " " + notificationData.lastName + " (" + notificationData.username + ")");
+							break;
+						case Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR:
+							this.monitorNotApproved.push(notificationData.firstName + " " + notificationData.lastName + " (" + notificationData.username + ")");
+							break;
+						default:
+							break;
+					}
+					
 				}
-			}
+			}			
 		}
 		
 		

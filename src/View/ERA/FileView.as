@@ -436,6 +436,17 @@ package View.ERA
 		
 		private function setupButtonsAccess():void {
 			// Enable all the buttons since we have loaded the data now
+			
+			if(FileController.roomType != Model_ERARoom.FORENSIC_LAB) {
+				downloadButton.visible = false;
+				downloadButton.includeInLayout = false;
+				uploadNewVersionButton.visible = false;
+				uploadNewVersionButton.includeInLayout = false;
+			}
+			
+			if(mediaData.lockedOut && FileController.roomType == Model_ERARoom.SCREENING_ROOM) return; // dont enable any buttons
+			
+			
 			editDetailsButton.enabled = true;
 			hideShowAnnotationButton.enabled = true;
 			//			shareButton.enabled = true;
@@ -482,12 +493,7 @@ package View.ERA
 				uploadNewVersionButton.enabled = true;
 			}
 			
-			if(FileController.roomType != Model_ERARoom.FORENSIC_LAB) {
-				downloadButton.visible = false;
-				downloadButton.includeInLayout = false;
-				uploadNewVersionButton.visible = false;
-				uploadNewVersionButton.includeInLayout = false;
-			}
+			
 			
 			// The delete button should be enabled, provided its been shared via the asset
 			// and not via the collection 

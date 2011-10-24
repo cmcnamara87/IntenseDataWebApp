@@ -53,6 +53,14 @@ package Model.Transactions.ERAProject
 					subject += "Researcher Did Not Approve File";
 					body += "Researcher " + notificationData.fullName + " did not approved file " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for ERA submission.";
 					break;
+				case Model_ERANotification.FILE_APPROVED_BY_MONITOR:
+					subject += "Researcher Approved File";
+					body += "Monitor " + notificationData.fullName + " approved file " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for ERA submission.";
+					break;
+				case Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR:
+					subject += "Researcher Did Not Approve File";
+					body += "Monitor " + notificationData.fullName + " did not approved file " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for ERA submission.";
+					break;
 				case Model_ERANotification.FILE_UPLOADED:
 					subject += "New File Uploaded";
 					body += "" + notificationData.fullName + " uploaded " + notificationData.file.title + " to " + notificationData.room.roomTitle + ".";
@@ -78,11 +86,15 @@ package Model.Transactions.ERAProject
 				case Model_ERANotification.EVIDENCE_COLLECTED:
 					subject += "Evidence Collected";
 					body = "" + notificationData.fullName + " marked " + notificationData.logItem.title + " as collected by a researcher in " + notificationData.room.roomTitle + ".";
-					break;
+					// todo fix this up so it sends
+					return;
+//					break;
 				case Model_ERANotification.EVIDENCE_READY_FOR_COLLECTION:
 					subject += "Evidence Ready for Collection";
 					body += "" + notificationData.fullName + " marked " + notificationData.logItem.title + " as ready for collection in " + notificationData.room.roomTitle + ".";
-					break;
+					// todo fix this up so it sends
+					return;
+//					break;
 				default:
 					break;
 				

@@ -15,6 +15,7 @@ package Controller.ERA {
 	import Model.Model_ERAFile;
 	import Model.Model_ERANotification;
 	import Model.Model_ERARoom;
+	import Model.Model_ERAUser;
 	import Model.Model_Media;
 	
 	import Module.AudioViewer.AudioView;
@@ -171,7 +172,8 @@ package Controller.ERA {
 			} else {
 				// its the screening lab, so we need to ask 'do they want to save changes'
 				// if they are a reserachers
-				if(CaseController.isResearcher) {
+				trace("*************** is researcher", CaseController.isResearcher ? "yes" : "no", "is moniotor", Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year) ? "yes" : "no");
+				if((CaseController.isResearcher || Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)) && !currentMediaData.lockedOut) {
 					var myAlert:Alert = Alert.show("Have you finished commenting on this file for Review?", "Finished Commenting?", Alert.YES | Alert.NO, null, finishedCommenting, null, Alert.YES);
 					myAlert.height = 100;
 					myAlert.width = 300;
@@ -194,15 +196,28 @@ package Controller.ERA {
 		private function fileApproved(e:CloseEvent):void {
 			if(e.detail == Alert.YES) {
 				trace("finished commenting an approve", currentAssetID);
-				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, roomID, Auth.getInstance().getUsername(), 
-					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName, Model_ERANotification.FILE_APPROVED_BY_RESEARCHER, caseID, currentAssetID);
+				
+				if(CaseController.isResearcher) {
+					AppModel.getInstance().updateFileLockOutStatus(roomID, Model_ERANotification.FILE_APPROVED_BY_RESEARCHER, caseID, currentAssetID, lockOutStatusUpdated);
+				}
+				if(Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)) {
+					AppModel.getInstance().updateFileLockOutStatus(roomID, Model_ERANotification.FILE_APPROVED_BY_MONITOR, caseID, currentAssetID, lockOutStatusUpdated);
+				}
 			} else {
 				trace("finished commenting an DO NOT approve");
-				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, roomID, Auth.getInstance().getUsername(), 
-					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName, Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER, caseID, currentAssetID);
+				if(CaseController.isResearcher) {
+					AppModel.getInstance().updateFileLockOutStatus(roomID, Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER, caseID, currentAssetID, lockOutStatusUpdated);
+				}
+				if(Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)) {
+					AppModel.getInstance().updateFileLockOutStatus(roomID, Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR, caseID, currentAssetID, lockOutStatusUpdated);
+				}
 			}
 			
 			Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
+		}
+		
+		private function lockOutStatusUpdated(status:Boolean):void {
+			// oh well.
 		}
 		
 		/* =================================== DOWNLOAD A FILE ========================================= */

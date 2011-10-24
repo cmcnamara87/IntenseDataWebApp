@@ -5,10 +5,16 @@
 				   cornerRadius="20"
 				   backgroundColor="{approved ? 0x009900 : 0xFF0000}"
 				   borderColor="0xFFFFFF"
-				   borderWeight="2">
+				   borderWeight="2"
+				   includeInLayout="{show}"
+				   visible="{show}"
+				   >
 	
 	<fx:Script>
 		<![CDATA[
+			[Bindable]
+			public var show:Boolean = false;
+			
 			[Bindable]
 			public var approved:Boolean = true;
 		]]>

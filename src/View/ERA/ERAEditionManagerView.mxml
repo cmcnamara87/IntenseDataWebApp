@@ -140,6 +140,7 @@
 		<!-- Create the middle box -->
 		<s:VGroup width="900" height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
 			<!-- Create Menu box -->
+			<s:Label width="100%"/>
 			
 			<s:Label text="ERA Edition" fontSize="20" fontWeight="bold" color="0x5e6469" />
 			<s:HGroup width="100%">

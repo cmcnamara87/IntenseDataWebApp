@@ -39,6 +39,7 @@ package Controller.ERA
 		private var currentRoom:Model_ERARoom = null;
 		
 		// setup teh users permissions for the ucrrent case
+		// for other roles, see @Auth.getInstance().hasRoleForYear
 		public static var isProductionManager:Boolean = false;
 		private var isTeamManager:Boolean = false;
 		public static var isResearcher:Boolean = false;
