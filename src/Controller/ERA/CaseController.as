@@ -564,6 +564,7 @@ package Controller.ERA
 			layout.notificationBar.showError("Failed to Upload file.");
 		}
 		private function uploadProgress(percentage:Number, evidenceItem:EvidenceItem):void {
+			layout.notificationBar.showProcess("Uploading file... " + percentage + "%");
 			evidenceItem.showProgress(percentage);
 		}
 		private function uploadComplete(status:Boolean, eraEvidence:Model_ERAFile=null, evidenceItem:EvidenceItem=null):void {

@@ -21,6 +21,10 @@
 			public function addNotifications(notificationsArray:Array):void {
 				
 				notificationList.removeAllElements();
+				
+				showAllNotificationsButton.visible = false;
+				showAllNotificationsButton.includeInLayout = false;
+				
 				for each(var notificationData:Model_ERANotification in notificationsArray) {
 //					if(notificationData.username == Auth.getInstance().getUsername()) continue;
 					
@@ -33,9 +37,95 @@
 				var notificationUpdatedEvent:IDEvent = new IDEvent(IDEvent.ERA_NOTIFICATIONS_UPDATED, true);
 				dispatchEvent(notificationUpdatedEvent);
 			}
+			
+			public function showAllNotifications():void {
+				
+				showAllNotificationsButton.visible = false;
+				showAllNotificationsButton.includeInLayout = false;
+				
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					notificationListItem.visible = true;
+					notificationListItem.includeInLayout = true;
+				}	
+			}
+			
+			public function filterRoomNotifications(roomID:Number):void {
+				
+				notificationPanel.visible = true;
+				showAllNotificationsButton.visible = true;
+				showAllNotificationsButton.includeInLayout = true;
+				
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					
+					if(notificationListItem.notificationData.room) { 
+						if(notificationListItem.notificationData.room.base_asset_id != roomID) {
+							notificationListItem.visible = false;
+							notificationListItem.includeInLayout = false;
+						} else {
+							notificationListItem.visible = true;
+							notificationListItem.includeInLayout = true;
+						}
+					}
+				}
+			}
+			
+			public function filterCaseNotifications(caseID:Number):void {
+				
+				notificationPanel.visible = true;
+				showAllNotificationsButton.visible = true;
+				showAllNotificationsButton.includeInLayout = true;
+				
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					
+					if(notificationListItem.notificationData.room) { 
+						if(notificationListItem.notificationData.eraCase.base_asset_id != caseID) {
+							notificationListItem.visible = false;
+							notificationListItem.includeInLayout = false;
+						} else {
+							notificationListItem.visible = true;
+							notificationListItem.includeInLayout = true;
+						}
+					}
+				}
+			}
+			
+			public function filterFileNotifications(fileID:Number):void {
+				
+				notificationPanel.visible = true;
+				showAllNotificationsButton.visible = true;
+				showAllNotificationsButton.includeInLayout = true;
+				
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					
+					if(notificationListItem.notificationData.file) { 
+						if(notificationListItem.notificationData.file.base_asset_id != fileID) {
+							notificationListItem.visible = false;
+							notificationListItem.includeInLayout = false;
+						} else {
+							notificationListItem.visible = true;
+							notificationListItem.includeInLayout = true;
+						}
+					}
+				}
+			}
+
+			protected function label1_clickHandler(event:MouseEvent):void
+			{
+				showAllNotifications();
+			}
+
 		]]>
 	</fx:Script>
 
+	<fx:Declarations>
+		<s:Fade duration="200" alphaFrom="0" alphaTo="1" id="fadeIn" />   
+		<s:Fade duration="200" alphaFrom="1" alphaTo="0" id="fadeOut" />		
+	</fx:Declarations>
+	
 	<!-- Header -->
 	<s:VGroup width="100%" height="100%" gap="0">
 		<View:Header id="header" visible="false" includeInLayout="false"></View:Header>
@@ -54,11 +144,20 @@
 					   id="notificationPanel"
 					   top="{header.height + 10}"
 					   right="20"
-					   width="300" visible="false"
-					   maxHeight="500">
-		<s:Scroller width="100%" height="100%">
-			<s:VGroup id="notificationList" width="100%" height="100%" gap="1"/>
-		</s:Scroller>
+					   width="350" visible="false"
+					   maxHeight="500" showEffect="{fadeIn}" hideEffect="{fadeOut}" resizeEffect="Resize"
+					   borderVisible="false">
+		<s:VGroup width="100%" height="100%" gap="0">
+			<s:VGroup paddingBottom="10" paddingTop="10" id="showAllNotificationsButton" visible="false" includeInLayout="false" width="100%">
+				<s:Label width="100%" textAlign="center" text="Show All Notifications" color="0x0000FF" click="label1_clickHandler(event)" />	
+			</s:VGroup>
+			<s:Scroller width="100%" height="100%">
+				<s:VGroup id="notificationList" width="100%" height="100%" gap="1"/>
+			</s:Scroller>	
+		</s:VGroup>
+		<s:filters>
+			<s:DropShadowFilter distance="3" angle="0" alpha="0.5" color="0x000000" blurX="20" blurY="20"/>
+		</s:filters>
 	</s:BorderContainer>
 	
 	<!--<Notification:NotificationPanel

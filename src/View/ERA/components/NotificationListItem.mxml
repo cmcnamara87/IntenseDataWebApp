@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
-				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" backgroundColor="{read ? 0xFFFFFF : 0xD9F0FF}" borderVisible="false"
+				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" backgroundColor="{read ? 0xFFFFFF : 0xD9F0FF}" borderColor="0xEEEEEE" borderVisible="true" borderStyle="solid"
 				   >
 
 	<fx:Script>
@@ -28,6 +28,10 @@
 			[Bindable]
 			private var read:Boolean;
 			
+			public function get notificationData():Model_ERANotification {
+				return _notificationData;
+			}
+			
 			public function set notificationData(notificationData:Model_ERANotification):void {
 				_notificationData = notificationData;
 				
@@ -45,7 +49,7 @@
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
 						if(fileURL == currentURL) fileURL = '';
 						if(roomURL == currentURL) roomURL = '';
-						notificationText = "RM " + notificationData.eraCase.rmCode + " - Researcher <b>" + notificationData.fullName + "</b> approved file <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font> for <font color='#00AA00'>ERA submission</font>.";
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - Researcher <b>" + notificationData.fullName + "</b> approved file <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font> for <font color='#00AA00'><b>ERA submission</b></font>.";
 						break;
 					case Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER:
 						
@@ -67,7 +71,7 @@
 						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
 						if(fileURL == currentURL) fileURL = '';
 						if(roomURL == currentURL) roomURL = '';
-						notificationText = "RM " + notificationData.eraCase.rmCode + " - Monitor <b>" + notificationData.fullName + "</b> approved file <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font> for <font color='#00AA00'>ERA submission</font>.";
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - Monitor <b>" + notificationData.fullName + "</b> approved file <font color='#0000FF'><a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> in <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font> for <font color='#00AA00'><b>ERA submission</b></font>.";
 						break;
 					case Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR:
 						
@@ -192,7 +196,7 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:VGroup id="notificationList" width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="0">
+	<s:VGroup id="notificationList" width="100%" paddingBottom="15" paddingLeft="15" paddingRight="15" paddingTop="15" gap="10">
 		<mx:Text htmlText="{notificationText}" width="100%" />
 		<s:HGroup width="100%">
 			<s:Button label="{read ? 'Mark as Not Read' : 'Mark as Read'}" height="20" fontSize="10" id="markAsReadButton" click="markAsReadButton_clickHandler(event)" />

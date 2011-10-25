@@ -19,6 +19,7 @@
 			import Model.Model_ERACase;
 			import Model.Model_ERAUser;
 			
+			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			
 			private var _eraCaseData:Model_ERACase;
@@ -118,7 +119,6 @@
 				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, canvas1_removedFromStageHandler);
 			}
-
 		]]>
 	</fx:Script>
 

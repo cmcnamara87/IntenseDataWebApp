@@ -125,12 +125,15 @@
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:DropShadowFilter id="myFilter" distance="-1" angle="270" color="0xDDDDDD" alpha="0.5" blurX="0" blurY="0"/>
 	</fx:Declarations>
 	<s:Group width="70" height="70">
 		
-		<mx:Image source="{icon}" width="70" height="70" horizontalAlign="center" maintainAspectRatio="true"/>
+		<mx:Image source="{icon}" width="50" height="50" horizontalAlign="center" maintainAspectRatio="true" verticalAlign="middle" horizontalCenter="0" verticalCenter="0" filters="{myFilter}">
+		</mx:Image>
+		
 		<s:Label x="18" text="x" fontSize="70" fontWeight="bold" color="0xFF0000" visible="{unavailable}" includeInLayout="{unavailable}"/>
-		 <components:NotificationBadge id="notificationBadge" top="-10" left="60" notificationCount="{notificationCount}" />
+		<components:NotificationBadge id="notificationBadge" top="-10" left="60" notificationCount="{notificationCount}" />
 	 </s:Group>
 	<!--<s:Group width="70" height="70">		
 		<s:BorderContainer backgroundColor="0x434343" borderVisible="false" height="70" width="70" visible="true" includeInLayout="true">
@@ -146,7 +149,7 @@
 		
 	</s:Group>-->
 	
-	<s:Label text="{roomName}" fontSize="18" color="0xcfcfcf" width="100%" textAlign="center">
+	<s:Label text="{roomName}" fontSize="15" color="0xcfcfcf" width="100%" textAlign="center">
 		<s:filters>
 			<s:DropShadowFilter distance="1" angle="270" color="0x000000" blurX="0" blurY="0"/>
 		</s:filters>

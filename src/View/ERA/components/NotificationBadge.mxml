@@ -10,6 +10,7 @@
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
 			[Bindable]
 			public var notificationCount:Number = 0;
 			public var notificationToolTip:String = "";

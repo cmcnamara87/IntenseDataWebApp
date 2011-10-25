@@ -4,8 +4,7 @@
 		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100" gap="15" buttonMode="true" 
 		  mouseOver="vgroup1_mouseOverHandler(event)" 
 		  mouseOut="vgroup1_mouseOutHandler(event)" 
-		  mouseDown="vgroup1_mouseDownHandler(event)" 
-		  mouseUp="vgroup1_mouseUpHandler(event)"
+		  
 		  mouseMove="vgroup1_mouseMoveHandler(event)" xmlns:components="View.ERA.components.*"
 		  creationComplete="vgroup1_creationCompleteHandler(event)"
 		  removedFromStage="vgroup1_removedFromStageHandler(event)">
@@ -92,7 +91,7 @@
 					var approvedTooltip:String = "";
 					// its going to show all the users who have approved/disappoved
 					if(_fileData.researcherApproved.length) {
-						approvedTooltip += "<b>Approved By Researcher(s)</b>:\n";
+						approvedTooltip += "Approved By Researcher(s):\n";
 						for each(var researcherNameString:String in _fileData.researcherApproved) {
 							approvedTooltip += researcherNameString + "\n";
 						}
@@ -220,6 +219,13 @@
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
 			}
 
+
+			protected function notificationBadge_clickHandler(event:MouseEvent):void
+			{
+				// Show notifications in the notification panel (filters to only show ones relating to this object)
+				AppController.layout.filterFileNotifications(this.fileID);
+			}
+
 		]]>
 	</fx:Script>
 
@@ -228,8 +234,9 @@
 	</fx:Declarations>
 	
 	<s:Group width="100" height="100">
-		<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="Description: {description}" alpha="{checkedOut ? 0.5 : 1}" />
-		<components:NotificationBadge id="notificationBadge" left="75" notificationCount="{notificationCount}" />		
+		<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="Description: {description}" alpha="{checkedOut ? 0.5 : 1}" mouseDown="vgroup1_mouseDownHandler(event)" 
+				  mouseUp="vgroup1_mouseUpHandler(event)" />
+		<components:NotificationBadge id="notificationBadge" left="75" notificationCount="{notificationCount}" click="notificationBadge_clickHandler(event)" />		
 		<components:TickBadge horizontalCenter="0" id="tickBadge" show="false" />
 	</s:Group>
 	

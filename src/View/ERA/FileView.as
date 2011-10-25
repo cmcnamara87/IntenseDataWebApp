@@ -445,7 +445,7 @@ package View.ERA
 			}
 			
 			if(mediaData.lockedOut && FileController.roomType == Model_ERARoom.SCREENING_ROOM) return; // dont enable any buttons
-			
+			if(FileController.roomType == Model_ERARoom.EXHIBIT) return;
 			
 			editDetailsButton.enabled = true;
 			hideShowAnnotationButton.enabled = true;
