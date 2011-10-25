@@ -119,6 +119,10 @@ package Model {
 			
 			this.screeningCount = 0;
 			this.exhibitionCount = 0;
+			this.researcherApproved = new Array();
+			this.researcherNotApproved = new Array();
+			this.monitorApproved = new Array();
+			this.monitorNotApproved = new Array();
 			for each(var notificationData:Model_ERANotification in AppController.allNotificationsArray) {
 				if(notificationData.file && notificationData.file.base_asset_id == this.base_asset_id) {
 					switch(notificationData.type) {
@@ -162,6 +166,8 @@ package Model {
 				trace("Media Media URI:", meta_media_uri);
 				return meta_media_uri
 			} else if(rootMetaType == "document") {
+				trace("RAW DATA");
+				trace(rawData.meta["r_media"]);
 				trace("******PDF URL IS", "http://"+Recensio_Flex_Beta.serverAddress+"/" + meta_media_uri);
 				return "http://"+Recensio_Flex_Beta.serverAddress+"/" + meta_media_uri;
 			} else {

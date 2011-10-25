@@ -240,5 +240,5 @@
 		<components:TickBadge horizontalCenter="0" id="tickBadge" show="false" />
 	</s:Group>
 	
-	<s:Label text="{title}{version > 0 ? '_v' + version : ''}{screeningCount > 0 ? '_r' + screeningCount : ''}{exhibitionCount > 0 ? '_e' + exhibitionCount : ''} ({ext})" width="100%" textAlign="center" />
+	<s:Label text="{title}{version > 0 ? '_v' + version : ''}{screeningCount > 0 ? '_r' + screeningCount : ''}{exhibitionCount > 0 ? '_e' + exhibitionCount : ''} ({ext == 'pot' ? 'ppt' : ext})" width="100%" textAlign="center" />
 </s:VGroup>
