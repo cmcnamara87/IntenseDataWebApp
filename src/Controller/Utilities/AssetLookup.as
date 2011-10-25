@@ -44,7 +44,7 @@ package Controller.Utilities {
 		public static var EvidenceBoxIcon:Class;
 		[Embed(source="Assets/Template/forensic_lab_icon_1.png")]
 		public static var ForensicLabIcon:Class;
-		[Embed(source="Assets/Template/screening_lab_icon_1.png")]
+		[Embed(source="Assets/Template/screening_lab_icon_2.png")]
 		public static var ScreeningLabIcon:Class;
 		[Embed(source="Assets/Template/exhibition_icon_1.png")]
 		public static var ExhibitionIcon:Class;
