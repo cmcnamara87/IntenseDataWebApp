@@ -245,7 +245,9 @@
 				// Disable the text entry boxes, because theyh ave already been saved
 				evidenceType.enabled = false;
 				title.enabled = false;
+				title.setStyle('borderVisible', 'none');
 				description.enabled = false;
+				description.setStyle('borderVisible', 'none');
 				
 				usefulCheckbox.selected = logItem.useful;
 				if(usefulCheckbox.selected == true) {
@@ -396,8 +398,8 @@
 				<fx:String>Video</fx:String>
 			</s:ArrayList>
 		</s:DropDownList>
-		<s:TextInput id="title" text="name" color="0x888888" focusIn="title_focusInHandler(event)" focusOut="title_focusOutHandler(event)"/>
-		<s:TextInput id="description" width="300" text="description" color="0x888888" focusIn="description_focusInHandler(event)" focusOut="description_focusOutHandler(event)"/>
+		<s:TextInput id="title" text="name" color="0x888888" focusIn="title_focusInHandler(event)" focusOut="title_focusOutHandler(event)" borderColor="0xDDDDDD"/>
+		<s:TextInput id="description" width="300" text="description" color="0x888888" focusIn="description_focusInHandler(event)" focusOut="description_focusOutHandler(event)" borderColor="0xDDDDDD" />
 		<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)" cornerRadius="10"/>
 		<s:HGroup id="actionGroup" visible="false" includeInLayout="false">
 			<s:CheckBox label="Accepted" id="usefulCheckbox" change="usefulCheckbox_changeHandler(event)"/>

@@ -48,7 +48,7 @@ package Controller.Utilities {
 		public static var ScreeningLabIcon:Class;
 		[Embed(source="Assets/Template/exhibition_icon_1.png")]
 		public static var ExhibitionIcon:Class;
-		[Embed(source="Assets/Template/post_mortem_icon.png")]
+		[Embed(source="Assets/Template/post_mortem_icon_1.png")]
 		public static var PostMortemIcon:Class;
 		
 		
