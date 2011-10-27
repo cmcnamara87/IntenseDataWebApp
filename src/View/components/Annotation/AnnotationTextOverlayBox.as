@@ -27,7 +27,9 @@ package View.components.Annotation
 			super();
 			
 			// Setup the size
-			this.percentWidth = 100;
+//			this.percentWidth = 100;
+			this.width = 500;
+			this.height = 100;
 			
 			// Setup layout
 			var myLayout:VerticalLayout = new VerticalLayout();
@@ -57,6 +59,7 @@ package View.components.Annotation
 			
 			// Add Content Entry box
 			annotationTextInput = new TextArea();
+			annotationTextInput.percentHeight = 100;
 			annotationTextInput.percentWidth = 100;
 		}
 		
@@ -73,9 +76,16 @@ package View.components.Annotation
 			}
 			trace("Adding Text Input");
 			this.addElement(annotationTextInput);
+			
+			this.percentWidth = 100;
 		}
 		
 		public function enterReadOnlyMode():void {
+			
+			
+			
+			this.width = 500;
+			
 			//trace("Entering Read Only Mode");
 			if(this.contains(annotationText)) {
 				//trace("Removing annotation text");
@@ -139,7 +149,11 @@ package View.components.Annotation
 				
 				startRefLocation = newCommentText.indexOf("{", startRefLocation + replacementString);
 			}
-			annotationText.htmlText = newCommentText;
+			if(newCommentText.length > 200) {
+				annotationText.htmlText = newCommentText.substr(0, 200) + "...";
+			} else {
+				annotationText.htmlText = newCommentText;
+			}
 //			annotationText.text = text;
 		}
 		

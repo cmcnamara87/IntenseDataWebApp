@@ -43,6 +43,7 @@ package Model.Transactions.ERAProject
 			var data:XML;
 			if((data = AppModel.getInstance().getData("getting users with role " + role, e)) == null) {
 				callback(false, role, null);
+				return;
 			}
 			
 			// Gets out all the users

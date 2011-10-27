@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   borderStyle="solid"
+		   borderColor="0x000000"
+		   mouseOver="bordercontainer1_mouseOverHandler(event)"
+		   mouseOut="bordercontainer1_mouseOutHandler(event)"
+		   backgroundColor="0xFF0000"
+		   >
+	<fx:Script>
+		<![CDATA[
+			import Controller.IDEvent;
+			
+			import flash.utils.clearTimeout;
+			import flash.utils.setTimeout;
+			
+			public var annotationID:Number = 0;
+			public var videoID:Number = 0; // the id of the video this annotation is on
+			public var startTime:Number = 0;
+			public var endTime:Number = 0;
+			
+			[Bindable]
+			public var annotationHeight:Number = 0;
+			[Bindable]
+			public var annotationWidth:Number = 0;
+			
+			[Bindable]
+			public var annotationColor:uint = 0x000000;
+			
+			private var disappearTimeout:uint = 0;
+			
+			[Bindable]
+			public var highlight:Boolean = false;
+			
+
+			protected function bordercontainer1_mouseOverHandler(event:MouseEvent):void
+			{
+				if(disappearTimeout) {
+					trace("cancelling timeout");
+					clearTimeout(disappearTimeout);
+					disappearTimeout = 0;
+				}
+				
+				if(videoID != 0) {
+					downloadButton.visible = true;
+					downloadButton.includeInLayout = true;
+				}
+				trace("mouse in");
+			}
+
+
+			protected function bordercontainer1_mouseOutHandler(event:MouseEvent):void
+			{
+				trace("mouse out");
+				disappearTimeout = setTimeout(function():void {
+					downloadButton.visible = false;
+					downloadButton.includeInLayout = false;
+				}, 500);
+			}
+
+
+			protected function downloadButton_clickHandler(event:MouseEvent):void
+			{
+				var downloadEvent:IDEvent = new IDEvent(IDEvent.ERA_DOWNLOAD_VIDEO_SEGMENT, true);
+				downloadEvent.data.timelineAnnotation = this;
+				dispatchEvent(downloadEvent);
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:Button visible="false" includeInLayout="false" id="downloadButton" horizontalCenter="0" label="Download" top="-30" cornerRadius="10" chromeColor="0xFFFFFF" click="downloadButton_clickHandler(event)"/>
+	<mx:Canvas id="annotationBox" backgroundColor="{annotationColor}" backgroundAlpha="{highlight ? 1 : 0.1}" borderStyle="solid" borderColor="{annotationColor}" width="{annotationWidth}" height="{annotationHeight}"/>
+</s:BorderContainer>

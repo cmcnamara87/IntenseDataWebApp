@@ -6,8 +6,10 @@ package View.components.Annotation
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.geom.Point;
 	
 	import mx.containers.Canvas;
 	import mx.controls.Alert;
@@ -77,16 +79,7 @@ package View.components.Annotation
 			this.setStyle('borderWeight', 3);
 			this.setStyle('borderColor', 0x00AA00);
 			
-			this.addEventListener(MouseEvent.MOUSE_OVER, function(e:Event):void {
-				var annotation:AnnotationInterface = e.target as AnnotationInterface;
-				annotation.highlight();
-				
-				// tell the viewer to display the overlay to go with this
-				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
-				myEvent.data.text = annotation.getText();
-				myEvent.data.author = annotation.getAuthor();
-				dispatchEvent(myEvent);
-			});
+			this.addEventListener(MouseEvent.MOUSE_OVER, mouseOver);
 			
 			this.addEventListener(MouseEvent.MOUSE_OUT, function(e:Event):void {
 				trace("Mouse out!!!");
@@ -95,6 +88,18 @@ package View.components.Annotation
 				// tell the viewer to hide the annotation text overlay
 				dispatchEvent(new IDEvent(IDEvent.ANNOTATION_MOUSE_OUT, true));
 			});
+		}
+		
+		private function mouseOver(e:Event):void {
+			var annotation:AnnotationInterface = e.target as AnnotationInterface;
+			annotation.highlight();
+			
+			// tell the viewer to display the overlay to go with this
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+			myEvent.data.annotation = this;
+			myEvent.data.text = annotation.getText();
+			myEvent.data.author = annotation.getAuthor();
+			dispatchEvent(myEvent);
 		}
 		
 		/* PUBLIC FUNCTIONS */
@@ -164,6 +169,18 @@ package View.components.Annotation
 		}
 		public function getY():Number {
 			return this.y;
+		}
+		
+		public function getHeight():Number {
+			return this.height;
+		}
+		
+		public function localToLocal(containerFrom:DisplayObject, containerTo:DisplayObject, origin:Point):Point
+		{
+			var point:Point = origin;
+			point = containerFrom.localToGlobal(point);
+			point = containerTo.globalToLocal(point);
+			return point;
 		}
 	}
 }

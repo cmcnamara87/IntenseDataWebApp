@@ -20,9 +20,11 @@ package View.components.MediaViewer
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.ProgressEvent;
+	import flash.geom.Point;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	import flash.utils.getQualifiedClassName;
@@ -144,29 +146,33 @@ package View.components.MediaViewer
 			scrollerContents.percentHeight = 100;
 			scrollerContents.percentWidth = 100;
 			
-			// So we can align the image/annotations vertically
-			var verticalAlignGroup:HGroup = new HGroup();
-			verticalAlignGroup.percentHeight = 100;
-			verticalAlignGroup.percentWidth = 100;
-			verticalAlignGroup.verticalAlign = VerticalAlign.MIDDLE;
-			scrollerContents.addElement(verticalAlignGroup);
-			
-			// So we can align the image/annotations horizontally.
-			var horizontalAlignGroup:VGroup = new VGroup();
-			horizontalAlignGroup.percentWidth = 100;
-			horizontalAlignGroup.horizontalAlign = HorizontalAlign.CENTER;
-			verticalAlignGroup.addElement(horizontalAlignGroup);
-			
+//			// So we can align the image/annotations vertically
+//			var verticalAlignGroup:HGroup = new HGroup();
+//			verticalAlignGroup.percentHeight = 100;
+//			verticalAlignGroup.percentWidth = 100;
+//			verticalAlignGroup.verticalAlign = VerticalAlign.MIDDLE;
+//			scrollerContents.addElement(verticalAlignGroup);
+//			
+//			// So we can align the image/annotations horizontally.
+//			var horizontalAlignGroup:VGroup = new VGroup();
+//			horizontalAlignGroup.percentWidth = 100;
+//			horizontalAlignGroup.horizontalAlign = HorizontalAlign.CENTER;
+//			verticalAlignGroup.addElement(horizontalAlignGroup);
+//			
 			// Adding the group to the scroller
 			myScroller.viewport = scrollerContents;
 			scrollerAndOverlayGroup.addElement(myScroller);
 			
-			// The group that will contain the Image and its Annotations
-			mediaGroup = new Group();
-			horizontalAlignGroup.addElement(mediaGroup);
+//			// The group that will contain the Image and its Annotations
+//			mediaGroup = new Group();
+//			horizontalAlignGroup.addElement(mediaGroup);
+//			
 			
 			media = new MediaAndAnnotationHolder(mediaType);
-			mediaGroup.addElement(media);
+			media.horizontalCenter = 0;
+			media.verticalCenter = 0;
+			scrollerContents.addElement(media);
+//			mediaGroup.addElement(media);
 			
 			loadingLabel = new Label();
 			loadingLabel.text = "Loading...";
@@ -176,7 +182,8 @@ package View.components.MediaViewer
 			loadingLabel.setStyle('textAlign', 'center');
 			loadingLabel.visible = true;
 			
-			mediaGroup.addElement(loadingLabel);
+			scrollerContents.addElement(loadingLabel);
+//			mediaGroup.addElement(loadingLabel);
 			
 			
 			// Create the Annotation Tools toolbar
@@ -433,6 +440,11 @@ package View.components.MediaViewer
 		private function annotationMouseOver(e:IDEvent):void {
 			trace("Caught annotation mouse over");
 			trace("author is", e.data.author);
+			
+			// Only show the text, if we are coming from the actual annotation, not from highlughting the annotation list
+			if(e.data.fromAnnotationList) return;
+			
+			
 			if(e.data.bottom && e.data.bottom == true) {
 				// Only show the annotaton overlay at the bottom
 				// this is when the request comes from the annotaiton list panel
@@ -441,8 +453,24 @@ package View.components.MediaViewer
 			} else {
 				this.showAnnotationTextOverlayViewMode();
 			}
+
 			annotationTextOverlayBox.setAuthor(e.data.author);
 			annotationTextOverlayBox.setText(e.data.text);
+			
+			var annotationB:AnnotationInterface = (e.data.annotation as AnnotationInterface);
+			if(scrollerAndOverlayGroup.mouseY < (scrollerAndOverlayGroup.height / 2)) {
+				var point:Point = annotationB.localToLocal(media, scrollerAndOverlayGroup, new Point(annotationB.getX(), annotationB.getY() + annotationB.getHeight()));
+			} else {
+				trace("point", annotationB.getX(), annotationB.getY());
+				var point:Point = annotationB.localToLocal(media, scrollerAndOverlayGroup, new Point(annotationB.getX(), annotationB.getY()));
+				trace("annotation text overly height", annotationTextOverlayBox.height);
+				point.y -= annotationTextOverlayBox.height;
+			}
+			
+			trace("annotation coordinates", point.x, point.y);
+			annotationTextOverlayBox.x = point.x;
+			annotationTextOverlayBox.y = point.y;
+			
 			trace("**********************");
 		}
 		
@@ -503,7 +531,7 @@ package View.components.MediaViewer
 			scrollerAndOverlayGroup.addElement(annotationTextOverlayBox);
 			
 			
-			if(bottom) {
+			/*if(bottom) {
 				// We always want to show the overlay at hte bottom
 				// this is for when we highlight annotations in the annotaiton list panel
 				annotationTextOverlayBox.bottom = 0;
@@ -517,7 +545,7 @@ package View.components.MediaViewer
 				} else {
 					annotationTextOverlayBox.bottom = 0;
 				}
-			}
+			}*/
 			annotationTextOverlayBox.visible = true;
 		}
 		

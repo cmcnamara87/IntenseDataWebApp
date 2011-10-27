@@ -35,6 +35,8 @@ package Model.Transactions.ERAProject
 		
 		private var newFileID:Number;
 		
+		private var bytesLoadedSoFar:Number = 0;
+		
 		public function Transaction_UploadERAFile(year:String, evidenceRoomID:Number, forensicLabID:Number, logItemID:Number, type:String, title:String, description:String, version:Number, fileReference:FileReference, evidenceItem:EvidenceItem, connection:Connection, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function) {
 			this.year = year;
 			this.evidenceRoomID = evidenceRoomID;
@@ -60,6 +62,7 @@ package Model.Transactions.ERAProject
 		}
 		
 		private function progressHandler(event:ProgressEvent):void {
+//			var byteJustLoaded:Number = event.bytesLoaded
 			var percentProgress:Number = Math.round(event.bytesLoaded/event.bytesTotal*100);
 			progressCallback(percentProgress, evidenceItem);
 		}

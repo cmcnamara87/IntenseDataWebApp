@@ -200,7 +200,7 @@ package View.components.Panels.AnnotationList
 				
 				var addRefButton:IDButton = new IDButton("Add Ref");
 				addRefButton.percentWidth = 100;
-				buttonHGroup.addElement(addRefButton);
+//				buttonHGroup.addElement(addRefButton);
 				addRefButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
 					var addRefEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL, true);
 					addRefEvent.data.commentID = assetID;
@@ -257,6 +257,7 @@ package View.components.Panels.AnnotationList
 //			trace("List Item Mouse Over", assetID);
 			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, true);
 			myEvent.data.assetID = assetID;
+			myEvent.data.fromAnnotationList = true;
 			this.dispatchEvent(myEvent);
 		}
 		

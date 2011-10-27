@@ -5,8 +5,10 @@ package View.components.Annotation
 	
 	import View.components.MediaViewer.PDFViewer.PDF;
 	
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.geom.Point;
 	
 	import mx.graphics.BitmapFill;
 	
@@ -61,16 +63,7 @@ package View.components.Annotation
 			// this Annotation class.
 			this.mouseChildren = false;
 			
-			this.addEventListener(MouseEvent.MOUSE_OVER, function(e:Event):void {
-				var annotation:AnnotationInterface = e.target as AnnotationInterface;
-				annotation.highlight();
-				
-				// tell the viewer to display the overlay to go with this
-				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
-				myEvent.data.text = annotation.getText();
-				myEvent.data.author = annotation.getAuthor();
-				dispatchEvent(myEvent);
-			});
+			this.addEventListener(MouseEvent.MOUSE_OVER, mouseOver);
 			
 			this.addEventListener(MouseEvent.MOUSE_OUT, function(e:Event):void {
 				trace("Mouse out!!!");
@@ -82,6 +75,17 @@ package View.components.Annotation
 			
 		}
 		
+		private function mouseOver(e:Event):void {
+			var annotation:AnnotationInterface = e.target as AnnotationInterface;
+			annotation.highlight();
+			
+			// tell the viewer to display the overlay to go with this
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+			myEvent.data.annotation = this;
+			myEvent.data.text = annotation.getText();
+			myEvent.data.author = annotation.getAuthor();
+			dispatchEvent(myEvent);
+		}
 		/* PUBLIC FUNCTIONS */
 		/**
 		 * Tells the controller to save this annotation in the database. 
@@ -160,6 +164,18 @@ package View.components.Annotation
 		}
 		public function getY():Number {
 			return this.y;
+		}
+		
+		public function getHeight():Number {
+			return this.height;
+		}
+		
+		public function localToLocal(containerFrom:DisplayObject, containerTo:DisplayObject, origin:Point):Point
+		{
+			var point:Point = origin;
+			point = containerFrom.localToGlobal(point);
+			point = containerTo.globalToLocal(point);
+			return point;
 		}
 	}
 }

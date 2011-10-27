@@ -7,7 +7,7 @@
 	<fx:Script>
 		<![CDATA[
 			import flash.net.navigateToURL;
-			[Embed(source="Assets/Template/login_logo.jpg")] 
+			[Embed(source="Assets/Template/login_logo_1.jpg")] 
 			[Bindable] private var login_logo:Class;
 			
 			[Embed(source="Assets/Template/header_logo_id_4.png")] 
@@ -31,8 +31,8 @@
 		<Element:LoginBox id="loginbox" width="337" height="184" x="{5/6 * box.width}" y="{box.height/2}" toolTip="Login to the system"></Element:LoginBox>
 	</s:BorderContainer>
 	<s:HGroup paddingBottom="10" paddingLeft="80" paddingRight="10" paddingTop="5" verticalAlign="bottom">
-		<s:Label text="Powered by" />	
-		<mx:Image source="{idLogo}" width="200" height="19" click="image1_clickHandler(event)"></mx:Image>
-		<s:Label text="TM v1.1.9" />
+		<!--<s:Label text="Powered by" />	
+		<mx:Image source="{idLogo}" width="200" height="19" click="image1_clickHandler(event)"></mx:Image>-->
+		<s:Label text="v1.1.3.2" />
 	</s:HGroup>
 </s:VGroup>

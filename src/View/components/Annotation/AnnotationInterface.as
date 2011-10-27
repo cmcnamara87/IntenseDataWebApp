@@ -1,5 +1,8 @@
 package View.components.Annotation
 {
+	import flash.display.DisplayObject;
+	import flash.geom.Point;
+
 	public interface AnnotationInterface
 	{
 		function save():void;
@@ -19,5 +22,9 @@ package View.components.Annotation
 		function getX():Number;
 		
 		function getY():Number;
+		
+		function getHeight():Number;
+		
+		function localToLocal(containerFrom:DisplayObject, containerTo:DisplayObject, origin:Point):Point;
 	}
 }

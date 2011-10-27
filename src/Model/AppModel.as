@@ -31,6 +31,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetFile;
 	import Model.Transactions.ERAProject.Transaction_GetUser;
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
+	import Model.Transactions.ERAProject.Transaction_GetVideoSegment;
 	import Model.Transactions.ERAProject.Transaction_MoveFile;
 	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
 	import Model.Transactions.ERAProject.Transaction_RemoveUserFromCase;
@@ -1725,6 +1726,9 @@ package Model {
 		}
 		public function uploadERAFileVersion(roomID:Number, oldFileID:Number, originalFileID:Number, type:String, title:String, description:String, fileReference:FileReference, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
 			var uploadERAVersion:Transaction_UploadFileVersion = new Transaction_UploadFileVersion(AppController.currentEraProject.year, roomID, oldFileID, originalFileID, type, title, description, fileReference, _connection, ioErrorCallback, progressCallback, completeCallback);
+		}
+		public function getVideoSegment(videoID:Number, startTime:Number, length:Number, callback:Function):void {
+			var getVideoSegment:Transaction_GetVideoSegment = new Transaction_GetVideoSegment(videoID, startTime, length, _connection, callback);
 		}
 		public function getERAFile(fileID:Number, callback:Function):void {
 			var getERAFile:Transaction_GetFile = new Transaction_GetFile(fileID, _connection, callback);

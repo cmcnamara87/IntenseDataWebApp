@@ -3,6 +3,7 @@ package Module.Videoviewer {
 	import Model.Model_Commentary;
 	import Model.Model_Media;
 	
+	import View.ERA.components.TimelineAnnotation;
 	import View.components.IDGUI;
 	
 	import flash.display.DisplayObjectContainer;
@@ -50,7 +51,8 @@ package Module.Videoviewer {
 		public static function highlightAnnotation(annotatationID:Number):void {
 			for each(var videoAnnotation:VideoAnnotation in annotationsArray) {
 				if ((videoAnnotation._data as Model_Commentary).base_asset_id == annotatationID) {
-					videoAnnotation._timelineGraphicFill.alpha = 0.8;
+//					videoAnnotation._timelineGraphicFill.alpha = 0.8;
+					videoAnnotation.timelineAnnotation.highlight = true;
 					break;
 				}
 			}
@@ -66,7 +68,8 @@ package Module.Videoviewer {
 		public static function unhighlightAnnotation(annotatationID:Number):void {
 			for each(var videoAnnotation:VideoAnnotation in annotationsArray) {
 				if ((videoAnnotation._data as Model_Commentary).base_asset_id == annotatationID) {
-					videoAnnotation._timelineGraphicFill.alpha = 0.1;
+//					videoAnnotation._timelineGraphicFill.alpha = 0.1;
+					videoAnnotation.timelineAnnotation.highlight = false;
 					break;
 				}
 			}
@@ -117,6 +120,9 @@ package Module.Videoviewer {
 		
 		private var _timelineGraphic:Sprite = new Sprite();
 		private var _videoGraphic:Sprite = new Sprite();
+		
+		public var timelineAnnotation:TimelineAnnotation = new TimelineAnnotation();
+		
 		private var _timelineGraphicBorder:Sprite = new Sprite();
 		private var _timelineGraphicFill:Sprite = new Sprite();
 		private var _videoGraphicOverlay:Sprite = new Sprite();
@@ -154,6 +160,18 @@ package Module.Videoviewer {
 			if(heightPercentage == 0) {
 				heightPercentage = defaultHeight;
 			}
+			
+			timelineAnnotation.startTime = data.start;
+			timelineAnnotation.endTime = data.end;
+			
+			try {
+				timelineAnnotation.annotationID = (data as Model_Commentary).base_asset_id;
+				timelineAnnotation.videoID = (data as Model_Commentary).objectID;
+			} catch (e:Error) {
+				trace("some error");
+			}
+			
+			
 			//draw the graphics
 			addChildren();
 		}
@@ -167,10 +185,12 @@ package Module.Videoviewer {
 		}
 		
 		private function addChildren():void {
-			this.addChild(_timelineGraphic);
+			
+			//this.addChild(_timelineGraphic);
 			_timelineGraphic.addChild(_timelineGraphicFill);
 			_timelineGraphic.addChild(_timelineGraphicBorder);
 			_timelineGraphicFill.alpha = 0.1;
+			this.addChild(timelineAnnotation);
 			setupVideoGraphics();
 		}
 		
@@ -190,6 +210,14 @@ package Module.Videoviewer {
 				}
 				var minusY:Number = -1*(graphicHeight*(xLevel-1));
 				_timelineGraphic.x = startTime/duration*newTimelineWidth;
+				
+				timelineAnnotation.x = startTime/duration * newTimelineWidth;
+				timelineAnnotation.y = minusY;
+				timelineAnnotation.annotationWidth = ((endTime-startTime)/duration*newTimelineWidth);
+				timelineAnnotation.annotationHeight = variablegraphicHeight;
+				timelineAnnotation.annotationColor = annotationColor;
+				
+				
 				//endTime = startTime+10; /* DELETE */
 				var newLength:Number = ((endTime-startTime)/duration*newTimelineWidth);
 				resetVideoGraphic(videoDimensions);
@@ -213,10 +241,12 @@ package Module.Videoviewer {
 			_videoGraphic.addChild(_videoGraphicTextContainer);
 			
 			
-			_timelineGraphic.addEventListener(MouseEvent.MOUSE_OVER,graphicMouseOver);
-			_timelineGraphic.addEventListener(MouseEvent.MOUSE_OUT,graphicMouseOut);
-			_timelineGraphic.addEventListener(MouseEvent.MOUSE_UP,annotationClick);
+			
+			timelineAnnotation.addEventListener(MouseEvent.MOUSE_OVER,graphicMouseOver);
+			timelineAnnotation.addEventListener(MouseEvent.MOUSE_OUT,graphicMouseOut);
+			timelineAnnotation.annotationBox.addEventListener(MouseEvent.MOUSE_UP,annotationClick);
 			_timelineGraphic.mouseChildren = false;
+			
 //			_videoGraphicTextField.text = _data.text;
 			_videoGraphicTextField.htmlText = IDGUI.getLinkHTML(_data.text, "#000000");
 			_videoGraphicTextFormat.align = TextFormatAlign.CENTER;
@@ -231,12 +261,14 @@ package Module.Videoviewer {
 		}
 		
 		private function graphicMouseOver(e:MouseEvent):void {
-			_timelineGraphicFill.alpha = 0.5;
+//			_timelineGraphicFill.alpha = 0.5;
+			timelineAnnotation.highlight = true;
 			trace("WTFBBQ");
 		}
 		
 		private function graphicMouseOut(e:MouseEvent):void {
-			_timelineGraphicFill.alpha = 0.1;
+			timelineAnnotation.highlight = false;
+//			_timelineGraphicFill.alpha = 0.1;
 		}
 		
 		private function annotationClick(e:MouseEvent):void {

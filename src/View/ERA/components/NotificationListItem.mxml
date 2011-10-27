@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
-				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" backgroundColor="{read ? 0xFFFFFF : 0xD9F0FF}" borderColor="0xEEEEEE" borderVisible="true" borderStyle="solid"
+				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" 
+				   backgroundColor="{read ? 0xFFFFFF : 0xD9F0FF}" 
+				   borderColor="{read ? 0xEEEEEE: 0xA3D0ED}" borderVisible="true" borderStyle="solid"
 				   >
 
 	<fx:Script>
@@ -199,7 +201,7 @@
 	<s:VGroup id="notificationList" width="100%" paddingBottom="15" paddingLeft="15" paddingRight="15" paddingTop="15" gap="10">
 		<mx:Text htmlText="{notificationText}" width="100%" />
 		<s:HGroup width="100%">
-			<s:Button label="{read ? 'Mark as Not Read' : 'Mark as Read'}" height="20" fontSize="10" id="markAsReadButton" click="markAsReadButton_clickHandler(event)" />
+			<s:Button chromeColor="0xFFFFFF" cornerRadius="10" label="{read ? 'Mark as Not Read' : 'Mark as Read'}" height="20" fontSize="10" id="markAsReadButton" click="markAsReadButton_clickHandler(event)" />
 			<mx:Text text="{timeStamp}" width="100%" color="0x888888" fontSize="10" textAlign="right"/>
 		</s:HGroup>
 		

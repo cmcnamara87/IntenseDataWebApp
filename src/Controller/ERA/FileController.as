@@ -24,6 +24,7 @@ package Controller.ERA {
 	
 	import View.AssetView;
 	import View.ERA.FileView;
+	import View.ERA.components.TimelineAnnotation;
 	import View.Element.AssetOptionsForm;
 	import View.MediaView;
 	import View.ModuleWrapper.*;
@@ -132,6 +133,9 @@ package Controller.ERA {
 			mediaView.addEventListener(IDEvent.ERA_SAVE_FILE, saveFile);
 			// Listne for a file being downloaded
 			mediaView.addEventListener(IDEvent.ERA_DOWNLOAD_FILE, downloadFile);
+			
+			// Listen for someone trying to download a video segment
+			mediaView.addEventListener(IDEvent.ERA_DOWNLOAD_VIDEO_SEGMENT, downloadVideoSegment);
 			
 			mediaView.addEventListener(IDEvent.ERA_GO_BACK, goBack);
 		}
@@ -248,7 +252,21 @@ package Controller.ERA {
 		}
 		/* =================================== END OF DOWNLOAD A FILE ========================================= */
 		
+		/* =================================== DOWNLOAD A VIDEO FILE SEGMENT ========================================= */
+		private function downloadVideoSegment(e:IDEvent):void {
+			var timelineAnnotation:TimelineAnnotation = e.data.timelineAnnotation;
+			AppModel.getInstance().getVideoSegment(timelineAnnotation.videoID, timelineAnnotation.startTime, timelineAnnotation.endTime - timelineAnnotation.startTime, segmentReady);
+		}
 		
+		private function segmentReady(status:Boolean, videoLocation:String = ""):void {
+			if(!status) {
+				trace("segment failed");
+			}
+			trace("segment ready!!!!!");
+			
+			var req:URLRequest = new URLRequest("http://" + Recensio_Flex_Beta.serverAddress+ "/" + videoLocation);
+			navigateToURL(req, 'Download');
+		}
 		
 		/* ================ FUNCTIONS THAT CALL THE DATABASE ================ */
 		private function loadMediaAsset():void {

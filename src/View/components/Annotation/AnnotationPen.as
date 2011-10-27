@@ -2,8 +2,10 @@ package View.components.Annotation
 {
 	import Controller.IDEvent;
 	
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.geom.Point;
 	
 	import mx.containers.Canvas;
 	
@@ -21,6 +23,7 @@ package View.components.Annotation
 		
 		private var topXCoor:Number = 999999999;
 		private var topYCoor:Number = 999999999; // THe smallest y coor for the pen drawing (this is, the top of it)
+		private var bottomYCoor:Number = 0;
 		
 		/**
 		 * Creates an Annotation Pen 
@@ -46,16 +49,7 @@ package View.components.Annotation
 			
 			redraw(0x00AA00);
 			
-			this.addEventListener(MouseEvent.MOUSE_OVER, function(e:Event):void {
-				var annotation:AnnotationInterface = e.target as AnnotationInterface;
-				annotation.highlight();
-				
-				// tell the viewer to display the overlay to go with this
-				var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
-				myEvent.data.text = annotation.getText();
-				myEvent.data.author = annotation.getAuthor();
-				dispatchEvent(myEvent);
-			});
+			this.addEventListener(MouseEvent.MOUSE_OVER, mouseOver);
 			
 			this.addEventListener(MouseEvent.MOUSE_OUT, function(e:Event):void {
 				trace("Mouse out!!!");
@@ -65,6 +59,18 @@ package View.components.Annotation
 				dispatchEvent(new IDEvent(IDEvent.ANNOTATION_MOUSE_OUT, true));
 			});
 			
+		}
+		
+		private function mouseOver(e:Event):void {
+			var annotation:AnnotationInterface = e.target as AnnotationInterface;
+			annotation.highlight();
+			
+			// tell the viewer to display the overlay to go with this
+			var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+			myEvent.data.annotation = this;
+			myEvent.data.text = annotation.getText();
+			myEvent.data.author = annotation.getAuthor();
+			dispatchEvent(myEvent);
 		}
 		
 		/**
@@ -107,6 +113,13 @@ package View.components.Annotation
 				}
 				if(line.x2 < topXCoor) {
 					topXCoor = line.x2;
+				}
+				
+				if(line.y1 > bottomYCoor) {
+					bottomYCoor = line.y1;
+				} 
+				if(line.y2 > bottomYCoor) {
+					bottomYCoor = line.y2;
 				}
 				
 				if(line.y1 > 0.5 || line.y2 > 0.5) {
@@ -183,6 +196,19 @@ package View.components.Annotation
 		}
 		public function getY():Number {
 			return this.topYCoor;
+		}
+		
+		public function getHeight():Number {
+			return bottomYCoor - topYCoor;
+		}
+		public function localToLocal(containerFrom:DisplayObject, containerTo:DisplayObject, origin:Point):Point
+		{
+			trace("doing this on annotation pen");
+			trace("origin point", origin.x, origin.y);
+			var point:Point = origin;
+			point = containerFrom.localToGlobal(point);
+			point = containerTo.globalToLocal(point);
+			return point;
 		}
 	}
 }

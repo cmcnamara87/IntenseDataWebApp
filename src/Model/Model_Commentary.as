@@ -27,6 +27,8 @@ package Model {
 		public var reply_id:Number; // ONLY USE THESE WITH DEKKERS CODE
 		public var parentID:Number = 0; // ONLY USE THESE WITH DEKKERS CODE
 		
+		public var objectID:Number = 0;
+		
 		public function Model_Commentary() {
 			super();
 		}
@@ -144,6 +146,9 @@ package Model {
 			annotation_path = rawData.meta.r_annotation.path;
 			annotation_type = rawData.meta.r_annotation.annotationType;
 			annotation_linenum = rawData.meta.r_annotation.lineNum;
+			
+			this.objectID = rawData.related.(@type=="object").to;
+			
 			//Figure out whether an annotation or a comment
 			switch(annotation_type) {
 				case ANNOTATION_BOX_TYPE_ID:
