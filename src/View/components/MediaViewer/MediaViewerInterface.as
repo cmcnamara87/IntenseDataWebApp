@@ -8,7 +8,7 @@ package View.components.MediaViewer
 		
 		function enterNewAnnotationMode():void;
 		
-		function highlightAnnotation(assetID:Number):void;
+		function highlightAnnotation(assetID:Number, showText:Boolean=true):void;
 		
 		function unhighlightAnnotation(assetID:Number):void;
 		

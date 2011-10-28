@@ -99,6 +99,8 @@ package View.components.Panels.Comments
 			saveButton.percentHeight 	= 100;
 			saveButton.percentWidth 	= 100;
 			saveButton.label 			= "Save";
+			saveButton.setStyle("cornerRadius", "10");
+			saveButton.setStyle("chromeColor", "0xFFFFFF");
 			buttonHGroup.addElement(saveButton);
 			
 			// Create the Edit Button
@@ -106,6 +108,8 @@ package View.components.Panels.Comments
 			cancelButton.percentHeight	= 100;
 			cancelButton.percentWidth 	= 100;
 			cancelButton.label			= "Cancel";
+			cancelButton.setStyle("cornerRadius", "10");
+			cancelButton.setStyle("chromeColor", "0xFFFFFF");
 			buttonHGroup.addElement(cancelButton);
 
 			// Add a horizontal rule.

@@ -314,7 +314,7 @@ package Module.Videoviewer {
 			loadAnnotations(annotations);
 		}
 		
-		override public function highlightAnnotation(assetID:Number):void {
+		override public function highlightAnnotation(assetID:Number, showText:Boolean=true):void {
 			VideoAnnotation.highlightAnnotation(assetID);
 		}
 		override public function unhighlightAnnotation(assetID:Number):void {

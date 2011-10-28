@@ -368,7 +368,7 @@ package Module.AudioViewer
 			_UITimeline.resize();
 		}
 		
-		override public function highlightAnnotation(assetID:Number):void {
+		override public function highlightAnnotation(assetID:Number, showText:Boolean=false):void {
 			AudioAnnotation.isBeingMouseOvered = true;
 			for(var i:Number = 0; i < _UITimeline._annotationArea.numChildren; i++) {
 				var audioAnnotation:AudioAnnotation = _UITimeline._annotationArea.getChildAt(i) as AudioAnnotation;

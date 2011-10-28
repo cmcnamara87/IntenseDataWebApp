@@ -217,7 +217,7 @@ package View.components.MediaViewer
 		 * @param assetID
 		 * 
 		 */		
-		public function highlightAnnotation(assetID:Number):void {
+		public function highlightAnnotation(assetID:Number, showText:Boolean=true):void {
 			trace("Finding annotation to highlight", assetID);
 
 			for(var i:Number = 0; i < annotations.length; i++) {
@@ -232,11 +232,13 @@ package View.components.MediaViewer
 					dispatchEvent(scrollToAnnotationEvent);
 					
 					// tell the viewer to display the overlay to go with this
-					var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
-					myEvent.data.bottom = true; // this means we want to show the text overlay at the bottom
-					myEvent.data.text = annotation.getText();
-					myEvent.data.author = annotation.getAuthor();
-					dispatchEvent(myEvent);
+					if(showText) {
+						var myEvent:IDEvent = new IDEvent(IDEvent.ANNOTATION_MOUSE_OVER, true);
+						myEvent.data.bottom = true; // this means we want to show the text overlay at the bottom
+						myEvent.data.text = annotation.getText();
+						myEvent.data.author = annotation.getAuthor();
+						dispatchEvent(myEvent);
+					}
 					
 					break;
 				}

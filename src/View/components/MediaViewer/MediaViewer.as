@@ -4,6 +4,7 @@ package View.components.MediaViewer
 	
 	import spark.components.BorderContainer;
 	
+	// ABSTRACT CLASS!!!
 	public class MediaViewer extends BorderContainer
 	{
 		public function MediaViewer()
@@ -35,7 +36,7 @@ package View.components.MediaViewer
 //			throw new Error("enterNewAnnotationMode in MediaViewer: Should be overwritten");
 		}
 		
-		public function highlightAnnotation(assetID:Number):void {
+		public function highlightAnnotation(assetID:Number, showText:Boolean=true):void {
 			//throw new Error("highlightAnnotation in MediaViewer: Should be overwritten");
 //			trace("Error: highlightAnnotation in MediaViewer: Should be overwritten");
 		}

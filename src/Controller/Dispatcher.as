@@ -124,6 +124,7 @@ package Controller {
 				url = "login";
 			}
 			
+			
 			if(Router.getInstance().getURL() == "go") {
 				if(MediaController.currentMediaData) {
 					// Push in whatever hte current medias ID was
@@ -141,6 +142,7 @@ package Controller {
 			trace("CALLED WITH URL", url);
 			Router.getInstance().setURL(url);
 			url = Router.getInstance().getURL();
+			
 			trace("CONTROLLER IS", Router.getInstance().getController(url));
 			loadController(Router.getInstance().getController(url));
 			forceRedraw();

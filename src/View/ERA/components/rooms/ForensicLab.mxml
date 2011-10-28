@@ -278,21 +278,25 @@
 			<s:HGroup width="100%" height="100%" gap="0">
 
 				<s:BorderContainer width="100%" height="100%" backgroundColor="0xFFFFFF" borderVisible="false"  dragDrop="hotFileGroup_dragDropHandler(event)"  dragExit="bordercontainer1_dragExitHandler(event)" dragEnter="hotFileGroup_dragEnterHandler(event)">
-					<s:VGroup width="100%" height="100%" paddingLeft="50">
-						<s:BorderContainer backgroundColor="0xCCFFCC" width="100%" height="40" borderVisible="false" >
-							<s:Label fontWeight="bold" color="0x2A4B11" verticalCenter="0" width="100%" text="Active"  textAlign="center" fontSize="14"/>
+					<s:VGroup width="100%" height="100%">
+						<s:BorderContainer backgroundColor="0xCCFFCC" width="100%" height="20" borderVisible="false" >
+							<s:Label fontWeight="bold" color="0x7AC17E" verticalCenter="0" width="100%" text="Active"  textAlign="center" fontSize="11"/>
 						</s:BorderContainer>
 						<!--<mx:HRule width="100%" />-->
-						<s:Scroller width="100%" height="100%">
-							<s:TileGroup id="hotFileGroup" width="100%" height="100%" verticalGap="20" horizontalGap="20" />
-						</s:Scroller>
+						
+						<s:HGroup width="100%" height="100%" paddingLeft="50">
+							<s:Scroller width="100%" height="100%">
+								<s:TileGroup id="hotFileGroup" width="100%" height="100%" verticalGap="20" horizontalGap="20" />
+							</s:Scroller>	
+						</s:HGroup>
+						
 					</s:VGroup>
 				</s:BorderContainer>
 				<mx:VRule height="100%" />
 				<s:BorderContainer width="500" height="100%" backgroundColor="0xFFFFFF" borderVisible="false" dragDrop="coldFileGroup_dragDropHandler(event)" dragExit="coldFileGroup_dragExitHandler(event)" dragEnter="coldFileGroup_dragEnterHandler(event)">
 					<s:VGroup width="100%" height="100%" >
-						<s:BorderContainer backgroundColor="0xCCCCCC" width="100%" height="40" borderVisible="false">
-							<s:Label color="0x999999" fontWeight="bold" verticalCenter="0" width="100%" text="Inactive" textAlign="center" fontSize="14"/>	
+						<s:BorderContainer backgroundColor="0xCCCCCC" width="100%" height="20" borderVisible="false">
+							<s:Label color="0x999999" fontWeight="bold" verticalCenter="0" width="100%" text="Inactive" textAlign="center" fontSize="11"/>	
 						</s:BorderContainer>
 						<!--<mx:HRule width="100%" />-->
 						<s:Scroller width="100%" height="100%">

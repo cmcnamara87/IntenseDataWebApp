@@ -143,36 +143,37 @@ package View.components.MediaViewer
 			// This group will contain the image
 			// And this group is placed inside the scroller
 			scrollerContents = new Group();
+			scrollerContents.clipAndEnableScrolling = false;
 			scrollerContents.percentHeight = 100;
 			scrollerContents.percentWidth = 100;
 			
 //			// So we can align the image/annotations vertically
-//			var verticalAlignGroup:HGroup = new HGroup();
-//			verticalAlignGroup.percentHeight = 100;
-//			verticalAlignGroup.percentWidth = 100;
-//			verticalAlignGroup.verticalAlign = VerticalAlign.MIDDLE;
-//			scrollerContents.addElement(verticalAlignGroup);
+			var verticalAlignGroup:HGroup = new HGroup();
+			verticalAlignGroup.percentHeight = 100;
+			verticalAlignGroup.percentWidth = 100;
+			verticalAlignGroup.verticalAlign = VerticalAlign.MIDDLE;
+			scrollerContents.addElement(verticalAlignGroup);
 //			
 //			// So we can align the image/annotations horizontally.
-//			var horizontalAlignGroup:VGroup = new VGroup();
-//			horizontalAlignGroup.percentWidth = 100;
-//			horizontalAlignGroup.horizontalAlign = HorizontalAlign.CENTER;
-//			verticalAlignGroup.addElement(horizontalAlignGroup);
+			var horizontalAlignGroup:VGroup = new VGroup();
+			horizontalAlignGroup.percentWidth = 100;
+			horizontalAlignGroup.horizontalAlign = HorizontalAlign.CENTER;
+			verticalAlignGroup.addElement(horizontalAlignGroup);
 //			
 			// Adding the group to the scroller
 			myScroller.viewport = scrollerContents;
 			scrollerAndOverlayGroup.addElement(myScroller);
 			
 //			// The group that will contain the Image and its Annotations
-//			mediaGroup = new Group();
-//			horizontalAlignGroup.addElement(mediaGroup);
+			mediaGroup = new Group();
+			horizontalAlignGroup.addElement(mediaGroup);
 //			
 			
 			media = new MediaAndAnnotationHolder(mediaType);
-			media.horizontalCenter = 0;
-			media.verticalCenter = 0;
-			scrollerContents.addElement(media);
-//			mediaGroup.addElement(media);
+//			media.horizontalCenter = 0;
+//			media.verticalCenter = 0;
+//			scrollerContents.addElement(media);
+			mediaGroup.addElement(media);
 			
 			loadingLabel = new Label();
 			loadingLabel.text = "Loading...";
@@ -182,6 +183,8 @@ package View.components.MediaViewer
 			loadingLabel.setStyle('textAlign', 'center');
 			loadingLabel.visible = true;
 			
+			loadingLabel.horizontalCenter = 0;
+			loadingLabel.verticalCenter = 0;
 			scrollerContents.addElement(loadingLabel);
 //			mediaGroup.addElement(loadingLabel);
 			
@@ -390,9 +393,9 @@ package View.components.MediaViewer
 		 * @param assetID
 		 * 
 		 */		
-		override public function highlightAnnotation(assetID:Number):void {
+		override public function highlightAnnotation(assetID:Number, showText:Boolean=true):void {
 			if(!addAnnotationMode) {
-				media.highlightAnnotation(assetID);
+				media.highlightAnnotation(assetID, showText);
 			}
 		}
 		
@@ -442,7 +445,10 @@ package View.components.MediaViewer
 			trace("author is", e.data.author);
 			
 			// Only show the text, if we are coming from the actual annotation, not from highlughting the annotation list
-			if(e.data.fromAnnotationList) return;
+			if(e.data.fromAnnotationList) {
+				trace('from annotation list');
+				return;
+			} 
 			
 			
 			if(e.data.bottom && e.data.bottom == true) {

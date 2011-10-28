@@ -50,7 +50,7 @@ package Module.Videoviewer {
 		 */		
 		public static function highlightAnnotation(annotatationID:Number):void {
 			for each(var videoAnnotation:VideoAnnotation in annotationsArray) {
-				if ((videoAnnotation._data as Model_Commentary).base_asset_id == annotatationID) {
+				if (videoAnnotation._data != null && (videoAnnotation._data as Model_Commentary).base_asset_id == annotatationID) {
 //					videoAnnotation._timelineGraphicFill.alpha = 0.8;
 					videoAnnotation.timelineAnnotation.highlight = true;
 					break;
@@ -67,7 +67,7 @@ package Module.Videoviewer {
 		 */		
 		public static function unhighlightAnnotation(annotatationID:Number):void {
 			for each(var videoAnnotation:VideoAnnotation in annotationsArray) {
-				if ((videoAnnotation._data as Model_Commentary).base_asset_id == annotatationID) {
+				if (videoAnnotation._data && (videoAnnotation._data as Model_Commentary).base_asset_id == annotatationID) {
 //					videoAnnotation._timelineGraphicFill.alpha = 0.1;
 					videoAnnotation.timelineAnnotation.highlight = false;
 					break;
@@ -317,6 +317,9 @@ package Module.Videoviewer {
 			}
 			if(_timelineGraphic.parent) {
 				_timelineGraphic.parent.removeChild(_timelineGraphic);
+			}
+			if(timelineAnnotation.parent) {
+				timelineAnnotation.parent.removeChild(timelineAnnotation);
 			}
 		}
 	}

@@ -143,6 +143,9 @@ package View.components.Panels.AnnotationList
 			
 			if(editMode) {
 				var saveButton:IDButton = new IDButton("Save");
+				saveButton.setStyle("cornerRadius", "10");
+				saveButton.setStyle("chromeColor", "0xFFFFFF");
+				
 				buttonHGroup.addElement(saveButton);
 				saveButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
 					editMode = false;
@@ -156,6 +159,9 @@ package View.components.Panels.AnnotationList
 				});
 				
 				var cancelButton:IDButton = new IDButton("Cancel");
+				cancelButton.setStyle("cornerRadius", "10");
+				cancelButton.setStyle("chromeColor", "0xFFFFFF");
+				
 				buttonHGroup.addElement(cancelButton);
 				cancelButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
 					editMode = false;	
@@ -180,6 +186,9 @@ package View.components.Panels.AnnotationList
 	//				// Create a Delete button
 					trace("Creating delete button");
 					deleteButton		= new Button();
+					deleteButton.setStyle("cornerRadius", "10");
+					deleteButton.setStyle("chromeColor", "0xFFFFFF");
+					
 					deleteButton.percentHeight 	= 100;
 					deleteButton.percentWidth	= 100;
 					deleteButton.label			= "Delete";
@@ -199,6 +208,9 @@ package View.components.Panels.AnnotationList
 				}
 				
 				var addRefButton:IDButton = new IDButton("Add Ref");
+				addRefButton.setStyle("cornerRadius", "10");
+				addRefButton.setStyle("chromeColor", "0xFFFFFF");
+				
 				addRefButton.percentWidth = 100;
 //				buttonHGroup.addElement(addRefButton);
 				addRefButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {

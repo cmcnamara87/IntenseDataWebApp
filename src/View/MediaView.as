@@ -554,12 +554,16 @@ package View
 		}
 		
 		private function annotationListItemMouseOver(e:IDEvent):void {
-//			trace("Caught List Item Mouseover");
-			mediaViewer.highlightAnnotation(e.data.assetID);
+			if(e.data.fromAnnotationList) {
+				// we have got the highlight request from the annotaiton list
+				// so turn off  showing text (since you are under the text anyway)
+				mediaViewer.highlightAnnotation(e.data.assetID, false);
+			} else {
+				mediaViewer.highlightAnnotation(e.data.assetID, true);
+			}
 		}
 		
 		private function annotationListItemMouseOut(e:IDEvent):void {
-//			trace("Caught List Item Mouseover");
 			mediaViewer.unhighlightAnnotation(e.data.assetID);
 			
 		}
