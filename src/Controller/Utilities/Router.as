@@ -7,6 +7,7 @@ package Controller.Utilities {
 	import Controller.ERA.AppSauce;
 	import Controller.ERA.CaseController;
 	import Controller.ERA.FileController;
+	import Controller.ERA.FileController2;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -86,6 +87,11 @@ package Controller.Utilities {
 				url: 'file',
 				title: 'File Viewer',
 				classname: FileController
+			},
+			{
+				url: 'file2',
+				title: 'File Viewer New',
+				classname: FileController2
 			}
 		);
 		

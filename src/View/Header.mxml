@@ -21,7 +21,8 @@
 			protected function image1_clickHandler(event:MouseEvent):void
 			{
 				// TODO Auto-generated method stub
-				Dispatcher.call('case');
+//				Dispatcher.call('case');
+				Dispatcher.call('file2');
 			}
 			
 			public function addERAProjects(eraProjectArray:Array):void {
