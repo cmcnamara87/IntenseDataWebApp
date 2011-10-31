@@ -64,7 +64,8 @@ package Model.Transactions.ERAProject
 		private function progressHandler(event:ProgressEvent):void {
 //			var byteJustLoaded:Number = event.bytesLoaded
 			var percentProgress:Number = Math.round(event.bytesLoaded/event.bytesTotal*100);
-			progressCallback(percentProgress, evidenceItem);
+			
+			progressCallback(percentProgress, logItemID);
 		}
 		private function ioErrorHandler(event:IOErrorEvent):void {
 			ioErrorCallback(event, evidenceItem);
@@ -201,7 +202,7 @@ package Model.Transactions.ERAProject
 			var eraEvidence:Model_ERAFile = new Model_ERAFile();
 			eraEvidence.setData(data.reply.result.asset[0]);
 			
-			completeCallback(true, eraEvidence, evidenceItem);
+			completeCallback(true, evidenceItem.getID(), eraEvidence.base_asset_id)
 		}
 		
 		private function sendNotification():void {

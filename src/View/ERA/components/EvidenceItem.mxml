@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="View.components.*" xmlns:components1="View.ERA.components.*" gap="0"
+		  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:components="View.ERA.components.*"  gap="0"
+		  creationComplete="vgroup1_creationCompleteHandler(event)"
+		  removedFromStage="vgroup1_removedFromStageHandler(event)"
 		 >
 
 	<fx:Script>
@@ -19,6 +21,9 @@
 			import flashx.textLayout.tlf_internal;
 			
 			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			
+			import spark.components.Group;
 			private var fileReference:FileReference;
 			
 			private var logItem:Model_ERALogItem;
@@ -82,17 +87,16 @@
 //				AppModel.getInstance().startFileUpload(dataObject);
 			}
 			
-			public function showComplete(evidence:Model_ERAFile):void {
-				uploadButton.label = "View";
-				uploadButton.enabled = true;
-//				uploadProgress.includeInLayout = false;
-				uploadProgress.visible = false;
-				logItem.uploaded = true;
-				logItem.dataItemID = evidence.base_asset_id;
-			}
-			public function showProgress(percentage:Number):void {
-				progressBar.showPercentage(percentage);
-			}
+//			public function showComplete(evidence:Model_ERAFile):void {
+//				uploadButton.label = "View";
+//				uploadButton.enabled = true;
+////				uploadProgress.includeInLayout = false;
+//				uploadProgress.visible = false;
+//				logItem.uploaded = true;
+//				logItem.dataItemID = evidence.base_asset_id;
+//			}
+
+			
 			private function ioErrorHandler(e:IOError):void {
 				
 			}
@@ -371,6 +375,41 @@
 				dispatchEvent(usefulEvent);
 			}
 
+
+			protected function vgroup1_creationCompleteHandler(event:FlexEvent):void
+			{
+				(AppController.layout as Group).addEventListener(IDEvent.ERA_PROGRESS_EVENT, eraProgressOccured);
+				(AppController.layout as Group).addEventListener(IDEvent.ERA_COMPLETE_EVENT, eraCompleteEvent);
+			}
+
+			private function eraProgressOccured(e:IDEvent):void {
+				if(e.data.evidenceID != this.getID()) return;
+				
+				uploadProgress.visible = true;
+				uploadButton.enabled = false;
+				
+				progressBar.showPercentage(e.data.percentage);
+			}
+			private function eraCompleteEvent(e:IDEvent):void {
+				if(e.data.evidenceID != this.getID()) return;
+				
+				var fileID:Number = e.data.fileID;
+				
+				uploadButton.label = "View";
+				uploadButton.enabled = true;
+				//				uploadProgress.includeInLayout = false;
+				uploadProgress.visible = false;
+				logItem.uploaded = true;
+				logItem.dataItemID = fileID;
+				
+			}
+
+			protected function vgroup1_removedFromStageHandler(event:Event):void
+			{
+				(AppController.layout as Group).removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraProgressOccured);
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+			}
+
 		]]>
 	</fx:Script>
 
@@ -410,7 +449,7 @@
 		</s:HGroup>
 	</s:HGroup>
 	<s:HGroup id="uploadProgress" width="100%" visible="false" showEffect="{resizeShow}" hideEffect="{resizeHide}" height="0" paddingTop="10" paddingBottom="20">
-		<components1:LoadingBar id="progressBar" width="100%" />
+		<components:LoadingBar id="progressBar" width="100%" />
 		<s:Button width="70" label="Cancel" id="cancelUploadButton" click="cancelUploadButton_clickHandler(event)" chromeColor="0xFFFFFF" cornerRadius="10"/>
 	</s:HGroup>
 </s:VGroup>

@@ -18,6 +18,28 @@
 			import mx.controls.Text;
 			
 			import spark.components.Label;
+			
+			public function allProgressEvents(percentage:Number, evidenceID:Number):void {
+				var progressEvent:IDEvent = new IDEvent(IDEvent.ERA_PROGRESS_EVENT, true);
+				progressEvent.data.percentage = percentage;
+				progressEvent.data.evidenceID = evidenceID;
+				dispatchEvent(progressEvent);
+			}
+			
+			public function allCompleteEvents(status:Boolean, evidenceID:Number=0, dataFileID:Number=0):void {
+				if(!status) {
+					notificationBar.showGood("Upload Failed");
+					return;
+				}
+					
+				notificationBar.showGood("Upload Complete");
+
+				var progressEvent:IDEvent = new IDEvent(IDEvent.ERA_COMPLETE_EVENT, true);
+				progressEvent.data.evidenceID = evidenceID;
+				progressEvent.data.fileID = dataFileID;
+				dispatchEvent(progressEvent);
+			}
+			
 			public function addNotifications(notificationsArray:Array):void {
 				
 				notificationList.removeAllElements();

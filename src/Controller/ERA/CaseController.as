@@ -558,23 +558,26 @@ package Controller.ERA
 			// get out the room IDs
 			trace("ROOM IDS ARE: EVIDNECE ROOM", getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, "FORENSIC LAB", getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id);
 			
-			AppModel.getInstance().uploadERAFile(getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id, logItemID, type, title, description, version, file, evidenceItem, uploadIOError, uploadProgress, uploadComplete); 
+			AppModel.getInstance().uploadERAFile(getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id, logItemID, type, title, description, version, file, evidenceItem, uploadIOError, AppController.layout.allProgressEvents, AppController.layout.allCompleteEvents); 
 		}
 		private function uploadIOError():void {
 			layout.notificationBar.showError("Failed to Upload file.");
 		}
-		private function uploadProgress(percentage:Number, evidenceItem:EvidenceItem):void {
-			layout.notificationBar.showProcess("Uploading file... " + percentage + "%");
-			evidenceItem.showProgress(percentage);
+		
+		public static function uploadProgress(percentage:Number, evidenceItem:EvidenceItem):void {
+			// is the current room the evidence management room?
+			
+			
 		}
-		private function uploadComplete(status:Boolean, eraEvidence:Model_ERAFile=null, evidenceItem:EvidenceItem=null):void {
-			if(status) {
-				layout.notificationBar.showGood("Upload Complete");
-				evidenceItem.showComplete(eraEvidence);
-			} else {
-				Alert.show("Upload failed");
-			}
-		}
+
+//		private function uploadComplete(status:Boolean, eraEvidence:Model_ERAFile=null, evidenceItem:EvidenceItem=null):void {
+//			if(status) {
+//				layout.notificationBar.showGood("Upload Complete");
+//				evidenceItem.showComplete(eraEvidence);
+//			} else {
+//				Alert.show("Upload failed");
+//			}
+//		}
 		/* ====================================== END OF SAVE A FILE ===================================== */
 		
 		

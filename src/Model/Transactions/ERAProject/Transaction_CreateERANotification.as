@@ -123,17 +123,16 @@ package Model.Transactions.ERAProject
 			
 			// Setup the access for the admin for the year
 			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.SYS_ADMIN + "_" + year + '</actor><access>read-write</access></acl>'));
-//			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.VIEWER + "_" + year + '</actor><access>read-write</access></acl>'));
-			
 			
 			// Set up access for production managers
 			for each(var productionManager:Model_ERAUser in eraCase.productionManagerArray) {
-				if(productionManager.username == Auth.getInstance().getUsername()) continue;
+				// dont notify you, unless you are doing an upload (then its actually useful)
+				if(productionManager.username == Auth.getInstance().getUsername() && type !=  Model_ERANotification.FILE_UPLOADED) continue;
 				argsXML.appendChild(XML('<acl><actor type="user">system:' + productionManager.username + '</actor><access>read-write</access></acl>'));	
 			}
 			
 			for each(var productionTeamMember:Model_ERAUser in eraCase.productionTeamArray) {
-				if(productionTeamMember.username == Auth.getInstance().getUsername()) continue;
+				if(productionTeamMember.username == Auth.getInstance().getUsername() && type !=  Model_ERANotification.FILE_UPLOADED) continue;
 				argsXML.appendChild(XML('<acl><actor type="user">system:' + productionTeamMember.username + '</actor><access>read-write</access></acl>'));	
 			}
 			
