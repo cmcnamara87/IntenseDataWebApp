@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<!-- TITLE BAR WITH CREATION BUTTON -->
+	<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
+		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
+			<s:VGroup width="100%" paddingTop="10">
+				
+				<s:Label text="Case Creator {currentYear}" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+					<!--<s:filters>
+					<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+					</s:filters>-->
+				</s:Label>
+				
+			</s:VGroup>
+			<s:Button id="makeNewCase" label="Create New Case" cornerRadius="10" height="30" click="makeNewCase_clickHandler(event)"/>
+		</s:HGroup>
+	</s:BorderContainer>
+	<!-- END OF TITLE BAR WITH CREATION BUTTON -->
+	
+</s:VGroup>

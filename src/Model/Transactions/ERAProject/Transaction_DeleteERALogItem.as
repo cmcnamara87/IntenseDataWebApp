@@ -41,6 +41,25 @@ package Model.Transactions.ERAProject
 				return;
 			}
 			
+			// there is an uploaded file
+			// now we need to destroy all versions of the uploaded file
+			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			
+			argsXML.where = "related to{originalfile} (id=" + logItem.dataItemID + ")";
+			argsXML.action = "pipe";
+			argsXML.service.@name = "asset.destroy";
+			
+			connection.sendRequest(baseXML, versionsDeleted);
+		}
+		
+		private function versionsDeleted(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("deleting era data file from log item", e)) == null) {
+				callback(false);
+				return;
+			}
+			
 			var baseXML:XML = connection.packageRequest("asset.destroy", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
