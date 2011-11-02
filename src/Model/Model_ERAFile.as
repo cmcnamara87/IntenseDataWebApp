@@ -152,6 +152,14 @@ package Model {
 			}			
 		}
 		
+		public function getMediaURL():String {
+			switch(rootMetaType) {
+				case "video":
+					return "rtmp://" + Recensio_Flex_Beta.serverAddress + "/vod/" + meta_media_uri;
+				default:
+					return "";
+			}
+		}
 		
 		/**
 		 * Gets the URL to this media asset.

@@ -52,6 +52,7 @@ package Module.Videoviewer {
 		private var _video:*;
 		//private var _rtmpUri:String = "rtmp://demo.recensio.com.au/oflaDemo";
 //		private var _rtmpUri:String = "rtmp://recensio.dyndns.org/vod/";
+
 		private var _rtmpUri:String = "rtmp://" + Recensio_Flex_Beta.serverAddress + "/vod/";
 		private var _fileName:String = "";
 		private var _metaData:Object = { duration:0, width: 0, height: 0 ,videoKeyFrameFrequence:.5};

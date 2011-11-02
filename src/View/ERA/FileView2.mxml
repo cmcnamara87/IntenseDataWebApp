@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" gap="0">
 	<fx:Script>
 		<![CDATA[
+			import View.components.IDGUI;
+			
+			import mx.graphics.SolidColor;
+			
+			import org.osmf.events.LoadEvent;
 			import org.osmf.events.MediaPlayerStateChangeEvent;
 			import org.osmf.events.TimeEvent;
 
 			private var videoDuration:Number = 0;
+			private var isScrubbing:Boolean = false;
+			private var wasPlayingBeforeScrubbing:Boolean = false; // stores if they video was playing wbefore we started scrubbing (sinc ethat pauses it for load reasons)
+			private var lastScrubTo:Number = 0; // the time in the video we last scrubbed to
+			private const MIN_SCRUB_TIME:Number = 1; // you have to scrub at least 1 second, for it to update
+			
 			
 			protected function videoPlayer_mediaPlayerStateChangeHandler(event:MediaPlayerStateChangeEvent):void
 			{
@@ -17,39 +27,202 @@
 
 			protected function videoPlayer_currentTimeChangeHandler(event:TimeEvent):void
 			{
-				trace("blah", event.time, videoDuration);
-				playhead.left = scrubbar.width * event.time / videoDuration;
-			}
-
-
-			protected function playButton_clickHandler(event:MouseEvent):void
-			{
-				if(videoPlayer.playing) {
-					videoPlayer.pause();
-				} else {
-					videoPlayer.play();
+				if(!isScrubbing) {
+					playhead.x = scrubbar.width * event.time / videoDuration;
 				}
 			}
-
 
 			protected function videoPlayer_durationChangeHandler(event:TimeEvent):void
 			{
 				trace("duration is", event.time)
 				videoDuration = event.time;
 			}
+			
+			
+			protected function playButton_clickHandler(event:MouseEvent):void
+			{
+				togglePlayState();
+			}
+
+			private function togglePlayState():void {
+				if(videoPlayer.playing) {
+					playButton.label = "Play";
+					videoPlayer.pause();
+				} else {
+					playButton.label = "Pause";
+					videoPlayer.play();
+				}
+			}
+
+			protected function videoPlayer_clickHandler(event:MouseEvent):void
+			{
+				togglePlayState();
+			}
+			
+			protected function scrubbar_mouseMoveHandler(event:MouseEvent):void
+			{
+				
+				playhead.x = event.localX;
+				
+				// translate the mouse posiotion into seconds
+				var newTime:Number = event.localX / scrubbar.width * videoPlayer.duration;
+				
+				// Make sure it has moved enough
+				if(Math.abs(newTime - lastScrubTo) > MIN_SCRUB_TIME) {
+					// do the scrubbing
+					trace("scrubbing", newTime, lastScrubTo);
+					videoPlayer.seek(newTime);
+					// update last scrub to
+					lastScrubTo = newTime;
+				}
+			}
 
 
-			protected function scrubbar_clickHandler(event:MouseEvent):void
+			protected function scrubbar_mouseDownHandler(event:MouseEvent):void
+			{
+				isScrubbing = true;
+				wasPlayingBeforeScrubbing = videoPlayer.playing;
+				
+				// pause the video (resume it on mouse up)
+				videoPlayer.pause();
+				
+				// scrub to where we moused down
+				var newTime:Number = event.localX / scrubbar.width * videoPlayer.duration;
+				videoPlayer.seek(newTime);
+				
+				// update the playhead instantly to that position
+				playhead.x = event.localX;
+				
+				// Save this time as the last time we scrubbed to
+				lastScrubTo = newTime;
+				
+				trace("Mouse down!!!");
+				scrubbar.addEventListener(MouseEvent.MOUSE_MOVE, scrubbar_mouseMoveHandler);
+				scrubbar.addEventListener(MouseEvent.MOUSE_OUT, scrubbar_mouseOutHandler);
+			}
+
+
+			protected function scrubbar_mouseUpHandler(event:MouseEvent):void
+			{
+				finishedScrubbing();	
+			}
+
+
+			protected function scrubbar_mouseOutHandler(event:MouseEvent):void
+			{
+				finishedScrubbing();
+			}
+
+			private function finishedScrubbing():void {
+				isScrubbing = false;
+				
+				scrubbar.removeEventListener(MouseEvent.MOUSE_MOVE, scrubbar_mouseMoveHandler);
+				scrubbar.removeEventListener(MouseEvent.MOUSE_MOVE, scrubbar_mouseOutHandler);
+				
+				// resume the video
+				if(wasPlayingBeforeScrubbing) videoPlayer.play();
+
+			}
+
+
+			protected function videoPlayer_mouseOverHandler(event:MouseEvent):void
+			{
+				videoControl.visible = true;
+			}
+
+
+			protected function videoPlayer_mouseOutHandler(event:MouseEvent):void
+			{
+				videoControl.visible = false;
+			}
+
+
+			protected function videoControl_mouseOverHandler(event:MouseEvent):void
+			{
+				fadeOut.stop();
+				trace("Mouse over");
+				videoControl.visible = true;
+				fadeIn.end();
+				trace('fade in playing', fadeIn.isPlaying ? 'yes' : 'no');
+			}
+
+
+			protected function group1_mouseDownHandler(event:MouseEvent):void
 			{
 				// TODO Auto-generated method stub
-				videoPlayer.seek(videoPlayer.duration * 	event.localX /  scrubbar.width)
+			}
+
+			protected function topLeft_mouseDownHandler(event:MouseEvent):void
+			{
+				topLeft.removeEventListener(MouseEvent.MOUSE_DOWN, topLeft_mouseDownHandler);
+			}
+
+
+			protected function boxAnnotation_mouseDownHandler(event:MouseEvent):void
+			{
+				event.target.alpha = 0.5;
+				
+				boxAnnotation.addEventListener(MouseEvent.MOUSE_MOVE, boxAnnotationMoved);
+				boxAnnotation.addEventListener(MouseEvent.MOUSE_UP, boxAnnotationMouseUp);
+				boxAnnotation.addEventListener(MouseEvent.MOUSE_OUT, boxAnnotationMouseUp);
+			}
+			private function boxAnnotationMoved(event:MouseEvent):void {
+				trace("video box", videoBox.mouseX, videoBox.mouseY);
+				trace("box annotation", boxAnnotation.x, boxAnnotation.y);
+				boxAnnotation.x = videoBox.mouseX - boxAnnotation.width / 2;
+				boxAnnotation.y = videoBox.mouseY - boxAnnotation.height / 2;
+				trace("box annotation 2", boxAnnotation.x, boxAnnotation.y);
+			}
 			
+			private function boxAnnotationMouseUp(event:MouseEvent):void {
+				event.target.alpha = 1;
+				
+				
+				boxAnnotation.removeEventListener(MouseEvent.MOUSE_MOVE, boxAnnotationMoved);
+				boxAnnotation.removeEventListener(MouseEvent.MOUSE_UP, boxAnnotationMouseUp);
+				boxAnnotation.removeEventListener(MouseEvent.MOUSE_OUT, boxAnnotationMouseUp);
+			}
+
+
+			protected function bottomRight_mouseDownHandler(event:MouseEvent):void
+			{
+				bottomRight.backgroundFill = new SolidColor(0x00FF00);
+				videoBox.mouseChildren = false;
+				videoBox.addEventListener(MouseEvent.MOUSE_MOVE, bottomRightMoved);
+				videoBox.addEventListener(MouseEvent.MOUSE_UP, bottomRightMouseUp);
+			}
+			
+			private function bottomRightMoved(e:MouseEvent):void {
+				// get out the new x and y coordinate of this box
+				trace("video box", videoBox.mouseX, videoBox.mouseY);
+				trace("box annotation", boxAnnotation.x, boxAnnotation.y);
+				
+				var newPoint = IDGUI.localToLocal(videoBox, boxAnnotation, new Point(videoBox.mouseX, videoBox.mouseY));
+				
+				
+				bottomRight.x = newPoint.x - bottomRight.width / 2;
+				bottomRight.y = newPoint.y - bottomRight.height / 2;
+				
+				trace("box annotation 2", boxAnnotation.x, boxAnnotation.y);
+				// scale the box (or adjust the width??!!? not sure of behaviour yet
+				square.width = bottomRight.x - 10;
+				square.height = bottomRight.y - 10;
+			}
+			
+			
+			private function bottomRightMouseUp(e:MouseEvent):void {
+				videoBox.removeEventListener(MouseEvent.MOUSE_MOVE, bottomRightMoved);
+				videoBox.removeEventListener(MouseEvent.MOUSE_UP, bottomRightMouseUp);
+				videoBox.mouseChildren = true;
+				bottomRight.backgroundFill = new SolidColor(0xFFFFFF);
 			}
 
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:Fade duration="200" alphaFrom="0" alphaTo="1" id="fadeIn" />   
+		<s:Fade duration="200" alphaFrom="1" alphaTo="0" id="fadeOut"/>		
 	</fx:Declarations>
 	
 	<!-- TITLE BAR WITH CREATION BUTTON -->
@@ -70,11 +243,31 @@
 	</s:BorderContainer>
 	<!-- END OF TITLE BAR WITH CREATION BUTTON -->
 	
-	<s:VideoDisplay id="videoPlayer" width="100%" height="100%" autoDisplayFirstFrame="true" scaleMode="none"  durationChange="videoPlayer_durationChangeHandler(event)" source="http://123.100.147.12/Media/1230_1.f4v" currentTimeChange="videoPlayer_currentTimeChangeHandler(event)" mediaPlayerStateChange="videoPlayer_mediaPlayerStateChangeHandler(event)" />
-	<s:HGroup width="100%">
-		<s:Button label="Play" id="playButton" click="playButton_clickHandler(event)"/>
-		<s:BorderContainer id="scrubbar" height="30" width="100%" backgroundColor="0x00FF00" click="scrubbar_clickHandler(event)">
-			<s:BorderContainer id="playhead" height="30" width="1" borderVisible="false" backgroundColor="0xFFFF00" />
+	<s:BorderContainer id="videoBox" backgroundColor="0x888888" borderVisible="false" width="100%" height="100%">
+		<s:VideoDisplay id="videoPlayer" muted="true" width="100%" height="100%" autoDisplayFirstFrame="true"  durationChange="videoPlayer_durationChangeHandler(event)" currentTimeChange="videoPlayer_currentTimeChangeHandler(event)" mediaPlayerStateChange="videoPlayer_mediaPlayerStateChangeHandler(event)" click="videoPlayer_clickHandler(event)" rollOver="videoPlayer_mouseOverHandler(event)" rollOut="videoPlayer_mouseOutHandler(event)" />
+		
+		<s:Group id="boxAnnotation" >
+			<s:BorderContainer id="square" backgroundAlpha="0.01" borderColor="0xFFFFFF" borderStyle="solid" borderWeight="5" width="120" height="120" x="10" y="10" mouseDown="boxAnnotation_mouseDownHandler(event)">
+				<s:BorderContainer backgroundAlpha="0.001" borderColor="0x000000" borderStyle="solid" borderWeight="5" width="100%" height="100%" />
+			</s:BorderContainer>
+			<s:BorderContainer id="topLeft" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.x - 10}" y="{square.y - 10}" mouseDown="topLeft_mouseDownHandler(event)"/>
+			<s:BorderContainer backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.width + 10}" y="{square.y - 10}"/>
+			<s:BorderContainer backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.x - 10}" y="{square.height + 10}"/>
+			<s:BorderContainer id="bottomRight" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.width + 10}" y="{square.height + 10}" mouseDown="bottomRight_mouseDownHandler(event)"/>
+		</s:Group>
+
+		<s:BorderContainer id="videoControl" width="600" height="50" visible="false" backgroundColor="0xDDDDDD" borderColor="0x888888" borderStyle="solid" borderWeight="1" backgroundAlpha="0.9" borderVisible="false" horizontalCenter="0" bottom="100" showEffect="{fadeIn}" hideEffect="{fadeOut}" mouseOver="videoControl_mouseOverHandler(event)">
+			<s:HGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%" gap="10" >
+				<s:Button label="Pause" id="playButton" click="playButton_clickHandler(event)" height="100%"/>
+				<s:Group width="100%">
+					<s:BorderContainer id="scrubbar" height="30" width="100%" backgroundColor="0xEEEEEE" borderVisible="true" mouseDown="scrubbar_mouseDownHandler(event)" mouseUp="scrubbar_mouseUpHandler(event)" mouseChildren="false" >
+						<s:BorderContainer id="playhead" height="29" width="2" borderVisible="false" backgroundColor="0x444444" includeInLayout="false" />
+					</s:BorderContainer>
+				</s:Group>
+			</s:HGroup>
 		</s:BorderContainer>
-	</s:HGroup>
+		
+	</s:BorderContainer>
+	
+	
 </s:VGroup>

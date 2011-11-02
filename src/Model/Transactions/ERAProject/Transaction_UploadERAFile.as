@@ -63,7 +63,8 @@ package Model.Transactions.ERAProject
 		
 		private function progressHandler(event:ProgressEvent):void {
 //			var byteJustLoaded:Number = event.bytesLoaded
-			var percentProgress:Number = Math.round(event.bytesLoaded/event.bytesTotal*100);
+//			var percentProgress:Number = Math.round(event.bytesLoaded/event.bytesTotal*100);
+			var percentProgress:Number = event.bytesLoaded/event.bytesTotal*100;
 			
 			progressCallback(percentProgress, logItemID);
 		}
