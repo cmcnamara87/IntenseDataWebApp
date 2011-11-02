@@ -20,7 +20,7 @@ package Controller.ERA
 			trace('running init');
 			
 			// Get the 
-			AppModel.getInstance().getERAFile(4272, gotFile);
+			AppModel.getInstance().getERAFile(4288, gotFile);
 		}
 		
 		private function gotFile(status:Boolean, eraFile:Model_ERAFile) {

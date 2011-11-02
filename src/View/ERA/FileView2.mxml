@@ -162,9 +162,8 @@
 			{
 				event.target.alpha = 0.5;
 				
-				boxAnnotation.addEventListener(MouseEvent.MOUSE_MOVE, boxAnnotationMoved);
-				boxAnnotation.addEventListener(MouseEvent.MOUSE_UP, boxAnnotationMouseUp);
-				boxAnnotation.addEventListener(MouseEvent.MOUSE_OUT, boxAnnotationMouseUp);
+				videoBox.addEventListener(MouseEvent.MOUSE_MOVE, boxAnnotationMoved);
+				videoBox.addEventListener(MouseEvent.MOUSE_UP, boxAnnotationMouseUp);
 			}
 			private function boxAnnotationMoved(event:MouseEvent):void {
 				trace("video box", videoBox.mouseX, videoBox.mouseY);
@@ -177,10 +176,9 @@
 			private function boxAnnotationMouseUp(event:MouseEvent):void {
 				event.target.alpha = 1;
 				
-				
-				boxAnnotation.removeEventListener(MouseEvent.MOUSE_MOVE, boxAnnotationMoved);
-				boxAnnotation.removeEventListener(MouseEvent.MOUSE_UP, boxAnnotationMouseUp);
-				boxAnnotation.removeEventListener(MouseEvent.MOUSE_OUT, boxAnnotationMouseUp);
+				videoBox.mouseChildren = true;
+				videoBox.removeEventListener(MouseEvent.MOUSE_MOVE, boxAnnotationMoved);
+				videoBox.removeEventListener(MouseEvent.MOUSE_UP, boxAnnotationMouseUp);
 			}
 
 
@@ -217,6 +215,48 @@
 				bottomRight.backgroundFill = new SolidColor(0xFFFFFF);
 			}
 
+
+			protected function annotationStartHandle_mouseDownHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				annotationStartHandle.alpha = 0.5;
+				scrubbarBox.addEventListener(MouseEvent.MOUSE_MOVE, annotationStartHandleMouseMoved);
+				scrubbarBox.addEventListener(MouseEvent.MOUSE_OUT, annotationStartHandleMouseUp);
+				scrubbarBox.addEventListener(MouseEvent.MOUSE_UP, annotationStartHandleMouseUp);
+			}
+			
+			private function annotationStartHandleMouseMoved(e:MouseEvent):void {
+				annotationStartHandle.x = scrubbarBox.mouseX;
+			}
+
+			private function annotationStartHandleMouseUp(e:MouseEvent):void {
+				annotationStartHandle.alpha = 1;
+				
+				scrubbarBox.removeEventListener(MouseEvent.MOUSE_MOVE, annotationStartHandleMouseMoved);
+				scrubbarBox.removeEventListener(MouseEvent.MOUSE_UP, annotationStartHandleMouseUp);
+				scrubbarBox.removeEventListener(MouseEvent.MOUSE_OUT, annotationStartHandleMouseUp);
+			}
+
+			protected function annotationEndHandle_mouseDownHandler(event:MouseEvent):void
+			{
+				annotationEndHandle.alpha = 0.5;
+				scrubbarBox.addEventListener(MouseEvent.MOUSE_MOVE, annotationEndHandleMouseMoved);
+				scrubbarBox.addEventListener(MouseEvent.MOUSE_OUT, annotationEndHandleMouseUp);
+				scrubbarBox.addEventListener(MouseEvent.MOUSE_UP, annotationEndHandleMouseUp);
+			}
+			
+			private function annotationEndHandleMouseMoved(e:MouseEvent):void {
+				annotationEndHandle.x = scrubbarBox.mouseX;
+			}
+			
+			private function annotationEndHandleMouseUp(e:MouseEvent):void {
+				annotationEndHandle.alpha = 1;
+				
+				scrubbarBox.removeEventListener(MouseEvent.MOUSE_MOVE, annotationEndHandleMouseMoved);
+				scrubbarBox.removeEventListener(MouseEvent.MOUSE_UP, annotationEndHandleMouseUp);
+				scrubbarBox.removeEventListener(MouseEvent.MOUSE_OUT, annotationEndHandleMouseUp);
+			}
+
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -243,26 +283,31 @@
 	</s:BorderContainer>
 	<!-- END OF TITLE BAR WITH CREATION BUTTON -->
 	
-	<s:BorderContainer id="videoBox" backgroundColor="0x888888" borderVisible="false" width="100%" height="100%">
+	<s:BorderContainer id="videoBox" backgroundColor="0x888888" borderVisible="false" width="100%" height="100%" >
 		<s:VideoDisplay id="videoPlayer" muted="true" width="100%" height="100%" autoDisplayFirstFrame="true"  durationChange="videoPlayer_durationChangeHandler(event)" currentTimeChange="videoPlayer_currentTimeChangeHandler(event)" mediaPlayerStateChange="videoPlayer_mediaPlayerStateChangeHandler(event)" click="videoPlayer_clickHandler(event)" rollOver="videoPlayer_mouseOverHandler(event)" rollOut="videoPlayer_mouseOutHandler(event)" />
 		
 		<s:Group id="boxAnnotation" >
-			<s:BorderContainer id="square" backgroundAlpha="0.01" borderColor="0xFFFFFF" borderStyle="solid" borderWeight="5" width="120" height="120" x="10" y="10" mouseDown="boxAnnotation_mouseDownHandler(event)">
+			<s:BorderContainer id="square" buttonMode="true" backgroundAlpha="0.01" borderColor="0xFFFFFF" borderStyle="solid" borderWeight="5" width="120" height="120" x="10" y="10" mouseDown="boxAnnotation_mouseDownHandler(event)">
 				<s:BorderContainer backgroundAlpha="0.001" borderColor="0x000000" borderStyle="solid" borderWeight="5" width="100%" height="100%" />
 			</s:BorderContainer>
 			<s:BorderContainer id="topLeft" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.x - 10}" y="{square.y - 10}" mouseDown="topLeft_mouseDownHandler(event)"/>
 			<s:BorderContainer backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.width + 10}" y="{square.y - 10}"/>
 			<s:BorderContainer backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.x - 10}" y="{square.height + 10}"/>
-			<s:BorderContainer id="bottomRight" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.width + 10}" y="{square.height + 10}" mouseDown="bottomRight_mouseDownHandler(event)"/>
+			<s:BorderContainer id="bottomRight" buttonMode="true" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.width + 10}" y="{square.height + 10}" mouseDown="bottomRight_mouseDownHandler(event)"/>
 		</s:Group>
 
-		<s:BorderContainer id="videoControl" width="600" height="50" visible="false" backgroundColor="0xDDDDDD" borderColor="0x888888" borderStyle="solid" borderWeight="1" backgroundAlpha="0.9" borderVisible="false" horizontalCenter="0" bottom="100" showEffect="{fadeIn}" hideEffect="{fadeOut}" mouseOver="videoControl_mouseOverHandler(event)">
+		<s:BorderContainer id="videoControl" width="600" height="50" visible="false" backgroundColor="0xFFFFFF" borderColor="0x888888" borderStyle="solid" borderWeight="1" backgroundAlpha="0.9" borderVisible="false" horizontalCenter="0" bottom="100" showEffect="{fadeIn}" hideEffect="{fadeOut}" mouseOver="videoControl_mouseOverHandler(event)">
 			<s:HGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%" gap="10" >
 				<s:Button label="Pause" id="playButton" click="playButton_clickHandler(event)" height="100%"/>
-				<s:Group width="100%">
+				<s:Group width="100%" id="scrubbarBox">
 					<s:BorderContainer id="scrubbar" height="30" width="100%" backgroundColor="0xEEEEEE" borderVisible="true" mouseDown="scrubbar_mouseDownHandler(event)" mouseUp="scrubbar_mouseUpHandler(event)" mouseChildren="false" >
 						<s:BorderContainer id="playhead" height="29" width="2" borderVisible="false" backgroundColor="0x444444" includeInLayout="false" />
+						<s:BorderContainer id="annotationStart" height="29" width="2" borderVisible="false" backgroundColor="0x00FF00" includeInLayout="false" x="{annotationStartHandle.x + 10}" />
+						<s:BorderContainer id="annotationEnd" height="29" width="2" borderVisible="false" backgroundColor="0x00FF00" includeInLayout="false" x="{annotationEndHandle.x}" />
 					</s:BorderContainer>
+					
+					<s:BorderContainer id="annotationEndHandle"  y="-10" height="10" width="10" borderVisible="false" backgroundColor="0x00FF00" mouseDown="annotationEndHandle_mouseDownHandler(event)" />
+					<s:BorderContainer id="annotationStartHandle" y="-10" height="10" width="10" borderVisible="false" backgroundColor="0x00FF00" mouseDown="annotationStartHandle_mouseDownHandler(event)"/>
 				</s:Group>
 			</s:HGroup>
 		</s:BorderContainer>
