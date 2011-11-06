@@ -220,6 +220,7 @@
 			{
 				// TODO Auto-generated method stub
 				annotationStartHandle.alpha = 0.5;
+				scrubbarBox.mouseChildren = false;
 				scrubbarBox.addEventListener(MouseEvent.MOUSE_MOVE, annotationStartHandleMouseMoved);
 				scrubbarBox.addEventListener(MouseEvent.MOUSE_OUT, annotationStartHandleMouseUp);
 				scrubbarBox.addEventListener(MouseEvent.MOUSE_UP, annotationStartHandleMouseUp);
@@ -231,7 +232,7 @@
 
 			private function annotationStartHandleMouseUp(e:MouseEvent):void {
 				annotationStartHandle.alpha = 1;
-				
+				scrubbarBox.mouseChildren = true;
 				scrubbarBox.removeEventListener(MouseEvent.MOUSE_MOVE, annotationStartHandleMouseMoved);
 				scrubbarBox.removeEventListener(MouseEvent.MOUSE_UP, annotationStartHandleMouseUp);
 				scrubbarBox.removeEventListener(MouseEvent.MOUSE_OUT, annotationStartHandleMouseUp);
@@ -240,6 +241,7 @@
 			protected function annotationEndHandle_mouseDownHandler(event:MouseEvent):void
 			{
 				annotationEndHandle.alpha = 0.5;
+				scrubbarBox.mouseChildren = false;
 				scrubbarBox.addEventListener(MouseEvent.MOUSE_MOVE, annotationEndHandleMouseMoved);
 				scrubbarBox.addEventListener(MouseEvent.MOUSE_OUT, annotationEndHandleMouseUp);
 				scrubbarBox.addEventListener(MouseEvent.MOUSE_UP, annotationEndHandleMouseUp);
@@ -252,6 +254,7 @@
 			private function annotationEndHandleMouseUp(e:MouseEvent):void {
 				annotationEndHandle.alpha = 1;
 				
+				scrubbarBox.mouseChildren = true;
 				scrubbarBox.removeEventListener(MouseEvent.MOUSE_MOVE, annotationEndHandleMouseMoved);
 				scrubbarBox.removeEventListener(MouseEvent.MOUSE_UP, annotationEndHandleMouseUp);
 				scrubbarBox.removeEventListener(MouseEvent.MOUSE_OUT, annotationEndHandleMouseUp);
