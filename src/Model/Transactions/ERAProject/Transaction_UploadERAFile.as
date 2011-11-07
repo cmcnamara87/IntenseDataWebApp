@@ -115,13 +115,29 @@ package Model.Transactions.ERAProject
 			// It was successful, so lets get it out
 			newFileID = xml.reply.result.id;
 			
-			var baseXML:XML = connection.packageRequest("asset.relationship.add", new Object(), true);
+			// now we will just run a transcation to convert the video to a playable MP4
+			var baseXML:XML = connection.packageRequest("id.asset.video.transcode", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
+			argsXML.id = newFileID;
+			connection.sendRequest(baseXML, fileTranscoded);
+			
+			baseXML = connection.packageRequest("asset.relationship.add", new Object(), true);
+			argsXML = baseXML.service.args;
 			argsXML.id = newFileID;
 			argsXML.to = evidenceRoomID;
 			argsXML.to.@relationship = "room";
 			
 			connection.sendRequest(baseXML, addedEvidenceRoom);
+		}
+		
+		private function fileTranscoded(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("adding relationship to evidnece room", e)) == null) {
+				trace("FAILED TO TRANSCODE", data);
+				return;
+			} else {
+				trace("TRANSCODED", data);
+			}
 		}
 		
 		private function addedEvidenceRoom(e:Event):void {
