@@ -137,6 +137,9 @@ package Model.Transactions.ERAProject
 			// It was successful, so lets get it out
 			newFileID = xml.reply.result.id;
 			
+			// this function only  works if its a video file, so its okay if it does it
+			AppModel.getInstance().createF4V(newFileID);
+			
 			var baseXML:XML = connection.packageRequest("asset.set", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			

@@ -70,6 +70,9 @@ package Controller.Utilities {
 		[Embed(source="Assets/Template/assets/general_file_icon_small_others.png")]
 		private static var Generic_File_Icon_Small_Others:Class;
 		
+		[Embed(source="Assets/Template/assets/transcoding.png")]
+		public static var Transcoding_Class:Class;
+		
 		// Video icons
 		[Embed(source="Assets/Template/assets/video_file_icon_small_others.png")]
 		private static var Video_File_Icon_Small_Others:Class;
@@ -137,6 +140,8 @@ package Controller.Utilities {
 		[Embed(source="Assets/Template/add_comment_icon.png")]
 		private static var Buttonicon_add_comment:Class;
 		private static var Buttonicon_add_comment_data:BitmapData = (new Buttonicon_add_comment as Bitmap).bitmapData;
+		
+		
 		
 		private static var imagesSetup:Boolean = false;
 		

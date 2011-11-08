@@ -66,6 +66,9 @@
 			}
 			private function updateGUI():void {
 				title =  _fileData.title;
+				if(!_fileData.transcoded) {
+					title = "Transcoding... " + title;
+				}
 				description = _fileData.description;
 				fileID = _fileData.base_asset_id;
 				type = _fileData.type;
@@ -152,8 +155,11 @@
 //				if(rootMetaType == "image") {
 //					icon.source = 'http://' + Recensio_Flex_Beta.serverAddress + ':' + Recensio_Flex_Beta.serverPort + '/mflux/icon.mfjp?_skey=' + Auth.getInstance().getSessionID() + '&id=' + fileID + '&version=0&size=100'
 //				} else {
+				if(_fileData.transcoded) {
 					icon.source = AssetLookup.getAssetImageClass(rootMetaType);
-//				}
+				} else {
+					icon.source = AssetLookup.Transcoding_Class;
+				}
 			}
 
 			protected function vgroup1_mouseDownHandler(event:MouseEvent):void

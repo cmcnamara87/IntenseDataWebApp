@@ -20,7 +20,7 @@
 	</fx:Declarations>
 	<s:BorderContainer id="loadingBar" backgroundColor="{backgroundColor}" borderColor="0x000055" width="0" height="20">
 		<s:HGroup verticalAlign="middle">
-			<s:Label text="{loadingBar.percentWidth}%" textAlign="right" width="100%" color="0xFFFFFF"/>
+			<s:Label text="{Math.round(loadingBar.percentWidth)}%" textAlign="right" width="100%" color="0xFFFFFF"/>
 		</s:HGroup>
 	</s:BorderContainer>
 	

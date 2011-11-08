@@ -24,6 +24,7 @@ package Model {
 		public var checkedOutUsername:String = ""; // the username of the person who checked out the file
 		
 		public var meta_media_uri:String;
+		public var transcoded:Boolean = true;
 		
 		public var notificationCount:Number = 0;
 		public var notificationArray:Array = new Array();
@@ -63,6 +64,12 @@ package Model {
 			meta_media_uri = rawData.meta.r_media.uri;
 			
 			this.rootMetaType = AssetLookup.getCommonType(rawData.type);
+			
+			// if its video, we need to store whether its successfully been transcoded or not
+			// we dont really care for other medias
+			if(this.rootMetaType == "video") {
+				this.transcoded = rawData.meta.r_media.transcoded == "true";
+			}
 			
 			if(rawData.content) {
 				this.fileExt = rawData.content.type.@ext;
