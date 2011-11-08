@@ -18,7 +18,11 @@
 			import Controller.Utilities.AssetLookup;
 			import Controller.Utilities.Auth;
 			
+			import Model.AppModel;
 			import Model.Model_ERAFile;
+			
+			import flash.utils.clearTimeout;
+			import flash.utils.setTimeout;
 			
 			import mx.core.IUIComponent;
 			import mx.events.FlexEvent;
@@ -59,16 +63,57 @@
 			[Bindable]
 			private var notificationCount:Number = 0;
 			
+			private var transcodeChecker:uint = 0;
+			
 			public function set fileData(fileData:Model_ERAFile):void {
 				this._fileData = fileData;
 				
+				
+				if(!_fileData.transcoded) {
+					// hasnt finished transcoding, lets update the data every 30 seconds)
+					
+					transcodeChecker = setTimeout(function():void {
+						trace("getting file data");
+						AppModel.getInstance().getERAFile(_fileData.base_asset_id, gotFileData);	
+					}, 10000);
+				}
 				updateGUI();
 			}
+			private function gotFileData(status:Boolean, fileData:Model_ERAFile):void {
+				if(!status) {
+					trace("oh no, error");
+					return;
+				}
+				
+				trace('got file data');
+				// since we got the data, we may as well update it
+				this._fileData = fileData;
+				updateGUI();
+				
+				// check if the transcoding is done
+				trace('is file transcoded?', _fileData.transcoded ? 'yes' : 'no');
+				if(_fileData.transcoded) {
+					clearTimeout(transcodeChecker);
+				} else {
+					transcodeChecker = setTimeout(function():void {
+						trace("getting file data");
+						AppModel.getInstance().getERAFile(_fileData.base_asset_id, gotFileData);	
+					}, 10000);
+				}
+			}
+			
 			private function updateGUI():void {
 				title =  _fileData.title;
 				if(!_fileData.transcoded) {
 					title = "Transcoding... " + title;
 				}
+				
+				if(_fileData.transcoded) {
+					icon.source = AssetLookup.getAssetImageClass(rootMetaType);
+				} else {
+					icon.source = AssetLookup.Transcoding_Class;
+				}
+				
 				description = _fileData.description;
 				fileID = _fileData.base_asset_id;
 				type = _fileData.type;
