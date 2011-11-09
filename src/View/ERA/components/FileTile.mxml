@@ -108,10 +108,16 @@
 					title = "Transcoding... " + title;
 				}
 				
-				if(_fileData.transcoded) {
-					icon.source = AssetLookup.getAssetImageClass(rootMetaType);
-				} else {
+				if(!_fileData.transcoded) {
 					icon.source = AssetLookup.Transcoding_Class;
+					
+				// lets see if it has a thumbnail url stored
+				} else if (_fileData.thumbnailURL != "") {
+					trace("********* thumbnail url is", _fileData.thumbnailURL);
+					icon.source = _fileData.thumbnailURL;
+				} else {
+					trace("******** root meta type is", _fileData.rootMetaType);
+					icon.source = AssetLookup.getAssetImageClass(_fileData.rootMetaType);
 				}
 				
 				description = _fileData.description;
@@ -200,11 +206,11 @@
 //				if(rootMetaType == "image") {
 //					icon.source = 'http://' + Recensio_Flex_Beta.serverAddress + ':' + Recensio_Flex_Beta.serverPort + '/mflux/icon.mfjp?_skey=' + Auth.getInstance().getSessionID() + '&id=' + fileID + '&version=0&size=100'
 //				} else {
-				if(_fileData.transcoded) {
-					icon.source = AssetLookup.getAssetImageClass(rootMetaType);
-				} else {
-					icon.source = AssetLookup.Transcoding_Class;
-				}
+//				if(_fileData.transcoded) {
+//					icon.source = AssetLookup.getAssetImageClass(rootMetaType);
+//				} else {
+//					icon.source = AssetLookup.Transcoding_Class;
+//				}
 			}
 
 			protected function vgroup1_mouseDownHandler(event:MouseEvent):void
@@ -221,7 +227,11 @@
 				var dragProxy:Image = new Image();
 				dragProxy.height= 100;
 				dragProxy.width= 100; 
-				dragProxy.source = AssetLookup.getAssetImageClass(rootMetaType);
+				if(_fileData.thumbnailURL != "") {
+					dragProxy.source = _fileData.thumbnailURL;
+				} else {
+					dragProxy.source = AssetLookup.getAssetImageClass(rootMetaType);
+				}
 				
 				DragManager.doDrag(event.currentTarget as IUIComponent, null, event, dragProxy);
 				this.alpha = 0.5;
@@ -282,11 +292,12 @@
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:DropShadowFilter id="shadow123" distance="0" angle="0" alpha="0.2" color="0x000000" blurX="10" blurY="10"/>
 	</fx:Declarations>
 	
 	<s:Group width="100" height="100">
-		<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="Description: {description}" alpha="{checkedOut ? 0.5 : 1}" mouseDown="vgroup1_mouseDownHandler(event)" 
-				  mouseUp="vgroup1_mouseUpHandler(event)" />
+		<mx:Image id="icon" height="100" width="100" verticalAlign="middle" horizontalAlign="center" maintainAspectRatio="true" toolTip="Description: {description}" alpha="{checkedOut ? 0.5 : 1}" mouseDown="vgroup1_mouseDownHandler(event)" 
+				  mouseUp="vgroup1_mouseUpHandler(event)" filters="{shadow123}" />
 		<components:NotificationBadge id="notificationBadge" left="75" notificationCount="{notificationCount}" click="notificationBadge_clickHandler(event)" />		
 		<components:TickBadge horizontalCenter="0" id="tickBadge" show="false" />
 	</s:Group>

@@ -1569,7 +1569,7 @@ package Model {
 				trace(functionName + ": FAILED", e.target.data);
 				return null;
 			}
-//			trace(functionName + ": SUCCESS", e.target.data);
+			trace(functionName + ": SUCCESS", e.target.data);
 			return dataXML;
 		}
 		

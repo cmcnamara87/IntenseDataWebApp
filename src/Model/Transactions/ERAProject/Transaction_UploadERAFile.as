@@ -116,8 +116,8 @@ package Model.Transactions.ERAProject
 			// It was successful, so lets get it out
 			newFileID = xml.reply.result.id;
 			
-			// this function only  works if its a video file, so its okay if it does it
-			AppModel.getInstance().createF4V(newFileID);
+			
+			
 			
 			
 			var baseXML:XML = connection.packageRequest("asset.relationship.add", new Object(), true);
@@ -206,6 +206,12 @@ package Model.Transactions.ERAProject
 			
 			var eraEvidence:Model_ERAFile = new Model_ERAFile();
 			eraEvidence.setData(data.reply.result.asset[0]);
+			
+			// Do the conversion if we need to
+			// this function only  works if its a video file, so its okay if it does it
+			if(eraEvidence.rootMetaType == "video") {
+				AppModel.getInstance().createF4V(newFileID);
+			}
 			
 			completeCallback(true, evidenceItem.getID(), eraEvidence.base_asset_id)
 		}

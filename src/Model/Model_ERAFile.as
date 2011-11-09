@@ -39,6 +39,8 @@ package Model {
 		
 		public var lockedOut:Boolean = false;
 		
+		public var thumbnailURL:String = "";
+		
 		public function Model_ERAFile() {
 			super();
 		}
@@ -70,6 +72,16 @@ package Model {
 			if(this.rootMetaType == "video") {
 				this.transcoded = rawData.meta.r_media.transcoded == "true";
 			}
+			
+			// get the thumbnail if its there
+			if(this.rootMetaType == "video" || this.rootMetaType == "document") {
+				if(rawData.meta["ERA-thumbnail"].length()) {
+					this.thumbnailURL = "http://" + Recensio_Flex_Beta.serverAddress + "/Media/thumbnails/" + rawData.meta["ERA-thumbnail"].uri;
+				}
+			} else if (this.rootMetaType == "image") {
+				this.thumbnailURL = 'http://' + Recensio_Flex_Beta.serverAddress + ':' + Recensio_Flex_Beta.serverPort + '/mflux/icon.mfjp?_skey=' + Auth.getInstance().getSessionID() + '&id=' + this.base_asset_id + '&version=0&size=100'
+			}
+			
 			
 			if(rawData.content) {
 				this.fileExt = rawData.content.type.@ext;
