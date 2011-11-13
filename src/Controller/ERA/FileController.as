@@ -260,7 +260,8 @@ package Controller.ERA {
 		
 		private function segmentReady(status:Boolean, videoLocation:String = ""):void {
 			if(!status) {
-				trace("segment failed");
+				Alert.show("Segment Extraction Failed");
+				return;
 			}
 			trace("segment ready!!!!!");
 			
@@ -276,8 +277,25 @@ package Controller.ERA {
 			// For some reason, the browser doesnt have to data, so we will have to load it here
 			//AppModel.getInstance().getThisMediasData(currentAssetID, mediasDataLoaded);
 			AppModel.getInstance().getERAFile(currentAssetID, mediasDataLoaded);
+			
+			// Get all the files in the room
+			AppModel.getInstance().getAllERAFilesInRoom(roomID, gotRoomFiles);
 			return;
 
+		}
+		private function gotRoomFiles(status:Boolean, fileArray:Array):void {
+			if(!status) {
+				trace("oh no it didnt work");
+				return;
+			}
+			trace("got room files for annotation link media panel");
+			var newFileArray:Array = new Array();
+			for each(var file:Model_ERAFile in fileArray) {
+				if(file.base_asset_id != currentAssetID) {
+					newFileArray.push(file);
+				}
+			}
+			mediaView.addMediaLinkPanelFiles(newFileArray);
 		}
 		
 		/**

@@ -1,5 +1,7 @@
 package View.components
 {
+	import Controller.ERA.FileController;
+	
 	import mx.graphics.SolidColorStroke;
 	
 	import spark.components.Button;
@@ -82,7 +84,9 @@ package View.components
 //				trace("mediaTitle", mediaTitle);
 				
 				// for tomorrow, get out the length of the first part, after the </a> is put in, and start seraching from there
-				var replacementString:String = "(<font color='"+color+"'><u><a href='#go/" + refAssetID + "'>" + mediaTitle + "</a></u></font>)";
+				//"file/" + caseID + "/" + escape(rmCode) + "/" + roomType + "/" + roomID + "/"  + fileID);
+//				var replacementString:String = "(<font color='"+color+"'><u><a href='#go/" + refAssetID + "'>" + mediaTitle + "</a></u></font>)";
+				var replacementString:String = "(<font color='"+color+"'><u><a href='#file/" + FileController.caseID + "/" + FileController.rmCode + "/" + FileController.roomType + "/" + FileController.roomID + "/" + refAssetID + "'>" + mediaTitle + "</a></u></font>)";
 				newCommentText = newCommentText.substring(0, startRefLocation) + replacementString + newCommentText.substring(endRefLocation + 1);
 				
 				startRefLocation = newCommentText.indexOf("{", startRefLocation + replacementString.length);

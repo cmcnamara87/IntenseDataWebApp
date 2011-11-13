@@ -53,6 +53,8 @@ package View.components.Panels.Comments
 			addCommentButton = new Button();
 			addCommentButton.label = "Add Comment";
 			addCommentButton.percentHeight = 100;
+			addCommentButton.setStyle('cornerRadius', 10);
+			addCommentButton.setStyle("chromeColor", "0xFFFFFF");
 			toolbar.addElement(addCommentButton);
 			
 			var addCommentMax:Line = new Line();
@@ -65,6 +67,8 @@ package View.components.Panels.Comments
 			maxMinButton.label = "Max";
 			maxMinButton.width = 40;
 			maxMinButton.percentHeight = 100;
+			maxMinButton.setStyle('cornerRadius', 10);
+			maxMinButton.setStyle("chromeColor", "0xFFFFFF");
 			toolbar.addElement(maxMinButton);
 			
 			// Add the close button to the panel
@@ -72,6 +76,8 @@ package View.components.Panels.Comments
 			closeButton.label = "X";
 			closeButton.percentHeight = 100;
 			closeButton.width = 30;
+			closeButton.setStyle('cornerRadius', 10);
+			closeButton.setStyle("chromeColor", "0xFFFFFF");
 			toolbar.addElement(closeButton);
 			
 			// Event Listenrs
@@ -176,12 +182,13 @@ package View.components.Panels.Comments
 			content.removeElement(newCommentObject);
 		}
 		
-		public function addReferenceTo(mediaData:Model_Media):void {
-			trace("title of added asset is", mediaData.meta_title);
+//		public function addReferenceTo(mediaData:Model_Media):void {
+		public function addReferenceTo(fileID:Number, fileTitle:String):void {
+			trace("title of added asset is", fileTitle);
 			var commentIndex:Number = this.getCommentIndexFromAssetID(editingCommentID);
 			trace("found", editingCommentID, "at", commentIndex); 
 			var comment:Comment = content.getElementAt(commentIndex) as Comment;
-			comment.addReference(mediaData.base_asset_id, mediaData.meta_title);
+			comment.addReference(fileID, fileTitle);
 			
 		}
 		

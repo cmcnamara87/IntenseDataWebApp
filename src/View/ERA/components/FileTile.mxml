@@ -65,19 +65,24 @@
 			
 			private var transcodeChecker:uint = 0;
 			
+			private var transcodeTimer:Timer = new Timer(10000);
+			
 			public function set fileData(fileData:Model_ERAFile):void {
 				this._fileData = fileData;
 				
 				
 				if(!_fileData.transcoded) {
-					// hasnt finished transcoding, lets update the data every 30 seconds)
 					
-					transcodeChecker = setTimeout(function():void {
-						trace("getting file data");
-						AppModel.getInstance().getERAFile(_fileData.base_asset_id, gotFileData);	
-					}, 10000);
+					transcodeTimer.addEventListener(TimerEvent.TIMER, checkIfTranscoded);
+					// hasnt finished transcoding, lets update the data every 30 seconds)
+					transcodeTimer.start();
 				}
 				updateGUI();
+			}
+			private function checkIfTranscoded(e:Event):void {
+				trace("getting file data");
+				transcodeTimer.stop();
+				AppModel.getInstance().getERAFile(_fileData.base_asset_id, gotFileData);	
 			}
 			private function gotFileData(status:Boolean, fileData:Model_ERAFile):void {
 				if(!status) {
@@ -95,10 +100,7 @@
 				if(_fileData.transcoded) {
 					clearTimeout(transcodeChecker);
 				} else {
-					transcodeChecker = setTimeout(function():void {
-						trace("getting file data");
-						AppModel.getInstance().getERAFile(_fileData.base_asset_id, gotFileData);	
-					}, 10000);
+					transcodeTimer.start();
 				}
 			}
 			
@@ -109,14 +111,13 @@
 				}
 				
 				if(!_fileData.transcoded) {
+					trace("*********FILE IS NOT TRANSCODED***************************");
 					icon.source = AssetLookup.Transcoding_Class;
 					
 				// lets see if it has a thumbnail url stored
-				} else if (_fileData.thumbnailURL != "") {
-					trace("********* thumbnail url is", _fileData.thumbnailURL);
-					icon.source = _fileData.thumbnailURL;
+//				} else if (_fileData.thumbnailURL != "") {
+//					icon.source = _fileData.thumbnailURL;
 				} else {
-					trace("******** root meta type is", _fileData.rootMetaType);
 					icon.source = AssetLookup.getAssetImageClass(_fileData.rootMetaType);
 				}
 				
@@ -227,11 +228,11 @@
 				var dragProxy:Image = new Image();
 				dragProxy.height= 100;
 				dragProxy.width= 100; 
-				if(_fileData.thumbnailURL != "") {
-					dragProxy.source = _fileData.thumbnailURL;
-				} else {
+//				if(_fileData.thumbnailURL != "") {
+//					dragProxy.source = _fileData.thumbnailURL;
+//				} else {
 					dragProxy.source = AssetLookup.getAssetImageClass(rootMetaType);
-				}
+//				}
 				
 				DragManager.doDrag(event.currentTarget as IUIComponent, null, event, dragProxy);
 				this.alpha = 0.5;
@@ -244,6 +245,7 @@
 				mouseDown = false;
 				var showFileEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_FILE, true);
 				showFileEvent.data.fileID = fileID;
+				showFileEvent.data.fileTitle = title;
 				trace("dispatching show file event");
 				this.dispatchEvent(showFileEvent);
 			}
@@ -278,6 +280,7 @@
 			{
 				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+				transcodeTimer.removeEventListener(TimerEvent.TIMER, checkIfTranscoded);
 			}
 
 
@@ -302,5 +305,5 @@
 		<components:TickBadge horizontalCenter="0" id="tickBadge" show="false" />
 	</s:Group>
 	
-	<s:Label text="{title}{version > 0 ? '_v' + version : ''}{screeningCount > 0 ? '_r' + screeningCount : ''}{exhibitionCount > 0 ? '_e' + exhibitionCount : ''} ({ext == 'pot' ? 'ppt' : ext})" width="100%" textAlign="center" />
+	<s:Label id="fileLabel" text="{title}{version > 0 ? '_v' + version : ''}{screeningCount > 0 ? '_r' + screeningCount : ''}{exhibitionCount > 0 ? '_e' + exhibitionCount : ''} ({ext == 'pot' ? 'ppt' : ext})" width="100%" textAlign="center" />
 </s:VGroup>

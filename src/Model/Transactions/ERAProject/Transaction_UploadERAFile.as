@@ -69,6 +69,7 @@ package Model.Transactions.ERAProject
 			progressCallback(percentProgress, logItemID);
 		}
 		private function ioErrorHandler(event:IOErrorEvent):void {
+			Auth.getInstance().uploadCount--;
 			ioErrorCallback(event, evidenceItem);
 		}
 		
@@ -100,6 +101,8 @@ package Model.Transactions.ERAProject
 			argsXML.meta["r_media"].@id = "4";
 			argsXML.meta["r_media"]["transcoded"] = "false";
 			
+			// Store that we are currently uploading, so a message can be displayed on attempt to log out
+			Auth.getInstance().uploadCount++;
 			connection.uploadFile(fileReference, baseXML, null);
 		}
 		
@@ -112,6 +115,8 @@ package Model.Transactions.ERAProject
 				return;
 			}
 			trace("uploading file: SUCCESS", xml);
+			
+			Auth.getInstance().uploadCount--;
 			
 			// It was successful, so lets get it out
 			newFileID = xml.reply.result.id;
@@ -209,7 +214,7 @@ package Model.Transactions.ERAProject
 			
 			// Do the conversion if we need to
 			// this function only  works if its a video file, so its okay if it does it
-			if(eraEvidence.rootMetaType == "video") {
+			if(eraEvidence.rootMetaType == "video" || eraEvidence.rootMetaType == "document") {
 				AppModel.getInstance().createF4V(newFileID);
 			}
 			

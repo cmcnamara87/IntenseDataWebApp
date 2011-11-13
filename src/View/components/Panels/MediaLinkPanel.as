@@ -2,8 +2,11 @@ package View.components.Panels
 {
 	import Controller.IDEvent;
 	
+	import Model.AppModel;
+	import Model.Model_ERAFile;
 	import Model.Model_Media;
 	
+	import View.ERA.components.FileTile;
 	import View.components.AssetTile.AssetTile;
 	import View.components.GoodBorderContainer;
 	
@@ -34,7 +37,10 @@ package View.components.Panels
 			centeringGroup.percentWidth = 100;
 			centeringGroup.percentHeight = 100;
 			
+			
 			contents = new HGroup();
+			contents.paddingLeft = 10;
+			contents.paddingTop = 10;
 			centeringGroup.addElement(contents);
 			
 			
@@ -49,6 +55,19 @@ package View.components.Panels
 		
 		public function show():void {
 			this.height = 160;
+		}
+		
+		public function addFiles(filesArray:Array):void {
+			contents.removeAllElements();
+			for each(var file:Model_ERAFile in filesArray) {
+				var tile:FileTile = new FileTile();
+				tile.fileData = file;
+				tile.fileLabel.setStyle('color', '0xFFFFFF');
+				contents.addElement(tile);
+				/*
+				var tile:AssetTile = new AssetTile(something, IDEvent.ASSET_ADD_AS_REF_COMMENT, "0xFFFFFF");
+				contents.addElement(tile); */
+			}
 		}
 		
 		public function addMedia(modelMediaArray:Array):void {

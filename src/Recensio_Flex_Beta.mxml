@@ -7,6 +7,7 @@
 	<fx:Script>
 		<![CDATA[
 			import Controller.Dispatcher;
+			import Controller.Utilities.Auth;
 			
 			import Model.AppModel;
 			
@@ -39,10 +40,13 @@
 				stage.addEventListener(Event.RESIZE, onStageResize);
 				
 				securityLogoutTimer.addEventListener(TimerEvent.TIMER, function(e:TimerEvent):void {
-					Alert.show("Your session has expired. Please log in again to continue use.", "Expired Session (30 mins inactivity timeout)");
-					securityLogoutTimer.stop();
-					Dispatcher.dumpOut();
-				});
+					// Only dump out a user, if they are not uploading any file (since that will extend the mediaflux session);
+					if(Auth.getInstance().uploadCount == 0) {
+						Alert.show("Your session has expired. Please log in again to continue use.", "Expired Session (30 mins inactivity timeout)");
+						securityLogoutTimer.stop();
+						Dispatcher.dumpOut();
+					}
+				}, false, 0, true);
 			}
 			
 			//Fixes resize bugs

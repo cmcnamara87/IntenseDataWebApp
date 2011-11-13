@@ -72,12 +72,13 @@ package View.components.Panels.AnnotationList
 			});
 		}
 		
-		public function addReferenceTo(mediaData:Model_Media):void {
-			trace("title of added asset is", mediaData.meta_title);
+		public function addReferenceTo(fileID:Number, fileTitle:String):void {
+//		public function addReferenceTo(mediaData:Model_Media):void {
+			trace("title of added asset is", fileTitle);
 			for(var i = 0; i < content.numElements; i++) {
 				var annotation:AnnotationListItem = content.getElementAt(i) as AnnotationListItem;
 				if(editingAnnotationID == annotation.getID()) {
-					annotation.addReference(mediaData.base_asset_id, mediaData.meta_title);
+					annotation.addReference(fileID, fileTitle);
 					return;
 				}
 			}

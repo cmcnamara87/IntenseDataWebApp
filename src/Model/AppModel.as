@@ -907,7 +907,9 @@ package Model {
 				baseXML.service.args.service.@name = "asset.destroy";
 				
 				_connection.sendRequest(baseXML, function(e:Event):void {
-					callback(e);
+					if(callback) {
+						callback(e);
+					}
 				});
 			});
 		}

@@ -69,16 +69,15 @@ package Model {
 			
 			// if its video, we need to store whether its successfully been transcoded or not
 			// we dont really care for other medias
-			if(this.rootMetaType == "video") {
+			if(this.rootMetaType == "video" || this.rootMetaType == "document") {
 				this.transcoded = rawData.meta.r_media.transcoded == "true";
 			}
 			
 			// get the thumbnail if its there
-			if(this.rootMetaType == "video" || this.rootMetaType == "document") {
-				if(rawData.meta["ERA-thumbnail"].length()) {
-					this.thumbnailURL = "http://" + Recensio_Flex_Beta.serverAddress + "/Media/thumbnails/" + rawData.meta["ERA-thumbnail"].uri;
-				}
-			} else if (this.rootMetaType == "image") {
+			if(rawData.meta["ERA-thumbnail"].length()) {
+				this.thumbnailURL = "http://" + Recensio_Flex_Beta.serverAddress + "/Media/thumbnails/" + rawData.meta["ERA-thumbnail"].uri;
+			}
+			if (this.rootMetaType == "image") {
 				this.thumbnailURL = 'http://' + Recensio_Flex_Beta.serverAddress + ':' + Recensio_Flex_Beta.serverPort + '/mflux/icon.mfjp?_skey=' + Auth.getInstance().getSessionID() + '&id=' + this.base_asset_id + '&version=0&size=100'
 			}
 			

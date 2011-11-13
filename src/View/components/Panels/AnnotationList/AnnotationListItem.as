@@ -2,9 +2,12 @@ package View.components.Panels.AnnotationList
 {
 	//	import Model.Model_Annotation;
 	
+	import Controller.ERA.FileController;
 	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
+	
+	import Model.Model_ERARoom;
 	
 	import View.components.IDButton;
 	import View.components.IDGUI;
@@ -187,7 +190,6 @@ package View.components.Panels.AnnotationList
 					trace("Creating delete button");
 					deleteButton		= new Button();
 					deleteButton.setStyle("cornerRadius", "10");
-					deleteButton.setStyle("chromeColor", "0xFFFFFF");
 					
 					deleteButton.percentHeight 	= 100;
 					deleteButton.percentWidth	= 100;
@@ -207,20 +209,26 @@ package View.components.Panels.AnnotationList
 					}
 				}
 				
-				var addRefButton:IDButton = new IDButton("Add Ref");
-				addRefButton.setStyle("cornerRadius", "10");
-				addRefButton.setStyle("chromeColor", "0xFFFFFF");
+				if(FileController.roomType == Model_ERARoom.EVIDENCE_ROOM) {
+					var addRefButton:IDButton = new IDButton("Add Ref");
+					addRefButton.setStyle("cornerRadius", "10");
+					
+					addRefButton.percentWidth = 100;
+					
+					addRefButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+						var addRefEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL, true);
+						addRefEvent.data.commentID = assetID;
+						addRefEvent.data.type = "annotation";
+						dispatchEvent(addRefEvent);
+						editMode = true;
+						render();
+					});
+					
+					buttonHGroup.addElement(addRefButton);
+				}
 				
-				addRefButton.percentWidth = 100;
-//				buttonHGroup.addElement(addRefButton);
-				addRefButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-					var addRefEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL, true);
-					addRefEvent.data.commentID = assetID;
-					addRefEvent.data.type = "annotation";
-					dispatchEvent(addRefEvent);
-					editMode = true;
-					render();
-				});
+				
+				
 			}
 			
 			// Add a horizontal rule at the bottom of the comment
