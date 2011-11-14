@@ -106,6 +106,9 @@ package Controller {
 						}
 					}, null, Alert.CANCEL);
 				
+			} else {
+				Auth.getInstance().logout(true);
+				call(Router.getInstance().getURL());
 			}
 
 		}
