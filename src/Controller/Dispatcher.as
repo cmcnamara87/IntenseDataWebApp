@@ -16,10 +16,12 @@ package Controller {
 	import flash.utils.getDefinitionByName;
 	import flash.utils.setTimeout;
 	
+	import mx.controls.Alert;
 	import mx.core.Application;
 	import mx.core.FlexGlobals;
 	import mx.core.UIComponent;
 	import mx.events.BrowserChangeEvent;
+	import mx.events.CloseEvent;
 	import mx.events.ResizeEvent;
 	import mx.managers.BrowserManager;
 	import mx.managers.IBrowserManager;
@@ -94,8 +96,21 @@ package Controller {
 		
 		// Called on logout
 		public static function logout():void {
-			Auth.getInstance().logout(true);
-			call(Router.getInstance().getURL());
+			
+			if(Auth.getInstance().uploadCount > 0) {
+				var myAlert:Alert = Alert.show(
+					"Are you sure you wish to logout, file(s) are currently uploading?", "Files Currently Uploading", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
+						if (e.detail==Alert.OK) {
+							Auth.getInstance().logout(true);
+							call(Router.getInstance().getURL());
+						}
+					}, null, Alert.CANCEL);
+				
+			} else {
+				Auth.getInstance().logout(true);
+				call(Router.getInstance().getURL());
+			}
+
 		}
 		public static function dumpOut():void {
 			Auth.getInstance().logout(false);
@@ -130,14 +145,15 @@ package Controller {
 					// Push in whatever hte current medias ID was
 					// The media controller is the active one
 					// so start saving some browser history
-					BrowserController.mediaIDHistoryArray.push(MediaController.currentMediaData.base_asset_id);
+//					BrowserController.mediaIDHistoryArray.push(MediaController.currentMediaData.base_asset_id);
 					trace("----HISTORY SAVING FOR", MediaController.currentMediaData.base_asset_id);
 					// Now clear that out, since we are going to be loading a new one
-					BrowserController.currentMediaData = null;
+//					BrowserController.currentMediaData = null;
 				}
 				
-				var argArray:Array = Router.getInstance().getArgs();
-				url = "view/" + argArray[0];
+				
+//				var argArray:Array = Router.getInstance().getArgs();
+//				url = "view/" + argArray[0];
 			}
 			trace("CALLED WITH URL", url);
 			Router.getInstance().setURL(url);

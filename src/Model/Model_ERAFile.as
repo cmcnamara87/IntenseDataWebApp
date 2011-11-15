@@ -24,6 +24,7 @@ package Model {
 		public var checkedOutUsername:String = ""; // the username of the person who checked out the file
 		
 		public var meta_media_uri:String;
+		public var transcoded:Boolean = true;
 		
 		public var notificationCount:Number = 0;
 		public var notificationArray:Array = new Array();
@@ -37,6 +38,8 @@ package Model {
 		public var monitorNotApproved:Array = new Array();
 		
 		public var lockedOut:Boolean = false;
+		
+		public var thumbnailURL:String = "";
 		
 		public function Model_ERAFile() {
 			super();
@@ -63,6 +66,21 @@ package Model {
 			meta_media_uri = rawData.meta.r_media.uri;
 			
 			this.rootMetaType = AssetLookup.getCommonType(rawData.type);
+			
+			// if its video, we need to store whether its successfully been transcoded or not
+			// we dont really care for other medias
+			if(this.rootMetaType == "video" || this.rootMetaType == "document") {
+				this.transcoded = rawData.meta.r_media.transcoded == "true";
+			}
+			
+			// get the thumbnail if its there
+			if(rawData.meta["ERA-thumbnail"].length()) {
+				this.thumbnailURL = "http://" + Recensio_Flex_Beta.serverAddress + "/Media/thumbnails/" + rawData.meta["ERA-thumbnail"].uri;
+			}
+			if (this.rootMetaType == "image") {
+				this.thumbnailURL = 'http://' + Recensio_Flex_Beta.serverAddress + ':' + Recensio_Flex_Beta.serverPort + '/mflux/icon.mfjp?_skey=' + Auth.getInstance().getSessionID() + '&id=' + this.base_asset_id + '&version=0&size=100'
+			}
+			
 			
 			if(rawData.content) {
 				this.fileExt = rawData.content.type.@ext;

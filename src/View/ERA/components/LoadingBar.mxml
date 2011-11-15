@@ -9,7 +9,7 @@
 			private var backgroundColor:uint = 0x8FAFF7;
 			
 			public function showPercentage(percentage:Number):void {
-				loadingBar.percentWidth = Math.round(percentage);
+				loadingBar.percentWidth = percentage;
 				backgroundColor += 1;
 			}
 		]]>
@@ -18,9 +18,9 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:BorderContainer id="loadingBar" backgroundColor="{backgroundColor}" borderColor="0x000055" width="0" height="20" >
+	<s:BorderContainer id="loadingBar" backgroundColor="{backgroundColor}" borderColor="0x000055" width="0" height="20">
 		<s:HGroup verticalAlign="middle" paddingTop="2" paddingLeft="2">
-			<s:Label text="{loadingBar.percentWidth}%" textAlign="right" width="100%" color="0xFFFFFF"/>
+			<s:Label text="{Math.round(loadingBar.percentWidth)}%" textAlign="right" width="100%" color="0xFFFFFF"/>
 		</s:HGroup>
 	</s:BorderContainer>
 	

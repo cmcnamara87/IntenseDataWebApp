@@ -8,6 +8,7 @@ package View.ERA
 	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
 	
+	import Model.AppModel;
 	import Model.Model_ERAFile;
 	import Model.Model_ERARoom;
 	import Model.Model_Media;
@@ -300,7 +301,7 @@ package View.ERA
 			this.addPanels(viewerAndPanels);
 			
 			myMediaLinkPanel = new MediaLinkPanel();
-			myMediaLinkPanel.addMedia(BrowserController.currentCollectionAssets);
+//			myMediaLinkPanel.addMedia(BrowserController.currentCollectionAssets);
 			this.addElement(myMediaLinkPanel);
 			
 //			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
@@ -332,6 +333,7 @@ package View.ERA
 			// Asset Ref Code
 			this.addEventListener(IDEvent.OPEN_REF_PANEL, function(e:IDEvent):void {
 				currentlyAddingRefTo = e.data.type;
+				// Show the media panel
 				myMediaLinkPanel.show();
 			});
 			
@@ -339,20 +341,34 @@ package View.ERA
 				myMediaLinkPanel.hide();
 			});
 			
-			this.addEventListener(IDEvent.ASSET_ADD_AS_REF_COMMENT, function(e:IDEvent):void {
+			this.addEventListener(IDEvent.ERA_SHOW_FILE, function(e:IDEvent):void {
 				if(currentlyAddingRefTo == 'comment') {
-					myCommentsPanel.addReferenceTo(e.data.assetData);
+					myCommentsPanel.addReferenceTo(e.data.fileID, e.data.fileTitle);
+//					myCommentsPanel.addReferenceTo(e.data.assetData);
 				} else if (currentlyAddingRefTo == 'annotation') {
-					myAnnotationListPanel.addReferenceTo(e.data.assetData);
+					myAnnotationListPanel.addReferenceTo(e.data.fileID, e.data.fileTitle);
+//					myAnnotationListPanel.addReferenceTo(e.data.assetData);
 					//					myCommentsPanel.addReferenceTo(e.data.assetData);
 				}
 			})
+//				
+//			this.addEventListener(IDEvent.ASSET_ADD_AS_REF_COMMENT, function(e:IDEvent):void {
+//				if(currentlyAddingRefTo == 'comment') {
+//					myCommentsPanel.addReferenceTo(e.data.assetData);
+//				} else if (currentlyAddingRefTo == 'annotation') {
+//					myAnnotationListPanel.addReferenceTo(e.data.assetData);
+//					//					myCommentsPanel.addReferenceTo(e.data.assetData);
+//				}
+//			})
 			
 			this.addEventListener(IDEvent.COMMENT_EDITED, function(e:IDEvent):void {
 				myMediaLinkPanel.hide();
 			});
 		}
 		
+		public function addMediaLinkPanelFiles(fileArray:Array):void {
+			myMediaLinkPanel.addFiles(fileArray);
+		}
 		
 		
 		/* ============== INPUT FUNCTIONS CALLED BY CONTROLLER ================ */

@@ -380,6 +380,9 @@
 			{
 				(AppController.layout as Group).addEventListener(IDEvent.ERA_PROGRESS_EVENT, eraProgressOccured);
 				(AppController.layout as Group).addEventListener(IDEvent.ERA_COMPLETE_EVENT, eraCompleteEvent);
+				
+				// move focus to dropdown
+				evidenceType.setFocus();
 			}
 
 			private function eraProgressOccured(e:IDEvent):void {
@@ -425,7 +428,7 @@
 	
 	<s:HGroup verticalAlign="middle">
 		<s:Button id="deleteEvidence" label="X" width="30" click="deleteEvidence_clickHandler(event)" cornerRadius="10" />
-		<s:DropDownList id="evidenceType" width="200">
+		<s:ComboBox id="evidenceType" width="200">
 			<s:ArrayList>
 				<fx:String>Audio</fx:String>
 				<fx:String>Image</fx:String>
@@ -436,7 +439,7 @@
 				<fx:String>Research Statement</fx:String>
 				<fx:String>Video</fx:String>
 			</s:ArrayList>
-		</s:DropDownList>
+		</s:ComboBox>
 		<s:TextInput id="title" text="name" color="0x888888" focusIn="title_focusInHandler(event)" focusOut="title_focusOutHandler(event)" borderColor="0xDDDDDD"/>
 		<s:TextInput id="description" width="300" text="description" color="0x888888" focusIn="description_focusInHandler(event)" focusOut="description_focusOutHandler(event)" borderColor="0xDDDDDD" />
 		<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)" cornerRadius="10"/>

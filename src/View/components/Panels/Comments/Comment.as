@@ -2,8 +2,11 @@ package View.components.Panels.Comments
 {
 //	import Model.Model_Annotation;
 	
+	import Controller.ERA.FileController;
 	import Controller.IDEvent;
 	import Controller.Utilities.Auth;
+	
+	import Model.Model_ERARoom;
 	
 	import View.Layout;
 	import View.components.IDButton;
@@ -161,7 +164,6 @@ package View.components.Panels.Comments
 			if(editMode == true) {
 				saveButton = new IDButton("Save");
 				saveButton.setStyle("cornerRadius", "10");
-				saveButton.setStyle("chromeColor", "0xFFFFFF");
 				saveButton.percentWidth = 100;
 				buttonHGroup.addElement(saveButton);
 
@@ -169,7 +171,6 @@ package View.components.Panels.Comments
 				
 				var cancelButton:Button = new IDButton("Cancel");
 				cancelButton.setStyle("cornerRadius", "10");
-				cancelButton.setStyle("chromeColor", "0xFFFFFF");
 				cancelButton.percentWidth = 100;
 				buttonHGroup.addElement(cancelButton);
 				cancelButton.addEventListener(MouseEvent.CLICK, function(e:Event) {
@@ -184,7 +185,6 @@ package View.components.Panels.Comments
 				// Create the reply button
 				var replyButton:Button 		= new Button();
 				replyButton.setStyle("cornerRadius", "10");
-				replyButton.setStyle("chromeColor", "0xFFFFFF");
 				replyButton.percentHeight 	= 100;
 				replyButton.percentWidth 	= 100;
 				replyButton.label 			= "Reply";
@@ -213,7 +213,7 @@ package View.components.Panels.Comments
 					if(commentText != "Comment Removed" || Auth.getInstance().isSysAdmin()) {
 						deleteButton		= new Button();
 						deleteButton.setStyle("cornerRadius", "10");
-						deleteButton.setStyle("chromeColor", "0xFFFFFF");
+						
 						deleteButton.percentHeight 	= 100;
 						deleteButton.percentWidth	= 100;
 						deleteButton.label			= "Delete";
@@ -227,13 +227,16 @@ package View.components.Panels.Comments
 						}
 					}
 					
-					addReferenceButton = new Button();
-					addReferenceButton.setStyle("cornerRadius", "10");
-					addReferenceButton.setStyle("chromeColor", "0xFFFFFF");
-					addReferenceButton.percentHeight = 100;
-					addReferenceButton.percentWidth = 100;
-					addReferenceButton.label = "Add Ref";
-					buttonHGroup.addElement(addReferenceButton);
+					// only show the re button if we are in the evidence manager
+					if(FileController.roomType == Model_ERARoom.EVIDENCE_ROOM) {
+						addReferenceButton = new Button();
+						addReferenceButton.setStyle("cornerRadius", "10");
+						
+						addReferenceButton.percentHeight = 100;
+						addReferenceButton.percentWidth = 100;
+						addReferenceButton.label = "Add Ref";
+						buttonHGroup.addElement(addReferenceButton);
+					}
 				}
 				
 				// Add a horizontal rule at the bottom of the comment

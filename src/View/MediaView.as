@@ -239,15 +239,15 @@ package View
 			this.addEventListener(IDEvent.CLOSE_REF_PANEL, function(e:IDEvent):void {
 				myMediaLinkPanel.hide();
 			});
-			
-			this.addEventListener(IDEvent.ASSET_ADD_AS_REF_COMMENT, function(e:IDEvent):void {
-				if(currentlyAddingRefTo == 'comment') {
-					myCommentsPanel.addReferenceTo(e.data.assetData);
-				} else if (currentlyAddingRefTo == 'annotation') {
-					myAnnotationListPanel.addReferenceTo(e.data.assetData);
+//			
+//			this.addEventListener(IDEvent.ASSET_ADD_AS_REF_COMMENT, function(e:IDEvent):void {
+//				if(currentlyAddingRefTo == 'comment') {
 //					myCommentsPanel.addReferenceTo(e.data.assetData);
-				}
-			})
+//				} else if (currentlyAddingRefTo == 'annotation') {
+//					myAnnotationListPanel.addReferenceTo(e.data.assetData);
+////					myCommentsPanel.addReferenceTo(e.data.assetData);
+//				}
+//			})
 			
 			this.addEventListener(IDEvent.COMMENT_EDITED, function(e:IDEvent):void {
 				myMediaLinkPanel.hide();

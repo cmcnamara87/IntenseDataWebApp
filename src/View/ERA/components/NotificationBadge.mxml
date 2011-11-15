@@ -3,10 +3,13 @@
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   xmlns:mx="library://ns.adobe.com/flex/mx" width="22" height="22"
 				   cornerRadius="20"
-				   backgroundColor="0xFF8800"
+				   backgroundColor="{backgroundColor}"
 				   borderColor="0xFFFFFF"
 				   borderWeight="2"
-				   visible="{notificationCount>0}">
+				   visible="{notificationCount>0}"
+				   mouseOver="bordercontainer1_mouseOverHandler(event)"
+				   mouseOut="bordercontainer1_mouseOutHandler(event)"
+				   buttonMode="true">
 
 	<fx:Script>
 		<![CDATA[
@@ -14,6 +17,26 @@
 			[Bindable]
 			public var notificationCount:Number = 0;
 			public var notificationToolTip:String = "";
+			
+			private var initialColor:uint = 0xFF8800;
+			private var mouseOverColor:uint = 0xFF5500;
+			
+			[Bindable]
+			private var backgroundColor:uint = initialColor;
+			
+			
+
+			protected function bordercontainer1_mouseOverHandler(event:MouseEvent):void
+			{
+				backgroundColor = mouseOverColor;
+			}
+
+
+			protected function bordercontainer1_mouseOutHandler(event:MouseEvent):void
+			{
+				backgroundColor = initialColor;
+			}
+
 		]]>
 	</fx:Script>
 

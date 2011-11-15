@@ -245,6 +245,12 @@ package Controller {
 			}
 		}
 		
+		/* ============================ CHANGING READ STATUS =========================== */
+		/**
+		 * The user has changed the read status of a notification 
+		 * @param e
+		 * 
+		 */		
 		private static function notificationStatusChanged(e:IDEvent):void {
 			var notificationID:Number = e.data.notificationID;
 			var readStatus:Boolean = e.data.readStatus;
@@ -257,6 +263,7 @@ package Controller {
 				layout.notificationBar.showError("Failed to mark as read");
 			}
 		}
+		/* ============================ END OF CHANGING READ STATUS =========================== */
 		
 		private static function updateNotifications(e:TimerEvent):void {
 			getNotifications();

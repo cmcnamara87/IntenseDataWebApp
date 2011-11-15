@@ -12,6 +12,8 @@ package Controller.Utilities {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
+	import mx.controls.Alert;
+	
 	public class Auth extends EventDispatcher {
 		
 		private static var _instance:Auth;
@@ -22,6 +24,9 @@ package Controller.Utilities {
 		private var eraUser:Model_ERAUser = null;
 		private var isSystemAdministrator:Boolean = false;
 		private var isUser:Boolean = false;
+		// Says whether a file is currently uploading,
+		// to notification the user of this when they are logging out
+		public var uploadCount:Number = 0;
 		
 		public var userRoleArray:Array = new Array();
 		

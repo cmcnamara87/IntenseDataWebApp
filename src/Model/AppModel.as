@@ -14,6 +14,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_CreateERANotification;
 	import Model.Transactions.ERAProject.Transaction_CreateERAProject;
 	import Model.Transactions.ERAProject.Transaction_CreateERAUser;
+	import Model.Transactions.ERAProject.Transaction_CreateF4V;
 	import Model.Transactions.ERAProject.Transaction_CreateRoom;
 	import Model.Transactions.ERAProject.Transaction_DeleteERACase;
 	import Model.Transactions.ERAProject.Transaction_DeleteERALogItem;
@@ -906,7 +907,9 @@ package Model {
 				baseXML.service.args.service.@name = "asset.destroy";
 				
 				_connection.sendRequest(baseXML, function(e:Event):void {
-					callback(e);
+					if(callback) {
+						callback(e);
+					}
 				});
 			});
 		}
@@ -1568,7 +1571,7 @@ package Model {
 				trace(functionName + ": FAILED", e.target.data);
 				return null;
 			}
-//			trace(functionName + ": SUCCESS", e.target.data);
+			trace(functionName + ": SUCCESS", e.target.data);
 			return dataXML;
 		}
 		
@@ -1727,6 +1730,10 @@ package Model {
 		public function uploadERAFileVersion(roomID:Number, oldFileID:Number, originalFileID:Number, type:String, title:String, description:String, fileReference:FileReference, ioErrorCallback:Function, progressCallback:Function, completeCallback:Function):void {
 			var uploadERAVersion:Transaction_UploadFileVersion = new Transaction_UploadFileVersion(AppController.currentEraProject.year, roomID, oldFileID, originalFileID, type, title, description, fileReference, _connection, ioErrorCallback, progressCallback, completeCallback);
 		}
+		public function createF4V(videoFileID:Number):void {
+			var createF4V:Transaction_CreateF4V = new Transaction_CreateF4V(videoFileID, _connection);
+		}
+		
 		public function getVideoSegment(videoID:Number, startTime:Number, length:Number, callback:Function):void {
 			var getVideoSegment:Transaction_GetVideoSegment = new Transaction_GetVideoSegment(videoID, startTime, length, _connection, callback);
 		}

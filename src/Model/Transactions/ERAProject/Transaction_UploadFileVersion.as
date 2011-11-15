@@ -1,5 +1,6 @@
 package Model.Transactions.ERAProject
 {
+	import Controller.LoginController;
 	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
@@ -63,6 +64,9 @@ package Model.Transactions.ERAProject
 			progressCallback(percentProgress);
 		}
 		private function ioErrorHandler(event:IOErrorEvent):void {
+			// Store that we are currently uploading, so a message can be displayed on attempt to log out
+			Auth.getInstance().uploadCount--;
+			
 			ioErrorCallback(event);
 		}
 		
@@ -83,6 +87,7 @@ package Model.Transactions.ERAProject
 			var data:XML;
 			if((data = AppModel.getInstance().getData("getting versioned files", e)) == null) {
 				completeCallback(false);
+				
 				return;
 			}
 			
@@ -121,6 +126,9 @@ package Model.Transactions.ERAProject
 			argsXML.meta["r_media"].@id = "4";
 			argsXML.meta["r_media"]["transcoded"] = "false";
 
+			// Store that we are currently uploading, so a message can be displayed on attempt to log out
+			Auth.getInstance().uploadCount++;
+			
 			connection.uploadFile(fileReference, baseXML, null);
 		}
 		
@@ -134,8 +142,14 @@ package Model.Transactions.ERAProject
 			}
 			trace("uploading file: SUCCESS", xml);
 			
+			// Store that we are currently uploading, so a message can be displayed on attempt to log out
+			Auth.getInstance().uploadCount--;
+			
 			// It was successful, so lets get it out
 			newFileID = xml.reply.result.id;
+			
+			// this function only  works if its a video file, so its okay if it does it
+			AppModel.getInstance().createF4V(newFileID);
 			
 			var baseXML:XML = connection.packageRequest("asset.set", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;

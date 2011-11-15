@@ -156,9 +156,9 @@ package View
 				myMediaLinkPanel.hide();
 			});
 			
-			this.addEventListener(IDEvent.ASSET_ADD_AS_REF_COMMENT, function(e:IDEvent):void {
-				myCommentsPanel.addReferenceTo(e.data.assetData);
-			})
+//			this.addEventListener(IDEvent.ASSET_ADD_AS_REF_COMMENT, function(e:IDEvent):void {
+//				myCommentsPanel.addReferenceTo(e.data.assetData);
+//			})
 			
 			this.addEventListener(IDEvent.COMMENT_EDITED, function(e:IDEvent):void {
 				myMediaLinkPanel.hide();

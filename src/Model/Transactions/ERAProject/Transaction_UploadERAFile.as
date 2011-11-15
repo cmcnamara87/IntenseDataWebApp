@@ -1,5 +1,6 @@
 package Model.Transactions.ERAProject
 {
+	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
@@ -63,12 +64,12 @@ package Model.Transactions.ERAProject
 		
 		private function progressHandler(event:ProgressEvent):void {
 //			var byteJustLoaded:Number = event.bytesLoaded
-//			var percentProgress:Number = Math.round(event.bytesLoaded/event.bytesTotal*100);
 			var percentProgress:Number = event.bytesLoaded/event.bytesTotal*100;
 			
 			progressCallback(percentProgress, logItemID);
 		}
 		private function ioErrorHandler(event:IOErrorEvent):void {
+			Auth.getInstance().uploadCount--;
 			ioErrorCallback(event, evidenceItem);
 		}
 		
@@ -100,6 +101,8 @@ package Model.Transactions.ERAProject
 			argsXML.meta["r_media"].@id = "4";
 			argsXML.meta["r_media"]["transcoded"] = "false";
 			
+			// Store that we are currently uploading, so a message can be displayed on attempt to log out
+			Auth.getInstance().uploadCount++;
 			connection.uploadFile(fileReference, baseXML, null);
 		}
 		
@@ -113,8 +116,14 @@ package Model.Transactions.ERAProject
 			}
 			trace("uploading file: SUCCESS", xml);
 			
+			Auth.getInstance().uploadCount--;
+			
 			// It was successful, so lets get it out
 			newFileID = xml.reply.result.id;
+			
+			
+			
+			
 			
 			var baseXML:XML = connection.packageRequest("asset.relationship.add", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
@@ -202,6 +211,12 @@ package Model.Transactions.ERAProject
 			
 			var eraEvidence:Model_ERAFile = new Model_ERAFile();
 			eraEvidence.setData(data.reply.result.asset[0]);
+			
+			// Do the conversion if we need to
+			// this function only  works if its a video file, so its okay if it does it
+			if(eraEvidence.rootMetaType == "video" || eraEvidence.rootMetaType == "document") {
+				AppModel.getInstance().createF4V(newFileID);
+			}
 			
 			completeCallback(true, evidenceItem.getID(), eraEvidence.base_asset_id)
 		}

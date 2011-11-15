@@ -18,7 +18,11 @@
 			import Controller.Utilities.AssetLookup;
 			import Controller.Utilities.Auth;
 			
+			import Model.AppModel;
 			import Model.Model_ERAFile;
+			
+			import flash.utils.clearTimeout;
+			import flash.utils.setTimeout;
 			
 			import mx.core.IUIComponent;
 			import mx.events.FlexEvent;
@@ -59,13 +63,64 @@
 			[Bindable]
 			private var notificationCount:Number = 0;
 			
+			private var transcodeChecker:uint = 0;
+			
+			private var transcodeTimer:Timer = new Timer(10000);
+			
 			public function set fileData(fileData:Model_ERAFile):void {
 				this._fileData = fileData;
 				
+				
+				if(!_fileData.transcoded) {
+					
+					transcodeTimer.addEventListener(TimerEvent.TIMER, checkIfTranscoded);
+					// hasnt finished transcoding, lets update the data every 30 seconds)
+					transcodeTimer.start();
+				}
 				updateGUI();
 			}
+			private function checkIfTranscoded(e:Event):void {
+				trace("getting file data");
+				transcodeTimer.stop();
+				AppModel.getInstance().getERAFile(_fileData.base_asset_id, gotFileData);	
+			}
+			private function gotFileData(status:Boolean, fileData:Model_ERAFile):void {
+				if(!status) {
+					trace("oh no, error");
+					return;
+				}
+				
+				trace('got file data');
+				// since we got the data, we may as well update it
+				this._fileData = fileData;
+				updateGUI();
+				
+				// check if the transcoding is done
+				trace('is file transcoded?', _fileData.transcoded ? 'yes' : 'no');
+				if(_fileData.transcoded) {
+					clearTimeout(transcodeChecker);
+				} else {
+					transcodeTimer.start();
+				}
+			}
+			
 			private function updateGUI():void {
 				title =  _fileData.title;
+				if(!_fileData.transcoded) {
+					title = "Transcoding... " + title;
+				}
+				
+				if(!_fileData.transcoded) {
+					trace("*********FILE IS NOT TRANSCODED***************************");
+					icon.source = AssetLookup.Transcoding_Class;
+					
+				// lets see if it has a thumbnail url stored
+//				} else if (_fileData.thumbnailURL != "") {
+//					icon.source = _fileData.thumbnailURL;
+				} else {
+					icon.source = AssetLookup.getAssetImageClass(_fileData.rootMetaType);
+				}
+				
 				description = _fileData.description;
 				fileID = _fileData.base_asset_id;
 				type = _fileData.type;
@@ -152,7 +207,10 @@
 //				if(rootMetaType == "image") {
 //					icon.source = 'http://' + Recensio_Flex_Beta.serverAddress + ':' + Recensio_Flex_Beta.serverPort + '/mflux/icon.mfjp?_skey=' + Auth.getInstance().getSessionID() + '&id=' + fileID + '&version=0&size=100'
 //				} else {
-					icon.source = AssetLookup.getAssetImageClass(rootMetaType);
+//				if(_fileData.transcoded) {
+//					icon.source = AssetLookup.getAssetImageClass(rootMetaType);
+//				} else {
+//					icon.source = AssetLookup.Transcoding_Class;
 //				}
 			}
 
@@ -170,7 +228,11 @@
 				var dragProxy:Image = new Image();
 				dragProxy.height= 100;
 				dragProxy.width= 100; 
-				dragProxy.source = AssetLookup.getAssetImageClass(rootMetaType);
+//				if(_fileData.thumbnailURL != "") {
+//					dragProxy.source = _fileData.thumbnailURL;
+//				} else {
+					dragProxy.source = AssetLookup.getAssetImageClass(rootMetaType);
+//				}
 				
 				DragManager.doDrag(event.currentTarget as IUIComponent, null, event, dragProxy);
 				this.alpha = 0.5;
@@ -183,6 +245,7 @@
 				mouseDown = false;
 				var showFileEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_FILE, true);
 				showFileEvent.data.fileID = fileID;
+				showFileEvent.data.fileTitle = title;
 				trace("dispatching show file event");
 				this.dispatchEvent(showFileEvent);
 			}
@@ -217,6 +280,7 @@
 			{
 				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+				transcodeTimer.removeEventListener(TimerEvent.TIMER, checkIfTranscoded);
 			}
 
 
@@ -231,14 +295,15 @@
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:DropShadowFilter id="shadow123" distance="0" angle="0" alpha="0.2" color="0x000000" blurX="10" blurY="10"/>
 	</fx:Declarations>
 	
 	<s:Group width="100" height="100">
-		<mx:Image id="icon" height="100" width="100" verticalAlign="middle" maintainAspectRatio="true" toolTip="Description: {description}" alpha="{checkedOut ? 0.5 : 1}" mouseDown="vgroup1_mouseDownHandler(event)" 
-				  mouseUp="vgroup1_mouseUpHandler(event)" />
+		<mx:Image id="icon" height="100" width="100" verticalAlign="middle" horizontalAlign="center" maintainAspectRatio="true" toolTip="Description: {description}" alpha="{checkedOut ? 0.5 : 1}" mouseDown="vgroup1_mouseDownHandler(event)" 
+				  mouseUp="vgroup1_mouseUpHandler(event)" filters="{shadow123}" />
 		<components:NotificationBadge id="notificationBadge" left="75" notificationCount="{notificationCount}" click="notificationBadge_clickHandler(event)" />		
 		<components:TickBadge horizontalCenter="0" id="tickBadge" show="false" />
 	</s:Group>
 	
-	<s:Label text="{title}{version > 0 ? '_v' + version : ''}{screeningCount > 0 ? '_r' + screeningCount : ''}{exhibitionCount > 0 ? '_e' + exhibitionCount : ''} ({ext == 'pot' ? 'ppt' : ext})" width="100%" textAlign="center" />
+	<s:Label id="fileLabel" text="{title}{version > 0 ? '_v' + version : ''}{screeningCount > 0 ? '_r' + screeningCount : ''}{exhibitionCount > 0 ? '_e' + exhibitionCount : ''} ({ext == 'pot' ? 'ppt' : ext})" width="100%" textAlign="center" />
 </s:VGroup>
