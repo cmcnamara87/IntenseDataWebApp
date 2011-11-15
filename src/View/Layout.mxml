@@ -53,7 +53,21 @@
 					var notification:NotificationListItem = new NotificationListItem();
 					notification.notificationData = notificationData;
 					notificationList.addElement(notification);
+					
+					// make it invisible by default if its read
+					if(notification.isRead()) {
+						notification.visible = false;
+						notification.includeInLayout = false;
+					}
 				}
+				
+				// make sure only the 'unread' button is clicked
+				showAllButton.selected = false;
+				showReadButton.selected = false;
+				showUnreadButton.selected = true;
+				
+				notificationFilterButton.visible = true;
+				notificationFilterButton.includeInLayout = true;
 				
 				trace("dispatching era notification event");
 				var notificationUpdatedEvent:IDEvent = new IDEvent(IDEvent.ERA_NOTIFICATIONS_UPDATED, true);
@@ -65,11 +79,12 @@
 				showAllNotificationsButton.visible = false;
 				showAllNotificationsButton.includeInLayout = false;
 				
-				for(var i:Number = 0; i < notificationList.numElements; i++) {
-					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
-					notificationListItem.visible = true;
-					notificationListItem.includeInLayout = true;
-				}	
+				notificationFilterButton.visible = true;
+				notificationFilterButton.includeInLayout = true;
+				
+				
+				showAllButton.selected = true;
+				showAllButton_changeHandler();
 			}
 			
 			public function filterRoomNotifications(roomID:Number):void {
@@ -82,10 +97,17 @@
 				notificationPanel.visible = true;
 				showAllNotificationsButton.visible = true;
 				showAllNotificationsButton.includeInLayout = true;
+				notificationFilterButton.visible = false;
+				notificationFilterButton.includeInLayout = false;
 				
 				for(var i:Number = 0; i < notificationList.numElements; i++) {
 					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
 					
+					if(notificationListItem.isRead()) {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+						continue;
+					}
 					if(notificationListItem.notificationData.room) { 
 						if(notificationListItem.notificationData.room.base_asset_id != roomID) {
 							notificationListItem.visible = false;
@@ -108,9 +130,17 @@
 				notificationPanel.visible = true;
 				showAllNotificationsButton.visible = true;
 				showAllNotificationsButton.includeInLayout = true;
+				notificationFilterButton.visible = false;
+				notificationFilterButton.includeInLayout = false;
 				
 				for(var i:Number = 0; i < notificationList.numElements; i++) {
 					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					
+					if(notificationListItem.isRead()) {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+						continue;
+					}
 					
 					if(notificationListItem.notificationData.eraCase) { 
 						if(notificationListItem.notificationData.eraCase.base_asset_id != caseID) {
@@ -134,9 +164,17 @@
 				notificationPanel.visible = true;
 				showAllNotificationsButton.visible = true;
 				showAllNotificationsButton.includeInLayout = true;
+				notificationFilterButton.visible = false;
+				notificationFilterButton.includeInLayout = false;
 				
 				for(var i:Number = 0; i < notificationList.numElements; i++) {
 					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					
+					if(notificationListItem.isRead()) {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+						continue;
+					}
 					
 					if(notificationListItem.notificationData.file) { 
 						if(notificationListItem.notificationData.file.base_asset_id != fileID) {
@@ -157,6 +195,82 @@
 			protected function label1_clickHandler(event:MouseEvent):void
 			{
 				showAllNotifications();
+			}
+
+
+			protected function showReadButton_changeHandler(event:Event):void
+			{
+				if(!showReadButton.selected) {
+					// the button has been un selected,
+					// so lets switch it to show all
+					showAllButton.selected = true;
+					showAllButton_changeHandler();
+					return;
+				}
+				
+				
+				showAllButton.selected = false;
+				showUnreadButton.selected = false;
+				
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					if(notificationListItem.isRead()) {
+						notificationListItem.visible = true;
+						notificationListItem.includeInLayout = true;
+					} else {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+					}
+				}
+			}
+
+
+			protected function showUnreadButton_changeHandler(event:Event):void
+			{
+				if(!showUnreadButton.selected) {
+					// the button has been un selected,
+					// so lets switch it to show all
+					showAllButton.selected = true;
+					showAllButton_changeHandler();
+					return;
+				}
+				
+				
+				showAllButton.selected = false;
+				showReadButton.selected = false;
+				
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					if(!notificationListItem.isRead()) {
+						notificationListItem.visible = true;
+						notificationListItem.includeInLayout = true;
+					} else {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+					}
+				}
+			}
+
+
+			protected function showAllButton_changeHandler(event:Event=null):void
+			{
+				if(!showAllButton.selected) {
+					// the button has been un selected,
+					// make it so that you cant unselect it
+					showAllButton.selected = true;
+					return;
+				}
+				
+				// Turn off other buttons
+				showReadButton.selected = false;
+				showUnreadButton.selected = false;
+				
+				// Make all visible
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					notificationListItem.visible = true;
+					notificationListItem.includeInLayout = true;
+				}
 			}
 
 		]]>
@@ -185,12 +299,12 @@
 					   maxHeight="500" showEffect="{fadeIn}" hideEffect="{fadeOut}" resizeEffect="Resize"
 					   borderVisible="false">
 		<s:VGroup width="100%" height="100%" gap="0">
-			<!--<s:HGroup verticalAlign="middle" paddingBottom="15" paddingLeft="15" paddingRight="15" paddingTop="15">
+			<s:HGroup id="notificationFilterButton" verticalAlign="middle" paddingBottom="15" paddingLeft="15" paddingRight="15" paddingTop="15" width="100%">
 				<s:Label text="Show:" />
-				<s:ToggleButton label="All" cornerRadius="10" selected="true" width="100%" />
-				<s:ToggleButton label="Unread" cornerRadius="10" width="100%" />
-				<s:ToggleButton label="Read" cornerRadius="10" width="100%" />
-			</s:HGroup>-->
+				<s:ToggleButton id="showAllButton" label="All" cornerRadius="10" selected="true" width="100%" change="showAllButton_changeHandler(event)" />
+				<s:ToggleButton id="showUnreadButton" label="Unread" cornerRadius="10" width="100%" change="showUnreadButton_changeHandler(event)"/>
+				<s:ToggleButton id="showReadButton" label="Read" cornerRadius="10" width="100%" change="showReadButton_changeHandler(event)" />
+			</s:HGroup>
 			<s:VGroup paddingBottom="10" paddingTop="15" id="showAllNotificationsButton" visible="false" includeInLayout="false" width="100%">
 				<s:Label width="100%" textAlign="center" text="Show All Notifications" color="0x0000FF" click="label1_clickHandler(event)" />	
 			</s:VGroup>

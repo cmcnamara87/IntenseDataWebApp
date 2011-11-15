@@ -30,6 +30,10 @@
 			[Bindable]
 			private var read:Boolean;
 			
+			public function isRead():Boolean {
+				return read;
+			}
+			
 			public function get notificationData():Model_ERANotification {
 				return _notificationData;
 			}
