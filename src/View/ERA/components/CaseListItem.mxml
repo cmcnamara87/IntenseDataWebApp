@@ -5,10 +5,10 @@
 				   backgroundColor="0x111111"
 				   mouseOut="canvas1_mouseOutHandler(event)"
 				   mouseOver="canvas1_mouseOverHandler(event)"
-				   click="canvas1_clickHandler(event)" xmlns:components="View.ERA.components.*"
+				    xmlns:components="View.ERA.components.*"
 				   creationComplete="canvas1_creationCompleteHandler(event)"
-				   removedFromStage="canvas1_removedFromStageHandler(event)">
-
+				   removedFromStage="canvas1_removedFromStageHandler(event)"
+				   >
 	<fx:Script>
 		<![CDATA[
 			import Controller.AppController;
@@ -119,6 +119,19 @@
 				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, canvas1_removedFromStageHandler);
 			}
+
+			protected function vgroup1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+
+			protected function notificationBadge_clickHandler(event:MouseEvent):void
+			{
+				// Show notifications in the notification panel (filters to only show ones relating to this object)
+				AppController.layout.filterCaseNotifications(_eraCaseData.base_asset_id);
+			}
+
 		]]>
 	</fx:Script>
 
@@ -126,11 +139,11 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<s:HGroup width="100%" paddingRight="10" verticalAlign="middle"> 
-		<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+		<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" click="canvas1_clickHandler(event)">
 			<s:Label text="{researcherName} - {title}" color="0xFFFFFF" width="100%" />
 			<s:Label text="RM {rmCode}" color="0xFFFFFF" width="100%" />
 		</s:VGroup>
-		<components:NotificationBadge id="notificationBadge" notificationCount="{this.notificationCount}" verticalCenter="0" />	
+		<components:NotificationBadge id="notificationBadge" notificationCount="{this.notificationCount}" verticalCenter="0" click="notificationBadge_clickHandler(event)"/>	
 	</s:HGroup>
 	
 </mx:Canvas>

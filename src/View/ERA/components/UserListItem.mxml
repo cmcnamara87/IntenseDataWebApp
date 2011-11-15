@@ -45,8 +45,8 @@
 		]]>
 	</fx:Script>
 	
-	<s:Label text="{firstName} {lastName} ({username})" width="100%">
-	</s:Label>
+	<mx:Text text="{firstName} {lastName} ({username})" width="100%">
+	</mx:Text>
 	<s:Button label="Remove" width="80" id="deleteButton" click="deleteButton_clickHandler(event)">
 	</s:Button>
 </s:HGroup>

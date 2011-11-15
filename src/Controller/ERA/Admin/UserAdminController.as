@@ -175,10 +175,17 @@ package Controller.ERA.Admin
 			var roleComponent:ERARole = e.data.roleComponent;
 			var role:String = e.data.role;
 			
-			layout.notificationBar.showProcess("Removing " + username);
-			
-			AppModel.getInstance().removeRoleFromERAUser(username, role, roleComponent, userRemovedFromRole);
+			var myAlert:Alert = Alert.show(
+				"Are you sure you wish to remove user: " + username + " from " + Model_ERAUser.getRolePrettyName(role), "Remove User", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
+					if (e.detail==Alert.OK) {
+						layout.notificationBar.showProcess("Removing " + username);
+						
+						AppModel.getInstance().removeRoleFromERAUser(username, role, roleComponent, userRemovedFromRole);
+					}
+				}, null, Alert.CANCEL);
 		}
+			
+			
 		private function userRemovedFromRole(status:Boolean, username:String="", roleComponent:ERARole=null):void {
 			if(!status) {
 				layout.notificationBar.showError("Failed to remove role for " + username);

@@ -237,35 +237,6 @@
 			}
 
 
-			protected function evidenceBoxButton_clickHandler(event:MouseEvent):void
-			{
-				var showEvidenceBoxEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_EVIDENCE_BOX, true);
-				this.dispatchEvent(showEvidenceBoxEvent);
-			}
-
-
-			protected function evidenceManagementButton_clickHandler(event:MouseEvent):void
-			{
-				var showEvidenceManagementEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_EVIDENCE_MANAGEMENT, true);
-				this.dispatchEvent(showEvidenceManagementEvent);
-			}
-			
-			protected function forensicLabButton_clickHander(event:MouseEvent):void {
-				var showForensicLabEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_FORENSIC_LAB, true);
-				this.dispatchEvent(showForensicLabEvent);
-			}
-			
-			protected function screeningLabButton_clickHander(event:MouseEvent):void {
-				var showScreeningLabEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_SCREENING_LAB, true);
-				this.dispatchEvent(showScreeningLabEvent);
-			}
-
-
-			protected function exhibitionButton_clickHandler(event:MouseEvent):void
-			{
-				var showExhibition:IDEvent = new IDEvent(IDEvent.ERA_SHOW_EXHIBITION, true);
-				this.dispatchEvent(showExhibition);
-			}
 
 		]]>
 	</fx:Script>
@@ -321,15 +292,15 @@
 		<s:BorderContainer id="caseNav" backgroundColor="0x565656" width="100%" height="140" borderVisible="false" resizeEffect="Resize">
 			<s:VGroup horizontalAlign="center" height="100%" width="100%">
 				<s:HGroup height="100%" verticalAlign="middle" gap="10" id="roomButtons">
-					<components:RoomIcon roomName="Evidence Manager" id="evidenceManagementButton" roomType="{Model_ERARoom.EVIDENCE_MANAGEMENT}" icon="{AssetLookup.EvidenceManagerIcon}" click="evidenceManagementButton_clickHandler(event)"/>
+					<components:RoomIcon roomName="Evidence Manager" id="evidenceManagementButton" roomType="{Model_ERARoom.EVIDENCE_MANAGEMENT}" icon="{AssetLookup.EvidenceManagerIcon}"/>
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Evidence Box" alpha="0.5" id="evidenceBoxButton"  roomType="{Model_ERARoom.EVIDENCE_ROOM}" icon="{AssetLookup.EvidenceBoxIcon}" click="evidenceBoxButton_clickHandler(event)" />
+					<components:RoomIcon roomName="Evidence Box" alpha="0.5" id="evidenceBoxButton"  roomType="{Model_ERARoom.EVIDENCE_ROOM}" icon="{AssetLookup.EvidenceBoxIcon}" />
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" id="forensicLabButton"  roomType="{Model_ERARoom.FORENSIC_LAB}" icon="{AssetLookup.ForensicLabIcon}" click="forensicLabButton_clickHander(event)" />
+					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" id="forensicLabButton"  roomType="{Model_ERARoom.FORENSIC_LAB}" icon="{AssetLookup.ForensicLabIcon}"  />
 					<mx:Image source="{AssetLookup.getLeftRightArrowIconClass()}" width="46" height="72"></mx:Image>
-					<components:RoomIcon roomName="Review Lab" alpha="0.5" id="screeningLabButton"  roomType="{Model_ERARoom.SCREENING_ROOM}" icon="{AssetLookup.ScreeningLabIcon}" click="screeningLabButton_clickHander(event)" />
+					<components:RoomIcon roomName="Review Lab" alpha="0.5" id="screeningLabButton"  roomType="{Model_ERARoom.SCREENING_ROOM}" icon="{AssetLookup.ScreeningLabIcon}"  />
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Exhibition" alpha="0.5"  id="exhibitionButton"  unavailable="false" roomType="{Model_ERARoom.EXHIBIT}" icon="{AssetLookup.ExhibitionIcon}" click="exhibitionButton_clickHandler(event)"/>
+					<components:RoomIcon roomName="Exhibition" alpha="0.5"  id="exhibitionButton"  unavailable="false" roomType="{Model_ERARoom.EXHIBIT}" icon="{AssetLookup.ExhibitionIcon}" />
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass() }"  width="46" height="34"></mx:Image>
 					<components:RoomIcon roomName="Post Mortem" alpha="0.5" id="postMortemButton" unavailable="true" roomType="{Model_ERARoom.POST_MORTEM}" icon="{AssetLookup.PostMortemIcon}" />
 				</s:HGroup>

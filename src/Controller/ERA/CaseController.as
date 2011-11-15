@@ -14,6 +14,7 @@ package Controller.ERA
 	import Model.Model_ERAProject;
 	import Model.Model_ERARoom;
 	import Model.Model_ERAUser;
+	import Model.Transactions.ERAProject.Transaction_CreateAllResearchers;
 	
 	import View.ERA.CaseView;
 	import View.ERA.NoERAFound;
@@ -54,6 +55,8 @@ package Controller.ERA
 			if(AppController.eraProjectArray == null || AppController.eraProjectArray.length == 0) {
 				view = new NoERAFound();
 			}
+		
+//			var test:Transaction_CreateAllResearchers = new Transaction_CreateAllResearchers();
 			
 			super();
 		}

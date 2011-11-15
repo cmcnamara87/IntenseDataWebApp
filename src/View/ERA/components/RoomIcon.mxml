@@ -120,6 +120,42 @@
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
 			}
 
+
+			protected function vgroup1_clickHandler(event:MouseEvent):void
+			{
+				switch(roomType) {
+					case Model_ERARoom.EVIDENCE_MANAGEMENT:
+						var showEvidenceManagementEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_EVIDENCE_MANAGEMENT, true);
+						this.dispatchEvent(showEvidenceManagementEvent);
+						break;
+					case Model_ERARoom.EVIDENCE_ROOM:
+						var showEvidenceBoxEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_EVIDENCE_BOX, true);
+						this.dispatchEvent(showEvidenceBoxEvent);
+						break;
+					case Model_ERARoom.FORENSIC_LAB:
+						var showForensicLabEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_FORENSIC_LAB, true);
+						this.dispatchEvent(showForensicLabEvent);
+						break;
+					case Model_ERARoom.SCREENING_ROOM:
+						var showScreeningLabEvent:IDEvent = new IDEvent(IDEvent.ERA_SHOW_SCREENING_LAB, true);
+						this.dispatchEvent(showScreeningLabEvent);
+						break;
+					case Model_ERARoom.EXHIBIT:
+						var showExhibition:IDEvent = new IDEvent(IDEvent.ERA_SHOW_EXHIBITION, true);
+						this.dispatchEvent(showExhibition);
+						break;
+					default:
+						break;
+				}
+			}
+
+
+			protected function notificationBadge_clickHandler(event:MouseEvent):void
+			{
+				// Show notifications in the notification panel (filters to only show ones relating to this object)
+				AppController.layout.filterRoomNotifications(this._roomData.base_asset_id);
+			}
+
 		]]>
 	</fx:Script>
 
@@ -129,11 +165,11 @@
 	</fx:Declarations>
 	<s:Group width="70" height="70">
 		
-		<mx:Image source="{icon}" width="48" height="50" horizontalAlign="center" maintainAspectRatio="true" verticalAlign="middle" horizontalCenter="0" verticalCenter="0" filters="{myFilter}">
+		<mx:Image source="{icon}" width="48" height="50" horizontalAlign="center" maintainAspectRatio="true" verticalAlign="middle" horizontalCenter="0" verticalCenter="0" filters="{myFilter}" click="vgroup1_clickHandler(event)">
 		</mx:Image>
 		
 		<s:Label x="18" text="x" fontSize="70" fontWeight="bold" color="0xFF0000" visible="{unavailable}" includeInLayout="{unavailable}"/>
-		<components:NotificationBadge id="notificationBadge" top="-0" left="50" notificationCount="{notificationCount}" />
+		<components:NotificationBadge id="notificationBadge" top="-0" left="50" notificationCount="{notificationCount}" click="notificationBadge_clickHandler(event)"/>
 	 </s:Group>
 	<!--<s:Group width="70" height="70">		
 		<s:BorderContainer backgroundColor="0x434343" borderVisible="false" height="70" width="70" visible="true" includeInLayout="true">
@@ -149,7 +185,7 @@
 		
 	</s:Group>-->
 	
-	<s:Label text="{roomName}" fontSize="15" color="0xcfcfcf" width="100%" textAlign="center">
+	<s:Label text="{roomName}" fontSize="15" color="0xcfcfcf" width="100%" textAlign="center" click="vgroup1_clickHandler(event)">
 		<s:filters>
 			<s:DropShadowFilter distance="1" angle="270" color="0x000000" blurX="0" blurY="0"/>
 		</s:filters>
