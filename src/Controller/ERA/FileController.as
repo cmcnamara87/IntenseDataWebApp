@@ -436,6 +436,7 @@ package Controller.ERA {
 		// Called when an annotation is saved.  Sets the data correctly and pushes the information to the model
 		public function saveAnnotation(items:Array):void {
 			for(var i:Number=0; i<items.length; i++) {
+				trace("^^^^^^ SAVING ANNOTATION", i);
 				if(!items[i].x) {
 					items[i].x = 0;
 				}
