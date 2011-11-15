@@ -139,7 +139,7 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<s:HGroup width="100%" paddingRight="10" verticalAlign="middle"> 
-		<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" click="canvas1_clickHandler(event)">
+		<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" click="canvas1_clickHandler(event)" buttonMode="true">
 			<s:Label text="{researcherName} - {title}" color="0xFFFFFF" width="100%" />
 			<s:Label text="RM {rmCode}" color="0xFFFFFF" width="100%" />
 		</s:VGroup>
