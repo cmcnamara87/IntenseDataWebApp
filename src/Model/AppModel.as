@@ -390,7 +390,7 @@ package Model {
 		
 		// DEKKERS COMMENT FUNCTION, saveNewComment is my comment function
 		// Saves a comment (reply, new or updated comment)
-		public function saveComment(assetData:Object):void {
+		/*public function saveComment(assetData:Object):void {
 			trace('about to call database, comment is:', assetData.commentText);
 			var args:Object = new Object();
 			if(assetData.assetID == -1) {
@@ -430,7 +430,7 @@ package Model {
 					Alert.show("Could not update comment");
 				}
 			}
-		}
+		}*/
 		
 		/**
 		 * Saves a new pen annotation. 
@@ -652,6 +652,10 @@ package Model {
 				if (dataXML.reply.@type == "result") {
 					
 					var new_id:Number = dataXML.reply.result.id;
+					
+					// Send a notification
+					AppModel.getInstance().createERANotification(AppController.currentEraProject.year, roomID, Auth.getInstance().getUsername(), Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName, Model_ERANotification.ANNOTATION, 0, assetData.parentID, new_id);
+					
 					AppModel.getInstance().setAnnotationClassForID(new_id);
 					//AppModel.getInstance().copyAccess(assetData.parentID, new_id);
 				}
