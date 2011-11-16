@@ -51,6 +51,12 @@ package Controller.Utilities {
 		[Embed(source="Assets/Template/post_mortem_icon_1.png")]
 		public static var PostMortemIcon:Class;
 		
+		// Annotation Tools Icons
+		[Embed(source="Assets/Template/vector_square_icon.png")]
+		public static var VectorSquareIcon:Class;
+		[Embed(source="Assets/Template/vector_circle_icon.png")]
+		public static var VectorCircleIcon:Class;
+		
 		
 		[Embed(source="Assets/Template/assets/audio2.png")] 
 		private static var Asseticon_audio:Class;

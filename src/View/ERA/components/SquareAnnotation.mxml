@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 creationComplete="group1_creationCompleteHandler(event)" >
+
+	<fx:Script>
+		<![CDATA[
+			import View.components.IDGUI;
+			
+			import flash.utils.setTimeout;
+			
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.graphics.SolidColor;
+			
+			/*==================== MOVING THE ANNOTATION ======================== */
+			
+			// This is the parent of the annotation (so its going to be the video ... this i need to work out)
+			private var videoBox:DisplayObjectContainer;
+			private var currentResizingHandle:BorderContainer;
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				videoBox = this.parent;
+				
+				setTimeout(function():void {
+					topRight.x = 200;
+				}, 5000);
+			}
+
+			/* ============================ MOVE THE ANNTOATION ============================ */
+			/**
+			 * Start moving the annotation box
+			 */
+			protected function boxAnnotation_mouseDownHandler(event:MouseEvent):void
+			{
+				event.target.alpha = 0.5;
+				videoBox.addEventListener(MouseEvent.MOUSE_MOVE, boxAnnotationMoved);
+				videoBox.addEventListener(MouseEvent.MOUSE_UP, boxAnnotationMouseUp);
+			}
+			/**
+			 * Move the annotation box
+			 */
+			private function boxAnnotationMoved(event:MouseEvent):void {
+				trace("video box", videoBox.mouseX, videoBox.mouseY);
+				trace("box annotation", this.x, this.y);
+				this.x = videoBox.mouseX - this.width / 2;
+				this.y = videoBox.mouseY - this.height / 2;
+				trace("box annotation 2", this.x, this.y);
+			}
+			/**
+			 * Stop moving the annotation box
+			 */
+			private function boxAnnotationMouseUp(event:MouseEvent):void {
+				event.target.alpha = 1;
+				
+				videoBox.mouseChildren = true;
+				videoBox.removeEventListener(MouseEvent.MOUSE_MOVE, boxAnnotationMoved);
+				videoBox.removeEventListener(MouseEvent.MOUSE_UP, boxAnnotationMouseUp);
+			}
+			/* ============================ END OF MOVE THE ANNTOATION ============================ */
+			
+			/* ============================ RESIZE THE ANNOTATION ============================ */
+			
+			protected function bottomRight_mouseDownHandler(event:MouseEvent):void
+			{
+				bottomRight.backgroundFill = new SolidColor(0x00FF00);
+				videoBox.mouseChildren = false;
+				
+				currentResizingHandle = event.target as BorderContainer;
+				
+				videoBox.addEventListener(MouseEvent.MOUSE_MOVE, resizerMoved);
+				videoBox.addEventListener(MouseEvent.MOUSE_UP, resizerMouseUp);
+			}
+			
+			private function resizerMoved(e:MouseEvent):void {
+				// get out the new x and y coordinate of this box
+				var newPoint = IDGUI.localToLocal(videoBox, this, new Point(videoBox.mouseX, videoBox.mouseY));
+				
+				currentResizingHandle.x = newPoint.x - currentResizingHandle.width / 2;
+				currentResizingHandle.y = newPoint.y - currentResizingHandle.height / 2;
+				
+				trace("box annotation 2", this.x, this.y);
+				
+				// Resize to all points
+				square.width = currentResizingHandle.x - 10;
+				square.height = currentResizingHandle.y - 10;
+			}
+			
+			
+			private function resizerMouseUp(e:MouseEvent):void {
+				videoBox.removeEventListener(MouseEvent.MOUSE_MOVE, resizerMoved);
+				videoBox.removeEventListener(MouseEvent.MOUSE_UP, resizerMouseUp);
+				videoBox.mouseChildren = true;
+				bottomRight.backgroundFill = new SolidColor(0xFFFFFF);
+			}
+
+			
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:BorderContainer id="topLeft" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="0" y="0"/>
+	<s:BorderContainer id="topRight" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="100" y="0" />
+	<s:BorderContainer id="bottomLeft" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="0" y="100" />
+	<s:BorderContainer id="bottomRight" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="100" y="100" mouseDown="bottomRight_mouseDownHandler(event)"/>
+	
+	<!-- The actual square -->
+	<s:BorderContainer id="square" buttonMode="true" backgroundAlpha="0.01" borderColor="0xFFFFFF" borderStyle="solid" borderWeight="5" x="{topLeft.x + topLeft.width}" y="{topLeft.y + topLeft.height}" width="{topRight.x - (topLeft.x + topLeft.width)}" height="{bottomLeft.y - (topLeft.y + topLeft.height)}" mouseDown="boxAnnotation_mouseDownHandler(event)">
+		<s:BorderContainer backgroundAlpha="0.001" borderColor="0x000000" borderStyle="solid" borderWeight="5" width="100%" height="100%" />
+	</s:BorderContainer>
+	<!-- The top left adjustment box -->
+	<!--<s:BorderContainer id="topLeft" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.x - 10}" y="{square.y - 10}" mouseDown="topLeft_mouseDownHandler(event)"/>
+	<s:BorderContainer id="topRight" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.width + 10}" y="{square.y - 10}"/>
+	<s:BorderContainer id="bottomLeft" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.x - 10}" y="{square.height + 10}"/>
+	<s:BorderContainer id="bottomRight" buttonMode="true" backgroundColor="0xFFFFFF" borderVisible="false" width="10" height="10" x="{square.width + 10}" y="{square.height + 10}" mouseDown="bottomRight_mouseDownHandler(event)"/>-->	
+</s:Group>
