@@ -36,6 +36,8 @@ package Model.Transactions.ERAProject
 			
 			var ERAProjectArray:Array = AppModel.getInstance().extractAssetsFromXML(data, Model_ERAProject);
 			
+			ERAProjectArray.sortOn(["year"], [Array.DESCENDING]);
+			
 			callback(true, ERAProjectArray);
 		}
 	}

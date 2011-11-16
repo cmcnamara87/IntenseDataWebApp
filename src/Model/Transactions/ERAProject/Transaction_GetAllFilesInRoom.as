@@ -45,6 +45,8 @@ package Model.Transactions.ERAProject
 			
 			var eraEvidenceArray:Array = AppModel.getInstance().parseResults(data, Model_ERAFile);
 			
+			eraEvidenceArray.sortOn(["title"], [Array.CASEINSENSITIVE]);
+			
 			callback(true, eraEvidenceArray);
 		}
 	}

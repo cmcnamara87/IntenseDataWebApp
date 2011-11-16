@@ -87,6 +87,8 @@ package Model.Transactions.ERAProject
 			// Check if we have them all
 			if(userDetailsArray.length == userArray.length) {
 				// We have them all, give it back
+				userDetailsArray.sortOn(["lastName", "firstName"], [Array.CASEINSENSITIVE]);
+				
 				callback(true, role, userDetailsArray);
 			}
 		}

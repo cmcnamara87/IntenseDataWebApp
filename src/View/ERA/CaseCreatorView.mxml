@@ -268,7 +268,7 @@
 				for each(var researcherUser:Model_ERAUser in userArray) {
 					var object:Object = new Object();
 					object.data = researcherUser;
-					object.label = researcherUser.firstName + " " + researcherUser.lastName + " (" + researcherUser.username + ")";
+					object.label = researcherUser.lastName + ", " + researcherUser.firstName + " (" + researcherUser.username + ")";
 					dropdownData.addItem(object);
 				}
 				allResearchers.dataProvider = dropdownData;
@@ -279,7 +279,7 @@
 				for each(var productionManagerUser:Model_ERAUser in userArray) {
 					var object:Object = new Object();
 					object.data = productionManagerUser;
-					object.label = productionManagerUser.firstName + " " + productionManagerUser.lastName + " (" + productionManagerUser.username + ")";
+					object.label = productionManagerUser.lastName + ", " +  productionManagerUser.firstName + " (" + productionManagerUser.username + ")";
 					dropdownData.addItem(object);
 				}
 				allProductionManagers.dataProvider = dropdownData;
@@ -290,7 +290,7 @@
 				for each(var teamMemberUser:Model_ERAUser in userArray) {
 					var object:Object = new Object();
 					object.data = teamMemberUser;
-					object.label = teamMemberUser.firstName + " " + teamMemberUser.lastName + " (" + teamMemberUser.username + ")";
+					object.label = teamMemberUser.lastName + ", " + teamMemberUser.firstName + " (" + teamMemberUser.username + ")";
 					dropdownData.addItem(object);
 				}
 				allProductionTeamMembers.dataProvider = dropdownData;
