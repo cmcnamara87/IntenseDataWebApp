@@ -228,11 +228,11 @@
 				var dragProxy:Image = new Image();
 				dragProxy.height= 100;
 				dragProxy.width= 100; 
-//				if(_fileData.thumbnailURL != "") {
-//					dragProxy.source = _fileData.thumbnailURL;
-//				} else {
+				if(_fileData.thumbnailURL != "") {
+					dragProxy.source = _fileData.thumbnailURL;
+				} else {
 					dragProxy.source = AssetLookup.getAssetImageClass(rootMetaType);
-//				}
+				}
 				
 				DragManager.doDrag(event.currentTarget as IUIComponent, null, event, dragProxy);
 				this.alpha = 0.5;

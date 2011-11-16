@@ -289,6 +289,21 @@
 	<s:BorderContainer id="videoBox" backgroundColor="0x888888" borderVisible="false" width="100%" height="100%" >
 		<s:VideoDisplay id="videoPlayer" muted="true" width="100%" height="100%" autoDisplayFirstFrame="true"  durationChange="videoPlayer_durationChangeHandler(event)" currentTimeChange="videoPlayer_currentTimeChangeHandler(event)" mediaPlayerStateChange="videoPlayer_mediaPlayerStateChangeHandler(event)" click="videoPlayer_clickHandler(event)" rollOver="videoPlayer_mouseOverHandler(event)" rollOut="videoPlayer_mouseOutHandler(event)" />
 		
+		<!-- Annotation Toolbox -->
+		<s:BorderContainer id="annotationToolbox" backgroundColor="0xFFFFFF" width="200" height="30">
+			<s:HGroup width="100%" height="100%" verticalAlign="middle">
+				<s:Label text="Box" />
+				<s:Label text="Circle" />
+			</s:HGroup>
+			
+		</s:BorderContainer>
+		
+		<s:Group id="circleAnnotation">
+			<s:BorderContainer id="circle" buttonMode="true" backgroundAlpha="0.01" borderColor="0xFFFFFF" borderStyle="solid" borderWeight="5" width="200" height="200" cornerRadius="{width / 2}" x="10" y="10" mouseDown="boxAnnotation_mouseDownHandler(event)">
+				<s:BorderContainer backgroundAlpha="0.001" borderColor="0x000000" borderStyle="solid" borderWeight="5" width="100%" height="100%" cornerRadius="60"/>
+			</s:BorderContainer>
+		</s:Group>
+		
 		<s:Group id="boxAnnotation" >
 			<s:BorderContainer id="square" buttonMode="true" backgroundAlpha="0.01" borderColor="0xFFFFFF" borderStyle="solid" borderWeight="5" width="120" height="120" x="10" y="10" mouseDown="boxAnnotation_mouseDownHandler(event)">
 				<s:BorderContainer backgroundAlpha="0.001" borderColor="0x000000" borderStyle="solid" borderWeight="5" width="100%" height="100%" />
