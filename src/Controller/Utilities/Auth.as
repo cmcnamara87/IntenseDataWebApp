@@ -26,7 +26,7 @@ package Controller.Utilities {
 		private var isUser:Boolean = false;
 		// Says whether a file is currently uploading,
 		// to notification the user of this when they are logging out
-		public var uploadCount:Number = 0;
+		private var uploadCount:Number = 0;
 		
 		public var userRoleArray:Array = new Array();
 		
@@ -184,11 +184,27 @@ package Controller.Utilities {
 			
 			BrowserController.resetBrowserController();
 			
+			uploadCount = 0;
+			
 			_username = "";
 			_password = "";
 			_sessionID = "";
 		}
 		
+		public function incActiveUploadCount():void {
+			uploadCount++;
+		}
+		public function decActiveUploadCount():void {
+			uploadCount = Math.max(uploadCount - 1, 0);
+		}
+		/**
+		 * Shows the number of active uploads 
+		 * @return 
+		 * 
+		 */		
+		public function getActiveUploadCount():Number {
+			return uploadCount;
+		}
 		//Grab the Session ID for sending subsequent requests to mediaflux
 		public function getSessionID():String {
 			return _sessionID;
