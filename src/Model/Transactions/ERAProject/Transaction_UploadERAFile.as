@@ -214,7 +214,7 @@ package Model.Transactions.ERAProject
 			
 			// Do the conversion if we need to
 			// this function only  works if its a video file, so its okay if it does it
-			if(eraEvidence.rootMetaType == "video" || eraEvidence.rootMetaType == "document") {
+			if(eraEvidence.rootMetaType == "video" || eraEvidence.rootMetaType == "document" || eraEvidence.rootMetaType == "image") {
 				AppModel.getInstance().createF4V(newFileID);
 			}
 			

@@ -115,8 +115,8 @@
 					icon.source = AssetLookup.Transcoding_Class;
 					
 				// lets see if it has a thumbnail url stored
-//				} else if (_fileData.thumbnailURL != "") {
-//					icon.source = _fileData.thumbnailURL;
+				} else if (_fileData.thumbnailURL != "") {
+					icon.source = _fileData.thumbnailURL;
 				} else {
 					icon.source = AssetLookup.getAssetImageClass(_fileData.rootMetaType);
 				}

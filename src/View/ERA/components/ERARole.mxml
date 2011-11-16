@@ -25,7 +25,7 @@
 				var projectArray:ArrayCollection = new ArrayCollection();
 				for each(var eraUser:Model_ERAUser in allERAUsers) {
 					var object:Object = new Object();
-					object.label = eraUser.firstName + " " + eraUser.lastName + " " + "(" + eraUser.username + ")";
+					object.label = eraUser.lastName + ", " + eraUser.firstName + " (" + eraUser.username + ")";
 					object.data = eraUser;
 					projectArray.addItem(object);
 				}

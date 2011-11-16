@@ -7,6 +7,9 @@ package Model {
 		public var rmCode:String;
 		public var title:String;
 		public var researchersArray:Array = new Array();
+		public var researcherFirstName:String = "";
+		public var researcherLastName:String = "";
+		
 		public var qutSchool:String;
 		public var forArray:Array = new Array(); // array of FOR_Models
 		public var categoryArray:Array = new Array();
@@ -59,12 +62,19 @@ package Model {
 			this.title = eraCase["title"];
 			
 			// add all the researchers usernames
+			var blah:Number = 0;
 			for each(var researcherXML:XML in eraCase["researcher_username"]) {
+
 				var researcher:Model_ERAUser = new Model_ERAUser();
 				researcher.username = researcherXML["username"];
 				researcher.firstName = researcherXML["first_name"];
 				researcher.lastName = researcherXML["last_name"];
 				researchersArray.push(researcher);
+				
+				if(blah++ == 0) {
+					researcherFirstName = researcherXML["first_name"];
+					researcherLastName = researcherXML["last_name"];
+				}
 			}
 			
 			// add the qut school

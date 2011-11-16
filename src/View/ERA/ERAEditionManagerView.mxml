@@ -5,6 +5,8 @@
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
+			
 			import Model.Model_ERAProject;
 			
 			import mx.collections.ArrayCollection;
@@ -22,21 +24,43 @@
 					return;
 				}
 				
+				// Store the projects
 				projectArray = new ArrayCollection();
-				for each(var eraProject:Model_ERAProject in eraProjectArray) {
+				// For each project, add it to the display
+				
+				var currentEraIndex:Number = 0;
+				
+				for(var i:Number = 0; i < eraProjectArray.length; i++) {
+					var eraProject:Model_ERAProject = eraProjectArray[i] as Model_ERAProject;
+					
 					var baseID:Number = eraProject.base_asset_id;
 					var eraName:String = "ERA " + eraProject.year;
 					var object:Object = new Object();
 					object.label = eraName;
 					object.data = baseID;
 					projectArray.addItem(object);
+					
+					if(AppController.currentEraProject) {
+						trace("trying to match current era project", AppController.currentEraProject.base_asset_id, baseID);
+						if(AppController.currentEraProject.base_asset_id == baseID) {
+							currentEraIndex = i;
+							trace("match found");
+						}
+					}
 				}
 				eras.dataProvider = projectArray;
-				if(eras.dataProvider.length > 0 && eras.selectedIndex == -1) {
-					eras.selectedIndex = 0;
-				}
-//				
+				
+//				if(eras.dataProvider.length > 0 && eras.selectedIndex == -1) {
+//					eras.selectedIndex = 0;
+//				}
+							
 				this.leaveCreationMode();
+				
+				// if we have some projects, but we dont have some selected 
+				if(projectArray.length > 0) {
+					eras.selectedIndex = currentEraIndex;
+					trace("setting indext to", currentEraIndex);
+				}
 			}
 			public function addERAProject(eraProject:Model_ERAProject):void {
 				day.selectedItem = eraProject.day;

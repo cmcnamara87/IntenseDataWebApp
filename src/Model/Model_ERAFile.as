@@ -25,6 +25,7 @@ package Model {
 		
 		public var meta_media_uri:String;
 		public var transcoded:Boolean = true;
+		public var mimetype:String;
 		
 		public var notificationCount:Number = 0;
 		public var notificationArray:Array = new Array();
@@ -47,6 +48,8 @@ package Model {
 		
 		// Sets the specific data for the collection type
 		override protected function setSpecificData():void {
+			
+			this.mimetype = rawData.type;
 			
 			this.fileType = AssetLookup.getCommonType(rawData.type);
 			
@@ -76,8 +79,8 @@ package Model {
 			// get the thumbnail if its there
 			if(rawData.meta["ERA-thumbnail"].length()) {
 				this.thumbnailURL = "http://" + Recensio_Flex_Beta.serverAddress + "/Media/thumbnails/" + rawData.meta["ERA-thumbnail"].uri;
-			}
-			if (this.rootMetaType == "image") {
+			} else if (this.rootMetaType == "image" && (this.mimetype != "image/jpeg" && this.mimetype != "image/jpg")) { 
+				trace("MIME TYPE IS", this.mimetype);
 				this.thumbnailURL = 'http://' + Recensio_Flex_Beta.serverAddress + ':' + Recensio_Flex_Beta.serverPort + '/mflux/icon.mfjp?_skey=' + Auth.getInstance().getSessionID() + '&id=' + this.base_asset_id + '&version=0&size=100'
 			}
 			

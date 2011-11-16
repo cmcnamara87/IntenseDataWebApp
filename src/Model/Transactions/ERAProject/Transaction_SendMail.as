@@ -41,8 +41,8 @@ package Model.Transactions.ERAProject
 			var notificationData:Model_ERANotification = new Model_ERANotification();
 			notificationData.setData(data.reply.result.asset[0]);
 			
-			var subject:String = "nQuisitor RM " + notificationData.eraCase.rmCode + ": ";
-			var body:String = "New Notification: ";
+			var subject:String = "New nQuisitor Notification  (RM " + notificationData.eraCase.rmCode + "): ";
+			var body:String = "Hi, You have a new nQuisitor Notification: ";
 			
 			switch(notificationData.type) {
 				case Model_ERANotification.FILE_APPROVED_BY_RESEARCHER:
@@ -100,7 +100,7 @@ package Model.Transactions.ERAProject
 				
 			}
 			
-			body += "Visit nQuisitor at http://cifera.qut.edu.au/nquisitor";
+			body += "Visit nQuisitor at http://cifera.qut.edu.au/";
 			
 			for each(var aclXML:XML in data.reply.result.asset.acl) {
 				if(aclXML.actor.@type == "user") {

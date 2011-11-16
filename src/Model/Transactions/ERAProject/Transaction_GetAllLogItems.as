@@ -46,6 +46,8 @@ package Model.Transactions.ERAProject
 			
 			var eraLogItemArray:Array = AppModel.getInstance().parseResults(data, Model_ERALogItem);
 			
+			eraLogItemArray.sortOn(["type"], [Array.CASEINSENSITIVE]);
+			
 			callback(true, eraLogItemArray);
 		}
 	}
