@@ -69,7 +69,7 @@ package Model.Transactions.ERAProject
 			progressCallback(percentProgress, logItemID);
 		}
 		private function ioErrorHandler(event:IOErrorEvent):void {
-			Auth.getInstance().uploadCount--;
+			Auth.getInstance().decActiveUploadCount();
 			ioErrorCallback(event, evidenceItem);
 		}
 		
@@ -102,7 +102,7 @@ package Model.Transactions.ERAProject
 			argsXML.meta["r_media"]["transcoded"] = "false";
 			
 			// Store that we are currently uploading, so a message can be displayed on attempt to log out
-			Auth.getInstance().uploadCount++;
+			Auth.getInstance().incActiveUploadCount();
 			connection.uploadFile(fileReference, baseXML, null);
 		}
 		
@@ -116,7 +116,7 @@ package Model.Transactions.ERAProject
 			}
 			trace("uploading file: SUCCESS", xml);
 			
-			Auth.getInstance().uploadCount--;
+			Auth.getInstance().decActiveUploadCount();
 			
 			// It was successful, so lets get it out
 			newFileID = xml.reply.result.id;

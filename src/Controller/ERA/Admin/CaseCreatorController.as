@@ -52,16 +52,30 @@ package Controller.ERA.Admin
 		}
 		
 		private function setupEventListeners():void {
-			caseCreatorView.createCaseButton.addEventListener(MouseEvent.CLICK, createCase);
+			caseCreatorView.createCaseButton.addEventListener(MouseEvent.MOUSE_UP, createCase);
 			caseCreatorView.saveButton.addEventListener(MouseEvent.CLICK, saveChangesToCase);
 			caseCreatorView.deleteCaseButton.addEventListener(MouseEvent.CLICK, deleteCase);
 		}
 		
 		private function validInputs():Boolean {
-			var rmCode:String = caseCreatorView.rmCode.text;			
+			var rmCode:String = caseCreatorView.rmCode.text;		
+			// check there is an RM code
 			if(rmCode == "") {
 				layout.notificationBar.showError("Please enter an RM Code.");
 				return false;
+			}
+			
+			// Check the RM code is not already in user
+			trace("checking validity");
+			for each(var eraCase:Model_ERACase in this.eraCaseArray) {
+				if(eraCase.rmCode == rmCode) {
+					
+					// duplicate RM Code
+					layout.notificationBar.showError("This RM code already exists for " + eraCase.researcherLastName + ", " + 
+						eraCase.researcherFirstName + " " + eraCase.title + ". Please choose another RM code.");
+						
+					return false;
+				}
 			}
 			
 			// Get title
@@ -126,6 +140,7 @@ package Controller.ERA.Admin
 		
 		/* ====================================== UPDATE A CASE ===================================== */
 		private function saveChangesToCase(e:MouseEvent):void {
+			trace("saving changes to case");
 			if(!validInputs()) {
 				return;
 			}
@@ -209,7 +224,7 @@ package Controller.ERA.Admin
 		
 		/* ====================================== CREATE A CASE ===================================== */
 		private function createCase(e:MouseEvent):void {
-			
+			trace("saving a case");
 			if(!validInputs()) {
 				return;
 			}

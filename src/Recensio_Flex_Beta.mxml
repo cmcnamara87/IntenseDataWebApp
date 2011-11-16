@@ -41,7 +41,7 @@
 				
 				securityLogoutTimer.addEventListener(TimerEvent.TIMER, function(e:TimerEvent):void {
 					// Only dump out a user, if they are not uploading any file (since that will extend the mediaflux session);
-					if(Auth.getInstance().uploadCount == 0) {
+					if(Auth.getInstance().getActiveUploadCount() == 0) {
 						Alert.show("Your session has expired. Please log in again to continue use.", "Expired Session (30 mins inactivity timeout)");
 						securityLogoutTimer.stop();
 						Dispatcher.dumpOut();

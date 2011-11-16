@@ -97,7 +97,7 @@ package Controller {
 		// Called on logout
 		public static function logout():void {
 			
-			if(Auth.getInstance().uploadCount > 0) {
+			if(Auth.getInstance().getActiveUploadCount() > 0) {
 				var myAlert:Alert = Alert.show(
 					"Are you sure you wish to logout, file(s) are currently uploading?", "Files Currently Uploading", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
 						if (e.detail==Alert.OK) {
