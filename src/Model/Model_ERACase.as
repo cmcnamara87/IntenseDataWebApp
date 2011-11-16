@@ -16,6 +16,8 @@ package Model {
 		public var productionManagerArray:Array = new Array();
 		public var productionTeamArray:Array = new Array();
 		
+		public var fileCount:Number = 0;
+		
 		public static const CAT1:String = "Original Creative Works - Visual Art Work (NP-A1)";
 		public static const CAT2:String = "Original Creative Works - Design/Architectual Work (NP-A2)";
 		public static const CAT3:String = "Original Creative Works - Textural Work (NP-A3)";
