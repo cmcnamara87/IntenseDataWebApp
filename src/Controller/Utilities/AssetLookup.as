@@ -26,6 +26,9 @@ package Controller.Utilities {
 		private static var Asseticon_video_clicked:Class;
 		private static var Asseticon_video_clicked_data:BitmapData = (new Asseticon_video_clicked as Bitmap).bitmapData;
 		
+		// Annotation Download Icon
+		[Embed(source="Assets/Template/annotation_download_icon.png")]
+		public static var AnnotationDownloadIcon:Class;
 		
 		// Flow chart arrows
 		[Embed(source="Assets/Template/left_arrow.jpg")]

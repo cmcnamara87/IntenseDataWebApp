@@ -11,6 +11,7 @@
 	<fx:Script>
 		<![CDATA[
 			import Controller.IDEvent;
+			import Controller.Utilities.AssetLookup;
 			
 			import flash.utils.clearTimeout;
 			import flash.utils.setTimeout;
@@ -67,12 +68,25 @@
 				dispatchEvent(downloadEvent);
 			}
 
+
+			protected function downloadButton_mouseOverHandler(event:MouseEvent):void
+			{
+				downloadButton.alpha = 0.5;
+			}
+
+
+			protected function downloadButton_mouseOutHandler(event:MouseEvent):void
+			{
+				downloadButton.alpha = 1;
+			}
+
 		]]>
 	</fx:Script>
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Button visible="false" includeInLayout="false" id="downloadButton" horizontalCenter="0" label="Download" top="-30" cornerRadius="10" chromeColor="0xFFFFFF" click="downloadButton_clickHandler(event)"/>
-	<mx:Canvas id="annotationBox" backgroundColor="{annotationColor}" backgroundAlpha="{highlight ? 1 : 0.1}" borderStyle="solid" borderColor="{annotationColor}" width="{annotationWidth}" height="{annotationHeight}"/>
+	<mx:Image id="downloadButton" top="-30" buttonMode="true" toolTip="Download Annotation" visible="false" includeInLayout="false" source="{AssetLookup.AnnotationDownloadIcon}" horizontalCenter="0" click="downloadButton_clickHandler(event)" mouseOver="downloadButton_mouseOverHandler(event)" mouseOut="downloadButton_mouseOutHandler(event)"/>
+	<!--<s:Button    label="Download"  cornerRadius="10" chromeColor="0xFFFFFF" />-->
+	<s:BorderContainer id="annotationBox" backgroundColor="{annotationColor}" borderWeight="2" backgroundAlpha="{highlight ? 1 : 0.1}" borderStyle="solid" borderColor="{annotationColor}" width="{annotationWidth}" height="{annotationHeight}"/>
 </s:BorderContainer>
