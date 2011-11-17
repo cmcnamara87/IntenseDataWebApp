@@ -16,11 +16,17 @@ package Model.Transactions.ERAProject
 			this.caseID = caseID;
 			this.connection = connection;
 			this.callback = callback;
-			
-			deleteERACase();
+		
+			deleteNotifications();
 		}
 		
-		private function deleteERACase():void {
+		private function deleteNotifications():void {
+			AppModel.getInstance().deleteRelatedERANotifications(caseID, deleteERACase);
+		}
+		
+		private function deleteERACase(status:Boolean):void {
+			if(!status) trace("Failed to delete notifications for", caseID);
+			
 			var baseXML:XML = connection.packageRequest("asset.destroy", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
@@ -35,27 +41,8 @@ package Model.Transactions.ERAProject
 			if((data = AppModel.getInstance().getData("deleting era case", e)) == null) {
 				callback(false);
 			} else {
-				
-				// Delet all notifications associated with this case
-				var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
-				var argsXML:XMLList = baseXML.service.args;
-				
-				argsXML.where = "type>=ERA/notification and related to{notification_case} (id=" + caseID + ")";
-				argsXML.action = "pipe";
-				argsXML.service.@name = "asset.destroy";
-				
-				connection.sendRequest(baseXML, notificationsDeleted);
+				callback(true, caseID);
 			}
-		}
-		
-		private function notificationsDeleted(e:Event):void {
-			var data:XML;
-			if((data = AppModel.getInstance().getData("deleting case notifications", e)) == null) {
-				callback(false);
-				return;
-			}
-			
-			callback(true, caseID);
 		}
 	}
 	

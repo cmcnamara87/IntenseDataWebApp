@@ -24,10 +24,16 @@ package Model.Transactions.ERAProject
 			this.connection = connection;
 			this.callback = callback;
 			
-			getERAToDelete();
+			deleteNotifications();
 		}
 		
-		private function getERAToDelete():void {
+		private function deleteNotifications():void {
+			AppModel.getInstance().deleteRelatedERANotifications(eraProjectID, getERAToDelete);
+		}
+		
+		private function getERAToDelete(status:Boolean):void {
+			if(!status) trace("Failed to delete notifications for", eraProjectID);
+
 			
 			// Get out the ERA object
 			var baseXML:XML = connection.packageRequest("asset.get", new Object(), true);
