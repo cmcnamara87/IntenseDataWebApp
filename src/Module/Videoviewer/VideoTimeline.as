@@ -81,7 +81,7 @@ package Module.Videoviewer {
 				var percentLoaded:Number = newTime/delegate.getDuration();
 				if(percentLoaded*(this.width-20) > 0) {
 					_timelineBuffer.graphics.clear();
-					_timelineBuffer.graphics.beginFill(0xDDDDFF,1);
+					_timelineBuffer.graphics.beginFill(0xEEEEEE,1);
 					if(_timelineHead.x+1 > 0) {
 						_timelineBuffer.graphics.drawRect(1,1,percentLoaded*(this.width-20)+3+_timelineHead.x,19);
 						redrawAnnotations();

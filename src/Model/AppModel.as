@@ -20,6 +20,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_DeleteERALogItem;
 	import Model.Transactions.ERAProject.Transaction_DeleteERAProject;
 	import Model.Transactions.ERAProject.Transaction_DeleteERAUser;
+	import Model.Transactions.ERAProject.Transaction_DeleteRelatedNotifications;
 	import Model.Transactions.ERAProject.Transaction_ERAChangeUserPassword;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
 	import Model.Transactions.ERAProject.Transaction_GetAllConversation;
@@ -932,14 +933,19 @@ package Model {
 		
 		// Deletes an annotatio
 		public function deleteAnnotation2(assetID:Number, callback:Function):void {
-			var args:Object = new Object();
-			var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
-			baseXML.service.args["id"] = assetID;
-			if(_connection.sendRequest(baseXML, callback)) {
-				//All good
-			} else {
-				Alert.show("Could not delete asset");
-			}
+			AppModel.getInstance().deleteRelatedERANotifications(assetID, function(status:Boolean):void {
+				if(!status) trace("failed to delete annotations for notifiaction", assetID);
+				var args:Object = new Object();
+				var baseXML:XML = _connection.packageRequest('asset.destroy',args,true);
+				baseXML.service.args["id"] = assetID;
+				if(_connection.sendRequest(baseXML, callback)) {
+					//All good
+				} else {
+					Alert.show("Could not delete asset");
+				}
+			
+			});
+			
 		}
 		
 		// Reply when an asset is deleted
@@ -958,7 +964,11 @@ package Model {
 		public function deleteComment(assetID:Number):void {
 			
 			if(Auth.getInstance().isSysAdmin()) {
-				AppModel.getInstance().assetDestroy(assetID, null);
+				AppModel.getInstance().deleteRelatedERANotifications(assetID, function(status:Boolean):void {
+					if(!status) trace("failed to remove notifications");
+					AppModel.getInstance().assetDestroy(assetID, null);	
+				});
+			
 				return;
 			}
 			
@@ -1769,6 +1779,9 @@ package Model {
 		}
 		public function createERANotification(year:String, roomID:Number, username:String, firstName:String, lastName:String, type:String, caseID:Number=0, fileID:Number=0, commentID:Number=0) {
 			var createERANotification:Transaction_CreateERANotification = new Transaction_CreateERANotification(year, roomID, username, firstName, lastName, type, _connection, caseID, fileID, commentID);
+		}
+		public function deleteRelatedERANotifications(objectID:Number, callback:Function):void {
+			var deleteNotifications:Transaction_DeleteRelatedNotifications = new Transaction_DeleteRelatedNotifications(objectID, callback, _connection);
 		}
 
 		public function updateNotificationReadStatus(notificationID:Number, readStatus:Boolean, callback:Function):void {

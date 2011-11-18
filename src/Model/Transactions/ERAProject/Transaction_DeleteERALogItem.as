@@ -18,9 +18,17 @@ package Model.Transactions.ERAProject
 			this.connection = connection;
 			this.callback = callback;
 			
-			deleteERALogItem();
+			deleteNotifications();
 		}
-		private function deleteERALogItem():void {
+		
+		private function deleteNotifications():void {
+			AppModel.getInstance().deleteRelatedERANotifications(logItem.base_asset_id, null);
+			AppModel.getInstance().deleteRelatedERANotifications(logItem.dataItemID, deleteERALogItem);
+		}
+		
+		private function deleteERALogItem(status:Boolean):void {
+			if(!status) trace("Failed to delete notifications for", logItem.dataItemID);
+			
 			var baseXML:XML = connection.packageRequest("asset.destroy", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
