@@ -2,6 +2,9 @@ package View.components
 {
 	import Controller.ERA.FileController;
 	
+	import flash.display.DisplayObject;
+	import flash.geom.Point;
+	
 	import mx.graphics.SolidColorStroke;
 	
 	import spark.components.Button;
@@ -10,6 +13,15 @@ package View.components
 
 	public class IDGUI
 	{
+		
+		public static function localToLocal(containerFrom:DisplayObject, containerTo:DisplayObject, origin:Point):Point
+		{
+			var point:Point = origin;
+			point = containerFrom.localToGlobal(point);
+			point = containerTo.globalToLocal(point);
+			return point;
+		}
+		
 		/**
 		 * DEPRECATED - CREATE AN IDBUTTON OBJECT INSTEAD.
 		 * Creates a new button 

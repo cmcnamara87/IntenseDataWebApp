@@ -8,11 +8,13 @@ package Controller {
 	import Model.Model_Notification;
 	
 	import View.Layout;
+	import View.components.IDGUI;
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
+	import flash.geom.Point;
 	import flash.utils.Timer;
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.setTimeout;
@@ -124,7 +126,7 @@ package Controller {
 			showAdminToolButtons();
 			
 			// load the Dashboard (which is the default admin tool)
-			Dispatcher.call("erasetup");
+			Dispatcher.call("casecreator");
 		}
 		
 		/**
@@ -325,6 +327,10 @@ package Controller {
 		 */		
 		private static function showNotifications():void {
 			layout.notificationPanel.visible = true;
+			trace("&&&&&&&", AppController.layout.header.notificationButton.x);
+			trace("local", IDGUI.localToLocal(AppController.layout.header.globalButtonGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x);
+			AppController.layout.notificationPanel.x = 	IDGUI.localToLocal(AppController.layout.header.globalButtonGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x - AppController.layout.header.notificationButton.width/2;
+			
 //			layout.notificationPanel.x = layout.header.notificationButton.x;
 //			if(notificationsArray) {
 //				layout.header.notificationButton.label = notificationsArray.length + "";

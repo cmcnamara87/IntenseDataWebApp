@@ -36,6 +36,10 @@
 			import spark.layouts.HorizontalAlign;
 			import spark.layouts.VerticalAlign;
 			
+			[Bindable]
+			private static var casePanelExtended:Boolean = true; // Stores if the case panel is extended or not
+			
+			
 			private var aasdf:Array = new Array("helo", "world", "test", "this");
 			private var arrayTest:ArrayList = new ArrayList(aasdf);
 			
@@ -224,11 +228,7 @@
 			protected function caseTag_clickHandler(event:MouseEvent):void
 			{
 				// TODO Auto-generated method stub
-				if(casePanel.width == 300) {
-					casePanel.width = 0;
-				} else {
-					casePanel.width = 300;
-				}
+				casePanelExtended = !casePanelExtended;
 			}
 
 
@@ -246,7 +246,7 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<!-- The Case Panel -->
-	<s:BorderContainer  id="casePanel" backgroundColor="0x000000" borderVisible="false" height="100%" width="300" resizeEffect="Resize">
+	<s:BorderContainer  id="casePanel" backgroundColor="0x000000" borderVisible="false" height="100%" width="{casePanelExtended ? 300 : 0}" resizeEffect="Resize">
 		<s:VGroup width="100%" height="100%">
 			<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
 				<s:Label color="0xFFFFFF" text="ERA Case List" fontSize="20" />
@@ -255,8 +255,8 @@
 			</s:VGroup>
 			<s:Scroller width="100%" height="100%" chromeColor="0x222222">
 				<s:VGroup id="casePanelContent" width="100%" gap="0">
-					<s:Label color="0xFFFFFF">
-						Loading...
+					<s:Label color="0xFFFFFF" horizontalCenter="0">
+						
 					</s:Label>
 				</s:VGroup>
 			</s:Scroller>

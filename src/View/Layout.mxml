@@ -3,21 +3,27 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:View="View.*"
 		 xmlns:Notification="View.components.Notification.*"
-		 xmlns:Component="View.components.*" xmlns:components="View.ERA.components.*">
+		 xmlns:Component="View.components.*" xmlns:components="View.ERA.components.*" creationComplete="group1_creationCompleteHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
 			import Controller.IDEvent;
 			import Controller.Utilities.Auth;
 			
 			import Model.Model_ERANotification;
 			
 			import View.ERA.components.NotificationListItem;
+			import View.components.IDGUI;
 			
 			import mx.controls.HRule;
 			import mx.controls.Text;
+			import mx.events.FlexEvent;
 			
 			import spark.components.Label;
+			
+			
+			private var lastFilteredByID:Number = 0;
 			
 			public function allProgressEvents(percentage:Number, evidenceID:Number):void {
 				var progressEvent:IDEvent = new IDEvent(IDEvent.ERA_PROGRESS_EVENT, true);
@@ -87,18 +93,31 @@
 				showAllButton_changeHandler();
 			}
 			
-			public function filterRoomNotifications(roomID:Number):void {
-				
-				if(notificationPanel.visible) {
+			/**
+			 * @returns false if already filtered, true otherwise
+			 */
+			private function setupFiltering(id:Number):Boolean {
+				// If we have it open, and we already filtered by it, turn it off (toggle it off)
+				if(notificationPanel.visible && id == lastFilteredByID) {
 					notificationPanel.visible = false;
-					return;
+					return false;
 				}
+				
+				// Save the filtering ID
+				lastFilteredByID = id; 
 				
 				notificationPanel.visible = true;
 				showAllNotificationsButton.visible = true;
 				showAllNotificationsButton.includeInLayout = true;
 				notificationFilterButton.visible = false;
 				notificationFilterButton.includeInLayout = false;
+				
+				return true;
+			}
+			
+			public function filterRoomNotifications(roomID:Number):void {
+				
+				if(!setupFiltering(roomID)) return;
 				
 				for(var i:Number = 0; i < notificationList.numElements; i++) {
 					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
@@ -122,16 +141,7 @@
 			
 			public function filterCaseNotifications(caseID:Number):void {
 				
-				if(notificationPanel.visible) {
-					notificationPanel.visible = false;
-					return;
-				}
-				
-				notificationPanel.visible = true;
-				showAllNotificationsButton.visible = true;
-				showAllNotificationsButton.includeInLayout = true;
-				notificationFilterButton.visible = false;
-				notificationFilterButton.includeInLayout = false;
+				if(!setupFiltering(caseID)) return;
 				
 				for(var i:Number = 0; i < notificationList.numElements; i++) {
 					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
@@ -156,16 +166,7 @@
 			
 			public function filterFileNotifications(fileID:Number):void {
 				
-				if(notificationPanel.visible) {
-					notificationPanel.visible = false;
-					return;
-				}
-				
-				notificationPanel.visible = true;
-				showAllNotificationsButton.visible = true;
-				showAllNotificationsButton.includeInLayout = true;
-				notificationFilterButton.visible = false;
-				notificationFilterButton.includeInLayout = false;
+				if(!setupFiltering(fileID)) return;
 				
 				for(var i:Number = 0; i < notificationList.numElements; i++) {
 					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
@@ -273,12 +274,22 @@
 				}
 			}
 
+
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				trace("&&&&&&&&notification button", AppController.layout.header.notificationButton.x);
+				trace("&&&&&&&&local", IDGUI.localToLocal(AppController.layout.header, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x);
+				
+			}
+
 		]]>
 	</fx:Script>
 
 	<fx:Declarations>
 		<s:Fade duration="200" alphaFrom="0" alphaTo="1" id="fadeIn" />   
-		<s:Fade duration="200" alphaFrom="1" alphaTo="0" id="fadeOut" />		
+		<s:Fade duration="200" alphaFrom="1" alphaTo="0" id="fadeOut" />
+		<s:DropShadowFilter id="shadowy" distance="8" angle="90" color="0x000000" alpha="0.2" blurX="8" blurY="8" inner="true"/>
+		
 	</fx:Declarations>
 	
 	<!-- Header -->
@@ -291,30 +302,49 @@
 
 	</s:VGroup> 
 	
+	
+	
 	<s:BorderContainer backgroundColor="0xFFFFFF"
 					   id="notificationPanel"
 					   top="{header.height + 10}"
-					   right="20"
-					   width="350" visible="false"
+					   left="{IDGUI.localToLocal(AppController.layout.header, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x}"
+					   width="275" visible="false"
 					   maxHeight="500" showEffect="{fadeIn}" hideEffect="{fadeOut}" resizeEffect="Resize"
 					   borderVisible="false">
+		
 		<s:VGroup width="100%" height="100%" gap="0">
-			<s:HGroup id="notificationFilterButton" verticalAlign="middle" paddingBottom="15" paddingLeft="15" paddingRight="15" paddingTop="15" width="100%">
-				<s:Label text="Show:" />
-				<s:ToggleButton id="showAllButton" label="All" cornerRadius="10" selected="true" width="100%" change="showAllButton_changeHandler(event)" />
-				<s:ToggleButton id="showUnreadButton" label="Unread" cornerRadius="10" width="100%" change="showUnreadButton_changeHandler(event)"/>
-				<s:ToggleButton id="showReadButton" label="Read" cornerRadius="10" width="100%" change="showReadButton_changeHandler(event)" />
-			</s:HGroup>
+			<s:BorderContainer id="notificationFilterButton" backgroundColor="0xFFFFFF" borderStyle="solid" borderColor="0xEEEEEE" height="40" width="100%">
+				<s:HGroup  verticalAlign="middle" height="40" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%">
+					<s:Label text="Show:" fontSize="11" />
+					<s:ToggleButton id="showAllButton" label="All" chromeColor="0xFFFFFFF" cornerRadius="8" fontSize="11" selected="true" width="100%" change="showAllButton_changeHandler(event)" />
+					<s:ToggleButton id="showUnreadButton" label="Unread" chromeColor="0xFFFFFFF" cornerRadius="8" fontSize="11" width="100%" change="showUnreadButton_changeHandler(event)"/>
+					<s:ToggleButton id="showReadButton" label="Read" chromeColor="0xFFFFFFF" cornerRadius="8" fontSize="11" width="100%" change="showReadButton_changeHandler(event)" />
+				</s:HGroup>	
+			</s:BorderContainer>
+			
 			<s:VGroup paddingBottom="10" paddingTop="15" id="showAllNotificationsButton" visible="false" includeInLayout="false" width="100%">
 				<s:Label width="100%" textAlign="center" text="Show All Notifications" color="0x0000FF" click="label1_clickHandler(event)" />	
 			</s:VGroup>
-			<s:Scroller width="100%" height="100%">
+			<s:Scroller id="notificationScroller" chromeColor="0xFFFFFF" width="100%" height="100%" filters="{notificationScroller.verticalScrollBar.value > 0 ? shadowy : null}">
 				<s:VGroup id="notificationList" width="100%" height="100%" gap="0"/>
 			</s:Scroller>	
 		</s:VGroup>
+		
+		<s:Path x="38" y="-19" data="M 0 20 L 20 20 L 10 0 L  0 20">
+			<!-- Define the border color of the rectangle. -->
+			<s:stroke>
+				<s:SolidColorStroke color="0xFFFFFF"/>
+			</s:stroke>
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF" />
+			</s:fill>
+		</s:Path>
+		
 		<s:filters>
 			<s:DropShadowFilter distance="3" angle="0" alpha="0.5" color="0x000000" blurX="20" blurY="20"/>
 		</s:filters>
+		
+		
 	</s:BorderContainer>
 
 </s:Group>

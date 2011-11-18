@@ -70,14 +70,16 @@ package Controller.ERA.Admin
 				return;
 			}
 			// Check that it is a qut email address
-			var qutUsernameParts:Array = qutUsername.split("@");
-			if(qutUsernameParts.length != 2) {
-				layout.notificationBar.showError("Please fill in a QUT email address");
-				return;
-			}
-			if(qutUsernameParts[1] != "qut.edu.au") {
-				layout.notificationBar.showError("Please fill in a QUT email address");
-				return;
+			if(Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP) {
+				var qutUsernameParts:Array = qutUsername.split("@");
+				if(qutUsernameParts.length != 2) {
+					layout.notificationBar.showError("Please fill in a QUT email address");
+					return;
+				}
+				if(qutUsernameParts[1] != "qut.edu.au") {
+					layout.notificationBar.showError("Please fill in a QUT email address");
+					return;
+				}
 			}
 			
 			if(firstName == "") {

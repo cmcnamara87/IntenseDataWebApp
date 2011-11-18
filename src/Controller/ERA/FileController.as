@@ -57,7 +57,7 @@ package Controller.ERA {
 		private var ModuleClass:Class;
 		
 		// My variables
-		private var mediaView:FileView;	// The current view we are looking at - The Media View
+		private var fileView:FileView;	// The current view we are looking at - The Media View
 		private static var currentAssetID:Number = 0;		// The ID of the media asset we are viewing.
 		public static var currentMediaData:Model_ERAFile;
 		
@@ -70,10 +70,10 @@ package Controller.ERA {
 		public function FileController() {
 			
 			// Setup the View
-			mediaView =  new FileView(saveAnnotation);
+			fileView =  new FileView(saveAnnotation);
 			
 			// Pass this view to the parent
-			view = mediaView;
+			view = fileView;
 			super();
 		}
 		
@@ -109,35 +109,35 @@ package Controller.ERA {
 		 */		
 		private function setupEventListeners():void {
 			// Listen for "Save Comment" button being clicked.
-			mediaView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
-			mediaView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
-			mediaView.addEventListener(IDEvent.COMMENT_EDITED, saveEditedComment);
+			fileView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
+			fileView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
+			fileView.addEventListener(IDEvent.COMMENT_EDITED, saveEditedComment);
 			
 			// Listen for 'Save Sharing' autosave
-			mediaView.addEventListener(IDEvent.SHARING_CHANGED, sharingInfoChanged);
+			fileView.addEventListener(IDEvent.SHARING_CHANGED, sharingInfoChanged);
 			
 			// Listen for 'Save Annotation'
-			mediaView.addEventListener(IDEvent.ANNOTATION_SAVE_BOX, saveNewBoxAnnotation);
-			mediaView.addEventListener(IDEvent.ANNOTATION_SAVE_PEN, saveNewPenAnnotation);
-			mediaView.addEventListener(IDEvent.ANNOTATION_SAVE_HIGHLIGHT, saveNewHighlightAnnotation);
+			fileView.addEventListener(IDEvent.ANNOTATION_SAVE_BOX, saveNewBoxAnnotation);
+			fileView.addEventListener(IDEvent.ANNOTATION_SAVE_PEN, saveNewPenAnnotation);
+			fileView.addEventListener(IDEvent.ANNOTATION_SAVE_HIGHLIGHT, saveNewHighlightAnnotation);
 			// Listen for 'Annotation Deleted'
-			mediaView.addEventListener(IDEvent.ANNOTATION_DELETED, deleteAnnotation);
+			fileView.addEventListener(IDEvent.ANNOTATION_DELETED, deleteAnnotation);
 			
 			// Listen for Details for the Media being updated
-			mediaView.addEventListener(IDEvent.ASSET_UPDATE, updateMediaDetails);
+			fileView.addEventListener(IDEvent.ASSET_UPDATE, updateMediaDetails);
 			
 			// Listen for Asset being deleted
-			mediaView.addEventListener(IDEvent.MEDIA_ASSET_DELETE_BUTTON_CLICKED, deleteAssetButtonClicked);
+			fileView.addEventListener(IDEvent.MEDIA_ASSET_DELETE_BUTTON_CLICKED, deleteAssetButtonClicked);
 			
 			// Listen for version being upload
-			mediaView.addEventListener(IDEvent.ERA_SAVE_FILE, saveFile);
+			fileView.addEventListener(IDEvent.ERA_SAVE_FILE, saveFile);
 			// Listne for a file being downloaded
-			mediaView.addEventListener(IDEvent.ERA_DOWNLOAD_FILE, downloadFile);
+			fileView.addEventListener(IDEvent.ERA_DOWNLOAD_FILE, downloadFile);
 			
 			// Listen for someone trying to download a video segment
-			mediaView.addEventListener(IDEvent.ERA_DOWNLOAD_VIDEO_SEGMENT, downloadVideoSegment);
+			fileView.addEventListener(IDEvent.ERA_DOWNLOAD_VIDEO_SEGMENT, downloadVideoSegment);
 			
-			mediaView.addEventListener(IDEvent.ERA_GO_BACK, goBack);
+			fileView.addEventListener(IDEvent.ERA_GO_BACK, goBack);
 		}
 		
 		/* =================================== UPLOAD A NEW VERSION ========================================= */
@@ -158,7 +158,7 @@ package Controller.ERA {
 			layout.notificationBar.showError("Failed to Upload file.");
 		}
 		private function uploadProgress(percentage:Number):void {
-			mediaView.uploadNewVersionButton.label = "Uploaded " + percentage + "%";
+			fileView.uploadNewVersionButton.label = "Uploaded " + percentage + "%";
 		}
 		private function uploadComplete(status:Boolean, eraEvidence:Model_ERAFile=null):void {
 			if(status) {
@@ -230,8 +230,8 @@ package Controller.ERA {
 			
 			// We need to mark the file as downloaded, then let the user download it
 			// set the download button as 'preparing for download' while we change it status to 'checked out'
-			mediaView.downloadButton.label = "Preparing for Download";
-			mediaView.downloadButton.enabled = false;
+			fileView.downloadButton.label = "Preparing for Download";
+			fileView.downloadButton.enabled = false;
 			
 			// Tell the database to mark it as 'checked out'
 			AppModel.getInstance().updateERAFileCheckOutStatus(fileID, true, fileCheckedOut);
@@ -242,8 +242,8 @@ package Controller.ERA {
 				return;
 			}
 			
-			mediaView.downloadButton.label = "Checked out by " + Auth.getInstance().getUserDetails().firstName + " " + Auth.getInstance().getUserDetails().lastName;
-			mediaView.downloadButton.enabled = false;
+			fileView.downloadButton.label = "Checked out by " + Auth.getInstance().getUserDetails().firstName + " " + Auth.getInstance().getUserDetails().lastName;
+			fileView.downloadButton.enabled = false;
 			
 			// Download it now
 			var url:String = currentMediaData.getDownloadURL();
@@ -295,7 +295,7 @@ package Controller.ERA {
 					newFileArray.push(file);
 				}
 			}
-			mediaView.addMediaLinkPanelFiles(newFileArray);
+			fileView.addMediaLinkPanelFiles(newFileArray);
 		}
 		
 		/**
@@ -499,14 +499,14 @@ package Controller.ERA {
 //			trace("MediaController:SharingDataLoaded - Looking at this asset in collection", BrowserController.currentCollectionID);
 			
 			if(currentMediaData != null) {
-				mediaView.setupAssetsSharingInformation(userData, currentMediaData.base_creator_username);
+				fileView.setupAssetsSharingInformation(userData, currentMediaData.base_creator_username);
 			} else {
-				mediaView.setupAssetsSharingInformation(userData, "");
+				fileView.setupAssetsSharingInformation(userData, "");
 			}
 		}
 		
 		private function peopleCollectionLoaded(peopleCollection:Array):void {
-			mediaView.addPeople(peopleCollection);
+			fileView.addPeople(peopleCollection);
 		}
 		
 		private function mediasCommentaryLoaded(e:Event):void {
@@ -518,10 +518,10 @@ package Controller.ERA {
 			var annotationsForMedia:Array = AppModel.getInstance().extractAnnotationsFromXML(data);
 			// Add all the comments for this collection
 			// Send the collection ID, and all the comments
-			mediaView.addComments(commentsForMedia);
+			fileView.addComments(commentsForMedia);
 			
 			// Add all the annotations for this media
-			mediaView.addAnnotations(annotationsForMedia);
+			fileView.addAnnotations(annotationsForMedia);
 			
 		}
 		
@@ -529,7 +529,7 @@ package Controller.ERA {
 			currentMediaData = media;
 			
 			// Pass this data to the view.
-			mediaView.addMediaData(media);
+			fileView.addMediaData(media);
 			
 			// Gets out the Commentary Data for hte asset (that is, comments and annotations
 			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
@@ -561,7 +561,7 @@ package Controller.ERA {
 		 * 
 		 */		
 		public function commentSaved(commentID:Number, commentText:String, newCommentObject:NewComment):void {
-			mediaView.commentSaved(commentID, commentText, newCommentObject);
+			fileView.commentSaved(commentID, commentText, newCommentObject);
 		}
 		
 		
@@ -609,11 +609,11 @@ package Controller.ERA {
 			var baseXML:XML = XML(e.target.data);
 			if(baseXML.reply.@type == "result") {
 				// Successfully changed the medias data
-				mediaView.detailsSaved(true);
+				fileView.detailsSaved(true);
 			} else {
 				// Change failed
 				trace("Failed to update medias details", e.target.data);
-				mediaView.detailsSaved(false);
+				fileView.detailsSaved(false);
 			}
 		}
 		/**
@@ -630,7 +630,7 @@ package Controller.ERA {
 			if(data.reply.@type == "result") {
 				// Sharing update successfully
 				trace("Sharing Updated Successfully", e.target.data);
-				mediaView.unlockSharingPanelUsers();
+				fileView.unlockSharingPanelUsers();
 				trace("-------------------------");
 			} else {
 				Alert.show("Sharing Update Failed");

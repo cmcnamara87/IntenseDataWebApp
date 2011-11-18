@@ -3,7 +3,7 @@
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" 
 				   backgroundColor="{read ? 0xFFFFFF : 0xD9F0FF}" 
-				   borderColor="{read ? 0xEEEEEE: 0xA3D0ED}" borderVisible="true" borderStyle="solid"
+				   borderColor="{read ? 0xAAAAAA : 0x79A0B9}" borderVisible="true" borderStyle="solid"
 				   >
 
 	<fx:Script>
@@ -202,10 +202,10 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:VGroup id="notificationList" width="100%" paddingBottom="15" paddingLeft="15" paddingRight="15" paddingTop="15" gap="10">
-		<mx:Text htmlText="{notificationText}" width="100%" />
+	<s:VGroup id="notificationList" width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="8">
+		<mx:Text htmlText="{notificationText}" width="100%" fontSize="11"/>
 		<s:HGroup width="100%">
-			<s:Button chromeColor="0xFFFFFF" cornerRadius="10" label="{read ? 'Mark as Not Read' : 'Mark as Read'}" height="20" fontSize="10" id="markAsReadButton" click="markAsReadButton_clickHandler(event)" />
+			<s:Button chromeColor="0xFFFFFF" cornerRadius="7" label="{read ? 'Mark as Not Read' : 'Mark as Read'}" height="15" fontSize="10" id="markAsReadButton" click="markAsReadButton_clickHandler(event)" />
 			<mx:Text text="{timeStamp}" width="100%" color="0x888888" fontSize="10" textAlign="right"/>
 		</s:HGroup>
 		

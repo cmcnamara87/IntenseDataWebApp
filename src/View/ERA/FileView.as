@@ -385,7 +385,7 @@ package View.ERA
 				titleLabel.text += " v" + mediaData.version;
 			}
 			if(mediaData.screeningCount != 0) {
-				titleLabel.text += " s" + mediaData.screeningCount;
+				titleLabel.text += " r" + mediaData.screeningCount;
 			}
 			if(mediaData.exhibitionCount != 0) {
 				titleLabel.text += " e" + mediaData.exhibitionCount;
@@ -454,12 +454,14 @@ package View.ERA
 			// Enable all the buttons since we have loaded the data now
 			
 			if(FileController.roomType != Model_ERARoom.FORENSIC_LAB) {
+				// in any other room, besides the forensic lab, you cant download or upload, so disable them
 				downloadButton.visible = false;
 				downloadButton.includeInLayout = false;
 				uploadNewVersionButton.visible = false;
 				uploadNewVersionButton.includeInLayout = false;
 			}
 			
+			// If its the screening room (and you are a resarcher thats already approved the file) or the exhibition, leave all the buttons disabled
 			if(mediaData.lockedOut && FileController.roomType == Model_ERARoom.SCREENING_ROOM) return; // dont enable any buttons
 			if(FileController.roomType == Model_ERARoom.EXHIBIT) return;
 			
@@ -477,8 +479,8 @@ package View.ERA
 			if(mediaData.access_modify_content) {
 				// We have modify access to the file, so we enable adding annotations
 				addAnnotationButton.enabled = true;
-				downloadButton.enabled = true;
-				uploadNewVersionButton.enabled = true;
+//				downloadButton.enabled = true;
+//				uploadNewVersionButton.enabled = true;
 			}
 			
 			
@@ -487,7 +489,10 @@ package View.ERA
 				
 				// the file is chcecked out, not by you
 				downloadButton.label = "Checked out by " + mediaData.checkedOutUsername;
+				downloadButton.toolTip = "Checked out by " + mediaData.checkedOutUsername;
+				downloadButton.width = 220;
 				downloadButton.alpha = 0.5;
+				downloadButton.enabled = false;
 				
 				// it is checked out, only the checked out user can reupload it
 				if(mediaData.checkedOutUsername == Auth.getInstance().getUsername()) {
@@ -495,8 +500,9 @@ package View.ERA
 					//					unlockFileButton.includeInLayout = true;
 					//					unlockFileButton.enabled = true;
 					uploadNewVersionButton.enabled = true;
+					downloadButton.enabled = true;
 				} else {
-					
+					downloadButton.alpha = 1;
 					
 					uploadNewVersionButton.visible = false;
 					uploadNewVersionButton.includeInLayout = false;
@@ -506,6 +512,7 @@ package View.ERA
 			} else {
 				// its not checked out
 				// enable the upload button
+				downloadButton.enabled = true;
 				uploadNewVersionButton.enabled = true;
 			}
 			
@@ -816,6 +823,7 @@ package View.ERA
 				// let them download it
 				downloadButton.alpha = 1;
 				downloadButton.label = "Download";
+				downloadButton.width = 220;
 			}
 		}
 		private function downloadButtonMouseOut(e:MouseEvent):void {
@@ -824,6 +832,7 @@ package View.ERA
 				// let them download it
 				downloadButton.alpha = 0.5;
 				downloadButton.label = "Checked out by " + mediaData.checkedOutUsername;
+				downloadButton.width = 220;
 			}
 		}
 		

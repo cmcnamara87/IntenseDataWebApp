@@ -114,7 +114,7 @@
 			
 			<s:ToggleButton chromeColor="0x222222" cornerRadius="10" color="0xFFFFFF" id="notificationButton" fontWeight="bold" height="20" width="50" label="0" toolTip="Notifications">
 			</s:ToggleButton>
-			<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="profileButton" height="20" label="Username" toolTip="Go to your Profile Page">
+			<s:Button minWidth="120" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="profileButton" height="20" label="Username" toolTip="Go to your Profile Page">
 			</s:Button>
 			
 			<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="logoutButton" height="20" label="Logout" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
