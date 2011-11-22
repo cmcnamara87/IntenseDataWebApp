@@ -257,6 +257,36 @@ package Model {
 			}
 		}
 		
+		public function getThisAssetsCommentaryWithRoomArray(objectID:Number, roomIDArray:Array, callback:Function):void {
+			trace("AppModel getThisAssetsCommentary: Getting Commentary for Asset", objectID);
+			
+			var args:Object = new Object();
+			
+			
+			args.where = "namespace = recensio and r_base/active = true and class >= 'recensio:base/resource/annotation' " +
+				"and related to{object} (id=" + objectID + ") and (";
+		
+			for(var i:Number = 0; i < roomIDArray.length; i++) {
+				if(i > 0) {
+					args.where += " or ";
+				}
+				args.where += "related to{room} (id=" + roomIDArray[i] + ")";
+			}
+			args.where += ")";
+			
+			// By default, asset.query limits it to 100 results
+			// this means we will get them all TODO change this so it paginates basically
+			args.size = "infinity";
+			
+			args.action = "get-meta";
+			if(_connection.sendRequest(_connection.packageRequest('asset.query',args,true),callback)) {
+				//All good
+			} else {
+				Alert.show("Could not load annotations");
+			}
+		}
+		
+		
 		//Gets all assets owned by the user
 		/*public function getAllAssets(callback:Function):void {
 			var args:Object = new Object();

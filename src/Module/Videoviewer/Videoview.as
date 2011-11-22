@@ -35,7 +35,7 @@ package Module.Videoviewer {
 		private var testMode:Boolean = false;
 		public var annotationSave:Function = FileView.saveAnnotationFunction; 
 		public var annotationDelete:Function;
-		public var autoplay:Boolean = true;
+		public var autoplay:Boolean = false;
 		private var newAnnotation:NewVideoAnnotation;
 		
 		private var _screen:VideoScreen;
@@ -350,11 +350,11 @@ package Module.Videoviewer {
 		
 		public function isPaused(paused:Boolean):void {
 			if(paused) {
-				_UI.playbutton.label = "Stopped";
-				_UI.playbutton.setStyle("color","#990000");
-			} else {
-				_UI.playbutton.label = "Playing";
+				_UI.playbutton.label = "Play";
 				_UI.playbutton.setStyle("color","#009900");
+			} else {
+				_UI.playbutton.label = "Pause";
+				_UI.playbutton.setStyle("color","#888888");
 			}
 		}
 		

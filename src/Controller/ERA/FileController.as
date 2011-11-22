@@ -349,7 +349,8 @@ package Controller.ERA {
 		
 		private function saveEditedComment(e:IDEvent):void {
 			AppModel.getInstance().editComment(e.data.commentID, e.data.commentText, function(e:Event):void {
-				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
+				this.getCommentaryForAsset();
+//				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 			});
 		}
 		
@@ -473,7 +474,8 @@ package Controller.ERA {
 		
 		// TODO REMOVE THIS FUNCTION (ONLY SO WE CAN UPDATE ANNOTATIONS FROM DEKKERS CODE
 		private function getAnnotations():void {
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
+			this.getCommentaryForAsset();
+//			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 		}
 		
 		private function deleteAnnotation(e:IDEvent):void {
@@ -524,6 +526,18 @@ package Controller.ERA {
 			fileView.addAnnotations(annotationsForMedia);
 			
 		}
+		private function getCommentaryForAsset():void {
+			// check if we are in the forensic lab
+			if(roomID == CaseController.getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id) {
+				// we are, get out the review and evidence box
+				var evidenceBoxID:Number = CaseController.getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id;
+				var reviewLabID:Number = CaseController.getRoom(Model_ERARoom.SCREENING_ROOM).base_asset_id
+				AppModel.getInstance().getThisAssetsCommentaryWithRoomArray(currentAssetID, new Array(roomID, evidenceBoxID, reviewLabID), mediasCommentaryLoaded);
+			} else {
+				// Gets out the Commentary Data for hte asset (that is, comments and annotations
+				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
+			}
+		}
 		
 		private function mediasDataLoaded(status:Boolean, media:Model_ERAFile):void {
 			currentMediaData = media;
@@ -531,8 +545,8 @@ package Controller.ERA {
 			// Pass this data to the view.
 			fileView.addMediaData(media);
 			
-			// Gets out the Commentary Data for hte asset (that is, comments and annotations
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
+			getCommentaryForAsset();
+			
 			
 			
 			// Get out the People data
@@ -591,7 +605,8 @@ package Controller.ERA {
 			AppModel.getInstance().setAnnotationClassForID(annotationID, function(e:Event):void {
 				// After setting the annotation class, get all the commentary for this media asset
 				// And reload them so they show on the asset.
-				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);	
+				this.getCommentaryForAsset();
+//				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);	
 			});
 			
 			// So lets just get out all the annotations/comments again
@@ -602,7 +617,8 @@ package Controller.ERA {
 		}
 		
 		public function annotationDeleted(e:Event):void {
-			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
+			this.getCommentaryForAsset();
+//			AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 		}
 		
 		private function mediaDetailsUpdated(e:Event):void {

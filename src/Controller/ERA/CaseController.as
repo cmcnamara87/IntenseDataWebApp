@@ -37,7 +37,7 @@ package Controller.ERA
 		private var caseID:Number = 0; // The Mflux ID for the current case
 		private var roomType:String;
 		public static var currentERACase:Model_ERACase = null;
-		private var roomArray:Array = new Array();
+		public static var roomArray:Array = new Array();
 		private var currentRoom:Model_ERARoom = null;
 		
 		// setup teh users permissions for the ucrrent case
@@ -143,7 +143,7 @@ package Controller.ERA
 			var moveToRoomType = e.data.moveToRoomType;
 			trace('move to room type', moveToRoomType);
 			
-			AppModel.getInstance().moveERAFile(fileID, currentRoom.base_asset_id, this.getRoom(moveToRoomType).base_asset_id, moveToRoomType, fileMoved);
+			AppModel.getInstance().moveERAFile(fileID, currentRoom.base_asset_id, getRoom(moveToRoomType).base_asset_id, moveToRoomType, fileMoved);
 		}
 		private function fileMoved(status:Boolean):void {
 			if(status) {
@@ -180,7 +180,7 @@ package Controller.ERA
 			
 			
 			if(Auth.getInstance().isSysAdmin() || isProductionManager || isTeamManager) {
-				currentRoom = this.getRoom(Model_ERARoom.EVIDENCE_MANAGEMENT);
+				currentRoom = getRoom(Model_ERARoom.EVIDENCE_MANAGEMENT);
 				if(!currentRoom) return;
 				trace("Access granted*******");
 				
@@ -210,7 +210,7 @@ package Controller.ERA
 				return;
 			}
 			
-			currentRoom = this.getRoom(Model_ERARoom.FORENSIC_LAB);
+			currentRoom = getRoom(Model_ERARoom.FORENSIC_LAB);
 			if(!currentRoom) return;
 			
 			// Change the url
@@ -241,7 +241,7 @@ package Controller.ERA
 				return;
 			}
 			
-			currentRoom = this.getRoom(Model_ERARoom.EXHIBIT);
+			currentRoom = getRoom(Model_ERARoom.EXHIBIT);
 			
 			// Change the url
 			Router.getInstance().setURL("case/" + caseID + "/" + Model_ERARoom.EXHIBIT);
@@ -267,7 +267,7 @@ package Controller.ERA
 			}
 			
 			
-			currentRoom = this.getRoom(Model_ERARoom.SCREENING_ROOM);
+			currentRoom = getRoom(Model_ERARoom.SCREENING_ROOM);
 			
 			// Change the url
 			Router.getInstance().setURL("case/" + caseID + "/" + Model_ERARoom.SCREENING_ROOM);
@@ -314,7 +314,7 @@ package Controller.ERA
 			}
 			
 			
-			currentRoom = this.getRoom(Model_ERARoom.EVIDENCE_ROOM);
+			currentRoom = getRoom(Model_ERARoom.EVIDENCE_ROOM);
 			
 			// Change the url
 			Router.getInstance().setURL("case/" + caseID + "/" + Model_ERARoom.EVIDENCE_ROOM);
@@ -445,7 +445,7 @@ package Controller.ERA
 		private function gotAllRooms(status:Boolean, eraRoomArray:Array):void {
 			if(status) {
 				// Store all the rooms
-				this.roomArray = eraRoomArray;
+				roomArray = eraRoomArray;
 				
 				// Add give the room data to the view
 				caseView.addRoomData(eraRoomArray);
@@ -591,7 +591,7 @@ package Controller.ERA
 		/* ====================================== END OF SAVE A FILE ===================================== */
 		
 		
-		private function getRoom(roomType:String):Model_ERARoom {
+		public static function getRoom(roomType:String):Model_ERARoom {
 			for(var i:Number = 0; i < roomArray.length; i++) {
 				var room:Model_ERARoom = (roomArray[i] as Model_ERARoom);
 				if(room.roomType == roomType) {
