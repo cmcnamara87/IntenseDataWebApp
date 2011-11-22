@@ -7,6 +7,7 @@ package Controller.Utilities {
 	import Controller.ERA.AppSauce;
 	import Controller.ERA.CaseController;
 	import Controller.ERA.FileController;
+	import Controller.ERA.RecoverController;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -31,6 +32,11 @@ package Controller.Utilities {
 				url:'browse',
 				title:'Browse',
 				classname:BrowserController
+			},
+			{
+				url: 'recover',
+				title: 'Recover Password',
+				classname: RecoverController
 			},
 			{
 				url:'login',

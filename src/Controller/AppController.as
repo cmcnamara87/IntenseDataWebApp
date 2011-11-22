@@ -275,7 +275,7 @@ package Controller {
 		 * Get the notification for a the current user from the database. 
 		 * 
 		 */		
-		private static function getNotifications():void {
+		public static function getNotifications():void {
 			trace("@@@@@@@@@@@@@@@@@ Getting Notifications");
 			AppModel.getInstance().getAllNotifications(gotNotifications);
 		}

@@ -48,7 +48,8 @@ package Controller {
 		
 		// Called when the login button is clicked.  Will automatically login with manager credentials if autologin is set
 		private function loginClicked(e:*):void {
-			(view as Login).loginbox.setNotification("Logging in...");
+			AppController.layout.notificationBar.showProcess("Logging in...");
+//			(view as Login).loginbox.setNotification("Logging in...");
 			if(!_authOverride) {
 				Auth.getInstance().login((view as Login).loginbox.usernameBox.getText(),(view as Login).loginbox.passwordBox.getText());
 			} else {
@@ -65,13 +66,17 @@ package Controller {
 				return;
 			}
 			loginAlreadyReceived = true;
-			(view as Login).loginbox.setNotification(e.data.message);
+			
+			
 			if(e.data.success) {
 				// The user has successfully logged in
 				loginSuccessful();
+				AppController.layout.notificationBar.showGood("Logging in");
+				//(view as Login).loginbox.setNotification(e.data.message);
 			} else {
 				// The user was suspended or gave an incorrect username/password
 				trace("***"+e.data.message);
+				AppController.layout.notificationBar.showError("Incorrect username/password");
 				loginAlreadyReceived = false;
 			}
 		}
@@ -94,6 +99,11 @@ package Controller {
 		 * 
 		 */
 		private function gotERAProjects(status:Boolean, eraProjectArray:Array):void {
+			
+			// Hide the logging in notification bar
+			AppController.layout.notificationBar.hide();
+			
+			
 			if(eraProjectArray.length == 0) {
 				// There are no eras setup, so lets do that
 				if(Auth.getInstance().isSysAdmin()) {

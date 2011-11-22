@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
-				   xmlns:mx="library://ns.adobe.com/flex/mx" width="300"
-				   backgroundColor="0x111111"
+				   xmlns:mx="library://ns.adobe.com/flex/mx" width="210"
+				   backgroundColor="0x222222"
 				   mouseOut="canvas1_mouseOutHandler(event)"
 				   mouseOver="canvas1_mouseOverHandler(event)"
 				    xmlns:components="View.ERA.components.*"
 				   creationComplete="canvas1_creationCompleteHandler(event)"
 				   removedFromStage="canvas1_removedFromStageHandler(event)"
+				   borderColor="0x888888"
+				   borderVisible="true"
+				   borderStyle="solid"
+				   borderAlpha="1"
 				   >
 	<fx:Script>
 		<![CDATA[
@@ -39,7 +43,11 @@
 				
 				// Set the researcher name
 				var firstResearcher:Model_ERAUser = researcherArray[0] as Model_ERAUser;
-				researcherName = firstResearcher.lastName + " " + firstResearcher.firstName;
+				
+				for each(var researcher:Model_ERAUser in researcherArray) {
+					researcherName += researcher.lastName + ", " + researcher.firstName + "\n";
+				}
+				
 				
 				// Set the RM code
 				rmCode = eraCaseData.rmCode;
@@ -49,7 +57,7 @@
 				
 				if(eraCaseData.base_asset_id == CaseController.currentERACase.base_asset_id) {
 					this.selected = true;
-					this.setStyle("backgroundColor", 0x333333);
+					this.setStyle("backgroundColor", 0x555555);
 				}
 				
 				this.notificationCount = eraCaseData.notificationCount;
@@ -83,16 +91,16 @@
 			protected function canvas1_mouseOutHandler(event:MouseEvent):void
 			{
 				if(this.selected) {
-					this.setStyle("backgroundColor", 0x333333);
+					this.setStyle("backgroundColor", 0x555555);
 				} else {
-					this.setStyle("backgroundColor", 0x111111);
+					this.setStyle("backgroundColor", 0x222222);
 				}
 			}
 
 
 			protected function canvas1_mouseOverHandler(event:MouseEvent):void
 			{
-				this.setStyle("backgroundColor", 0x222222);
+				this.setStyle("backgroundColor", 0x333333);
 			}
 
 
@@ -132,15 +140,22 @@
 				AppController.layout.filterCaseNotifications(_eraCaseData.base_asset_id);
 			}
 
+
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				Alert.show("hello world");
+			}
+
 		]]>
 	</fx:Script>
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:HGroup width="100%" paddingRight="10" verticalAlign="middle"> 
+	<s:HGroup buttonMode="true" width="100%" paddingRight="10" verticalAlign="middle"> 
 		<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" click="canvas1_clickHandler(event)" buttonMode="true">
-			<s:Label text="{researcherName} - {title}" color="0xFFFFFF" width="100%" />
+			<s:Label buttonMode="true" text="{researcherName}" fontWeight="bold" color="0xFFFFFF" width="100%" />
+			<s:Label buttonMode="true" text="{title}" color="0xFFFFFF" width="100%" />
 			<s:Label text="RM {rmCode}" color="0xFFFFFF" width="100%" />
 		</s:VGroup>
 		<components:NotificationBadge id="notificationBadge" notificationCount="{this.notificationCount}" verticalCenter="0" click="notificationBadge_clickHandler(event)"/>	

@@ -10,8 +10,11 @@
 		   >
 	<fx:Script>
 		<![CDATA[
+			import Controller.ERA.FileController;
 			import Controller.IDEvent;
 			import Controller.Utilities.AssetLookup;
+			
+			import Model.Model_ERARoom;
 			
 			import flash.utils.clearTimeout;
 			import flash.utils.setTimeout;
@@ -43,7 +46,7 @@
 					disappearTimeout = 0;
 				}
 				
-				if(videoID != 0) {
+				if(videoID != 0 && FileController.roomType == Model_ERARoom.FORENSIC_LAB) {
 					downloadButton.visible = true;
 					downloadButton.includeInLayout = true;
 				}

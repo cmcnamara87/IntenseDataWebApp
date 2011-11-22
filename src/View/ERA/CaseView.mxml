@@ -246,10 +246,10 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	<!-- The Case Panel -->
-	<s:BorderContainer  id="casePanel" backgroundColor="0x000000" borderVisible="false" height="100%" width="{casePanelExtended ? 300 : 0}" resizeEffect="Resize">
-		<s:VGroup width="100%" height="100%">
-			<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
-				<s:Label color="0xFFFFFF" text="ERA Case List" fontSize="20" />
+	<s:BorderContainer  id="casePanel" backgroundColor="0x000000" borderVisible="false" height="100%" width="{casePanelExtended ? 225 : 0}" resizeEffect="Resize">
+		<s:VGroup width="100%" height="100%" gap="0">
+			<s:VGroup width="100%" paddingTop="10">
+				<s:Label color="0xFFFFFF" text="ERA Case List" fontSize="20" paddingLeft="10"/>
 				<s:DropDownList id="caseERADropdown" chromeColor="0x222222" contentBackgroundColor="0x000000" color="0xFFFFFF" width="100%">
 				</s:DropDownList>
 			</s:VGroup>

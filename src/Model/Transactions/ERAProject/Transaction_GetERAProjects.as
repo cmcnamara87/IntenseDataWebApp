@@ -20,6 +20,7 @@ package Model.Transactions.ERAProject
 			
 			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
+			argsXML.size = "infinity";
 			
 			argsXML.where = "namespace>=ERA and type=ERA-project";
 			argsXML.action = "get-meta";

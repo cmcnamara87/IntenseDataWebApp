@@ -32,7 +32,7 @@ package Model.Transactions.ERAProject
 //			argsXML.where = "asset in collection " + eraID + " and type=ERA/case";
 			// TODO make era case go into the era collection
 			argsXML.where = "type=ERA/case and related to{era} (id=" + eraID + ")";
-			
+			argsXML.size = "infinity";
 			connection.sendRequest(baseXML, gotAllCases);
 		}
 		

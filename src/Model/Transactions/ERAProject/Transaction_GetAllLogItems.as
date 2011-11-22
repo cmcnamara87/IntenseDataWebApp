@@ -28,6 +28,7 @@ package Model.Transactions.ERAProject
 			var argsXML:XMLList = baseXML.service.args;
 			
 			argsXML.action = "get-meta";
+			argsXML.size = "infinity";
 			
 			// Get out all the ERA cases in this ERA{year} collection
 			//			argsXML.where = "asset in collection " + eraID + " and type=ERA/case";

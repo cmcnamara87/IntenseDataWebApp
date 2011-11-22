@@ -14,6 +14,7 @@ package Controller.ERA
 	import Model.Model_ERAProject;
 	import Model.Model_ERARoom;
 	import Model.Model_ERAUser;
+	import Model.Transactions.ERAProject.Transaction_CreateAllCases;
 	import Model.Transactions.ERAProject.Transaction_CreateAllResearchers;
 	
 	import View.ERA.CaseView;
@@ -57,6 +58,8 @@ package Controller.ERA
 			}
 		
 //			var test:Transaction_CreateAllResearchers = new Transaction_CreateAllResearchers();
+			
+//			var test:Transaction_CreateAllCases = new Transaction_CreateAllCases();
 			
 			super();
 		}
@@ -271,10 +274,14 @@ package Controller.ERA
 			
 			// Show the screening lab
 			caseView.showScreeningLab(null);
+			try {
 			// Get all the files in the screening lab
 			AppModel.getInstance().getAllERAFilesInRoom(currentRoom.base_asset_id, gotAllScreeningLabFiles);
 			// get all the conversation for the screening lab
 			AppModel.getInstance().getAllConversationOnOject(currentRoom.base_asset_id, currentRoom.base_asset_id, screeningLabCommentsRetrieved);
+			} catch (e:Error) {
+				trace("BIG ERROR HERE!!!!!!!!!!!");
+			}
 		}
 		private function gotAllScreeningLabFiles(status:Boolean, fileArray:Array):void {
 			if(!status) {

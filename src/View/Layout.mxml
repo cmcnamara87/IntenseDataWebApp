@@ -112,6 +112,8 @@
 				notificationFilterButton.visible = false;
 				notificationFilterButton.includeInLayout = false;
 				
+				AppController.layout.notificationPanel.x = 	IDGUI.localToLocal(AppController.layout.header.globalButtonGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x - AppController.layout.header.notificationButton.width/2;
+			
 				return true;
 			}
 			

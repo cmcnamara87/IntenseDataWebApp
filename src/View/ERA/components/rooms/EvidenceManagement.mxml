@@ -29,7 +29,14 @@
 			 * Add all the lot items to the display
 			 */
 			public function addLogItems(logItemArray:Array):void {
-		
+				// Clear the stored ones
+				logItemArray2 = new Array();
+
+				// Render it
+				renderLogItems(logItemArray);
+			}
+			
+			private function renderLogItems(logItemArray:Array) {
 				logItemList.removeAllElements();
 				
 				if(logItemArray == null) {
@@ -47,8 +54,6 @@
 					logItemList.addElement(label);
 					return;
 				}
-				
-				logItemArray.sortOn(["type"], [Array.CASEINSENSITIVE]);
 				
 				for each(var logItem:Model_ERALogItem in logItemArray) {
 					var evidenceItem:EvidenceItem = new EvidenceItem();

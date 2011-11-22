@@ -83,8 +83,8 @@ package Model.Transactions.ERAProject
 		private function grantIDUserRole(e:Event):void {
 			var data:XML;
 			if((data = AppModel.getInstance().getData("create user", e)) == null) {
-				callback(false);
-				return;
+//				callback(false);
+//				return;
 			}
 			
 			var baseXML:XML = connection.packageRequest("actor.grant", new Object(), true);

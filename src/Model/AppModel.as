@@ -35,6 +35,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
 	import Model.Transactions.ERAProject.Transaction_GetVideoSegment;
 	import Model.Transactions.ERAProject.Transaction_MoveFile;
+	import Model.Transactions.ERAProject.Transaction_RecoverPassword;
 	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
 	import Model.Transactions.ERAProject.Transaction_RemoveUserFromCase;
 	import Model.Transactions.ERAProject.Transaction_SendMail;
@@ -1798,6 +1799,10 @@ package Model {
 		}			
 		public function removeUserFromCase(caseID:Number, removeUsername:String, callback:Function):void {
 			var removeUserFromCase:Transaction_RemoveUserFromCase = new Transaction_RemoveUserFromCase(caseID, removeUsername, _connection, callback);
+		}
+		
+		public function recoverPassword(username:String, callback:Function):void {
+			var transaction:Transaction_RecoverPassword = new Transaction_RecoverPassword(username, _connection, callback);
 		}
 	}
 		

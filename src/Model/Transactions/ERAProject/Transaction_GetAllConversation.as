@@ -34,6 +34,7 @@ package Model.Transactions.ERAProject
 			var argsXML:XMLList = baseXML.service.args;
 			
 			argsXML.action = "get-meta";
+			argsXML.size = "infinity";
 			
 			// Get all the media for the room
 			argsXML.where = "type>=ERA/conversation and related to{room} (id=" + roomID + ") and related to{object} (id=" + objectID + ")";

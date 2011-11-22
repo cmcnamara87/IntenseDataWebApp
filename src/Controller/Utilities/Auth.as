@@ -211,7 +211,7 @@ package Controller.Utilities {
 		}
 		
 		//Sets the Session ID for mediaflux
-		private function setSessionID(_newSessionID:String):void {
+		public function setSessionID(_newSessionID:String):void {
 			_sessionID = _newSessionID;
 		}
 		
