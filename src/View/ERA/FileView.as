@@ -7,6 +7,7 @@ package View.ERA
 	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
+	import Controller.Utilities.Router;
 	
 	import Model.AppModel;
 	import Model.Model_ERAFile;
@@ -148,6 +149,7 @@ package View.ERA
 			backButton.label = "Back";
 			backButton.setStyle("cornerRadius", "10");
 			backButton.height = 30;
+			backButton.toolTip = Router.getInstance().showPreviousURL();
 			hGroup1.addElement(backButton);
 				
 			var vGroup1:VGroup = new VGroup();
@@ -373,8 +375,8 @@ package View.ERA
 		
 		/* ============== INPUT FUNCTIONS CALLED BY CONTROLLER ================ */
 		public function addMediaData(mediaData:Model_ERAFile):void {
-			trace("MediaView:addMediaData Adding data", mediaData);
-			trace("Media Data Loaded");
+//			trace("MediaView:addMediaData Adding data", mediaData);
+//			trace("Media Data Loaded");
 			this.mediaData = mediaData;
 			
 			// Setup the title

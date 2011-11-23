@@ -229,9 +229,9 @@
 						casePanelContent.addElement(selectedCaseListItem);
 						
 						selectedCaseListItem.addEventListener(FlexEvent.CREATION_COMPLETE, function(e:FlexEvent):void {
-							trace("case",eraCase.researcherLastName, eraCase.title);
-							trace("found a match to current selected case", selectedCaseListItem, selectedCaseListItem.top, selectedCaseListItem.y, selectedCaseListItem.bottom, selectedCaseListItem.x);
-							trace('match', selectedCaseListItem.selected ? 'yes' : 'no');
+//							trace("case",eraCase.researcherLastName, eraCase.title);
+//							trace("found a match to current selected case", selectedCaseListItem, selectedCaseListItem.top, selectedCaseListItem.y, selectedCaseListItem.bottom, selectedCaseListItem.x);
+//							trace('match', selectedCaseListItem.selected ? 'yes' : 'no');
 							casePanelScroller.verticalScrollBar.value = selectedCaseListItem.y;
 						});
 					} else {

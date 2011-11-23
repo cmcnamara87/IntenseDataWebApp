@@ -183,6 +183,11 @@ package Controller.Utilities {
 			historyArray.pop();
 			return historyArray.pop();
 		}
+		
+		public function showPreviousURL():String {
+			return historyArray[historyArray.length - 2];
+		}
+		
 		/**
 		 * Adds a url to the history chain 
 		 * @param url

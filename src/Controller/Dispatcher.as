@@ -159,11 +159,11 @@ package Controller {
 //				url = "view/" + argArray[0];
 //			}
 					
-			trace("CALLED WITH URL", url);
+//			trace("CALLED WITH URL", url);
 			Router.getInstance().setURL(url);
 			url = Router.getInstance().getURL();
 			
-			trace("CONTROLLER IS", Router.getInstance().getController(url));
+//			trace("CONTROLLER IS", Router.getInstance().getController(url));
 			loadController(Router.getInstance().getController(url));
 			forceRedraw();
 		}

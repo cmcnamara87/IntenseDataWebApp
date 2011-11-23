@@ -18,7 +18,7 @@
 			
 			public static const QUT_IP:String = '131.181.184.223';
 			public static const ID_SERVER:String = '123.100.147.12';
-			public static var serverAddress:String = ID_SERVER;
+			public static var serverAddress:String = QUT_IP;
 			public static const ID_ADMIN_USERNAME:String = "idadmin";
 //			public static var serverAddress:String = "192.168.0.200";
 //			public static var serverAddress:String = "131.181.184.223";

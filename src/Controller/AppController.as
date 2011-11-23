@@ -276,7 +276,7 @@ package Controller {
 		 * 
 		 */		
 		public static function getNotifications():void {
-			trace("@@@@@@@@@@@@@@@@@ Getting Notifications");
+//			trace("@@@@@@@@@@@@@@@@@ Getting Notifications");
 			AppModel.getInstance().getAllNotifications(gotNotifications);
 		}
 		
@@ -289,7 +289,7 @@ package Controller {
 		 * 
 		 */		
 		private static function gotNotifications(status:Boolean, notificationsArray:Array=null):void {
-			trace("@@@@@@@@@@@@@@@@@ Got Notifications");
+//			trace("@@@@@@@@@@@@@@@@@ Got Notifications");
 			if(!status) return;
 			
 			allNotificationsArray = notificationsArray;

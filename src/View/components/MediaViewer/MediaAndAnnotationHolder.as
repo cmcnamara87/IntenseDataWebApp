@@ -81,7 +81,7 @@ package View.components.MediaViewer
 			media.addEventListener(ProgressEvent.PROGRESS, function(e:ProgressEvent):void {
 				var percentLoaded:Number = Math.round(e.bytesLoaded / e.bytesTotal * 100);
 				dispatchEvent(e);
-				trace("Loaded", percentLoaded);
+//				trace("Loaded", percentLoaded);
 			});
 		}
 		

@@ -130,7 +130,7 @@ package Controller.ERA
 				roomType = currentRoom.roomType;
 			} 
 			
-			trace("displatching to", "file/" + caseID + "/" + escape(currentERACase.rmCode) + "/" + roomType + "/" + fileID);
+//			trace("displatching to", "file/" + caseID + "/" + escape(currentERACase.rmCode) + "/" + roomType + "/" + fileID);
 			Dispatcher.showFile(caseID, currentERACase.rmCode, roomType, currentRoom.base_asset_id, fileID);
 		}
 		
