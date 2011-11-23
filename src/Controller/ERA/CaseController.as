@@ -119,7 +119,7 @@ package Controller.ERA
 			
 			getAllERACases();
 		}
-		
+			
 		private function showFile(e:IDEvent):void {
 			trace("got a file", e.data.fileID);
 			var fileID:Number = e.data.fileID;
@@ -129,7 +129,6 @@ package Controller.ERA
 			} else {
 				roomType = currentRoom.roomType;
 			} 
-			
 			
 			trace("displatching to", "file/" + caseID + "/" + escape(currentERACase.rmCode) + "/" + roomType + "/" + fileID);
 			Dispatcher.showFile(caseID, currentERACase.rmCode, roomType, currentRoom.base_asset_id, fileID);

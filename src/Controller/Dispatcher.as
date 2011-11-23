@@ -122,6 +122,9 @@ package Controller {
 			return Router.getInstance().getArgs();
 		}
 		
+		public static function back():void {
+			Dispatcher.call(Router.getInstance().getPreviousURL());	
+		}
 		// Called when the user manually switches URLs
 		private static function URLChanged(e:IDEvent):void {
 //			Dispatcher.call(Router.getInstance().getURL());
@@ -140,21 +143,22 @@ package Controller {
 			}
 			
 			
-			if(Router.getInstance().getURL() == "go") {
-				if(MediaController.currentMediaData) {
+//			if(Router.getInstance().getURL() == "go") {
+//				if(MediaController.currentMediaData) {
 					// Push in whatever hte current medias ID was
 					// The media controller is the active one
 					// so start saving some browser history
 //					BrowserController.mediaIDHistoryArray.push(MediaController.currentMediaData.base_asset_id);
-					trace("----HISTORY SAVING FOR", MediaController.currentMediaData.base_asset_id);
+//					trace("----HISTORY SAVING FOR", MediaController.currentMediaData.base_asset_id);
 					// Now clear that out, since we are going to be loading a new one
 //					BrowserController.currentMediaData = null;
-				}
+//				}
 				
 				
 //				var argArray:Array = Router.getInstance().getArgs();
 //				url = "view/" + argArray[0];
-			}
+//			}
+					
 			trace("CALLED WITH URL", url);
 			Router.getInstance().setURL(url);
 			url = Router.getInstance().getURL();

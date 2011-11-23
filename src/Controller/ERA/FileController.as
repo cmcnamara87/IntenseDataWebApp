@@ -172,7 +172,8 @@ package Controller.ERA {
 		
 		private function goBack(e:IDEvent):void {
 			if(roomType != Model_ERARoom.SCREENING_ROOM) {
-				Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
+				Dispatcher.back();
+//				Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
 			} else {
 				// its the screening lab, so we need to ask 'do they want to save changes'
 				// if they are a reserachers
@@ -182,7 +183,8 @@ package Controller.ERA {
 					myAlert.height = 100;
 					myAlert.width = 300;
 				} else {
-					Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
+//					Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
+					Dispatcher.back();
 				}
 			}
 		}
@@ -193,7 +195,8 @@ package Controller.ERA {
 				myAlert.height = 100;
 				myAlert.width = 300;
 			} else {
-				Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
+//				Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
+				Dispatcher.back();
 			}
 		}
 		
@@ -361,7 +364,7 @@ package Controller.ERA {
 		
 		private function saveEditedComment(e:IDEvent):void {
 			AppModel.getInstance().editComment(e.data.commentID, e.data.commentText, function(e:Event):void {
-				this.getCommentaryForAsset();
+				getCommentaryForAsset();
 //				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);
 			});
 		}
@@ -617,7 +620,7 @@ package Controller.ERA {
 			AppModel.getInstance().setAnnotationClassForID(annotationID, function(e:Event):void {
 				// After setting the annotation class, get all the commentary for this media asset
 				// And reload them so they show on the asset.
-				this.getCommentaryForAsset();
+				getCommentaryForAsset();
 //				AppModel.getInstance().getThisAssetsCommentary(currentAssetID, roomID, mediasCommentaryLoaded);	
 			});
 			

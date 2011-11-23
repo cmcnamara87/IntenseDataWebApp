@@ -52,7 +52,7 @@ package Model {
 				case EVIDENCE_MANAGEMENT:
 					return "Evidence Management";
 				case EVIDENCE_ROOM:
-					return "Evidence Room";
+					return "Evidence Box";
 				case FORENSIC_LAB:
 					return "Forensic Lab";
 				case SCREENING_ROOM:

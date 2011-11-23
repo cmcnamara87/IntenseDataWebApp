@@ -11,6 +11,7 @@ package Controller.Utilities {
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.geom.Point;
 	
 	import mx.controls.Alert;
 	import mx.events.BrowserChangeEvent;
@@ -25,6 +26,10 @@ package Controller.Utilities {
 		public static var defaultURL:String = "case";
 		// The title for the default Route
 		private static var defaultTitle:String = "Intense Data - Browse";
+		
+		// Stores all the previous routes called
+		private static var historyArray:Array = new Array();
+		
 		
 		// The valid routes/controllers for the application
 		private static var routes:Array = new Array(
@@ -155,6 +160,7 @@ package Controller.Utilities {
 		
 		// Sets the URL and the title appropriately
 		public function setURL(newURL:String):void {
+			
 			var newTitle:String = "BAD BAD BAD";
 			_bm.setFragment(newURL);
 			for(var i:Number=0; i<routes.length; i++) {
@@ -163,6 +169,28 @@ package Controller.Utilities {
 				}
 			}
 			_bm.setTitle(newTitle);
+			
+			addHistory(newURL);
+		}
+		
+		/**
+		 * Get the previous url in the history chain 
+		 * @return The previous url in the history chain
+		 * 
+		 */		
+		public function getPreviousURL():String {
+			trace("getting history url");
+			historyArray.pop();
+			return historyArray.pop();
+		}
+		/**
+		 * Adds a url to the history chain 
+		 * @param url
+		 * 
+		 */		
+		private function addHistory(url:String):void {
+			trace("saving history url", url);
+			historyArray.push(url);
 		}
 		
 		// Called when the URL is manually changed by the user
