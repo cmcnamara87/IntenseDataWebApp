@@ -29,6 +29,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetAllNotifications;
 	import Model.Transactions.ERAProject.Transaction_GetAllRooms;
 	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
+	import Model.Transactions.ERAProject.Transaction_GetAudioSegment;
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
 	import Model.Transactions.ERAProject.Transaction_GetFile;
 	import Model.Transactions.ERAProject.Transaction_GetUser;
@@ -1784,6 +1785,9 @@ package Model {
 		
 		public function getVideoSegment(videoID:Number, startTime:Number, length:Number, callback:Function):void {
 			var getVideoSegment:Transaction_GetVideoSegment = new Transaction_GetVideoSegment(videoID, startTime, length, _connection, callback);
+		}
+		public function getAudioSegment(audioID:Number, startTime:Number, length:Number, callback:Function):void {
+			var getVideoSegment:Transaction_GetAudioSegment = new Transaction_GetAudioSegment(audioID, startTime, length, _connection, callback);
 		}
 		public function getERAFile(fileID:Number, callback:Function):void {
 			var getERAFile:Transaction_GetFile = new Transaction_GetFile(fileID, _connection, callback);

@@ -321,9 +321,9 @@ package Module.AudioViewer
 		}
 		
 		public function changeTimelineSize(maxLevel:Number):void {
-			_UITimeline.height = 30+10*maxLevel;
-			_UIToolbar.height = 80+10*maxLevel;
-			_UIView.setStyle("bottom",110+10*maxLevel);
+			_UITimeline.height = 30+10*maxLevel + 20;
+			_UIToolbar.height = 80+10*maxLevel + 20;
+			_UIView.setStyle("bottom",110+10*maxLevel + 20);
 		}
 		
 		public function saveAnnotation(start:Number,end:Number,text:String):void {

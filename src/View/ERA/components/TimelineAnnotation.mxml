@@ -67,6 +67,7 @@
 			protected function downloadButton_clickHandler(event:MouseEvent):void
 			{
 				var downloadEvent:IDEvent = new IDEvent(IDEvent.ERA_DOWNLOAD_SEGMENT, true);
+				trace("download button clicked");
 				downloadEvent.data.timelineAnnotation = this;
 				dispatchEvent(downloadEvent);
 			}

@@ -255,11 +255,15 @@ package Controller.ERA {
 		/* =================================== DOWNLOAD A VIDEO FILE SEGMENT ========================================= */
 		private function downloadMediaSegment(e:IDEvent):void {
 			var timelineAnnotation:TimelineAnnotation = e.data.timelineAnnotation;
+			trace("caught download video segment");
+			trace("timelin annotation", e.data.timelineAnnotation);
+			trace("something!", e.data.timelineAnnotation.videoID);
 			switch(currentMediaData.rootMetaType) {
 				case AssetLookup.VIDEO:
 					AppModel.getInstance().getVideoSegment(timelineAnnotation.videoID, timelineAnnotation.startTime, timelineAnnotation.endTime - timelineAnnotation.startTime, segmentReady);
 					break;
 				case AssetLookup.AUDIO:
+					AppModel.getInstance().getAudioSegment(timelineAnnotation.videoID, timelineAnnotation.startTime, timelineAnnotation.endTime - timelineAnnotation.startTime, segmentReady);
 					break;
 				default:
 					break;
@@ -271,7 +275,7 @@ package Controller.ERA {
 				Alert.show("Segment Extraction Failed");
 				return;
 			}
-			trace("segment ready!!!!!");
+			trace("segment ready!!!!!", "http://" + Recensio_Flex_Beta.serverAddress+ "/" + videoLocation);
 			
 			var req:URLRequest = new URLRequest("http://" + Recensio_Flex_Beta.serverAddress+ "/" + videoLocation);
 			navigateToURL(req, 'Download');

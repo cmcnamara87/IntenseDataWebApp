@@ -19,7 +19,8 @@ package Module.AudioViewer
 		static private var annotationsArray:Array = new Array();
 		static private var currentAnnotations:Array = new Array();
 		static private var colours:Array = new Array(
-			0xFF0000,0x0000FF,0x226666,0xC71585,0x009A9A,0xFF8C00,0x4B0082
+			/*0xFF0000,0x0000FF,0x226666,0xC71585,0x009A9A,0xFF8C00,0x4B0082*/
+			0xFF0000, 0xFF8800, 0xFFFF00, 0x00FF00, 0x00FFFF, 0x0000FF, 0xFF00FF
 		);
 		static private var colourChosen:Number = 0;
 		static private var levelSpace:Number = -8;
@@ -52,6 +53,7 @@ package Module.AudioViewer
 		static public function highlightAnnotations(theX:Number):void {
 			for(var i:int=0; i<annotationsArray.length; i++) {
 				(annotationsArray[i] as AudioAnnotation).checkCurrentAudioPosition(theX);
+				(annotationsArray[i] as AudioAnnotation).timelineAnnotation.highlight = true;
 			}
 		}
 		
@@ -118,8 +120,25 @@ package Module.AudioViewer
 			this._interface = _interface;
 			setData(data);
 			this.toolTip = data.text;
-			addChild(_mouseOverSprite);
+			addChild(_mouseOverSprite); 
 			_mouseOverSprite.alpha = 0;
+			
+			timelineAnnotation.startTime = data.annotation_x;
+			timelineAnnotation.endTime = data.annotation_y;
+			
+			try {
+				timelineAnnotation.annotationID = (data as Model_Commentary).base_asset_id;
+				trace("********* audio annotation ids", timelineAnnotation.annotationID);
+				timelineAnnotation.videoID = (data as Model_Commentary).objectID;
+				
+				trace("********* audio annotation ids",timelineAnnotation.videoID);
+			} catch (e:Error) {
+				trace("some error");
+			}
+			
+			
+			this.addChild(timelineAnnotation);
+			
 			this.addEventListener(MouseEvent.MOUSE_DOWN,annotationClicked);
 			this.addEventListener(MouseEvent.MOUSE_OVER,mouseOver);
 			this.addEventListener(MouseEvent.MOUSE_OUT,mouseOut);
@@ -139,20 +158,27 @@ package Module.AudioViewer
 			var anWidth:Number = (length/_audioLength*_interfaceWidth);
 			var anHeight:Number = 8*(yLevel+1);
 			var barBorderWidth:Number = 2;
-			_mouseOverSprite.graphics.clear();
+			/*_mouseOverSprite.graphics.clear();
 			_mouseOverSprite.graphics.beginFill(_annotationColour);
-			_mouseOverSprite.graphics.drawRect(0,0,anWidth,anHeight);
+			_mouseOverSprite.graphics.drawRect(0,0,anWidth,anHeight);*/
 			this.graphics.clear();
-			this.graphics.beginFill(_annotationColour,0.01);
-			this.graphics.drawRect(0,0,anWidth,anHeight);
-			this.graphics.beginFill(_annotationColour);
+			
+			/*this.graphics.beginFill(_annotationColour,0.01);
+			this.graphics.drawRect(0,0,anWidth,anHeight);*/
+			/*this.graphics.beginFill(_annotationColour);
 			this.graphics.drawRect(barBorderWidth,0,anWidth-barBorderWidth*2,barBorderWidth);
 			this.graphics.drawRect(0,0,barBorderWidth,anHeight);
-			this.graphics.drawRect(anWidth-barBorderWidth,0,barBorderWidth,anHeight);
+			this.graphics.drawRect(anWidth-barBorderWidth,0,barBorderWidth,anHeight);*/
 			this.x = xOffset+(_interfaceWidth/audioLength*(start));
 			this.y = yOffset;
 			this.alpha = 0.25;
 			this.width = (length/_audioLength*_interfaceWidth);
+			
+			timelineAnnotation.x = 0;
+			timelineAnnotation.y = 0
+			timelineAnnotation.annotationWidth = ((end - start)/audioLength * interfaceWidth);
+			timelineAnnotation.annotationHeight = anHeight;
+			timelineAnnotation.annotationColor = _annotationColour;
 		}
 		
 		private function annotationClicked(e:MouseEvent):void {
