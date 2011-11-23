@@ -88,6 +88,36 @@
 			[Bindable]
 			private var notificationCount:Number = 0;
 
+			public function getTitle():String {
+				return title;
+			}
+			public function getResearcherName():String {
+				return researcherName;
+			}
+			public function getRMCode():String {
+				return rmCode;
+			}
+			public function filter(caseFilterText:String):void {
+				
+				trace("filtering");
+				caseFilterText = caseFilterText.toLowerCase();
+				
+				// build up the search string
+				var searchString:String = rmCode + " " + researcherName + " " + title;
+				searchString = searchString.toLocaleLowerCase();
+				
+				trace("search string", searchString);
+				if(caseFilterText != "" && searchString.indexOf(caseFilterText) == -1) {
+					trace("is not a match", title);
+					this.visible = false;
+					this.includeInLayout = false;
+				} else {
+					trace("is a match", title);
+					this.visible = true;
+					this.includeInLayout = true;
+				}
+			}
+
 			protected function canvas1_mouseOutHandler(event:MouseEvent):void
 			{
 				if(this.selected) {

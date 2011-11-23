@@ -121,6 +121,8 @@ package Module.Videoviewer {
 		private var _timelineGraphic:Sprite = new Sprite();
 		private var _videoGraphic:Sprite = new Sprite();
 		
+		// The new border container based timeline annotation
+		// supports download button
 		public var timelineAnnotation:TimelineAnnotation = new TimelineAnnotation();
 		
 		private var _timelineGraphicBorder:Sprite = new Sprite();

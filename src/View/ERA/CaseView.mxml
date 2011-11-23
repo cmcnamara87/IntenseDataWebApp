@@ -26,13 +26,17 @@
 			import View.ERA.components.rooms.ForensicLab;
 			import View.ERA.components.rooms.ScreeningLab;
 			
+			import flash.utils.setTimeout;
+			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
 			import mx.controls.Text;
 			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
 			import mx.graphics.SolidColor;
 			
 			import spark.components.Label;
+			import spark.events.TextOperationEvent;
 			import spark.layouts.HorizontalAlign;
 			import spark.layouts.VerticalAlign;
 			
@@ -48,6 +52,8 @@
 			private var forensicLab:ForensicLab = null; // the forensic lab view
 			private var screeningLab:ScreeningLab = null; // the forensic lab view
 			private var exhibition:Exhibition = null;
+			
+			private const caseSearchBoxDefaultText:String = "Search for Case";
 			
 			/**
 			 * Adds data to all the rooms for the  case
@@ -214,13 +220,35 @@
 				// Add all the Cases
 				casePanelContent.removeAllElements();
 
+				var someY:Number = 0;
+				
 				for each(var eraCase:Model_ERACase in caseArray) {
-					var caseListItem:CaseListItem = new CaseListItem();
-					caseListItem.caseData = eraCase;
-					casePanelContent.addElement(caseListItem);
+					if(eraCase.base_asset_id == CaseController.currentERACase.base_asset_id) {
+						var selectedCaseListItem:CaseListItem = new CaseListItem();
+						selectedCaseListItem.caseData = eraCase;
+						casePanelContent.addElement(selectedCaseListItem);
+						
+						selectedCaseListItem.addEventListener(FlexEvent.CREATION_COMPLETE, function(e:FlexEvent):void {
+							trace("case",eraCase.researcherLastName, eraCase.title);
+							trace("found a match to current selected case", selectedCaseListItem, selectedCaseListItem.top, selectedCaseListItem.y, selectedCaseListItem.bottom, selectedCaseListItem.x);
+							trace('match', selectedCaseListItem.selected ? 'yes' : 'no');
+							casePanelScroller.verticalScrollBar.value = selectedCaseListItem.y;
+						});
+					} else {
+						var caseListItem:CaseListItem = new CaseListItem();
+						caseListItem.caseData = eraCase;
+						casePanelContent.addElement(caseListItem);
+					}
 				}
 				
 				caseNav.height = 140;
+				
+				
+				/*
+				setTimeout(function():void {
+					trace("adjusting scroll bar", someY);
+					
+				}, 2000);*/
 				
 				showERAInDropdown();
 			}
@@ -239,21 +267,60 @@
 
 
 
+
+			protected function caseFilterTextInput_changeHandler(event:TextOperationEvent):void
+			{
+				trace("chating!!!", casePanelContent.numElements);
+				// filter the case list
+
+				for(var i:Number = 0; i < casePanelContent.numElements; i++) {
+					trace("wtf");
+					var caseListItem:CaseListItem = casePanelContent.getElementAt(i) as CaseListItem;
+					caseListItem.filter(caseFilterTextInput.text);
+				}
+				/*
+				for each(var caseListItem:CaseListItem in casePanelContent) {
+					trace("wtf");
+					caseListItem.filter(caseFilterTextInput.text);
+				}*/
+			}
+
+
+			protected function caseFilterTextInput_focusInHandler(event:FocusEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(caseFilterTextInput.text == caseSearchBoxDefaultText) {
+					caseFilterTextInput.text = "";
+					caseFilterTextInput.setStyle("fontStyle", "normal");
+				}
+			}
+
+
+			protected function caseFilterTextInput_focusOutHandler(event:FocusEvent):void
+			{
+				if(caseFilterTextInput.text == "") {
+					caseFilterTextInput.text = caseSearchBoxDefaultText;
+					caseFilterTextInput.setStyle("fontStyle", "italic");
+				}
+			}
+
 		]]>
 	</fx:Script>
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:DropShadowFilter id="shadowy" distance="8" angle="90" color="0x000000" alpha="0.2" blurX="8" blurY="8" inner="true"/>
 	</fx:Declarations>
 	<!-- The Case Panel -->
-	<s:BorderContainer  id="casePanel" backgroundColor="0x000000" borderVisible="false" height="100%" width="{casePanelExtended ? 225 : 0}" resizeEffect="Resize">
+	<s:BorderContainer  id="casePanel" backgroundColor="0x222222" borderVisible="false" height="100%" width="{casePanelExtended ? 225 : 0}" resizeEffect="Resize">
 		<s:VGroup width="100%" height="100%" gap="0">
 			<s:VGroup width="100%" paddingTop="10">
 				<s:Label color="0xFFFFFF" text="ERA Case List" fontSize="20" paddingLeft="10"/>
-				<s:DropDownList id="caseERADropdown" chromeColor="0x222222" contentBackgroundColor="0x000000" color="0xFFFFFF" width="100%">
+				<s:DropDownList id="caseERADropdown" chromeColor="0x444444" contentBackgroundColor="0x444444" color="0xFFFFFF" width="100%">
 				</s:DropDownList>
+				<s:TextInput width="100%" id="caseFilterTextInput" color="0xFFFFFF" fontStyle="italic" height="30" text="{caseSearchBoxDefaultText}" chromeColor="0x222222" contentBackgroundColor="0x444444" focusIn="caseFilterTextInput_focusInHandler(event)" focusOut="caseFilterTextInput_focusOutHandler(event)" change="caseFilterTextInput_changeHandler(event)" />
 			</s:VGroup>
-			<s:Scroller width="100%" height="100%" chromeColor="0x222222">
+			<s:Scroller id="casePanelScroller" width="100%" height="100%" chromeColor="0x444444" filters="{casePanelScroller.verticalScrollBar.value > 0 ? shadowy : null}">
 				<s:VGroup id="casePanelContent" width="100%" gap="0">
 					<s:Label color="0xFFFFFF" horizontalCenter="0">
 						
@@ -275,7 +342,7 @@
 				<!-- End of the Current room -->
 				
 				<!-- THE ERA Cases floating tag -->
-				<s:BorderContainer buttonMode="true" id="caseTag" click="caseTag_clickHandler(event)" backgroundColor="black" borderVisible="false" width="40" height="150" top="270">
+				<s:BorderContainer buttonMode="true" id="caseTag" click="caseTag_clickHandler(event)" backgroundColor="0x222222" borderVisible="false" width="40" height="150" top="270">
 					<mx:Image source="{AssetLookup.getERACaseClass()}" width="22" height="16" x="8" y="10"></mx:Image>
 					<s:Label x="12" y="112" rotation="270" text="ERA Cases" color="white" fontSize="16"/>
 					<mx:Image source="{AssetLookup.getERACaseClass()}" width="22" height="16" x="8" y="120"></mx:Image>

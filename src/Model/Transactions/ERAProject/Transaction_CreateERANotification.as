@@ -151,6 +151,8 @@ package Model.Transactions.ERAProject
 
 			//trace("era notification", argsXML);
 			// todo mail goes in here!!
+//			AppController.layout.header.mything.text += baseXML;
+			
 			connection.sendRequest(baseXML, notificationCreated);
 		}
 		

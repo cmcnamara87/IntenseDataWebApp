@@ -58,6 +58,7 @@ package Model.Transactions.ERAProject
 			// put it in the namespace for this era
 			argsXML.domain = "system";
 			argsXML.user = username;
+			argsXML.from = "cifera@qut.edu.au";
 			argsXML.subject = "nQuisitor Password Reset";
 			argsXML.body = "Hi $${user}$$, Your nQuisitor password has been reset to: $${password}$$";
 			

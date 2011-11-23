@@ -1613,7 +1613,10 @@ package Model {
 		public function getData(functionName:String, e:Event):XML {
 			var dataXML:XML = XML(e.target.data);
 			if(dataXML.reply.@type != "result") {
-				trace(functionName + ": FAILED", e.target.data);
+				trace(functionName + ": FAILED", e.target.data, functionName);
+				
+				
+//				AppController.layout.header.mything.text += e.target.data;
 				return null;
 			}
 //			trace(functionName + ": SUCCESS", e.target.data);

@@ -270,6 +270,8 @@
 				} else {
 					
 					if(logItem.uploaded) {
+						usefulCheckbox.enabled = false;
+						processedCheckbox.enabled = false;
 						uploadButton.label = "View";
 					} else {
 						uploadButton.label = "Upload";
@@ -402,6 +404,8 @@
 				uploadButton.enabled = true;
 				//				uploadProgress.includeInLayout = false;
 				uploadProgress.visible = false;
+				usefulCheckbox.enabled = false;
+				processedCheckbox.enabled = false;
 				logItem.uploaded = true;
 				logItem.dataItemID = fileID;
 				
@@ -428,18 +432,18 @@
 	
 	<s:HGroup verticalAlign="middle">
 		<s:Button id="deleteEvidence" label="X" width="30" click="deleteEvidence_clickHandler(event)" cornerRadius="10" />
-		<s:ComboBox id="evidenceType" width="200">
+		<s:DropDownList id="evidenceType" width="200">
 			<s:ArrayList>
 				<fx:String>Audio</fx:String>
 				<fx:String>Image</fx:String>
 				<fx:String>PDF</fx:String>
 				<fx:String>Office Documents</fx:String>
 				<fx:String>Physical Object</fx:String>
-				<fx:String>Research Description</fx:String>
+				<fx:String>Research Evidence</fx:String>
 				<fx:String>Research Statement</fx:String>
 				<fx:String>Video</fx:String>
 			</s:ArrayList>
-		</s:ComboBox>
+		</s:DropDownList>
 		<s:TextInput id="title" text="name" color="0x888888" focusIn="title_focusInHandler(event)" focusOut="title_focusOutHandler(event)" borderColor="0xDDDDDD"/>
 		<s:TextInput id="description" width="300" text="description" color="0x888888" focusIn="description_focusInHandler(event)" focusOut="description_focusOutHandler(event)" borderColor="0xDDDDDD" />
 		<s:Button label="Save" id="saveButton" click="saveButton_clickHandler(event)" cornerRadius="10"/>

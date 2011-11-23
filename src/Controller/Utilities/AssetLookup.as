@@ -10,6 +10,14 @@ package Controller.Utilities {
 	
 	public class AssetLookup extends Object {
 		
+		// Media types
+		public static const VIDEO:String = "video";
+		public static const AUDIO:String = "audio";
+		public static const IMAGE:String = "image";
+		public static const DOCUMENT:String = "document"; 
+
+		
+		
 		// Image Icon Assets - Normal and Clicked
 		[Embed(source="Assets/Template/assets/image2.png")] 
 		private static var Asseticon_image:Class;
@@ -236,36 +244,27 @@ package Controller.Utilities {
 				case "video/mpeg":
 				case "application/x-troff-msvideo":	
 				case "video/x-msvideo":
-					type = 'video';
+					type = VIDEO;
 					break;
 				case "audio/wav":
 				case "audio/x-wav":
 				case "audio/wma":
 				case 'audio/mp3':
 				case 'audio/mpeg':
-					type = 'audio';
+					type = AUDIO;
 					break;
 				case "image/gif":
 				case 'image/jpg':
 				case "image/jpeg":
 				case 'image/png':
-					type = 'image';
+					type = IMAGE;
 					break;
 				case "application/pdf":
 				case 'application/x-shockwave-flash':
-					type = 'document';
-					break;
-				case "application/msword":
-					type = 'document';
-					break;
-				case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-					type = 'document';
-					break;
-				case "application/vnd.ms-powerpoint":
-					type = "document";
-					break;
-				case "application/x-shockwave-flash":
-					type = "document";
+				case "application/msword": // micrsoft word docs (pre docx)
+				case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": // docx types
+				case "application/vnd.ms-powerpoint": // powerpoint (ppt not pptx)
+					type = DOCUMENT;
 					break;
 				default:
 					trace("real type is", realType);

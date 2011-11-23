@@ -65,6 +65,7 @@
 		<s:HGroup height="100%" width="102" verticalAlign="middle" paddingLeft="10">
 			<!-- The logo -->
 			<mx:Image buttonMode="true" click="image1_clickHandler(event)" source="{logo}" width="102" height="22"></mx:Image>
+			<!--<s:TextArea id="mything" />-->
 		</s:HGroup>
 		
 		<!-- Add in the button group -->

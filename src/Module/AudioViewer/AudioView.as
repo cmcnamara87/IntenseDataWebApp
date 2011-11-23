@@ -164,14 +164,18 @@ package Module.AudioViewer
 			}
 			if(_isplaying) {
 				_UIVisualiser.stop();
-				_UIPlayButton.label = "Stopped";
-				_UIPlayButton.setStyle("color","#990000");
+				
+				_UIPlayButton.label = "Play";
+				_UIPlayButton.setStyle("color","#009900");
+				
 				_audioFileLoader.stop();
 				_isplaying = false;
 			} else {
 				_UIVisualiser.start();  
-				_UIPlayButton.label = "Playing";
-				_UIPlayButton.setStyle("color","#009900");
+				
+				_UIPlayButton.label = "Pause";
+				_UIPlayButton.setStyle("color","#888888");
+				
 				_audioFileLoader.play();
 				_isplaying = true;
 			}

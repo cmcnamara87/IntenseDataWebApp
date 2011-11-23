@@ -4,6 +4,7 @@ package Module.AudioViewer
 	
 	import Model.Model_Commentary;
 	
+	import View.ERA.components.TimelineAnnotation;
 	import View.components.IDGUI;
 	
 	import flash.display.DisplayObject;
@@ -105,6 +106,10 @@ package Module.AudioViewer
 		private var _data:Model_Commentary;
 		private var _interface:AudioTimeline;
 		private var _mouseOverSprite:Sprite = new Sprite();
+		
+		// The new border container based timeline annotation
+		// supports download button
+		public var timelineAnnotation:TimelineAnnotation = new TimelineAnnotation();
 		
 		
 		

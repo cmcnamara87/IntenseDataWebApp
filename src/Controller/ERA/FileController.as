@@ -135,7 +135,7 @@ package Controller.ERA {
 			fileView.addEventListener(IDEvent.ERA_DOWNLOAD_FILE, downloadFile);
 			
 			// Listen for someone trying to download a video segment
-			fileView.addEventListener(IDEvent.ERA_DOWNLOAD_VIDEO_SEGMENT, downloadVideoSegment);
+			fileView.addEventListener(IDEvent.ERA_DOWNLOAD_SEGMENT, downloadMediaSegment);
 			
 			fileView.addEventListener(IDEvent.ERA_GO_BACK, goBack);
 		}
@@ -253,9 +253,17 @@ package Controller.ERA {
 		/* =================================== END OF DOWNLOAD A FILE ========================================= */
 		
 		/* =================================== DOWNLOAD A VIDEO FILE SEGMENT ========================================= */
-		private function downloadVideoSegment(e:IDEvent):void {
+		private function downloadMediaSegment(e:IDEvent):void {
 			var timelineAnnotation:TimelineAnnotation = e.data.timelineAnnotation;
-			AppModel.getInstance().getVideoSegment(timelineAnnotation.videoID, timelineAnnotation.startTime, timelineAnnotation.endTime - timelineAnnotation.startTime, segmentReady);
+			switch(currentMediaData.rootMetaType) {
+				case AssetLookup.VIDEO:
+					AppModel.getInstance().getVideoSegment(timelineAnnotation.videoID, timelineAnnotation.startTime, timelineAnnotation.endTime - timelineAnnotation.startTime, segmentReady);
+					break;
+				case AssetLookup.AUDIO:
+					break;
+				default:
+					break;
+			}
 		}
 		
 		private function segmentReady(status:Boolean, videoLocation:String = ""):void {

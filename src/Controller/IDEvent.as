@@ -158,7 +158,7 @@ package Controller {
 			public static var ERA_SAVE_LOG_ITEM:String = "id_saveLogItem";
 			public static var ERA_SAVE_FILE:String = "id_saveFile";
 			public static var ERA_DOWNLOAD_FILE:String = "era_downloadFile";
-			public static var ERA_DOWNLOAD_VIDEO_SEGMENT:String = "era_downloadVideoSegment";
+			public static var ERA_DOWNLOAD_SEGMENT:String = "era_downloadSegment";
 			// Delete user in user admin
 			public static var ERA_DELETE_USER:String = "era_deleteUser";
 			// remove the user from a role

@@ -124,12 +124,19 @@
 				}
 			}
 			private function deleteResearcher(e:MouseEvent):void {
-				var userListItem:UserListItem = e.target.owner as UserListItem;
+				trace("e.target.owner", e.target.owner);
+				trace("e.target.owner", e.target.parent.parent);
+				var userListItem:UserListItem = e.target.parent.parent as UserListItem;
 				// remove it from the array and re-render
 				for(var i:Number = 0; i < chosenResearchersArray.length; i++) {
 					var researcher:Model_ERAUser = chosenResearchersArray[i] as Model_ERAUser;
-					if(researcher.username == userListItem.username) {
-						chosenResearchersArray.splice(i, 1);
+					trace("stufF", researcher);
+					trace("asdf", researcher.username);
+					trace("asdf", userListItem);
+					if(userListItem != null) {
+						if(researcher.username == userListItem.username) {
+							chosenResearchersArray.splice(i, 1);
+						}
 					}
 				}
 				renderResearchers();
