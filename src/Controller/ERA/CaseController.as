@@ -36,6 +36,7 @@ package Controller.ERA
 		private var caseView:CaseView; // The View for the case 
 		private var caseID:Number = 0; // The Mflux ID for the current case
 		private var roomType:String;
+		private var eraCaseArray:Array;
 		public static var currentERACase:Model_ERACase = null;
 		public static var roomArray:Array = new Array();
 		private var currentRoom:Model_ERARoom = null;
@@ -197,6 +198,7 @@ package Controller.ERA
 		/* ====================================== GOT ALL THE LOG ITEMS ===================================== */
 		private function gotAllLogItems(status:Boolean, logItemArray:Array):void {
 			caseView.showEvidenceManagement(logItemArray);
+			caseView.addCases(eraCaseArray);
 		}
 		/* ====================================== END OF GOT ALL THE LOG ITEMS ===================================== */
 		
@@ -375,6 +377,8 @@ package Controller.ERA
 				return;
 			}
 			
+			this.eraCaseArray = eraCaseArray;
+			
 			// did we get no cases?
 			if(eraCaseArray.length == 0) {
 				caseView.showNoCases();
@@ -400,7 +404,7 @@ package Controller.ERA
 			
 			// Add the cases for the view
 			// If the era case is emtpy, its going to display "no cases found"
-			caseView.addCases(eraCaseArray);
+//			caseView.addCases(eraCaseArray);
 			
 			// Just check that we found a case from all that shit up above
 			if(currentERACase != null) {
@@ -468,6 +472,8 @@ package Controller.ERA
 					default:
 						break;
 				}
+				
+				
 			} else {
 				layout.notificationBar.showError("No Rooms Found.");
 			}
@@ -598,6 +604,16 @@ package Controller.ERA
 				}
 			}
 			return null;
+		}
+		
+		//When the controller is destroyed/switched
+		override public function dealloc():void {
+			caseView = null; 
+			caseID = null;
+			roomType = null;
+			currentRoom = null;
+			
+			super.dealloc();
 		}
 	}
 }

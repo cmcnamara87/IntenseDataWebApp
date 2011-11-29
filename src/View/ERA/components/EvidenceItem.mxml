@@ -412,13 +412,17 @@
 
 			protected function vgroup1_removedFromStageHandler(event:Event):void
 			{
-				trace("CLEAR: Removing Evidence Items");
+				trace("CLEAR: Removing Evidence Item");
 				fileReference.removeEventListener(Event.SELECT, onFileSelect);
 				fileReference.removeEventListener(Event.CANCEL, fileSelectCancelled);
 				(AppController.layout as Group).removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraProgressOccured);
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
 				
+				(AppController.layout as Group).removeEventListener(IDEvent.ERA_PROGRESS_EVENT, eraProgressOccured);
+				(AppController.layout as Group).removeEventListener(IDEvent.ERA_COMPLETE_EVENT, eraCompleteEvent);
+				
 				logItem = null;
+				allLogItemsArray2 = null;
 				fileReference = null;
 			}
 

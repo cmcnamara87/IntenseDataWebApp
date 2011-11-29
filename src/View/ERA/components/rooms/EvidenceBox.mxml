@@ -2,17 +2,19 @@
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" gap="0" xmlns:components="View.components.*" xmlns:components1="View.ERA.components.*"
+		  removedFromStage="vgroup1_removedFromStageHandler(event)"
 		  >
 	
 	<fx:Script>
 		<![CDATA[
-			import View.ERA.components.FileTile;
 			import Controller.AppController;
 			import Controller.ERA.CaseController;
 			import Controller.Utilities.AssetLookup;
 			import Controller.Utilities.Auth;
 			
 			import Model.Model_ERAFile;
+			
+			import View.ERA.components.FileTile;
 			
 			import flashx.textLayout.formats.TextAlign;
 			
@@ -52,7 +54,7 @@
 				allFilterButton.label = "All";
 				allFilterButton.setStyle("chromeColor", "0xFFFFFF");
 				allFilterButton.setStyle("cornerRadius", "10");
-				allFilterButton.addEventListener(MouseEvent.CLICK, filterButtonClicked);
+				allFilterButton.addEventListener(MouseEvent.CLICK, filterButtonClicked, false, 0, true);
 				typeFiltersButtons.addElement(allFilterButton);
 				
 				for each(var file:Model_ERAFile in fileArray) {
@@ -60,7 +62,7 @@
 					typeFilterButton.label = file.type;
 					typeFilterButton.setStyle("chromeColor", "0xFFFFFF");
 					typeFilterButton.setStyle("cornerRadius", "10");
-					typeFilterButton.addEventListener(MouseEvent.CLICK, filterButtonClicked);
+					typeFilterButton.addEventListener(MouseEvent.CLICK, filterButtonClicked, false, 0, true);
 					
 					var found:Boolean = false;
 					for(var i:Number = 0; i < typeFiltersButtons.numElements; i++) {
@@ -114,6 +116,16 @@
 //				
 //				(e.target as Button).setStyle('chromeColor', '0x8FAFF7');
 				
+			}
+			
+			protected function vgroup1_removedFromStageHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				fileGroup.removeAllElements();
+				typeFiltersButtons.removeAllElements();
+				
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+				fileArray = null;
 			}
 			
 		]]>

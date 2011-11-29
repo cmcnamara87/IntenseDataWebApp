@@ -387,6 +387,7 @@ package Controller {
 			if(layout) {
 				layout.content.removeAllElements();
 			}
+			view = null;
 		}
 		
 		//Protection to ensure controllers take advantage of the init method

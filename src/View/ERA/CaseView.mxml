@@ -86,8 +86,12 @@
 				showRoomsAsNotSelected();
 				evidenceManagementButton.selected = true;
 				
-				if(!evidenceManagement) evidenceManagement = new EvidenceManagement();
 				room.removeAllElements();
+				evidenceManagement = null;
+				
+				
+//				if(!evidenceManagement) evidenceManagement = new EvidenceManagement();
+				evidenceManagement = new EvidenceManagement();
 				room.addElement(evidenceManagement);
 				evidenceManagement.addLogItems(logItemArray);
 			}
@@ -106,8 +110,11 @@
 				showRoomsAsNotSelected();
 				evidenceBoxButton.selected = true;
 				
-				if(!evidenceBox) evidenceBox = new EvidenceBox();
+//				if(!evidenceBox) evidenceBox = new EvidenceBox();
 				room.removeAllElements();
+				evidenceBox = null;
+				
+				evidenceBox = new EvidenceBox();
 				room.addElement(evidenceBox);
 				evidenceBox.addFiles(fileArray);
 				
@@ -313,8 +320,7 @@
 				casePanelContent.removeAllElements();
 				
 				// remove any of the rooms that are loaded
-				if(evidenceManagement) {
-				}
+				room.removeAllElements();
 				
 				aasdf = null;
 				arrayTest = null;

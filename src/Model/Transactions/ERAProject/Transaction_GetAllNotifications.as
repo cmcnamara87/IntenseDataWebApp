@@ -39,7 +39,7 @@ package Model.Transactions.ERAProject
 			
 			argsXML.action = "get-meta";
 			argsXML["get-related-meta"] = true;
-			argsXML.size = "infinity";
+			argsXML.size = "1";
 			
 			argsXML.where = "type=ERA/notification";
 			
