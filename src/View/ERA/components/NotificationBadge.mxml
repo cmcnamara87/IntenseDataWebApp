@@ -9,7 +9,8 @@
 				   visible="{notificationCount>0}"
 				   mouseOver="bordercontainer1_mouseOverHandler(event)"
 				   mouseOut="bordercontainer1_mouseOutHandler(event)"
-				   buttonMode="true">
+				   buttonMode="true"
+				   removedFromStage="bordercontainer1_removedFromStageHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
@@ -37,6 +38,15 @@
 				backgroundColor = initialColor;
 			}
 
+			protected function bordercontainer1_removedFromStageHandler(event:Event):void
+			{
+				trace("CLEAR: Removing Notification Badge");
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, bordercontainer1_removedFromStageHandler);
+				
+				notificationCount = null;
+				notificationToolTip = null;			
+			}
+			
 		]]>
 	</fx:Script>
 

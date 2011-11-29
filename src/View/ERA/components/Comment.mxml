@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" width="295" xmlns:components="View.ERA.components.*" gap="0" xmlns:components1="View.components.*" >
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="295" xmlns:components="View.ERA.components.*" gap="0" xmlns:components1="View.components.*"
+		  removedFromStage="vgroup1_removedFromStageHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
@@ -76,6 +77,17 @@
 				newComment.text = "Write a Comment";
 			}
 
+			protected function vgroup1_removedFromStageHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				mtime = null;
+				commentID = null;
+				userFullName = null;
+				text = null;
+
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+			}
+			
 		]]>
 	</fx:Script>
 

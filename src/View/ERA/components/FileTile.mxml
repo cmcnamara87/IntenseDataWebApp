@@ -62,9 +62,7 @@
 			
 			[Bindable]
 			private var notificationCount:Number = 0;
-			
-			private var transcodeChecker:uint = 0;
-			
+
 			private var transcodeTimer:Timer = new Timer(10000);
 			
 			public function set fileData(fileData:Model_ERAFile):void {
@@ -73,7 +71,7 @@
 				
 				if(!_fileData.transcoded) {
 					
-					transcodeTimer.addEventListener(TimerEvent.TIMER, checkIfTranscoded);
+					transcodeTimer.addEventListener(TimerEvent.TIMER, checkIfTranscoded, false, 0, true);
 					// hasnt finished transcoding, lets update the data every 30 seconds)
 					transcodeTimer.start();
 				}
@@ -98,7 +96,7 @@
 				// check if the transcoding is done
 				trace('is file transcoded?', _fileData.transcoded ? 'yes' : 'no');
 				if(_fileData.transcoded) {
-					clearTimeout(transcodeChecker);
+					transcodeTimer.removeEventListener(TimerEvent.TIMER, checkIfTranscoded);
 				} else {
 					transcodeTimer.start();
 				}
@@ -278,9 +276,27 @@
 
 			protected function vgroup1_removedFromStageHandler(event:Event):void
 			{
+				trace("CLEAR: Removing File Tile");	
+				trace("transcode timer is", transcodeTimer);
+				if(transcodeTimer) {
+					transcodeTimer.removeEventListener(TimerEvent.TIMER, checkIfTranscoded);
+				}
 				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
-				transcodeTimer.removeEventListener(TimerEvent.TIMER, checkIfTranscoded);
+
+				_fileData = null;
+				title = null;
+				description = null;
+				fileID = null;
+				type = null;
+				ext = null;
+				version = null;
+				screeningCount = null;
+				exhibitionCount = null
+				rootMetaType = null;
+				checkedOut = null;
+				notificationCount = null;
+				transcodeTimer = null;
 			}
 
 

@@ -24,7 +24,8 @@
 			import mx.events.FlexEvent;
 			
 			import spark.components.Group;
-			private var fileReference:FileReference;
+			
+			private var fileReference:FileReference = new FileReference();;
 			
 			private var logItem:Model_ERALogItem;
 			public var allLogItemsArray2:Array = new Array();
@@ -47,12 +48,7 @@
 					dispatchEvent(showFileEvent);
 					return;
 				}
-				
-				fileReference = new FileReference();
-				
-//				var typeArray:Array = AssetLookup.getFileFilter(logItem.type);
-//				trace("asset lookup type", typeArray[0]);
-//				fileReference.browse(typeArray);
+
 				fileReference.browse(AssetLookup.getFileTypes());
 				fileReference.addEventListener(Event.SELECT, onFileSelect);
 				fileReference.addEventListener(Event.CANCEL, fileSelectCancelled);
@@ -409,12 +405,21 @@
 				logItem.uploaded = true;
 				logItem.dataItemID = fileID;
 				
+				(AppController.layout as Group).removeEventListener(IDEvent.ERA_PROGRESS_EVENT, eraProgressOccured);
+				(AppController.layout as Group).removeEventListener(IDEvent.ERA_COMPLETE_EVENT, eraCompleteEvent);
+				
 			}
 
 			protected function vgroup1_removedFromStageHandler(event:Event):void
 			{
+				trace("CLEAR: Removing Evidence Items");
+				fileReference.removeEventListener(Event.SELECT, onFileSelect);
+				fileReference.removeEventListener(Event.CANCEL, fileSelectCancelled);
 				(AppController.layout as Group).removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraProgressOccured);
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+				
+				logItem = null;
+				fileReference = null;
 			}
 
 		]]>

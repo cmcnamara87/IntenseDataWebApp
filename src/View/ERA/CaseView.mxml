@@ -3,6 +3,7 @@
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" gap="0"
 		 xmlns:Component="View.components.*" xmlns:components="View.ERA.components.*"
+		 removedFromStage="hgroup1_removedFromStageHandler(event)"
 		 >
 
 	<fx:Script>
@@ -228,12 +229,7 @@
 						selectedCaseListItem.caseData = eraCase;
 						casePanelContent.addElement(selectedCaseListItem);
 						
-						selectedCaseListItem.addEventListener(FlexEvent.CREATION_COMPLETE, function(e:FlexEvent):void {
-//							trace("case",eraCase.researcherLastName, eraCase.title);
-//							trace("found a match to current selected case", selectedCaseListItem, selectedCaseListItem.top, selectedCaseListItem.y, selectedCaseListItem.bottom, selectedCaseListItem.x);
-//							trace('match', selectedCaseListItem.selected ? 'yes' : 'no');
-							casePanelScroller.verticalScrollBar.value = selectedCaseListItem.y;
-						});
+						selectedCaseListItem.addEventListener(FlexEvent.CREATION_COMPLETE, selectedCaseDrawn, false, 0, true );
 					} else {
 						var caseListItem:CaseListItem = new CaseListItem();
 						caseListItem.caseData = eraCase;
@@ -251,6 +247,11 @@
 				}, 2000);*/
 				
 				showERAInDropdown();
+			}
+			
+			private function selectedCaseDrawn(e:FlexEvent):void {
+				casePanelScroller.verticalScrollBar.value = (e.target as CaseListItem).y;
+				(e.target as CaseListItem).removeEventListener(FlexEvent.CREATION_COMPLETE, selectedCaseDrawn);
 			}
 
 			protected function caseTag_clickHandler(event:MouseEvent):void
@@ -304,6 +305,26 @@
 				}
 			}
 
+			protected function hgroup1_removedFromStageHandler(event:Event):void
+			{
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, hgroup1_removedFromStageHandler);
+				
+				// remove all the cases list items
+				casePanelContent.removeAllElements();
+				
+				// remove any of the rooms that are loaded
+				if(evidenceManagement) {
+				}
+				
+				aasdf = null;
+				arrayTest = null;
+				evidenceManagement = null;
+				evidenceBox = null;
+				forensicLab = null;
+				screeningLab = null;
+				exhibition = null;
+			}
+			
 		]]>
 	</fx:Script>
 

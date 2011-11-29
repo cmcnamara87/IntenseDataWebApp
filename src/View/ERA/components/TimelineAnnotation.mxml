@@ -7,6 +7,7 @@
 		   mouseOver="bordercontainer1_mouseOverHandler(event)"
 		   mouseOut="bordercontainer1_mouseOutHandler(event)"
 		   backgroundColor="0xFF0000"
+		   removedFromStage="bordercontainer1_removedFromStageHandler(event)"
 		   >
 	<fx:Script>
 		<![CDATA[
@@ -84,6 +85,18 @@
 				downloadButton.alpha = 1;
 			}
 
+			protected function bordercontainer1_removedFromStageHandler(event:Event):void
+			{
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, bordercontainer1_removedFromStageHandler);
+			
+				annotationID = null;
+				videoID = null;
+				startTime = null;
+				endTime = null;
+				annotationHeight = null;
+				annotationWidth = null;
+			}
+			
 		]]>
 	</fx:Script>
 

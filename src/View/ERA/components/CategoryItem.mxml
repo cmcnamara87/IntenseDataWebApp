@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%">
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%"
+		  removedFromStage="hgroup1_removedFromStageHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
 			[Bindable]
 			public var category:String = "";
+			
+			protected function hgroup1_removedFromStageHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				category = null;
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, hgroup1_removedFromStageHandler);
+			}
+			
 		]]>
 	</fx:Script>
 

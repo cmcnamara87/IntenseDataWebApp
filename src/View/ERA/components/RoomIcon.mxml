@@ -30,6 +30,7 @@
 			import mx.managers.DragManager;
 			
 			import spark.components.TileGroup;
+			
 			[Bindable]
 			public var roomName:String = "";
 			[Bindable]
@@ -39,13 +40,6 @@
 			
 			[Bindable]
 			private var notificationCount:Number = 0;
-			
-			public function set roomData(roomData:Model_ERARoom):void {
-				this._roomData = roomData;
-				
-				notificationCount = roomData.notificationCount;
-			}
-			
 
 			[Bindable]
 			public var unavailable:Boolean = false;
@@ -55,6 +49,12 @@
 			
 			[Bindable]
 			public var selected:Boolean = false;
+			
+			public function set roomData(roomData:Model_ERARoom):void {
+				this._roomData = roomData;
+				
+				notificationCount = roomData.notificationCount;
+			}
 			
 			protected function vgroup1_dragDropHandler(event:DragEvent):void
 			{
@@ -103,7 +103,7 @@
 
 			protected function vgroup1_creationCompleteHandler(event:FlexEvent):void
 			{
-				AppController.layout.addEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
+				AppController.layout.addEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated, false, 0, true);
 			}
 			
 			private function eraNotificationsUpdated(e:Event):void {
@@ -116,6 +116,13 @@
 
 			protected function vgroup1_removedFromStageHandler(event:Event):void
 			{
+				trace("CLEAR: Removing Room Icon");
+				roomName = null;
+				roomType = null;
+				_roomData = null;
+				notificationCount = null;
+				icon = null;
+				
 				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
 			}

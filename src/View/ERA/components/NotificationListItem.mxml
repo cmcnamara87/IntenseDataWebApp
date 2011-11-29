@@ -4,6 +4,7 @@
 				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" 
 				   backgroundColor="{read ? 0xFFFFFF : 0xD9F0FF}" 
 				   borderColor="{read ? 0xAAAAAA : 0x79A0B9}" borderVisible="true" borderStyle="solid"
+				   removedFromStage="canvas1_removedFromStageHandler(event)"
 				   >
 
 	<fx:Script>
@@ -16,6 +17,7 @@
 			
 			import mx.controls.Alert;
 			import mx.controls.Text;
+			import mx.events.FlexEvent;
 			
 			import spark.components.Label;
 			
@@ -196,6 +198,15 @@
 				
 			}
 
+			protected function canvas1_removedFromStageHandler(event:Event):void
+			{
+				_notificationData = null;
+				notificationText = null;
+				timeStamp = null;
+				trace("REMOVING NOTIFICAITOn LIST ITEM");
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, canvas1_removedFromStageHandler);
+			}
+			
 		]]>
 	</fx:Script>
 
