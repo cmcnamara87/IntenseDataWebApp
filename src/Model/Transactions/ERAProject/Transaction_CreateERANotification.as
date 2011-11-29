@@ -26,6 +26,11 @@ package Model.Transactions.ERAProject
 		private var commentID:Number;
 		private var eraCase:Model_ERACase;
 		
+		private var systemUserNotificationID:Number;
+		private var researcherNotificationID:Number;
+		
+		private var eraRoom:Model_ERARoom;
+		
 		public function Transaction_CreateERANotification(year:String, roomID:Number, username:String, firstName:String, lastName:String, type:String, connection:Connection, caseID:Number=0, fileID:Number=0, commentID:Number=0)
 		{
 			this.username = username;
@@ -62,7 +67,7 @@ package Model.Transactions.ERAProject
 				return;
 			}
 
-			var eraRoom:Model_ERARoom = new Model_ERARoom();
+			eraRoom = new Model_ERARoom();
 			eraRoom.setData(data.reply.result.asset[0]);
 			
 			caseID = eraRoom.caseID;
@@ -137,14 +142,14 @@ package Model.Transactions.ERAProject
 			}
 			
 			// If we are adding it to the screening room, we need to notify the researcher
-			if(type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB || type == Model_ERANotification.EVIDENCE_READY_FOR_COLLECTION) {
+			/*if(type == Model_ERANotification.FILE_MOVED_TO_REVIEW_LAB || type == Model_ERANotification.EVIDENCE_READY_FOR_COLLECTION) {
 				for each(var researcher:Model_ERAUser in eraCase.researchersArray) {
 					if(researcher.username == Auth.getInstance().getUsername()) continue;
 					argsXML.appendChild(XML('<acl><actor type="user">system:' + researcher.username + '</actor><access>read-write</access></acl>'));
 				}
-			}
+			}*/
 			
-			if(type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB) {
+			if(type == Model_ERANotification.FILE_MOVED_TO_REVIEW_LAB) {
 				// Notify the monitor when fiels are ready to be screened or exhibited
 				argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.MONITOR + "_" + year + '</actor><access>read-write</access></acl>'));
 			}
@@ -160,11 +165,68 @@ package Model.Transactions.ERAProject
 				return;
 			}
 			
-			var notificationID:Number = data.reply.result.id;
+			systemUserNotificationID = data.reply.result.id;
 			
-			// Send mail
-//			AppModel.getInstance().sendMailFromNotification(notificationID);
+			// Send mail to system users
+			AppModel.getInstance().sendMailFromNotification(systemUserNotificationID, false);
 			
+			createNotificationForResearcher();
+		}
+		
+		private function createNotificationForResearcher():void {
+			
+			// Now we need to create a notification for the researchers, its basically the same thing
+			// just we can email them differently
+			// and give them different notifications if necessary
+			if( (type == Model_ERANotification.FILE_COMMENT && (eraRoom.roomType == Model_ERARoom.EVIDENCE_ROOM || eraRoom.roomType == Model_ERARoom.SCREENING_ROOM)) ||
+				(type == Model_ERANotification.ROOM_COMMENT && (eraRoom.roomType == Model_ERARoom.EVIDENCE_ROOM || eraRoom.roomType == Model_ERARoom.SCREENING_ROOM)) ||
+				(type == Model_ERANotification.ANNOTATION && (eraRoom.roomType == Model_ERARoom.EVIDENCE_ROOM || eraRoom.roomType == Model_ERARoom.SCREENING_ROOM)) ||
+				(type == Model_ERANotification.FILE_MOVED_TO_REVIEW_LAB) ||
+				(type == Model_ERANotification.EVIDENCE_READY_FOR_COLLECTION) ||
+				(type == Model_ERANotification.EVIDENCE_COLLECTED) ||
+				(type == Model_ERANotification.FILE_APPROVED_BY_RESEARCHER) ||
+				(type == Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER)
+			){
+				// Create a new notification for the researcher
+				var baseXML:XML = connection.packageRequest("asset.create", new Object(), true);
+				var argsXML:XMLList = baseXML.service.args;
+				// Create a namespace for this era
+				argsXML.namespace = "ERA/" + this.year;
+				argsXML.type = "ERA/notification";
+				// Setup the era meta-data
+				argsXML.meta["ERA-notification"]["type"] = this.type;
+				argsXML.meta["ERA-notification"]["username"] = this.username;
+				argsXML.meta["ERA-notification"]["first_name"] = this.firstName;
+				argsXML.meta["ERA-notification"]["last_name"] = this.lastName;
+				// Set the notifications relationship to other assets
+				argsXML.related = "";
+				// Add compulsory room and case erlationships
+				argsXML.related.appendChild(XML('<to relationship="notification_case">' + this.caseID + '</to>'));
+				argsXML.related.appendChild(XML('<to relationship="notification_room">' + this.roomID + '</to>'));
+				// add option file and comment relationships
+				if(this.fileID != 0) {
+					argsXML.related.appendChild(XML('<to relationship="notification_file">' + this.fileID + '</to>'));
+				}
+				if(this.commentID != 0) {
+					argsXML.related.appendChild(XML('<to relationship="notification_comment">' + this.commentID + '</to>'));
+				}	
+				for each(var researcher:Model_ERAUser in eraCase.researchersArray) {
+					if(researcher.username == Auth.getInstance().getUsername()) continue;
+					argsXML.appendChild(XML('<acl><actor type="user">system:' + researcher.username + '</actor><access>read-write</access></acl>'));
+				}
+				
+				// todo mail goes in here!!
+				connection.sendRequest(baseXML, researcherNotificationCreated);
+			}
+		}
+		private function researcherNotificationCreated(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("creating era researcher notification", e)) == null) {
+				return;
+			}
+			researcherNotificationID = data.reply.result.id;
+			// Send mail to system users
+			AppModel.getInstance().sendMailFromNotification(researcherNotificationID, true);
 		}
 	}
 }

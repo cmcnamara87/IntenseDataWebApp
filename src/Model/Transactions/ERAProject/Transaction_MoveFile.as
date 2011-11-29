@@ -78,7 +78,7 @@ package Model.Transactions.ERAProject
 			if(toRoomType == Model_ERARoom.SCREENING_ROOM) {
 				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, toRoomID, Auth.getInstance().getUsername(),
 					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
-					Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB, 0, fileID, 0);
+					Model_ERANotification.FILE_MOVED_TO_REVIEW_LAB, 0, fileID, 0);
 			} else if(toRoomType == Model_ERARoom.EXHIBIT) {
 				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, toRoomID, Auth.getInstance().getUsername(),
 					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,

@@ -1792,9 +1792,9 @@ package Model {
 				_connection,
 				callback);
 		}
-		public function sendMailFromNotification(notificationID:Number):void {
+		public function sendMailFromNotification(notificationID:Number, forResearcher:Boolean):void {
 			var sendMail:Transaction_SendMail = new Transaction_SendMail(_connection);
-			sendMail.sendMailFromNotification(notificationID);
+			sendMail.sendMailFromNotification(notificationID, forResearcher);
 		}			
 		public function removeUserFromCase(caseID:Number, removeUsername:String, callback:Function):void {
 			var removeUserFromCase:Transaction_RemoveUserFromCase = new Transaction_RemoveUserFromCase(caseID, removeUsername, _connection, callback);

@@ -147,7 +147,7 @@ package Model {
 			for each(var notificationData:Model_ERANotification in AppController.allNotificationsArray) {
 				if(notificationData.file && notificationData.file.base_asset_id == this.base_asset_id) {
 					switch(notificationData.type) {
-						case Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB:
+						case Model_ERANotification.FILE_MOVED_TO_REVIEW_LAB:
 							this.screeningCount++;
 							break;
 						case Model_ERANotification.FILE_MOVED_TO_EXHIBITION:

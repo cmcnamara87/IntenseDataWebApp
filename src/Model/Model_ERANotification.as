@@ -6,29 +6,29 @@ package Model
 
 	public class Model_ERANotification extends Model_Base
 	{
-		// comment made
+		
+		// System user only
+		public static const FILE_MOVED_TO_EXHIBITION:String = "file_moved_to_exhibition";
+		// {user} moved {file name/id} to {room name/id} -> have file id, room id, room name (nothing needed)
+		public static const FILE_MOVED_TO_FORENSIC_LAB:String = "file_moved_to_forensic_lab";
+		// file uploaded
+		public static const FILE_UPLOADED:String =  "file_uploaded";
+		// {user} uploaded {file name/id} to {room name/id} -> have file id, room id, room name (nothing needed)
+		public static const FILE_APPROVED_BY_MONITOR:String = "file_approved_by_monitor";
+		public static const FILE_NOT_APPROVED_BY_MONITOR:String = "file_not_approved_by_monitor";
+		
+		
+		/* ================================================= Researcher and System user ================================================= */ 
 		public static const FILE_COMMENT:String = "file_comment";
 		// {user} wrote {comment text/id} on {file name/id} {room name/id} -> have commen text/id, have file id, have room id, need filename and room name
-		
 		public static const ROOM_COMMENT:String = "room_comment";
 		// {user} wrote {comment text/id} in {room name/id} -> have comment text/id, and room id, need room name
-		
-		// annotation made
 		public static const ANNOTATION:String = "annotation";
 		// {user} wrote {comment text } on {file name} in {room name/id} -> have commen text/id, file id, and room id, need file name nad room name
 		
 		// file moved to screening lab
-		public static const FILE_MOVED_TO_SCREENING_LAB:String = "file_moved_to_screening_lab";
+		public static const FILE_MOVED_TO_REVIEW_LAB:String = "file_moved_to_screening_lab";
 		// {user} moved {file name/id} to {room name/id} -> have file id, room id, room name (nothing needed)
-		
-		public static const FILE_MOVED_TO_EXHIBITION:String = "file_moved_to_exhibition";
-		// {user} moved {file name/id} to {room name/id} -> have file id, room id, room name (nothing needed)
-		
-		public static const FILE_MOVED_TO_FORENSIC_LAB:String = "file_moved_to_forensic_lab";
-		
-		// file uploaded
-		public static const FILE_UPLOADED:String =  "file_uploaded";
-		// {user} uploaded {file name/id} to {room name/id} -> have file id, room id, room name (nothing needed)
 		
 		// ready for collection
 		public static const EVIDENCE_READY_FOR_COLLECTION:String = "evidence_ready_for_collection";
@@ -40,8 +40,10 @@ package Model
 		public static const FILE_APPROVED_BY_RESEARCHER:String = "file_approve_by_researcher";
 		public static const FILE_NOT_APPROVED_BY_RESEARCHER:String = "file_not_approve_by_researcher";
 		
-		public static const FILE_APPROVED_BY_MONITOR:String = "file_approved_by_monitor";
-		public static const FILE_NOT_APPROVED_BY_MONITOR:String = "file_not_approved_by_monitor";
+		
+		
+		
+		
 		
 		public var type:String;
 		public var username:String;

@@ -112,7 +112,7 @@
 						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> wrote \"" + notificationData.comment_room.text + "\" on <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
 						
 						break;
-					case Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB:
+					case Model_ERANotification.FILE_MOVED_TO_REVIEW_LAB:
 					case Model_ERANotification.FILE_MOVED_TO_EXHIBITION:
 					case Model_ERANotification.FILE_MOVED_TO_FORENSIC_LAB:
 						
