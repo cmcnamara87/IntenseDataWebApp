@@ -198,7 +198,7 @@ package Controller.ERA
 		/* ====================================== GOT ALL THE LOG ITEMS ===================================== */
 		private function gotAllLogItems(status:Boolean, logItemArray:Array):void {
 			caseView.showEvidenceManagement(logItemArray);
-			caseView.addCases(eraCaseArray);
+			
 		}
 		/* ====================================== END OF GOT ALL THE LOG ITEMS ===================================== */
 		
@@ -404,7 +404,7 @@ package Controller.ERA
 			
 			// Add the cases for the view
 			// If the era case is emtpy, its going to display "no cases found"
-//			caseView.addCases(eraCaseArray);
+			caseView.addCases(eraCaseArray);
 			
 			// Just check that we found a case from all that shit up above
 			if(currentERACase != null) {

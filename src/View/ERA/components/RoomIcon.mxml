@@ -10,6 +10,8 @@
 		  alpha="{selected ? 1 : 0.5}" xmlns:components="View.ERA.components.*"
 		  creationComplete="vgroup1_creationCompleteHandler(event)"
 		  removedFromStage="vgroup1_removedFromStageHandler(event)"
+		  mouseOver="vgroup1_mouseOverHandler(event)"
+		  mouseOut="vgroup1_mouseOutHandler(event)"
 		  >
 
 	<fx:Script>
@@ -163,16 +165,27 @@
 				AppController.layout.filterRoomNotifications(this._roomData.base_asset_id);
 			}
 
+			protected function vgroup1_mouseOverHandler(event:MouseEvent):void
+			{
+				iconImage.filters = new Array(mouseOver);
+			}
+			
+			protected function vgroup1_mouseOutHandler(event:MouseEvent):void
+			{
+				iconImage.filters = new Array(myFilter);
+			}
+			
 		]]>
 	</fx:Script>
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		<s:DropShadowFilter id="myFilter" distance="-1" angle="270" color="0xDDDDDD" alpha="0.5" blurX="0" blurY="0"/>
+		<s:DropShadowFilter id="mouseOver" distance="0" angle="0" color="0xFFFFFF" alpha="1" blurX="10" blurY="10" />
 	</fx:Declarations>
 	<s:Group width="70" height="70">
 		
-		<mx:Image source="{icon}" width="48" height="50" horizontalAlign="center" maintainAspectRatio="true" verticalAlign="middle" horizontalCenter="0" verticalCenter="0" filters="{myFilter}" click="vgroup1_clickHandler(event)">
+		<mx:Image id="iconImage" source="{icon}" width="48" height="50" horizontalAlign="center" maintainAspectRatio="true" verticalAlign="middle" horizontalCenter="0" verticalCenter="0" filters="{myFilter}" click="vgroup1_clickHandler(event)">
 		</mx:Image>
 		
 		<s:Label x="18" text="x" fontSize="70" fontWeight="bold" color="0xFF0000" visible="{unavailable}" includeInLayout="{unavailable}"/>

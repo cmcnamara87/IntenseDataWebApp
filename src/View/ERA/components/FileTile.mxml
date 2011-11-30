@@ -65,6 +65,12 @@
 
 			private var transcodeTimer:Timer = new Timer(10000);
 			
+			
+			[Bindable]
+			public var dragEnabled:Boolean = true;
+			
+			private var mouseDown:Boolean = false;
+			
 			public function set fileData(fileData:Model_ERAFile):void {
 				this._fileData = fileData;
 				
@@ -196,10 +202,6 @@
 				}
 			}
 			
-			[Bindable]
-			public var dragEnabled:Boolean = true;
-			
-			private var mouseDown:Boolean = false;
 		
 			public function loadURL(id:Number):void {
 //				if(rootMetaType == "image") {
@@ -226,11 +228,11 @@
 				var dragProxy:Image = new Image();
 				dragProxy.height= 100;
 				dragProxy.width= 100; 
-//				if(_fileData.thumbnailURL != "") {
-//					dragProxy.source = _fileData.thumbnailURL;
-//				} else {
+				if(_fileData.thumbnailURL != "") {
+					dragProxy.source = _fileData.thumbnailURL;
+				} else {
 					dragProxy.source = AssetLookup.getAssetImageClass(rootMetaType);
-//				}
+				}
 				
 				DragManager.doDrag(event.currentTarget as IUIComponent, null, event, dragProxy);
 				this.alpha = 0.5;

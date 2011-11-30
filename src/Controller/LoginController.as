@@ -153,7 +153,8 @@ package Controller {
 			}
 			//Dispatcher.call(redirectURL);
 //			Dispatcher.call('browse');
-			Dispatcher.call('case');
+//			Dispatcher.call('case');
+			Dispatcher.call('splash');
 		}
 	}
 }

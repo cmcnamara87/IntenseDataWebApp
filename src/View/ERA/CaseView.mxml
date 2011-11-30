@@ -54,7 +54,11 @@
 			private var screeningLab:ScreeningLab = null; // the forensic lab view
 			private var exhibition:Exhibition = null;
 			
-			private const caseSearchBoxDefaultText:String = "Search for Case";
+			public static const caseSearchBoxDefaultText:String = "Search for Case";
+			
+			private var keepAdding:Boolean = true;
+			private var caseCounter:Number = 0;
+			private var caseArray:Array = null;
 			
 			/**
 			 * Adds data to all the rooms for the  case
@@ -230,35 +234,52 @@
 
 				var someY:Number = 0;
 				
-				for each(var eraCase:Model_ERACase in caseArray) {
-					if(eraCase.base_asset_id == CaseController.currentERACase.base_asset_id) {
-						var selectedCaseListItem:CaseListItem = new CaseListItem();
-						selectedCaseListItem.caseData = eraCase;
-						casePanelContent.addElement(selectedCaseListItem);
-						
-						selectedCaseListItem.addEventListener(FlexEvent.CREATION_COMPLETE, selectedCaseDrawn, false, 0, true );
-					} else {
-						var caseListItem:CaseListItem = new CaseListItem();
-						caseListItem.caseData = eraCase;
-						casePanelContent.addElement(caseListItem);
-					}
-				}
+				// Store it for temporary rendering
+				this.caseArray = caseArray;
+				
+				// Add the cases
+				addCasesToDisplay();
 				
 				caseNav.height = 140;
 				
 				
 				/*
 				setTimeout(function():void {
-					trace("adjusting scroll bar", someY);
-					
+				trace("adjusting scroll bar", someY);
+				
 				}, 2000);*/
 				
 				showERAInDropdown();
 			}
 			
-			private function selectedCaseDrawn(e:FlexEvent):void {
-				casePanelScroller.verticalScrollBar.value = (e.target as CaseListItem).y;
-				(e.target as CaseListItem).removeEventListener(FlexEvent.CREATION_COMPLETE, selectedCaseDrawn);
+			private function addCasesToDisplay():void {
+				
+					if(caseCounter < caseArray.length) {
+						var eraCase:Model_ERACase = caseArray[caseCounter] as Model_ERACase;
+						var caseListItem:CaseListItem = new CaseListItem();
+						caseListItem.caseData = eraCase;
+						caseListItem.addEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated, false, 0, true);
+						casePanelContent.addElement(caseListItem);
+						// now thats it added, lets run the filter by it, in case someone is searching while they are loading
+						caseListItem.filter(caseFilterTextInput.text);
+					} else {
+						loadingLabel.includeInLayout = false;
+						loadingLabel.visible = false;
+					}
+			}
+			
+			private function caseListItemCreated(e:FlexEvent):void {
+				(e.target as CaseListItem).removeEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated);
+				
+				if(keepAdding) {
+					if((e.target as CaseListItem).getID() == CaseController.currentERACase.base_asset_id) {
+						// its the selected one, so scroll to it;
+						casePanelScroller.verticalScrollBar.value = (e.target as CaseListItem).y;
+					}
+					
+					caseCounter++;
+					addCasesToDisplay();
+				}
 			}
 
 			protected function caseTag_clickHandler(event:MouseEvent):void
@@ -314,6 +335,8 @@
 
 			protected function hgroup1_removedFromStageHandler(event:Event):void
 			{
+				keepAdding = false;
+				
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, hgroup1_removedFromStageHandler);
 				
 				// remove all the cases list items
@@ -329,6 +352,8 @@
 				forensicLab = null;
 				screeningLab = null;
 				exhibition = null;
+				caseCounter = null;
+				caseArray = null;
 			}
 			
 		]]>
@@ -348,11 +373,15 @@
 				<s:TextInput width="100%" id="caseFilterTextInput" color="0xFFFFFF" fontStyle="italic" height="30" text="{caseSearchBoxDefaultText}" chromeColor="0x222222" contentBackgroundColor="0x444444" focusIn="caseFilterTextInput_focusInHandler(event)" focusOut="caseFilterTextInput_focusOutHandler(event)" change="caseFilterTextInput_changeHandler(event)" />
 			</s:VGroup>
 			<s:Scroller id="casePanelScroller" width="100%" height="100%" chromeColor="0x444444" filters="{casePanelScroller.verticalScrollBar.value > 0 ? shadowy : null}">
-				<s:VGroup id="casePanelContent" width="100%" gap="0">
-					<s:Label color="0xFFFFFF" horizontalCenter="0">
-						
+				<s:VGroup width="100%" gap="0">
+					<s:Label id="loadingLabel" color="0xFFFFFF" width="100" paddingLeft="10">
+						Loading...
 					</s:Label>
+					<s:VGroup id="casePanelContent" width="100%" gap="0">
+					</s:VGroup>	
+					
 				</s:VGroup>
+				
 			</s:Scroller>
 		</s:VGroup>
 	</s:BorderContainer>

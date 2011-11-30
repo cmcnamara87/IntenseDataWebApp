@@ -30,6 +30,8 @@ package Model {
 			this.roomTitle = getPrettyRoomName(roomType);
 			this.caseID = rawData.related.(@type=="case").to;
 			
+			
+			
 			updateNotificationCount();
 		}
 		

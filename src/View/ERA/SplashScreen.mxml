@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:components="View.ERA.components.*"
+		  backgroundColor="0x565656"
+		  removedFromStage="bordercontainer1_removedFromStageHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import Controller.AppController;
+			import Controller.Dispatcher;
+			import Controller.ERA.SplashScreen;
+			import Controller.Utilities.AssetLookup;
+			import Controller.Utilities.Auth;
+			
+			import Model.Model_ERACase;
+			import Model.Model_ERAProject;
+			import Model.Model_ERARoom;
+			import Model.Model_ERAUser;
+			
+			import View.ERA.components.CaseListItem;
+			import View.ERA.components.CaseListItemSmall;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			import spark.events.TextOperationEvent;
+			
+			// an array of all the cases to add
+			private var caseArray:Array = null;
+			// stores what number case we are up to adding
+			private var caseCounter:Number = 0;
+			
+			private var selectedCaseID:Number = 0;
+			
+			private var keepAdding:Boolean = true;
+			private var currentListItemAdding:CaseListItemSmall = null;
+			
+			/**
+			 * Add cases to the view
+			 * @param caseArray	Array of @see Model_ERACase
+			 */
+			public function addCases(caseArray:Array):void {
+				trace("adding cases");
+				
+				// Remove any of the current cases (just in case....)
+				casePanelContent.removeAllElements();
+								
+				// Store it for temporary rendering
+				this.caseArray = caseArray;
+
+				
+				caseSearch.text = "Loading Cases...";
+				caseSearch.enabled = false;
+				
+				casePanelScroller.visible = true;
+				casePanelScroller.includeInLayout = true;
+				// Add the cases
+				addCasesToDisplay();
+
+			}
+			
+			private function addCasesToDisplay():void {
+				if(caseCounter < caseArray.length) {
+					trace("adding cases");
+					var eraCase:Model_ERACase = caseArray[caseCounter] as Model_ERACase;
+					
+					currentListItemAdding = new CaseListItemSmall();
+					currentListItemAdding.caseID = eraCase.base_asset_id;
+					currentListItemAdding.width = 485;
+					casePanelContent.addElement(currentListItemAdding);
+					currentListItemAdding.title.text = eraCase.title;
+					for each(var researcher:Model_ERAUser in eraCase.researchersArray) {
+						currentListItemAdding.researchers.text += researcher.lastName + ", " + researcher.firstName + "\n";
+					}
+
+					currentListItemAdding.addEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated, false, 0, true);
+					currentListItemAdding.addEventListener(MouseEvent.CLICK, caseSelected, false, 0, true);
+					
+					// now thats it added, lets run the filter by it, in case someone is searching while they are loading
+//					caseListItem.filter(caseFilterTextInput.text);
+				} else {
+					caseSearch.enabled = true;
+					caseSearch.text = Controller.ERA.SplashScreen.caseSearchBoxDefaultText
+					caseCounter = 0;
+				}
+			}
+			
+			private function caseListItemCreated(e:FlexEvent):void {
+				
+				currentListItemAdding.removeEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated);
+				caseCounter++;
+				if(keepAdding) {
+					// if we should keep adding, keep going
+					addCasesToDisplay();
+				}
+			}
+			
+			private function caseSelected(e:MouseEvent):void {
+				for(var i:Number = 0; i < casePanelContent.numElements; i++) {
+					trace('deselecting all',  casePanelContent.getElementAt(i));
+					var caseListItemSmall:CaseListItemSmall = casePanelContent.getElementAt(i) as CaseListItemSmall;
+					caseListItemSmall.deselect();
+					trace('done');
+				}
+				trace('selecting');
+				(e.target as CaseListItemSmall).select();
+				selectedCaseID = (e.target as CaseListItemSmall).caseID;
+				trace('done');
+				placeSelect.enabled = true;
+				
+				var currentERACase:Model_ERACase = null;
+				for each(var eraCase:Model_ERACase in caseArray) {
+					if(eraCase.base_asset_id == selectedCaseID) {
+						currentERACase = eraCase;
+						break;
+					}
+				}
+				
+				trace('finding selected case', currentERACase);
+				
+				var isProductionManager:Boolean = false;
+				for each(var user:Model_ERAUser in currentERACase.productionManagerArray) {
+					if(Auth.getInstance().getUsername() == user.username) {
+						isProductionManager = true;
+						break;
+					}
+				}
+				
+				trace('got production');
+				
+				// or production team
+				var isTeamMember:Boolean = false;
+				for each(var teamUser:Model_ERAUser in currentERACase.productionTeamArray) {
+					if(Auth.getInstance().getUsername() == teamUser.username) {
+						isTeamMember = true;
+						break;
+					}
+				}
+				
+				trace('got tean');
+				
+				var isResearcher:Boolean = false;
+				for each(var researcherUser:Model_ERAUser in currentERACase.researchersArray) {
+					if(Auth.getInstance().getUsername() == researcherUser.username) {
+						isResearcher = true;
+						break;
+					}
+				}
+				
+				trace('got research');
+				
+				if(Auth.getInstance().isSysAdmin() || isProductionManager || isTeamMember) {
+					evidenceManagementButton.visible = true;
+					evidenceManagementButton.includeInLayout = true;
+					evidenceBoxButton.visible = true;
+					evidenceBoxButton.includeInLayout = true;
+					forensicLabButton.visible = true;
+					forensicLabButton.includeInLayout = true;
+					screeningLabButton.visible = true;
+					screeningLabButton.includeInLayout = true;
+					exhibitionButton.visible = true;
+					exhibitionButton.includeInLayout = true;
+					postMortemButton.visible = true;
+					postMortemButton.includeInLayout = true;
+				} else if (Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)) {
+					evidenceManagementButton.visible = false;
+					evidenceManagementButton.includeInLayout = false;
+					evidenceBoxButton.visible = true;
+					evidenceBoxButton.includeInLayout = true;
+					forensicLabButton.visible = false;
+					forensicLabButton.includeInLayout = false;
+					screeningLabButton.visible = true;
+					screeningLabButton.includeInLayout = true;
+					exhibitionButton.visible = true;
+					exhibitionButton.includeInLayout = true;
+					postMortemButton.visible = true;
+					postMortemButton.includeInLayout = true;
+				} else if (isResearcher) {
+					evidenceManagementButton.visible = false;
+					evidenceManagementButton.includeInLayout = false;
+					evidenceBoxButton.visible = true;
+					evidenceBoxButton.includeInLayout = true;
+					forensicLabButton.visible = false;
+					forensicLabButton.includeInLayout = false;
+					screeningLabButton.visible = true;
+					screeningLabButton.includeInLayout = true;
+					exhibitionButton.visible = false;
+					exhibitionButton.includeInLayout = false;
+					postMortemButton.visible = false;
+					postMortemButton.includeInLayout = false;
+				}
+				
+				trace('visible');
+				
+			}
+			
+			protected function vgroup1_removedFromStageHandler(event:Event):void
+			{
+				
+				
+			}
+			
+			public function showERAInDropdown():void {
+				// Now add all the ERAs to the dropdown (probably dont need this here, maybe another function???)
+				var eraNameArray:ArrayCollection = new ArrayCollection();
+				
+				// The position of the era project that is set as the current era project
+				var selectedIndex:Number = 0;
+				
+				for(var i:Number = 0; i < AppController.eraProjectArray.length; i++) {
+					var eraProject:Model_ERAProject = AppController.eraProjectArray[i] as Model_ERAProject;
+					
+					// Add the era project to the dropdown
+					var object:Object = new Object();
+					object.label = "ERA " + eraProject.year;
+					object.data = eraProject;
+					eraNameArray.addItem(object);
+					
+					// Check if the era project is the current project, if so, save its position
+//					if(AppController.currentEraProject.base_asset_id == eraProject.base_asset_id) {
+//						selectedIndex = i;
+//					}
+				}
+				caseERADropdown.dataProvider = eraNameArray;
+//				caseERADropdown.selectedIndex = selectedIndex;
+			}
+			
+			protected function evidenceManagementButton_clickHandler(event:MouseEvent):void
+			{
+				trace("clicked", event.target);
+				
+				Dispatcher.call("case/" + selectedCaseID + "/" + (event.target as RoomIcon).roomType);
+			}
+			
+			protected function bordercontainer1_removedFromStageHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+				
+				if(currentListItemAdding) {
+					currentListItemAdding.removeEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated);
+				}
+				
+				casePanelContent.removeAllElements();
+				
+				currentListItemAdding = null;
+				keepAdding = false;
+				caseArray = null;
+				
+			}
+			
+			protected function caseSearch_focusInHandler(event:FocusEvent):void
+			{
+				if(caseSearch.text == Controller.ERA.SplashScreen.caseSearchBoxDefaultText) {
+					caseSearch.text = "";
+				}
+				
+			}
+			
+			protected function caseSearch_focusOutHandler(event:FocusEvent):void
+			{
+				if(caseSearch.text == "") {
+					caseSearch.text = Controller.ERA.SplashScreen.caseSearchBoxDefaultText;
+				}
+				
+			}
+			
+			protected function caseSearch_changeHandler(event:TextOperationEvent):void
+			{
+				for(var i:Number = 0; i < casePanelContent.numElements; i++) {
+					trace("wtf", caseSearch.text);
+					var caseListItem:CaseListItemSmall = casePanelContent.getElementAt(i) as CaseListItemSmall;
+					caseListItem.filter(caseSearch.text);
+				}
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:DropShadowFilter id="myFilter" distance="-1" angle="270" color="0x000000" alpha="0.5" blurX="0" blurY="0"/>
+	</fx:Declarations>
+	
+
+		<s:VGroup horizontalAlign="center" height="100%" width="100%">
+			
+			<s:Label text="Where would you like to go?" color="0xFFFFFF" fontSize="32" fontWeight="bold" paddingTop="40" paddingBottom="20" filters="{myFilter}"/>
+			
+			<s:Label text="1. Select an ERA Edition" color="0xFFFFFF" fontSize="24" paddingBottom="10" filters="{myFilter}"/>
+			<s:DropDownList id="caseERADropdown" width="500" height="30" chromeColor="0x444444" contentBackgroundColor="0x444444" color="0xFFFFFF">
+			</s:DropDownList>
+			
+			<s:VGroup id="caseSelect" width="100%" horizontalAlign="center" height="100%">
+				<s:Label text="2. Select a Case" color="0xFFFFFF" fontSize="24" paddingTop="30" paddingBottom="10" filters="{myFilter}" />
+				<s:TextInput id="caseSearch" width="500" height="30" color="0xFFFFFF" text="" contentBackgroundColor="0x444444" enabled="false" change="caseSearch_changeHandler(event)" focusIn="caseSearch_focusInHandler(event)" focusOut="caseSearch_focusOutHandler(event)"/>
+				
+				<s:Scroller id="casePanelScroller" width="500" chromeColor="0x444444" height="100%">
+					<s:VGroup id="casePanelContent" width="100%" gap="5">
+					</s:VGroup>		
+				</s:Scroller>
+			</s:VGroup>
+			
+
+			<s:VGroup id="placeSelect" width="100%" height="200" horizontalAlign="center" enabled="false" paddingBottom="20">
+				<s:Label text="3. Select a Place" color="0xFFFFFF" fontSize="24" paddingTop="30" paddingBottom="10" filters="{myFilter}"/>
+				<s:HGroup height="100%" verticalAlign="middle" gap="15" id="roomButtons" >
+					<components:RoomIcon visible="false" includeInLayout="false" roomName="Evidence Manager" id="evidenceManagementButton" roomType="{Model_ERARoom.EVIDENCE_MANAGEMENT}" mouseChildren="false" icon="{AssetLookup.EvidenceManagerIcon}" click="evidenceManagementButton_clickHandler(event)"/>
+					<!--<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>-->
+					<components:RoomIcon roomName="Evidence Box" alpha="0.5" id="evidenceBoxButton"  roomType="{Model_ERARoom.EVIDENCE_ROOM}" mouseChildren="false" icon="{AssetLookup.EvidenceBoxIcon}" click="evidenceManagementButton_clickHandler(event)" />
+					<!--<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>-->
+					<components:RoomIcon visible="false" includeInLayout="false" roomName="Forensic Lab" alpha="0.5" id="forensicLabButton"  roomType="{Model_ERARoom.FORENSIC_LAB}" mouseChildren="false" icon="{AssetLookup.ForensicLabIcon}" click="evidenceManagementButton_clickHandler(event)"  />
+					<!--<mx:Image source="{AssetLookup.getLeftRightArrowIconClass()}" width="46" height="72"></mx:Image>-->
+					<components:RoomIcon roomName="Review Lab" alpha="0.5" id="screeningLabButton"  roomType="{Model_ERARoom.SCREENING_ROOM}" mouseChildren="false" icon="{AssetLookup.ScreeningLabIcon}" click="evidenceManagementButton_clickHandler(event)"  />
+					<!--<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>-->
+					<components:RoomIcon visible="false" includeInLayout="false" roomName="Exhibition" alpha="0.5"  id="exhibitionButton"  unavailable="false" roomType="{Model_ERARoom.EXHIBIT}" mouseChildren="false" icon="{AssetLookup.ExhibitionIcon}" click="evidenceManagementButton_clickHandler(event)" />
+					<!--<mx:Image source="{AssetLookup.getLeftArrowIconClass() }"  width="46" height="34"></mx:Image>-->
+					<components:RoomIcon visible="false" includeInLayout="false" roomName="Post Mortem" alpha="0.5" id="postMortemButton" unavailable="true" roomType="{Model_ERARoom.POST_MORTEM}" icon="{AssetLookup.PostMortemIcon}" />
+				</s:HGroup>
+			</s:VGroup>
+			
+		</s:VGroup>
+	
+</s:BorderContainer>

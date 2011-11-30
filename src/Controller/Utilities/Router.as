@@ -8,6 +8,7 @@ package Controller.Utilities {
 	import Controller.ERA.CaseController;
 	import Controller.ERA.FileController;
 	import Controller.ERA.RecoverController;
+	import Controller.ERA.SplashScreen;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -33,6 +34,11 @@ package Controller.Utilities {
 		
 		// The valid routes/controllers for the application
 		private static var routes:Array = new Array(
+			{
+				url: 'splash',
+				title: 'nQuisitor',
+				classname: SplashScreen
+			},
 			{
 				url:'browse',
 				title:'Browse',

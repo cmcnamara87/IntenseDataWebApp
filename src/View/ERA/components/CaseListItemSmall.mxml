@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%"
+				   backgroundColor="0x444444"
+				   removedFromStage="bordercontainer1_removedFromStageHandler(event)"
+				   mouseChildren="false"
+				   buttonMode="true"
+				   mouseOver="canvas1_mouseOverHandler(event)"
+				   mouseOut="canvas1_mouseOutHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import Controller.ERA.SplashScreen;
+			
+			import mx.events.FlexEvent;
+			
+			public var caseID:Number = 0;
+			
+			public var selected:Boolean = false;
+			
+			protected function bordercontainer1_removedFromStageHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, bordercontainer1_removedFromStageHandler);	
+			}		
+			public function deselect():void {
+				selected = false;
+				this.setStyle("backgroundColor", 0x444444);
+			}
+			public function select():void {
+				selected = true;
+				this.setStyle("backgroundColor", 0xFF8800);
+			}
+			
+			public function filter(caseFilterText:String):void {
+				
+				if(SplashScreen.caseSearchBoxDefaultText == caseFilterText) {
+					return;
+				}
+				
+				
+				trace("filtering");
+				caseFilterText = caseFilterText.toLowerCase();
+				
+				
+				
+				// build up the search string
+				var searchString:String = title.text + " " + researchers.text;
+				searchString = searchString.toLocaleLowerCase();
+				
+				trace("search string", searchString);
+				if(caseFilterText != "" && searchString.indexOf(caseFilterText) == -1) {
+					trace("is not a match", title);
+					this.visible = false;
+					this.includeInLayout = false;
+				} else {
+					trace("is a match", title);
+					this.visible = true;
+					this.includeInLayout = true;
+				}
+			}
+			
+			protected function canvas1_mouseOverHandler(event:MouseEvent):void
+			{
+				this.setStyle("backgroundColor", 0x888888);
+				
+			}
+			
+			protected function canvas1_mouseOutHandler(event:MouseEvent):void
+			{
+				if(selected) {
+					this.setStyle("backgroundColor", 0xFF8800);
+				} else {
+					this.setStyle("backgroundColor", 0x444444);
+				}
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:VGroup width="485" paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+		<s:Label id="title" fontWeight="bold" text="" color="0xFFFFFF" width="480"/>
+		<s:Label id="researchers" color="0xFFFFFF" text="" />
+	</s:VGroup>
+	
+	
+</mx:Canvas >

@@ -23,6 +23,8 @@
 			import Model.Model_ERACase;
 			import Model.Model_ERAUser;
 			
+			import View.ERA.CaseView;
+			
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			
@@ -41,6 +43,8 @@
 			
 			[Bindable]
 			private var notificationCount:Number = 0;
+			
+			private var notificationBadge:NotificationBadge;
 			
 			public function set caseData(eraCaseData:Model_ERACase):void {
 				this._eraCaseData = eraCaseData;
@@ -65,7 +69,7 @@
 				// Set the title
 				title = eraCaseData.title;
 				
-				if(eraCaseData.base_asset_id == CaseController.currentERACase.base_asset_id) {
+				if(CaseController.currentERACase && eraCaseData.base_asset_id == CaseController.currentERACase.base_asset_id) {
 					this.selected = true;
 					this.setStyle("backgroundColor", 0x555555);
 				}
@@ -88,7 +92,9 @@
 				}
 				*/
 			}
-			
+			public function getID():Number {
+				return _eraCaseData.base_asset_id;
+			}
 			public function getTitle():String {
 				return title;
 			}
@@ -100,8 +106,15 @@
 			}
 			public function filter(caseFilterText:String):void {
 				
+				if(CaseView.caseSearchBoxDefaultText == caseFilterText) {
+					return;
+				}
+				
+				
 				trace("filtering");
 				caseFilterText = caseFilterText.toLowerCase();
+				
+				
 				
 				// build up the search string
 				var searchString:String = rmCode + " " + researcherName + " " + title;
@@ -147,9 +160,41 @@
 			}
 
 			private function eraNotificationsUpdated(e:Event):void {
+				if(!_eraCaseData) {
+					// the data has been removed, probably because this has been removed from the stage, but flash is soooo slow at removing event listeners
+					// so just return
+					return;
+				}
 				_eraCaseData.updateNotificationCount();
 				this.notificationCount = _eraCaseData.notificationCount;
-				notificationBadge.notificationCount = this.notificationCount; 
+				
+				// if there is notifications, add the badge to the stage
+				if(this.notificationCount > 0) {
+					// we have some notifications to display
+					if(!notificationBadge) {
+						// we havent added the badge yet, so lets do that making now
+						notificationBadge = new NotificationBadge();
+						notificationBadge.notificationCount = this.notificationCount;
+						notificationBadge.verticalCenter = 0;
+						notificationBadge.addEventListener(MouseEvent.CLICK, notificationBadge_clickHandler, false, 0, true);
+						hGroup.addElement(notificationBadge);
+						
+					} else {
+						// we have made the badge, so lets just update how it looks
+						notificationBadge.notificationCount = this.notificationCount;
+					}
+				} else {
+					// we dont have any notifications
+					if(notificationBadge) {
+						// if we have the badge, we need to remove it
+						notificationBadge.removeEventListener(MouseEvent.CLICK, notificationBadge_clickHandler);
+						hGroup.removeElement(notificationBadge);
+						notificationBadge = null;
+					}
+				}
+				
+
+ 
 				trace("Updating ERA Case", _eraCaseData.title, "notification count", this.notificationCount);
 			}
 
@@ -158,6 +203,12 @@
 				trace("CLEAR: Removing Case List Item");
 				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, canvas1_removedFromStageHandler);
+				
+				if(notificationBadge) {
+					notificationBadge.removeEventListener(MouseEvent.CLICK, notificationBadge_clickHandler);
+					hGroup.removeElement(notificationBadge);
+					notificationBadge = null;
+				}
 				
 				_eraCaseData = null;
 				researcherArray = null;
@@ -191,13 +242,13 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:HGroup buttonMode="true" width="100%" paddingRight="10" verticalAlign="middle"> 
+	<s:HGroup id="hGroup" buttonMode="true" width="100%" paddingRight="10" verticalAlign="middle"> 
 		<s:VGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" click="canvas1_clickHandler(event)" buttonMode="true">
 			<s:Label buttonMode="true" text="{researcherName}" fontWeight="bold" color="0xFFFFFF" width="100%" />
 			<s:Label buttonMode="true" text="{title}" color="0xFFFFFF" width="100%" />
 			<s:Label text="RM {rmCode}" color="0xFFFFFF" width="100%" />
 		</s:VGroup>
-		<components:NotificationBadge id="notificationBadge" notificationCount="{this.notificationCount}" verticalCenter="0" click="notificationBadge_clickHandler(event)"/>	
+		<!--<components:NotificationBadge id="notificationBadge" notificationCount="{this.notificationCount}" verticalCenter="0" click="notificationBadge_clickHandler(event)"/>-->	
 	</s:HGroup>
 	
 </mx:Canvas>
