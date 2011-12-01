@@ -2,13 +2,13 @@
 <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   xmlns:mx="library://ns.adobe.com/flex/mx" width="210"
-				   backgroundColor="0x222222"
+				   backgroundColor="0x444444"
 				   mouseOut="canvas1_mouseOutHandler(event)"
 				   mouseOver="canvas1_mouseOverHandler(event)"
 				    xmlns:components="View.ERA.components.*"
 				   creationComplete="canvas1_creationCompleteHandler(event)"
 				   removedFromStage="canvas1_removedFromStageHandler(event)"
-				   borderColor="0x888888"
+				   borderColor="0x444444"
 				   borderVisible="true"
 				   borderStyle="solid"
 				   borderAlpha="1"
@@ -46,6 +46,10 @@
 			
 			private var notificationBadge:NotificationBadge;
 			
+			private const SELECTED_COLOR:uint = 0x888888;
+			private const NORMAL_COLOR:uint = 0x444444;
+			private const HIGHLIGHT_COLOR:uint = 0x666666;
+			
 			public function set caseData(eraCaseData:Model_ERACase):void {
 				this._eraCaseData = eraCaseData;
 				this.researcherArray = eraCaseData.researchersArray;
@@ -71,7 +75,7 @@
 				
 				if(CaseController.currentERACase && eraCaseData.base_asset_id == CaseController.currentERACase.base_asset_id) {
 					this.selected = true;
-					this.setStyle("backgroundColor", 0x555555);
+					this.setStyle("backgroundColor", SELECTED_COLOR);
 				}
 				
 				this.notificationCount = eraCaseData.notificationCount;
@@ -135,16 +139,16 @@
 			protected function canvas1_mouseOutHandler(event:MouseEvent):void
 			{
 				if(this.selected) {
-					this.setStyle("backgroundColor", 0x555555);
+					this.setStyle("backgroundColor", SELECTED_COLOR);
 				} else {
-					this.setStyle("backgroundColor", 0x222222);
+					this.setStyle("backgroundColor", NORMAL_COLOR);
 				}
 			}
 
 
 			protected function canvas1_mouseOverHandler(event:MouseEvent):void
 			{
-				this.setStyle("backgroundColor", 0x333333);
+				this.setStyle("backgroundColor", HIGHLIGHT_COLOR);
 			}
 
 

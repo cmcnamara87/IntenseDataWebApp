@@ -144,10 +144,17 @@ package Controller.ERA
 			trace('move to room type', moveToRoomType);
 			
 			AppModel.getInstance().moveERAFile(fileID, currentRoom.base_asset_id, getRoom(moveToRoomType).base_asset_id, moveToRoomType, fileMoved);
+
+			// if the file is a hot file, we need to descrease the number of hot files i nthe room
+			// its going to be hot for every room, except the forensic lab inactive section
+			if(e.data.hot) {
+				caseView.changeRoomEvidenceCount(currentRoom.roomType, false);
+			}
 		}
 		private function fileMoved(status:Boolean):void {
 			if(status) {
 				layout.notificationBar.showGood("File Moved");
+				// tell the view to update its icons
 			} else {
 				layout.notificationBar.showError("Failed to Move File");
 			}
@@ -156,7 +163,14 @@ package Controller.ERA
 		private function changeTemperature(e:IDEvent):void {
 			var fileID:Number = e.data.fileID;
 			var hot:Boolean = e.data.hot;
+			
+			trace("file is for change is", fileID);
 			AppModel.getInstance().updateERAFileTemperature(fileID, hot, temperatureChanged);
+			if(hot) {
+				caseView.changeRoomEvidenceCount(currentRoom.roomType, true);
+			} else {
+				caseView.changeRoomEvidenceCount(currentRoom.roomType, false);
+			}
 		}
 		private function temperatureChanged(status:Boolean):void {
 			if(!status) {
@@ -573,7 +587,10 @@ package Controller.ERA
 			// get out the room IDs
 			trace("ROOM IDS ARE: EVIDNECE ROOM", getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, "FORENSIC LAB", getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id);
 			
-			AppModel.getInstance().uploadERAFile(getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id, logItemID, type, title, description, version, file, evidenceItem, uploadIOError, AppController.layout.allProgressEvents, AppController.layout.allCompleteEvents); 
+			AppModel.getInstance().uploadERAFile(getRoom(Model_ERARoom.EVIDENCE_ROOM).base_asset_id, getRoom(Model_ERARoom.FORENSIC_LAB).base_asset_id, logItemID, type, title, description, version, file, evidenceItem, uploadIOError, AppController.layout.allProgressEvents, AppController.layout.allCompleteEvents);
+			
+			caseView.forensicLabButton.increaseEvidenceCount();
+			caseView.evidenceBoxButton.increaseEvidenceCount();
 		}
 		private function uploadIOError():void {
 			layout.notificationBar.showError("Failed to Upload file.");

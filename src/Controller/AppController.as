@@ -311,7 +311,7 @@ package Controller {
 
 			layout.header.notificationButton.label = unreadNotificationCount + "";
 			if(unreadNotificationCount > 0) {
-				layout.header.notificationButton.setStyle('chromeColor', "0xFF8800");
+				layout.header.notificationButton.setStyle('chromeColor', "0x649ccf");
 				layout.header.notificationButton.setStyle('font-weight', "bold");
 			} else {
 				layout.header.notificationButton.setStyle('chromeColor', "0x222222");

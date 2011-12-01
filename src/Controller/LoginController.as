@@ -9,6 +9,8 @@ package Controller {
 	
 	import flash.events.MouseEvent;
 	
+	import mx.controls.Alert;
+	
 	public class LoginController extends AppController {
 		
 		private var _authOverride:Boolean = false;
@@ -148,9 +150,11 @@ package Controller {
 			trace("redirectURL", redirectURL);
 			if(redirectURL == 'login') {
 				redirectURL = Router.defaultURL;
+				trace("must be here", redirectURL);
 				Dispatcher.call(redirectURL);
 				return;
 			}
+			trace("did it get to here");
 			//Dispatcher.call(redirectURL);
 //			Dispatcher.call('browse');
 //			Dispatcher.call('case');

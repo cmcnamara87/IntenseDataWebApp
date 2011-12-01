@@ -1,5 +1,7 @@
 package Controller.Utilities {
 	
+	import Model.Model_ERARoom;
+	
 	import View.ModuleWrapper.*;
 	
 	import flash.display.Bitmap;
@@ -16,6 +18,10 @@ package Controller.Utilities {
 		public static const IMAGE:String = "image";
 		public static const DOCUMENT:String = "document"; 
 
+		// Search icon
+		[Embed(source="Assets/Template/search.png")]
+		public static var SearchIcon:Class;
+		
 		
 		
 		// Image Icon Assets - Normal and Clicked
@@ -51,17 +57,27 @@ package Controller.Utilities {
 		// ERA room icons
 		[Embed(source="Assets/Template/evidence_manager_icon_1.png")]
 		public static var EvidenceManagerIcon:Class;
+		[Embed(source="Assets/Template/evidence_manager_icon_1_on.png")]
+		public static var EvidenceManagerIconOn:Class;
 		[Embed(source="Assets/Template/evidence_box_icon_1.png")]
 		public static var EvidenceBoxIcon:Class;
+		[Embed(source="Assets/Template/evidence_box_icon_1_on.png")]
+		public static var EvidenceBoxIconOn:Class;
 		[Embed(source="Assets/Template/forensic_lab_icon_1.png")]
 		public static var ForensicLabIcon:Class;
+		[Embed(source="Assets/Template/forensic_lab_icon_1_on.png")]
+		public static var ForensicLabIconOn:Class;
 		[Embed(source="Assets/Template/screening_lab_icon_2.png")]
 		public static var ScreeningLabIcon:Class;
+		[Embed(source="Assets/Template/screening_lab_icon_2_on.png")]
+		public static var ScreeningLabIconOn:Class;
 		[Embed(source="Assets/Template/exhibition_icon_1.png")]
 		public static var ExhibitionIcon:Class;
+		// Orange exhibition icon
+		[Embed(source="Assets/Template/exhibition_icon_1_on.png")]
+		public static var ExhibitionIconOn:Class;
 		[Embed(source="Assets/Template/post_mortem_icon_1.png")]
 		public static var PostMortemIcon:Class;
-		
 		
 		[Embed(source="Assets/Template/assets/audio2.png")] 
 		private static var Asseticon_audio:Class;
@@ -175,6 +191,45 @@ package Controller.Utilities {
 		
 		public function AssetLookup() {
 			super();
+		}
+		
+		public static function getRoomIcon(roomType:String, on:Boolean):Class {
+			if(!on) {
+				switch(roomType) {
+					case Model_ERARoom.EVIDENCE_MANAGEMENT:
+						return EvidenceManagerIcon;
+					case Model_ERARoom.EVIDENCE_ROOM:
+						return EvidenceBoxIcon;
+					case Model_ERARoom.EXHIBIT:
+						return ExhibitionIcon;
+					case Model_ERARoom.FORENSIC_LAB:
+						return ForensicLabIcon;
+					case Model_ERARoom.POST_MORTEM:
+						return PostMortemIcon;
+					case Model_ERARoom.SCREENING_ROOM:
+						return ScreeningLabIcon;
+					default:
+						return EvidenceManagerIcon;
+				}
+			} else {
+				switch(roomType) {
+					case Model_ERARoom.EVIDENCE_MANAGEMENT:
+						return EvidenceManagerIconOn;
+					case Model_ERARoom.EVIDENCE_ROOM:
+						return EvidenceBoxIconOn;
+					case Model_ERARoom.EXHIBIT:
+						return ExhibitionIconOn;
+					case Model_ERARoom.FORENSIC_LAB:
+						return ForensicLabIconOn;
+					case Model_ERARoom.POST_MORTEM:
+						return PostMortemIcon;
+					case Model_ERARoom.SCREENING_ROOM:
+						return ScreeningLabIconOn;
+					default:
+						return EvidenceManagerIcon;
+				}
+			}
+			return EvidenceManagerIcon;
 		}
 		
 		public static function getFileFilter(type:String):Array {

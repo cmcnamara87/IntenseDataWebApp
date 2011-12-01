@@ -37,7 +37,7 @@
 			private var description:String = "";
 			
 			[Bindable]
-			public var fileID:Number;
+			public var fileID:Number = 9999;
 			
 			[Bindable]
 			public var type:String;
@@ -65,6 +65,7 @@
 
 			private var transcodeTimer:Timer = new Timer(10000);
 			
+			public var hot:Boolean = true;
 			
 			[Bindable]
 			public var dragEnabled:Boolean = true;
@@ -127,6 +128,8 @@
 				
 				description = _fileData.description;
 				fileID = _fileData.base_asset_id;
+				hot = _fileData.hot;
+				trace("SETTING FILE ID!!!!!", fileID);
 				type = _fileData.type;
 				ext = _fileData.fileExt;
 				version = _fileData.version;
@@ -278,27 +281,27 @@
 
 			protected function vgroup1_removedFromStageHandler(event:Event):void
 			{
-				trace("CLEAR: Removing File Tile");	
-				trace("transcode timer is", transcodeTimer);
-				if(transcodeTimer) {
-					transcodeTimer.removeEventListener(TimerEvent.TIMER, checkIfTranscoded);
-				}
-				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
-				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
-
-				_fileData = null;
-				title = null;
-				description = null;
-				fileID = null;
-				type = null;
-				ext = null;
-				version = null;
-				screeningCount = null;
-				exhibitionCount = null
-				rootMetaType = null;
-				checkedOut = null;
-				notificationCount = null;
-				transcodeTimer = null;
+//				trace("CLEAR: Removing File Tile");	
+//				trace("transcode timer is", transcodeTimer);
+//				if(transcodeTimer) {
+//					transcodeTimer.removeEventListener(TimerEvent.TIMER, checkIfTranscoded);
+//				}
+//				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
+//				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+//
+//				_fileData = null;
+//				title = null;
+//				description = null;
+//				fileID = null;
+//				type = null;
+//				ext = null;
+//				version = null;
+//				screeningCount = null;
+//				exhibitionCount = null
+//				rootMetaType = null;
+//				checkedOut = null;
+//				notificationCount = null;
+//				transcodeTimer = null;
 			}
 
 

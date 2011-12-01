@@ -7,6 +7,7 @@ package Model {
 		public var roomType:String;
 		public var roomTitle:String;
 		public var caseID:Number;
+		public var evidenceCount:Number = 0;
 		
 		public static const EVIDENCE_MANAGEMENT:String = "evidencemanagement";
 		public static const EVIDENCE_ROOM:String = "evidenceroom";
@@ -30,8 +31,7 @@ package Model {
 			this.roomTitle = getPrettyRoomName(roomType);
 			this.caseID = rawData.related.(@type=="case").to;
 			
-			
-			
+//			this.evidenceCount = rawData.related.(@type=="evidence").to.length();
 			updateNotificationCount();
 		}
 		

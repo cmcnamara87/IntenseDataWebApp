@@ -160,9 +160,12 @@
 				(event.currentTarget as BorderContainer).setStyle('backgroundColor', '0xFFFFFF');
 				coldFileGroup.addElement(event.dragInitiator as FileTile);
 				
+				(event.dragInitiator as FileTile).hot = false;
+				
 				var makeColdEvent:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_FILE_TEMPERATURE, true);
 				makeColdEvent.data.hot = false;
 				makeColdEvent.data.fileID = (event.dragInitiator as FileTile).fileID;
+				
 				this.dispatchEvent(makeColdEvent);
 			}
 
@@ -171,6 +174,8 @@
 			{
 				(event.currentTarget as BorderContainer).setStyle('backgroundColor', '0xFFFFFF');
 				hotFileGroup.addElement(event.dragInitiator as FileTile);
+				
+				(event.dragInitiator as FileTile).hot = true;
 				
 				var makeHotEvent:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_FILE_TEMPERATURE, true);
 				makeHotEvent.data.hot = true;

@@ -19,8 +19,8 @@
 			public var notificationCount:Number = 0;
 			public var notificationToolTip:String = "";
 			
-			private var initialColor:uint = 0xFF8800;
-			private var mouseOverColor:uint = 0xFF5500;
+			private var initialColor:uint = 0x649ccf;//0xFF8800;
+			private var mouseOverColor:uint = 0x76B8F5;//0xFF5500;
 			
 			[Bindable]
 			private var backgroundColor:uint = initialColor;

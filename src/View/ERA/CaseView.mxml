@@ -60,6 +60,10 @@
 			private var caseCounter:Number = 0;
 			private var caseArray:Array = null;
 			
+			private var selectedCase:CaseListItem = null;
+			
+			private var renderNumber:Number = 1;
+			
 			/**
 			 * Adds data to all the rooms for the  case
 			 * @param roomDataArray	The Room data
@@ -83,6 +87,28 @@
 							exhibitionButton.roomData = roomData;
 							break;
 					}
+				}
+			}
+			
+			public function changeRoomEvidenceCount(roomType:String, increase:Boolean):void {
+				switch(roomType) {
+					case Model_ERARoom.EVIDENCE_MANAGEMENT:
+						if(increase) evidenceManagementButton.increaseEvidenceCount() else evidenceManagementButton.decreaseEvidenceCount();
+						break;
+					case Model_ERARoom.EVIDENCE_ROOM:
+						if(increase) evidenceBoxButton.increaseEvidenceCount() else evidenceBoxButton.decreaseEvidenceCount();
+						break;
+					case Model_ERARoom.FORENSIC_LAB:
+						if(increase) forensicLabButton.increaseEvidenceCount() else forensicLabButton.decreaseEvidenceCount();
+						break;
+					case Model_ERARoom.SCREENING_ROOM:
+						trace("descreasing screening lab");
+						if(increase) screeningLabButton.increaseEvidenceCount() else screeningLabButton.decreaseEvidenceCount();
+						break;
+					case Model_ERARoom.EXHIBIT:
+						trace("exhibition");
+						if(increase) exhibitionButton.increaseEvidenceCount() else exhibitionButton.decreaseEvidenceCount();
+						break;
 				}
 			}
 			
@@ -254,17 +280,37 @@
 			
 			private function addCasesToDisplay():void {
 				
+				
 					if(caseCounter < caseArray.length) {
-						var eraCase:Model_ERACase = caseArray[caseCounter] as Model_ERACase;
-						var caseListItem:CaseListItem = new CaseListItem();
-						caseListItem.caseData = eraCase;
-						caseListItem.addEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated, false, 0, true);
-						casePanelContent.addElement(caseListItem);
-						// now thats it added, lets run the filter by it, in case someone is searching while they are loading
-						caseListItem.filter(caseFilterTextInput.text);
+//						trace("here");
+						for(var i:Number = 0; i < renderNumber && (i + caseCounter) < caseArray.length; i++) {
+							trace("loading cas", i, caseCounter, i+caseCounter, caseArray.length);
+							var eraCase:Model_ERACase = caseArray[caseCounter + i] as Model_ERACase;
+							var caseListItem:CaseListItem = new CaseListItem();
+							caseListItem.caseData = eraCase;
+							casePanelContent.addElement(caseListItem);
+							// now thats it added, lets run the filter by it, in case someone is searching while they are loading
+							caseListItem.filter(caseFilterTextInput.text);
+						}
+//						trace("here 2");
+						caseCounter += i;
+//						renderNumber++;
+						
+						if(caseListItem) {
+							caseListItem.addEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated, false, 0, true);
+						} else {
+							loadingLabel.includeInLayout = false;
+							loadingLabel.visible = false;
+							
+							casePanelScroller.verticalScrollBar.value = selectedCase.y;
+						}
+//						trace("here 3");
+						
 					} else {
 						loadingLabel.includeInLayout = false;
 						loadingLabel.visible = false;
+						
+						casePanelScroller.verticalScrollBar.value = selectedCase.y;
 					}
 			}
 			
@@ -275,9 +321,10 @@
 					if((e.target as CaseListItem).getID() == CaseController.currentERACase.base_asset_id) {
 						// its the selected one, so scroll to it;
 						casePanelScroller.verticalScrollBar.value = (e.target as CaseListItem).y;
+						selectedCase = (e.target as CaseListItem);
 					}
 					
-					caseCounter++;
+//					caseCounter++;
 					addCasesToDisplay();
 				}
 			}
@@ -354,6 +401,7 @@
 				exhibition = null;
 				caseCounter = null;
 				caseArray = null;
+				selectedCase = null;
 			}
 			
 		]]>
@@ -364,22 +412,27 @@
 		<s:DropShadowFilter id="shadowy" distance="8" angle="90" color="0x000000" alpha="0.2" blurX="8" blurY="8" inner="true"/>
 	</fx:Declarations>
 	<!-- The Case Panel -->
-	<s:BorderContainer  id="casePanel" backgroundColor="0x222222" borderVisible="false" height="100%" width="{casePanelExtended ? 225 : 0}" resizeEffect="Resize">
+	<s:BorderContainer  id="casePanel" backgroundColor="0x565656" borderColor="0x222222" borderStyle="solid" height="100%" width="{casePanelExtended ? 225 : 0}" resizeEffect="Resize">
 		<s:VGroup width="100%" height="100%" gap="0">
 			<s:VGroup width="100%" paddingTop="10">
 				<s:Label color="0xFFFFFF" text="ERA Case List" fontSize="20" paddingLeft="10"/>
 				<s:DropDownList id="caseERADropdown" chromeColor="0x444444" contentBackgroundColor="0x444444" color="0xFFFFFF" width="100%">
 				</s:DropDownList>
-				<s:TextInput width="100%" id="caseFilterTextInput" color="0xFFFFFF" fontStyle="italic" height="30" text="{caseSearchBoxDefaultText}" chromeColor="0x222222" contentBackgroundColor="0x444444" focusIn="caseFilterTextInput_focusInHandler(event)" focusOut="caseFilterTextInput_focusOutHandler(event)" change="caseFilterTextInput_changeHandler(event)" />
+				<s:BorderContainer width="100%" height="35" backgroundColor="0x649ccf" borderVisible="false">
+					<s:HGroup width="100%" height="100%" verticalAlign="middle" paddingRight="5">
+						<s:TextInput width="100%" id="caseFilterTextInput" color="0xEEEEEE" paddingLeft="10" fontStyle="italic" height="100%" text="{caseSearchBoxDefaultText}" chromeColor="0x649ccf" contentBackgroundColor="0x649ccf" borderVisible="false" focusIn="caseFilterTextInput_focusInHandler(event)" focusOut="caseFilterTextInput_focusOutHandler(event)" change="caseFilterTextInput_changeHandler(event)" />
+						<mx:Image source="{AssetLookup.SearchIcon}" />	
+					</s:HGroup>
+				</s:BorderContainer>
+				
 			</s:VGroup>
 			<s:Scroller id="casePanelScroller" width="100%" height="100%" chromeColor="0x444444" filters="{casePanelScroller.verticalScrollBar.value > 0 ? shadowy : null}">
 				<s:VGroup width="100%" gap="0">
+					<s:VGroup id="casePanelContent" width="100%" gap="0">
+					</s:VGroup>	
 					<s:Label id="loadingLabel" color="0xFFFFFF" width="100" paddingLeft="10">
 						Loading...
 					</s:Label>
-					<s:VGroup id="casePanelContent" width="100%" gap="0">
-					</s:VGroup>	
-					
 				</s:VGroup>
 				
 			</s:Scroller>
@@ -418,17 +471,17 @@
 		<s:BorderContainer id="caseNav" backgroundColor="0x565656" width="100%" height="140" borderVisible="false" resizeEffect="Resize">
 			<s:VGroup horizontalAlign="center" height="100%" width="100%">
 				<s:HGroup height="100%" verticalAlign="middle" gap="10" id="roomButtons">
-					<components:RoomIcon roomName="Evidence Manager" id="evidenceManagementButton" roomType="{Model_ERARoom.EVIDENCE_MANAGEMENT}" icon="{AssetLookup.EvidenceManagerIcon}"/>
+					<components:RoomIcon roomName="Evidence Manager" id="evidenceManagementButton" roomType="{Model_ERARoom.EVIDENCE_MANAGEMENT}" />
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Evidence Box" alpha="0.5" id="evidenceBoxButton"  roomType="{Model_ERARoom.EVIDENCE_ROOM}" icon="{AssetLookup.EvidenceBoxIcon}" />
+					<components:RoomIcon roomName="Evidence Box" alpha="0.5" id="evidenceBoxButton"  roomType="{Model_ERARoom.EVIDENCE_ROOM}"  />
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" id="forensicLabButton"  roomType="{Model_ERARoom.FORENSIC_LAB}" icon="{AssetLookup.ForensicLabIcon}"  />
+					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" id="forensicLabButton"  roomType="{Model_ERARoom.FORENSIC_LAB}"  />
 					<mx:Image source="{AssetLookup.getLeftRightArrowIconClass()}" width="46" height="72"></mx:Image>
-					<components:RoomIcon roomName="Review Lab" alpha="0.5" id="screeningLabButton"  roomType="{Model_ERARoom.SCREENING_ROOM}" icon="{AssetLookup.ScreeningLabIcon}"  />
+					<components:RoomIcon roomName="Review Lab" alpha="0.5" id="screeningLabButton"  roomType="{Model_ERARoom.SCREENING_ROOM}"   />
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Exhibition" alpha="0.5"  id="exhibitionButton"  unavailable="false" roomType="{Model_ERARoom.EXHIBIT}" icon="{AssetLookup.ExhibitionIcon}" />
+					<components:RoomIcon roomName="Exhibition" alpha="0.5"  id="exhibitionButton"  unavailable="false" roomType="{Model_ERARoom.EXHIBIT}"  />
 					<mx:Image source="{AssetLookup.getLeftArrowIconClass() }"  width="46" height="34"></mx:Image>
-					<components:RoomIcon roomName="Post Mortem" alpha="0.5" id="postMortemButton" unavailable="true" roomType="{Model_ERARoom.POST_MORTEM}" icon="{AssetLookup.PostMortemIcon}" />
+					<components:RoomIcon roomName="Post Mortem" alpha="0.5" id="postMortemButton" unavailable="true" roomType="{Model_ERARoom.POST_MORTEM}"  />
 				</s:HGroup>
 			</s:VGroup>
 		</s:BorderContainer>

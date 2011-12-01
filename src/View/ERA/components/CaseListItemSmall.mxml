@@ -19,6 +19,14 @@
 			
 			public var selected:Boolean = false;
 			
+//			private const HIGHLIGHT_COLOR:uint = 0x888888;
+//			private const SELECTED_COLOR:uint = 0xD9F0FF; //0xFF8800
+//			private const REGULAR_COLOR:uint = 0x444444;
+			
+			private const SELECTED_COLOR:uint = 0x888888;
+			private const NORMAL_COLOR:uint = 0x444444;
+			private const HIGHLIGHT_COLOR:uint = 0x666666;
+			
 			protected function bordercontainer1_removedFromStageHandler(event:Event):void
 			{
 				// TODO Auto-generated method stub
@@ -26,11 +34,11 @@
 			}		
 			public function deselect():void {
 				selected = false;
-				this.setStyle("backgroundColor", 0x444444);
+				this.setStyle("backgroundColor", NORMAL_COLOR);
 			}
 			public function select():void {
 				selected = true;
-				this.setStyle("backgroundColor", 0xFF8800);
+				this.setStyle("backgroundColor", SELECTED_COLOR);
 			}
 			
 			public function filter(caseFilterText:String):void {
@@ -63,16 +71,16 @@
 			
 			protected function canvas1_mouseOverHandler(event:MouseEvent):void
 			{
-				this.setStyle("backgroundColor", 0x888888);
+				this.setStyle("backgroundColor", HIGHLIGHT_COLOR);
 				
 			}
 			
 			protected function canvas1_mouseOutHandler(event:MouseEvent):void
 			{
 				if(selected) {
-					this.setStyle("backgroundColor", 0xFF8800);
+					this.setStyle("backgroundColor", SELECTED_COLOR);
 				} else {
-					this.setStyle("backgroundColor", 0x444444);
+					this.setStyle("backgroundColor", NORMAL_COLOR);
 				}
 				
 			}

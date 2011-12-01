@@ -69,6 +69,9 @@ package Model.Transactions.ERAProject
 			
 			sendNotification();
 			
+			AppModel.getInstance().updateERAFileTemperature(fileID, true, function(status:Boolean):void {
+				trace("Made file hot");
+			});
 			callback(true);
 		}
 		

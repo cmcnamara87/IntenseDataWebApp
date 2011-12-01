@@ -13,6 +13,9 @@ package Model.Transactions.ERAProject
 		private var callback:Function;
 		private var caseID:Number;
 		
+		private var eraRoomArray:Array;
+		private var roomCounter:Number = 0;
+		
 		public function Transaction_GetAllRooms(caseID:Number, connection:Connection, callback:Function)
 		{
 			this.connection = connection;
@@ -44,9 +47,49 @@ package Model.Transactions.ERAProject
 				return;
 			}
 			
-			var eraRoomArray:Array = AppModel.getInstance().parseResults(data, Model_ERARoom);
+			eraRoomArray = AppModel.getInstance().parseResults(data, Model_ERARoom);
 			
-			callback(true, eraRoomArray);
+			trace("room array length", eraRoomArray.length);
+			
+			if(eraRoomArray.length > 0) {
+				// we need to go through, and work outif there are active files
+				// asset.count :where related to{room} (id=5114) and (ERA-evidence/hot=true or type>=ERA/logitem)
+				getEvidenceCount();
+			} else {
+				callback(true, eraRoomArray);
+			}
+		}
+		
+		private function getEvidenceCount():void {
+			var baseXML:XML = connection.packageRequest("asset.count", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			if((eraRoomArray[roomCounter] as Model_ERARoom).roomType == Model_ERARoom.EVIDENCE_ROOM) {
+				argsXML.where = "related to{room} (id=" + (eraRoomArray[roomCounter] as Model_ERARoom).base_asset_id + ") and (class>='recensio:base/resource/media')";
+			} else {
+				argsXML.where = "related to{room} (id=" + (eraRoomArray[roomCounter] as Model_ERARoom).base_asset_id + ") and (ERA-evidence/hot=true or type>=ERA/logitem) and (class>='recensio:base/resource/media' or type>=ERA/logitem)";
+			}
+			trace("looking at room", (eraRoomArray[roomCounter] as Model_ERARoom).base_asset_id);
+			connection.sendRequest(baseXML, gotEvidenceCount);
+		}
+		private function gotEvidenceCount(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("getting all rooms", e)) == null) {
+				callback(false, null);
+				return;
+			}
+			trace("RAAARRRRRRRRRR", data);
+			// Update the era room here
+			trace("count is", data.reply.result.total);
+			(eraRoomArray[roomCounter] as Model_ERARoom).evidenceCount = data.reply.result.total;
+			
+			roomCounter++;
+			trace("room counter is", roomCounter, eraRoomArray.length);
+			
+			if(roomCounter >= eraRoomArray.length) {
+				callback(true, eraRoomArray);
+			} else {
+				getEvidenceCount();
+			}
 		}
 	}
 }
