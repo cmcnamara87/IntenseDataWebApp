@@ -27,7 +27,7 @@ package Model {
 		public static const CAT6:String = "Recorded/Rendered Creative Works - Performance (NP-C2)";
 		public static const CAT7:String = "Recorded/Rendered Creative Works - Inter-Arts (NP-C3)";
 		public static const CAT8:String = "Recorded/Rendered Creative Works - Digital Creative Works (NP-C4)";
-		public static const CAT9:String = "Recorded/Rendered Creative Works - Website/Web Exhibition (NP-C1)";
+		public static const CAT9:String = "Recorded/Rendered Creative Works - Website/Web Exhibition (NP-C5)";
 		public static const CAT10:String = "Recorded/Rendered Creative Works - Other (NP-C6)";
 		
 		public static const CAT11:String = "Curated or Produced Substantial Exhibitions - Web-based Exhibition (NP-D1)";

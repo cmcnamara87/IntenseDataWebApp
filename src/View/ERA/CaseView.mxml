@@ -282,7 +282,8 @@
 				
 				
 					if(caseCounter < caseArray.length) {
-//						trace("here");
+						trace("here");
+						var caseListItem:CaseListItem = null;
 						for(var i:Number = 0; i < renderNumber && (i + caseCounter) < caseArray.length; i++) {
 							trace("loading cas", i, caseCounter, i+caseCounter, caseArray.length);
 							var eraCase:Model_ERACase = caseArray[caseCounter + i] as Model_ERACase;
@@ -291,42 +292,49 @@
 							casePanelContent.addElement(caseListItem);
 							// now thats it added, lets run the filter by it, in case someone is searching while they are loading
 							caseListItem.filter(caseFilterTextInput.text);
+							
+							if(caseListItem.getID() == CaseController.currentERACase.base_asset_id) {
+								// its the selected one, so scroll to it;
+								casePanelScroller.verticalScrollBar.value = caseListItem.y;
+								selectedCase = caseListItem;
+							}
+							
 						}
-//						trace("here 2");
-						caseCounter += i;
-//						renderNumber++;
+						trace("here 2");
+						caseCounter += renderNumber;
+						renderNumber++;
 						
 						if(caseListItem) {
 							caseListItem.addEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated, false, 0, true);
 						} else {
+							trace("here 7");
 							loadingLabel.includeInLayout = false;
 							loadingLabel.visible = false;
 							
 							casePanelScroller.verticalScrollBar.value = selectedCase.y;
 						}
-//						trace("here 3");
+						trace("here 3");
 						
 					} else {
+						trace("here 8");
 						loadingLabel.includeInLayout = false;
 						loadingLabel.visible = false;
 						
+						trace("selected case", selectedCase);
 						casePanelScroller.verticalScrollBar.value = selectedCase.y;
+						trace("here 9");
 					}
 			}
 			
 			private function caseListItemCreated(e:FlexEvent):void {
 				(e.target as CaseListItem).removeEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated);
-				
+				trace("here 4");
 				if(keepAdding) {
-					if((e.target as CaseListItem).getID() == CaseController.currentERACase.base_asset_id) {
-						// its the selected one, so scroll to it;
-						casePanelScroller.verticalScrollBar.value = (e.target as CaseListItem).y;
-						selectedCase = (e.target as CaseListItem);
-					}
-					
+					trace("here 5");	
 //					caseCounter++;
 					addCasesToDisplay();
 				}
+				trace("here 6");
 			}
 
 			protected function caseTag_clickHandler(event:MouseEvent):void
