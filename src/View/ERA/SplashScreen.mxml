@@ -321,7 +321,7 @@
 			<s:VGroup width="100%" horizontalAlign="center">
 				<s:Label text="What would you like to do now?" color="0xFFFFFF" fontSize="32" paddingTop="40" paddingBottom="40" filters="{myFilter}"/>
 				
-				<s:HGroup verticalAlign="middle" gap="50" width="515">
+				<s:HGroup verticalAlign="middle" gap="20" width="443">
 					<s:Button label="Create a Case" height="35" fontSize="16" cornerRadius="18" color="0xFFFFFF" chromeColor="0x538bbe" width="200" click="button1_clickHandler(event)"/>
 					<s:Label text="or" color="0xFFFFFF" fontSize="24" filters="{myFilter}"/>
 					<s:Button id="manageCase" label="Manage a Case" height="35" fontSize="16" cornerRadius="18" color="0xFFFFFF" chromeColor="0x538bbe" width="200" click="button2_clickHandler(event)" />
