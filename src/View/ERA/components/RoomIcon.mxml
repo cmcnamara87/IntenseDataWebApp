@@ -215,6 +215,8 @@
 				} else {
 					iconImage.filters = new Array(mouseOver);
 				}
+				
+				roomLabel.setStyle("textDecoration", "underline");
 			}
 			
 			protected function vgroup1_mouseOutHandler(event:MouseEvent):void
@@ -223,6 +225,10 @@
 					iconImage.filters = new Array(darkFilter);
 				} else {
 					iconImage.filters = new Array(regularFilter);
+				}
+				
+				if(!selected) {
+					roomLabel.setStyle("textDecoration", "none");
 				}
 			}
 			
@@ -241,7 +247,7 @@
 		<mx:Image id="iconImage" width="48" height="50" horizontalAlign="center" maintainAspectRatio="true" verticalAlign="middle" horizontalCenter="0" verticalCenter="0" filters="{(evidenceCount>0) ? darkFilter : regularFilter}" click="vgroup1_clickHandler(event)">
 		</mx:Image>
 		
-		<s:Label x="18" text="x" fontSize="70" fontWeight="bold" color="0xFF0000" visible="{unavailable}" includeInLayout="{unavailable}"/>
+		<s:Label x="18" text="x" fontSize="70" fontWeight="bold" color="0xFF0000"  visible="{unavailable}" includeInLayout="{unavailable}"/>
 		<components:NotificationBadge id="notificationBadge" top="-0" left="50" notificationCount="{notificationCount}" click="notificationBadge_clickHandler(event)"/>
 	 </s:Group>
 	<!--<s:Group width="70" height="70">		
@@ -258,7 +264,7 @@
 		
 	</s:Group>-->
 	
-	<s:Label text="{roomName}" fontSize="15" color="0xcfcfcf" width="100%" textAlign="center" click="vgroup1_clickHandler(event)">
+	<s:Label id="roomLabel" text="{roomName}" textDecoration="{selected ? 'underline' : 'none'}" fontSize="15" color="0xcfcfcf" width="100%" textAlign="center" click="vgroup1_clickHandler(event)">
 		<s:filters>
 			<s:DropShadowFilter distance="1" angle="270" color="0x000000" blurX="0" blurY="0"/>
 		</s:filters>

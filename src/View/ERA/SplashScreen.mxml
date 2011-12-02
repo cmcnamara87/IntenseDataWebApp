@@ -2,8 +2,10 @@
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" xmlns:components="View.ERA.components.*"
-		  backgroundColor="0x565656"
+		  backgroundColor="0x333333"
+		  borderVisible="false"
 		  removedFromStage="bordercontainer1_removedFromStageHandler(event)">
+	<!--  0x565656 -->
 	<fx:Script>
 		<![CDATA[
 			import Controller.AppController;
@@ -35,6 +37,17 @@
 			private var keepAdding:Boolean = true;
 			private var currentListItemAdding:CaseListItemSmall = null;
 			
+			[Embed(source="Assets/Template/login_logo_qut.jpg")] 
+			[Bindable] private var login_logo_qut:Class;
+			
+			[Embed(source="Assets/Template/splash_screen_logo_IDS.png")] 
+			[Bindable] private var splash_IDS:Class;
+			[Embed(source="Assets/Template/splash_screen_logo_QUT.png")] 
+			[Bindable] private var splash_QUT:Class;
+			
+			[Embed(source="Assets/Template/qut_logo_grey.jpg")] 
+			[Bindable] private var qut_logo_grey:Class;
+			
 			/**
 			 * Add cases to the view
 			 * @param caseArray	Array of @see Model_ERACase
@@ -44,6 +57,7 @@
 				
 				// Remove any of the current cases (just in case....)
 				casePanelContent.removeAllElements();
+				
 								
 				// Store it for temporary rendering
 				this.caseArray = caseArray;
@@ -66,7 +80,7 @@
 					
 					currentListItemAdding = new CaseListItemSmall();
 					currentListItemAdding.caseID = eraCase.base_asset_id;
-					currentListItemAdding.width = 485;
+					currentListItemAdding.percentWidth = 100;
 					casePanelContent.addElement(currentListItemAdding);
 					currentListItemAdding.title.text = eraCase.title;
 					for each(var researcher:Model_ERAUser in eraCase.researchersArray) {
@@ -106,6 +120,7 @@
 				(e.target as CaseListItemSmall).select();
 				selectedCaseID = (e.target as CaseListItemSmall).caseID;
 				trace('done');
+				placeSelect.visible = true;
 				placeSelect.enabled = true;
 				
 				var currentERACase:Model_ERACase = null;
@@ -275,50 +290,88 @@
 				
 			}
 			
+
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				Dispatcher.call('casecreator');
+			}
+
+
+			protected function button2_clickHandler(event:MouseEvent):void
+			{
+				caseSelect.visible = true;
+				manageCase.setStyle("chromeColor", 0x31699c);
+			}
+
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		<s:DropShadowFilter id="myFilter" distance="-1" angle="270" color="0x000000" alpha="0.5" blurX="0" blurY="0"/>
+		<s:DropShadowFilter id="myFilter" distance="-2" angle="270" color="0x000000" alpha="0.5" blurX="0" blurY="0"/>
 	</fx:Declarations>
 	
-
-		<s:VGroup horizontalAlign="center" height="100%" width="100%">
-			
-			<s:Label text="Where would you like to go?" color="0xFFFFFF" fontSize="32" fontWeight="bold" paddingTop="40" paddingBottom="20" filters="{myFilter}"/>
-			
-			<s:Label text="1. Select an ERA Edition" color="0xFFFFFF" fontSize="24" paddingBottom="10" filters="{myFilter}"/>
-			<s:DropDownList id="caseERADropdown" width="500" height="30" chromeColor="0x444444" contentBackgroundColor="0x444444" color="0xFFFFFF">
-			</s:DropDownList>
-			
-			<s:VGroup id="caseSelect" width="100%" horizontalAlign="center" height="100%">
-				<s:Label text="2. Select a Case" color="0xFFFFFF" fontSize="24" paddingTop="30" paddingBottom="10" filters="{myFilter}" />
-				<s:TextInput id="caseSearch" width="500" height="30" color="0xFFFFFF" text="" contentBackgroundColor="0x444444" enabled="false" change="caseSearch_changeHandler(event)" focusIn="caseSearch_focusInHandler(event)" focusOut="caseSearch_focusOutHandler(event)"/>
+	<!--<s:HGroup width="100%" height="100%" gap="100">-->
+		<s:VGroup width="385" height="100%" left="100" horizontalAlign="right">
+			<mx:Image source="{Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP ? splash_QUT : splash_IDS}" ></mx:Image>
+			<s:VGroup paddingRight="27">
+				<mx:Image source="{qut_logo_grey}"></mx:Image>	
+			</s:VGroup>
+		</s:VGroup>
+		<s:VGroup width="620" height="100%" right="150" horizontalAlign="left">
+			<s:VGroup width="100%" horizontalAlign="center">
+				<s:Label text="What would you like to do now?" color="0xFFFFFF" fontSize="32" paddingTop="40" paddingBottom="40" filters="{myFilter}"/>
 				
-				<s:Scroller id="casePanelScroller" width="500" chromeColor="0x444444" height="100%">
+				<s:HGroup verticalAlign="middle" gap="50" width="515">
+					<s:Button label="Create a Case" height="35" fontSize="16" cornerRadius="18" color="0xFFFFFF" chromeColor="0x538bbe" width="200" click="button1_clickHandler(event)"/>
+					<s:Label text="or" color="0xFFFFFF" fontSize="24" filters="{myFilter}"/>
+					<s:Button id="manageCase" label="Manage a Case" height="35" fontSize="16" cornerRadius="18" color="0xFFFFFF" chromeColor="0x538bbe" width="200" click="button2_clickHandler(event)" />
+				</s:HGroup>	
+			</s:VGroup>
+			
+			<!--<s:VGroup id="newCaseSelect" width="100%" horizontalAlign="left" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}">
+			<s:Label text="Create a New Case" color="0xFFFFFF" fontSize="24" paddingBottom="10" filters="{myFilter}"/>
+			
+			</s:VGroup>-->
+			
+			<s:VGroup id="caseSelect" width="100%" horizontalAlign="left" height="100%" visible="false">
+				<s:Label text="Select a Case" color="0xFFFFFF" fontSize="24" paddingTop="30" paddingBottom="10" filters="{myFilter}" />
+				<s:DropDownList id="caseERADropdown" width="100%" height="30" chromeColor="0x444444" borderColor="0x444444" contentBackgroundColor="0x444444" color="0xFFFFFF">
+				</s:DropDownList>
+				<s:TextInput id="caseSearch" width="100%" height="30" color="0xFFFFFF" text="" contentBackgroundColor="0x444444" enabled="false" change="caseSearch_changeHandler(event)" focusIn="caseSearch_focusInHandler(event)" focusOut="caseSearch_focusOutHandler(event)"/>
+				
+				<s:Scroller id="casePanelScroller" width="100%" chromeColor="0x444444" height="100%">
 					<s:VGroup id="casePanelContent" width="100%" gap="5">
 					</s:VGroup>		
 				</s:Scroller>
 			</s:VGroup>
 			
-
-			<s:VGroup id="placeSelect" width="100%" height="200" horizontalAlign="center" enabled="false" paddingBottom="20">
-				<s:Label text="3. Select a Place" color="0xFFFFFF" fontSize="24" paddingTop="30" paddingBottom="10" filters="{myFilter}"/>
+			
+			<s:VGroup id="placeSelect" width="100%" height="200" horizontalAlign="left" enabled="false" paddingBottom="20" visible="false">
+				<s:Label text="Choose Your Workspace" color="0xFFFFFF" fontSize="20" paddingTop="30" paddingBottom="10" filters="{myFilter}"/>
 				<s:HGroup height="100%" verticalAlign="middle" gap="15" id="roomButtons" >
-					<components:RoomIcon roomName="Evidence Manager" id="evidenceManagementButton" roomType="{Model_ERARoom.EVIDENCE_MANAGEMENT}" mouseChildren="false"  click="evidenceManagementButton_clickHandler(event)"/>
+					<components:RoomIcon alpha="0.6" roomName="Evidence Manager" id="evidenceManagementButton" roomType="{Model_ERARoom.EVIDENCE_MANAGEMENT}" mouseChildren="false"  click="evidenceManagementButton_clickHandler(event)"/>
 					<!--<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>-->
-					<components:RoomIcon roomName="Evidence Box" alpha="0.5" id="evidenceBoxButton"  roomType="{Model_ERARoom.EVIDENCE_ROOM}" mouseChildren="false"  click="evidenceManagementButton_clickHandler(event)" />
+					<components:RoomIcon alpha="0.6" roomName="Evidence Box" id="evidenceBoxButton"  roomType="{Model_ERARoom.EVIDENCE_ROOM}" mouseChildren="false"  click="evidenceManagementButton_clickHandler(event)" />
 					<!--<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>-->
-					<components:RoomIcon roomName="Forensic Lab" alpha="0.5" id="forensicLabButton"  roomType="{Model_ERARoom.FORENSIC_LAB}" mouseChildren="false"  click="evidenceManagementButton_clickHandler(event)"  />
+					<components:RoomIcon alpha="0.6" roomName="Forensic Lab" id="forensicLabButton"  roomType="{Model_ERARoom.FORENSIC_LAB}" mouseChildren="false"  click="evidenceManagementButton_clickHandler(event)"  />
 					<!--<mx:Image source="{AssetLookup.getLeftRightArrowIconClass()}" width="46" height="72"></mx:Image>-->
-					<components:RoomIcon roomName="Review Lab" alpha="0.5" id="screeningLabButton"  roomType="{Model_ERARoom.SCREENING_ROOM}" mouseChildren="false"  click="evidenceManagementButton_clickHandler(event)"  />
+					<components:RoomIcon alpha="0.6" roomName="Review Lab" id="screeningLabButton"  roomType="{Model_ERARoom.SCREENING_ROOM}" mouseChildren="false"  click="evidenceManagementButton_clickHandler(event)"  />
 					<!--<mx:Image source="{AssetLookup.getLeftArrowIconClass()}" width="46" height="34"></mx:Image>-->
-					<components:RoomIcon roomName="Exhibition" alpha="0.5"  id="exhibitionButton"  unavailable="false" roomType="{Model_ERARoom.EXHIBIT}" mouseChildren="false"  click="evidenceManagementButton_clickHandler(event)" />
+					<components:RoomIcon alpha="0.6" roomName="Exhibition"  id="exhibitionButton"  unavailable="false" roomType="{Model_ERARoom.EXHIBIT}" mouseChildren="false"  click="evidenceManagementButton_clickHandler(event)" />
 					<!--<mx:Image source="{AssetLookup.getLeftArrowIconClass() }"  width="46" height="34"></mx:Image>-->
-					<components:RoomIcon roomName="Post Mortem" alpha="0.5" id="postMortemButton" unavailable="true" roomType="{Model_ERARoom.POST_MORTEM}"  />
+					<components:RoomIcon alpha="0.6" roomName="Post Mortem" id="postMortemButton" unavailable="true" roomType="{Model_ERARoom.POST_MORTEM}"  />
 				</s:HGroup>
 			</s:VGroup>
-			
 		</s:VGroup>
+		
+	<!--</s:HGroup>-->
+	<!--<mx:Image source="{Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP ? login_logo_qut : login_logo_id}" x="100" y="20" width="385" height="230"></mx:Image>
+	<mx:Image source="{qut_logo_grey}" x="200" y="240" width="154" height="154"></mx:Image>-->
+	
+		<!--<s:VGroup height="100%" width="650" right="100" horizontalAlign="left">
+			
+			
+			
+		</s:VGroup>-->
 	
 </s:BorderContainer>

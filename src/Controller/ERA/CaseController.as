@@ -418,7 +418,11 @@ package Controller.ERA
 			
 			// Add the cases for the view
 			// If the era case is emtpy, its going to display "no cases found"
-			caseView.addCases(eraCaseArray);
+			// check incase we have been dealloced
+			if(caseView) {
+				caseView.addCases(eraCaseArray);	
+			}
+			
 			
 			// Just check that we found a case from all that shit up above
 			if(currentERACase != null) {

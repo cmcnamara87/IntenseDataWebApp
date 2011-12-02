@@ -60,6 +60,7 @@ package Controller.ERA
 			
 			// Disable the rooms
 			splashView.placeSelect.enabled = false;
+			splashView.placeSelect.visible = false;
 			
 			AppModel.getInstance().getAllERACases(AppController.currentEraProject.base_asset_id, gotAllERACases);
 		}
