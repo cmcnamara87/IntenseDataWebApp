@@ -37,16 +37,7 @@
 			private var keepAdding:Boolean = true;
 			private var currentListItemAdding:CaseListItemSmall = null;
 			
-			[Embed(source="Assets/Template/login_logo_qut.jpg")] 
-			[Bindable] private var login_logo_qut:Class;
 			
-			[Embed(source="Assets/Template/splash_screen_logo_IDS.png")] 
-			[Bindable] private var splash_IDS:Class;
-			[Embed(source="Assets/Template/splash_screen_logo_QUT.png")] 
-			[Bindable] private var splash_QUT:Class;
-			
-			[Embed(source="Assets/Template/qut_logo_grey.jpg")] 
-			[Bindable] private var qut_logo_grey:Class;
 			
 			/**
 			 * Add cases to the view
@@ -247,22 +238,6 @@
 				Dispatcher.call("case/" + selectedCaseID + "/" + (event.target as RoomIcon).roomType);
 			}
 			
-			protected function bordercontainer1_removedFromStageHandler(event:Event):void
-			{
-				// TODO Auto-generated method stub
-				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
-				
-				if(currentListItemAdding) {
-					currentListItemAdding.removeEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated);
-				}
-				
-				casePanelContent.removeAllElements();
-				
-				currentListItemAdding = null;
-				keepAdding = false;
-				caseArray = null;
-				
-			}
 			
 			protected function caseSearch_focusInHandler(event:FocusEvent):void
 			{
@@ -303,6 +278,25 @@
 				manageCase.setStyle("chromeColor", 0x31699c);
 			}
 
+			protected function bordercontainer1_removedFromStageHandler(event:Event):void
+			{
+				// Remove all the case list panel items
+				casePanelContent.removeAllElements();
+				
+				// remove this event listeners
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+				
+				if(currentListItemAdding) {
+					currentListItemAdding.removeEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated);
+				}
+
+				casePanelContent.removeAllElements();
+				
+				currentListItemAdding = null;
+				keepAdding = false;
+				caseArray = null;
+				
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -312,9 +306,9 @@
 	
 	<!--<s:HGroup width="100%" height="100%" gap="100">-->
 		<s:VGroup width="385" height="100%" left="100" horizontalAlign="right">
-			<mx:Image source="{Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP ? splash_QUT : splash_IDS}" ></mx:Image>
+			<mx:Image source="{Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP ? AssetLookup.splash_QUT : AssetLookup.splash_IDS}" ></mx:Image>
 			<s:VGroup paddingRight="27">
-				<mx:Image source="{qut_logo_grey}"></mx:Image>	
+				<mx:Image source="{AssetLookup.qut_logo_grey}"></mx:Image>	
 			</s:VGroup>
 		</s:VGroup>
 		<s:VGroup width="620" height="100%" right="150" horizontalAlign="left">

@@ -303,6 +303,7 @@
 						trace("here 2");
 						caseCounter += renderNumber;
 						renderNumber++;
+						renderNumber = Math.min(10, renderNumber);
 						
 						if(caseListItem) {
 							caseListItem.addEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated, false, 0, true);

@@ -67,39 +67,39 @@ package Controller.ERA
 		
 		private function setupEventListeners():void {
 			// Listen for log item being saved
-			caseView.addEventListener(IDEvent.ERA_SAVE_LOG_ITEM, saveLogItem);
-			caseView.addEventListener(IDEvent.ERA_SAVE_FILE, saveFile);
-			caseView.addEventListener(IDEvent.ERA_DELETE_LOG_ITEM, deleteLogItem);
+			caseView.addEventListener(IDEvent.ERA_SAVE_LOG_ITEM, saveLogItem, false, 0, true);
+			caseView.addEventListener(IDEvent.ERA_SAVE_FILE, saveFile, false, 0, true);
+			caseView.addEventListener(IDEvent.ERA_DELETE_LOG_ITEM, deleteLogItem, false, 0, true);
 			
-			caseView.addEventListener(IDEvent.ERA_UPDATE_LOG, updateLog);
+			caseView.addEventListener(IDEvent.ERA_UPDATE_LOG, updateLog, false, 0, true);
 			// Listen for era being changed
-			caseView.caseERADropdown.addEventListener(IndexChangeEvent.CHANGE, eraChanged);
+			caseView.caseERADropdown.addEventListener(IndexChangeEvent.CHANGE, eraChanged, false, 0, true);
 			
 			// Listen for changing to the evidence manager
-			caseView.addEventListener(IDEvent.ERA_SHOW_EVIDENCE_MANAGEMENT, showEvidenceManagement);				
+			caseView.addEventListener(IDEvent.ERA_SHOW_EVIDENCE_MANAGEMENT, showEvidenceManagement, false, 0, true);				
 			// Listen for changing to the evidence box
-			caseView.addEventListener(IDEvent.ERA_SHOW_EVIDENCE_BOX, showEvidenceBox);
+			caseView.addEventListener(IDEvent.ERA_SHOW_EVIDENCE_BOX, showEvidenceBox, false, 0, true);
 			// Listen for changing to the forensic lab
-			caseView.addEventListener(IDEvent.ERA_SHOW_FORENSIC_LAB, showForensicLab);
-			caseView.addEventListener(IDEvent.ERA_SHOW_SCREENING_LAB, showScreeningLab);
-			caseView.addEventListener(IDEvent.ERA_SHOW_EXHIBITION, showExhibition);
+			caseView.addEventListener(IDEvent.ERA_SHOW_FORENSIC_LAB, showForensicLab, false, 0, true);
+			caseView.addEventListener(IDEvent.ERA_SHOW_SCREENING_LAB, showScreeningLab, false, 0, true);
+			caseView.addEventListener(IDEvent.ERA_SHOW_EXHIBITION, showExhibition, false, 0, true);
 			
 			// Show one of the files
-			caseView.addEventListener(IDEvent.ERA_SHOW_FILE, showFile);
+			caseView.addEventListener(IDEvent.ERA_SHOW_FILE, showFile, false, 0, true);
 			
 			// Move files between the different rooms
-			caseView.addEventListener(IDEvent.ERA_MOVE_FILE, moveFile);
+			caseView.addEventListener(IDEvent.ERA_MOVE_FILE, moveFile, false, 0, true);
 			
 			// Change the temperature of the file
-			caseView.addEventListener(IDEvent.ERA_CHANGE_FILE_TEMPERATURE, changeTemperature);
+			caseView.addEventListener(IDEvent.ERA_CHANGE_FILE_TEMPERATURE, changeTemperature, false, 0, true);
 			
 			// Listne for comment creation
-			caseView.addEventListener(IDEvent.ERA_SAVE_COMMENT, saveComment);
+			caseView.addEventListener(IDEvent.ERA_SAVE_COMMENT, saveComment, false, 0, true);
 			
 			// Listen for errors to show
 			caseView.addEventListener(IDEvent.ERA_ERROR, function(e:IDEvent):void {
 				layout.notificationBar.showError(e.data.error);
-			});
+			}, false, 0, true);
 		}
 		override public function init():void {
 			layout.header.adminToolButtons.visible = false;
@@ -633,6 +633,8 @@ package Controller.ERA
 			caseID = null;
 			roomType = null;
 			currentRoom = null;
+			
+			eraCaseArray = null;
 			
 			super.dealloc();
 		}

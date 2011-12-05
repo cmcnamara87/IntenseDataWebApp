@@ -109,35 +109,35 @@ package Controller.ERA {
 		 */		
 		private function setupEventListeners():void {
 			// Listen for "Save Comment" button being clicked.
-			fileView.addEventListener(IDEvent.COMMENT_SAVED, saveComment);
-			fileView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment);
-			fileView.addEventListener(IDEvent.COMMENT_EDITED, saveEditedComment);
+			fileView.addEventListener(IDEvent.COMMENT_SAVED, saveComment, false, 0, true);
+			fileView.addEventListener(IDEvent.COMMENT_DELETE, deleteComment, false, 0, true);
+			fileView.addEventListener(IDEvent.COMMENT_EDITED, saveEditedComment, false, 0, true);
 			
 			// Listen for 'Save Sharing' autosave
-			fileView.addEventListener(IDEvent.SHARING_CHANGED, sharingInfoChanged);
+			fileView.addEventListener(IDEvent.SHARING_CHANGED, sharingInfoChanged, false, 0, true);
 			
 			// Listen for 'Save Annotation'
-			fileView.addEventListener(IDEvent.ANNOTATION_SAVE_BOX, saveNewBoxAnnotation);
-			fileView.addEventListener(IDEvent.ANNOTATION_SAVE_PEN, saveNewPenAnnotation);
-			fileView.addEventListener(IDEvent.ANNOTATION_SAVE_HIGHLIGHT, saveNewHighlightAnnotation);
+			fileView.addEventListener(IDEvent.ANNOTATION_SAVE_BOX, saveNewBoxAnnotation, false, 0, true);
+			fileView.addEventListener(IDEvent.ANNOTATION_SAVE_PEN, saveNewPenAnnotation, false, 0, true);
+			fileView.addEventListener(IDEvent.ANNOTATION_SAVE_HIGHLIGHT, saveNewHighlightAnnotation, false, 0, true);
 			// Listen for 'Annotation Deleted'
-			fileView.addEventListener(IDEvent.ANNOTATION_DELETED, deleteAnnotation);
+			fileView.addEventListener(IDEvent.ANNOTATION_DELETED, deleteAnnotation, false, 0, true);
 			
 			// Listen for Details for the Media being updated
-			fileView.addEventListener(IDEvent.ASSET_UPDATE, updateMediaDetails);
+			fileView.addEventListener(IDEvent.ASSET_UPDATE, updateMediaDetails, false, 0, true);
 			
 			// Listen for Asset being deleted
-			fileView.addEventListener(IDEvent.MEDIA_ASSET_DELETE_BUTTON_CLICKED, deleteAssetButtonClicked);
+			fileView.addEventListener(IDEvent.MEDIA_ASSET_DELETE_BUTTON_CLICKED, deleteAssetButtonClicked, false, 0, true);
 			
 			// Listen for version being upload
-			fileView.addEventListener(IDEvent.ERA_SAVE_FILE, saveFile);
+			fileView.addEventListener(IDEvent.ERA_SAVE_FILE, saveFile, false, 0, true);
 			// Listne for a file being downloaded
-			fileView.addEventListener(IDEvent.ERA_DOWNLOAD_FILE, downloadFile);
+			fileView.addEventListener(IDEvent.ERA_DOWNLOAD_FILE, downloadFile, false, 0, true);
 			
 			// Listen for someone trying to download a video segment
-			fileView.addEventListener(IDEvent.ERA_DOWNLOAD_SEGMENT, downloadMediaSegment);
+			fileView.addEventListener(IDEvent.ERA_DOWNLOAD_SEGMENT, downloadMediaSegment, false, 0, true);
 			
-			fileView.addEventListener(IDEvent.ERA_GO_BACK, goBack);
+			fileView.addEventListener(IDEvent.ERA_GO_BACK, goBack, false, 0, true);
 		}
 		
 		/* =================================== UPLOAD A NEW VERSION ========================================= */
@@ -667,6 +667,22 @@ package Controller.ERA {
 				Alert.show("Sharing Update Failed");
 				trace("Sharing Update Failed", e.target.data);
 			} 
+		}
+		
+		//When the controller is destroyed/switched
+		override public function dealloc():void {
+			comments = null;
+			annotations = null;
+			module = null;
+			optionsHeight = null;
+			commentToDelete = null;
+			moduleInstance = null;
+			ModuleClass = null;
+			
+			// My variables
+			fileView = null;	// The current view we are looking at - The Media View
+			
+			super.dealloc();
 		}
 	}
 }

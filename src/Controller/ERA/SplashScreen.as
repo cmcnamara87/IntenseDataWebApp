@@ -38,7 +38,7 @@ package Controller.ERA
 			
 		}
 		private function setupEventListeners():void {
-			splashView.caseERADropdown.addEventListener(IndexChangeEvent.CHANGE, eraChanged);
+			splashView.caseERADropdown.addEventListener(IndexChangeEvent.CHANGE, eraChanged, false, 0, true);
 		}
 	
 		private function eraChanged(e:IndexChangeEvent):void {

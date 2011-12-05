@@ -22,7 +22,16 @@ package Controller.Utilities {
 		[Embed(source="Assets/Template/search.png")]
 		public static var SearchIcon:Class;
 		
-		
+		[Embed(source="Assets/Template/login_logo_qut.jpg")] 
+		public static var login_logo_qut1:Class;
+		[Embed(source="Assets/Template/login_logo_id.jpg")] 
+		public static var login_logo_id1:Class;
+		[Embed(source="Assets/Template/splash_screen_logo_IDS.png")] 
+		public static var splash_IDS:Class;
+		[Embed(source="Assets/Template/splash_screen_logo_QUT.png")] 
+		public static var splash_QUT:Class;
+		[Embed(source="Assets/Template/qut_logo_grey.jpg")] 
+		public static var qut_logo_grey:Class;
 		
 		// Image Icon Assets - Normal and Clicked
 		[Embed(source="Assets/Template/assets/image2.png")] 

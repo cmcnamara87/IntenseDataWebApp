@@ -27,11 +27,7 @@
 			private const NORMAL_COLOR:uint = 0x444444;
 			private const HIGHLIGHT_COLOR:uint = 0x666666;
 			
-			protected function bordercontainer1_removedFromStageHandler(event:Event):void
-			{
-				// TODO Auto-generated method stub
-				this.removeEventListener(Event.REMOVED_FROM_STAGE, bordercontainer1_removedFromStageHandler);	
-			}		
+				
 			public function deselect():void {
 				selected = false;
 				this.setStyle("backgroundColor", NORMAL_COLOR);
@@ -84,6 +80,13 @@
 				}
 				
 			}
+			
+			protected function bordercontainer1_removedFromStageHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, bordercontainer1_removedFromStageHandler);
+//				caseID = null;
+			}	
 			
 		]]>
 	</fx:Script>

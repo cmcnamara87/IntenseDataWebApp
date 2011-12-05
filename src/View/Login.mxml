@@ -6,19 +6,21 @@
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.Utilities.AssetLookup;
+			
 			import Model.AppModel;
 			
 			import flash.net.navigateToURL;
 			
 			import mx.controls.Alert;
-			[Embed(source="Assets/Template/login_logo_qut.jpg")] 
+			/*[Embed(source="Assets/Template/login_logo_qut.jpg")] 
 			[Bindable] private var login_logo_qut:Class;
 			
 			[Embed(source="Assets/Template/login_logo_id.jpg")] 
 			[Bindable] private var login_logo_id:Class;
 			
 			[Embed(source="Assets/Template/header_logo_id_4.png")] 
-			[Bindable] private var idLogo:Class;
+			[Bindable] private var idLogo:Class;*/
 			
 			[Bindable]
 			private var something:String = "Visit <a href='http://intensedata.com.au'>intensedata.com.au</a>";
@@ -48,7 +50,7 @@
 
 	<!-- Login Box -->
 	<s:BorderContainer id="box" width="100%" height="400" backgroundColor="0x333333" borderVisible="false">
-		<mx:Image source="{Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP ? login_logo_qut : login_logo_id}" width="824" height="400"></mx:Image>
+		<mx:Image source="{Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP ? AssetLookup.login_logo_qut1 : AssetLookup.login_logo_id1}" width="824" height="400"></mx:Image>
 		
 		<Element:LoginBox id="loginbox" width="337" height="184" x="{5/6 * box.width}" y="{box.height/2}" toolTip="Login to the system"></Element:LoginBox>	
 		<s:Label id="forgotPassword" text="Forgot Your Password" color="0xDDDDDD" x="{loginbox.x - 150}" y="{loginbox.y + 55}" click="forgotPassword_clickHandler(event)" buttonMode="true"/>
