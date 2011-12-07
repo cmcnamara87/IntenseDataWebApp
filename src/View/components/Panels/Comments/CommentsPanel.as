@@ -96,7 +96,7 @@ package View.components.Panels.Comments
 			// Listen for someone wanting to add a reference to a comment
 			// we have to save the ID of the current comment being edited, so when they give back the
 			// annotation to add, we know who to add it to
-			this.addEventListener(IDEvent.OPEN_REF_PANEL, function(e:IDEvent):void {
+			this.addEventListener(IDEvent.OPEN_REF_PANEL_FILE, function(e:IDEvent):void {
 				trace("CAUGHT open ref panel event", e.data.commentID);
 				editingCommentID = e.data.commentID;
 			});

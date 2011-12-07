@@ -148,7 +148,7 @@ package View
 			this.addEventListener(IDEvent.LIVE_SEARCH, searchTermEntered);
 			
 			// Asset Ref Code
-			this.addEventListener(IDEvent.OPEN_REF_PANEL, function(e:IDEvent):void {
+			this.addEventListener(IDEvent.OPEN_REF_PANEL_FILE, function(e:IDEvent):void {
 				myMediaLinkPanel.show();
 			});
 			

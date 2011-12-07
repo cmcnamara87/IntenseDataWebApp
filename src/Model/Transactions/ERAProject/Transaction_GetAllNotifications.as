@@ -1,5 +1,7 @@
 package Model.Transactions.ERAProject
 {
+	import Controller.Utilities.Auth;
+	
 	import Model.AppModel;
 	import Model.Model_ERACase;
 	import Model.Model_ERAConversation;
@@ -16,6 +18,7 @@ package Model.Transactions.ERAProject
 		private var connection:Connection;
 		private var callback:Function;
 		private var roomID:Number;
+		private var readStatus:Boolean;
 		
 		private var eraNotificationArray:Array;
 		private var notificationNumber:Number = 0;
@@ -23,16 +26,19 @@ package Model.Transactions.ERAProject
 
 		private var notificationDataBeingProcessed:Model_ERANotification;
 		
-		public function Transaction_GetAllNotifications(connection:Connection, callback:Function)
+		public function Transaction_GetAllNotifications(readStatus:String, connection:Connection, callback:Function)
 		{
 			this.connection = connection;
 			this.callback = callback;
 			this.roomID = roomID;
+			this.readStatus = readStatus;
 			getAllNotifications();
 		}
 		
 		private function getAllNotifications():void {
 			// asset.query :where asset in collection <id>
+			
+			// asset.query :where type>=ERA/notification and not(ERA-notification/read_by_users/username contains-all 'p.hempenstall')
 			
 			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
@@ -41,7 +47,14 @@ package Model.Transactions.ERAProject
 			argsXML["get-related-meta"] = true;
 			argsXML.size = "infinity";
 			
-			argsXML.where = "type=ERA/notification";
+//			if(this.readStatus == Model_ERANotification.SHOW_ALL) {
+				argsXML.where = "type=ERA/notification";	
+//			} else if (this.readStatus == Model_ERANotification.SHOW_READ) {
+//				argsXML.where = "type>=ERA/notification and ERA-notification/read_by_users/username contains-all '" + Auth.getInstance().getUsername() + "'";	
+//			} else if (this.readStatus == Model_ERANotification.SHOW_UNREAD) {
+//				argsXML.where = "type>=ERA/notification and not(ERA-notification/read_by_users/username contains-all '" + Auth.getInstance().getUsername() + "')";
+//			}
+			
 			
 			connection.sendRequest(baseXML, gotAllNotifications);
 		}

@@ -3,6 +3,7 @@ package View.ERA
 	import Controller.AppController;
 	import Controller.BrowserController;
 	import Controller.Dispatcher;
+	import Controller.ERA.CaseController;
 	import Controller.ERA.FileController;
 	import Controller.IDEvent;
 	import Controller.Utilities.AssetLookup;
@@ -103,7 +104,13 @@ package View.ERA
 		
 		public static var saveAnnotationFunction:Function;
 		
+		// Stores whether we are making a reference in the comments or annotations
 		private var currentlyAddingRefTo:String;
+		// Stores whether we are making a file referecne, or annotation reference
+		private var referenceMode:String = NO_REF_MODE;
+		private static const FILE_REF_MODE = "file";
+		private static const ANNOTATION_REF_MODE = "annotation";
+		private static const NO_REF_MODE = "";
 		
 		private var commentCount:Number = 0;
 		
@@ -171,23 +178,6 @@ package View.ERA
 			vGroup1.addElement(titleLabel);
 			
 			this.addElement(titleBar);
-			
-			/*<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
-				<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
-					<s:VGroup width="100%">
-						<s:Label text="ERA {AppController.currentEraProject.year} / RM {CaseController.currentERACase.rmCode} - {CaseController.currentERACase.title}" fontSize="16" fontWeight="bold" color="0x828F9A">
-							<s:filters>
-								<s:DropShadowFilter distance="1" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
-							</s:filters>
-						</s:Label>
-						<s:Label text="RM {CaseController.currentERACase.rmCode} - Evidence Box" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
-							<s:filters>
-								<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
-							</s:filters>
-						</s:Label>
-					</s:VGroup>
-				</s:HGroup>
-			</s:BorderContainer>*/
 				
 			// Add toolbar
 			var myToolbar:Toolbar = new Toolbar();
@@ -210,7 +200,12 @@ package View.ERA
 			
 			
 			// Add Add Annotation button
-			addAnnotationButton = IDGUI.makeButton("Add Annotation");
+			if(FileController.refMode) {
+				addAnnotationButton = IDGUI.makeButton("Add New Annotation");
+			} else {
+				addAnnotationButton = IDGUI.makeButton("Add Annotation");	
+			}
+			
 			// Make the button invisible for now, we will only show it
 			// if its the 'image' media type (this is done when the media is loaded below
 			// TODO fix this when refactored
@@ -261,7 +256,11 @@ package View.ERA
 //			myToolbar.addElement(viewsButton);
 			
 			// Add annotations button
-			annotationListButton = IDGUI.makeButton('Annotation List');
+			if(FileController.refMode) {
+				annotationListButton = IDGUI.makeButton('Choose Existing Annotation');
+			} else {
+				annotationListButton = IDGUI.makeButton('Annotation List');
+			}
 			annotationListButton.enabled = false;
 			annotationListButton.setStyle("cornerRadius", "10");
 			annotationListButton.setStyle("chromeColor", "0xFFFFFF");
@@ -269,7 +268,12 @@ package View.ERA
 			hGroup1.addElement(annotationListButton);
 			
 			// Add comments button
-			commentsButton = IDGUI.makeMenuButton('Comments');
+			if(FileController.refMode) {
+				commentsButton = IDGUI.makeMenuButton('Choose Existing Comments');
+			} else {
+				commentsButton = IDGUI.makeMenuButton('Comments');
+			}
+			
 			commentsButton.enabled = false;
 			hGroup1.addElement(commentsButton);
 			
@@ -309,63 +313,87 @@ package View.ERA
 //			if(BrowserController.currentCollectionID == BrowserController.ALLASSETID) {
 //				this.hideButtonsForPureAssetView();	
 //			}
+			
 			// Add Event Listeners
-			deleteAssetButton.addEventListener(MouseEvent.CLICK, deleteAssetButtonClicked);
-			addAnnotationButton.addEventListener(MouseEvent.CLICK, addAnnotationButtonClicked);
-			hideShowAnnotationButton.addEventListener(MouseEvent.CLICK, hideShowAnnotationButtonClicked);
-			editDetailsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
-			shareButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
-			annotationListButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
-			commentsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
+			setupEventListeners();
+		}
+		
+		private function setupEventListeners():void {
+			// Listne for deleting an asset
+			deleteAssetButton.addEventListener(MouseEvent.CLICK, deleteAssetButtonClicked, false, 0, true);
+			// Adding an annotation button being clicked
+			addAnnotationButton.addEventListener(MouseEvent.CLICK, addAnnotationButtonClicked, false, 0, true);
+			/// Hiding annotations
+			hideShowAnnotationButton.addEventListener(MouseEvent.CLICK, hideShowAnnotationButtonClicked, false, 0, true);
+			// Editing the files details
+			editDetailsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked, false, 0, true);
+			// Sharing the file
+			shareButton.addEventListener(MouseEvent.CLICK, panelButtonClicked, false, 0, true);
+			// Opening the annotaiton list
+			annotationListButton.addEventListener(MouseEvent.CLICK, panelButtonClicked, false, 0, true);
+			// Opening the comment list
+			commentsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked, false, 0, true);
 			
-			uploadNewVersionButton.addEventListener(MouseEvent.CLICK, uploadNewVersionClicked);
-			unlockFileButton.addEventListener(MouseEvent.CLICK, unlockFileClicked);
+			// Upload a new version of the file
+			uploadNewVersionButton.addEventListener(MouseEvent.CLICK, uploadNewVersionClicked, false, 0, true);
+			// Unlock the file button being clicked
+			unlockFileButton.addEventListener(MouseEvent.CLICK, unlockFileClicked, false, 0, true);
+			
 			// Listen for annotation list item mouseover
-			this.addEventListener(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, annotationListItemMouseOver);
-			this.addEventListener(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOUT, annotationListItemMouseOut);
+			this.addEventListener(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOVER, annotationListItemMouseOver, false, 0, true);
+			this.addEventListener(IDEvent.ANNOTATION_LIST_ITEM_MOUSEOUT, annotationListItemMouseOut, false, 0, true);
 			
-			backButton.addEventListener(MouseEvent.CLICK, backButtonClicked);
-			downloadButton.addEventListener(MouseEvent.CLICK, downloadButtonClicked);
-			downloadButton.addEventListener(MouseEvent.MOUSE_OVER, downloadButtonMouseOver);
-			downloadButton.addEventListener(MouseEvent.MOUSE_OUT, downloadButtonMouseOut);
+			backButton.addEventListener(MouseEvent.CLICK, backButtonClicked, false, 0, true);
+			downloadButton.addEventListener(MouseEvent.CLICK, downloadButtonClicked, false, 0, true);
+			downloadButton.addEventListener(MouseEvent.MOUSE_OVER, downloadButtonMouseOver, false, 0, true);
+			downloadButton.addEventListener(MouseEvent.MOUSE_OUT, downloadButtonMouseOut, false, 0, true);
 			
-			viewsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked);
+			viewsButton.addEventListener(MouseEvent.CLICK, panelButtonClicked, false, 0, true);
 			
 			
 			// Asset Ref Code
-			this.addEventListener(IDEvent.OPEN_REF_PANEL, function(e:IDEvent):void {
+			this.addEventListener(IDEvent.OPEN_REF_PANEL_FILE, function(e:IDEvent):void {
 				currentlyAddingRefTo = e.data.type;
+				referenceMode = FILE_REF_MODE;
 				// Show the media panel
 				myMediaLinkPanel.show();
-			});
+			}, false, 0, true);
+			
+			// Asset Ref Code
+			this.addEventListener(IDEvent.OPEN_REF_PANEL_ANNOTATION, function(e:IDEvent):void {
+				currentlyAddingRefTo = e.data.type;
+				referenceMode = ANNOTATION_REF_MODE;
+				// Show the media panel
+				myMediaLinkPanel.show();
+			}, false, 0, true);
 			
 			this.addEventListener(IDEvent.CLOSE_REF_PANEL, function(e:IDEvent):void {
 				myMediaLinkPanel.hide();
-			});
+				referenceMode = NO_REF_MODE;
+			}, false, 0, true);
 			
 			this.addEventListener(IDEvent.ERA_SHOW_FILE, function(e:IDEvent):void {
+				// Check what referencing mode we are in
+				if(referenceMode == FILE_REF_MODE) {
+					if(currentlyAddingRefTo == 'comment') {
+						myCommentsPanel.addReferenceTo(e.data.fileID, e.data.fileTitle);
+					} else if (currentlyAddingRefTo == 'annotation') {
+						myAnnotationListPanel.addReferenceTo(e.data.fileID, e.data.fileTitle);
+					}
+				} else if(referenceMode == ANNOTATION_REF_MODE) {
+					Dispatcher.showFile(FileController.caseID, FileController.rmCode, FileController.roomType, FileController.roomID, e.data.fileID);
+				}
+				/*
 				if(currentlyAddingRefTo == 'comment') {
 					myCommentsPanel.addReferenceTo(e.data.fileID, e.data.fileTitle);
-//					myCommentsPanel.addReferenceTo(e.data.assetData);
 				} else if (currentlyAddingRefTo == 'annotation') {
 					myAnnotationListPanel.addReferenceTo(e.data.fileID, e.data.fileTitle);
-//					myAnnotationListPanel.addReferenceTo(e.data.assetData);
-					//					myCommentsPanel.addReferenceTo(e.data.assetData);
-				}
-			})
-//				
-//			this.addEventListener(IDEvent.ASSET_ADD_AS_REF_COMMENT, function(e:IDEvent):void {
-//				if(currentlyAddingRefTo == 'comment') {
-//					myCommentsPanel.addReferenceTo(e.data.assetData);
-//				} else if (currentlyAddingRefTo == 'annotation') {
-//					myAnnotationListPanel.addReferenceTo(e.data.assetData);
-//					//					myCommentsPanel.addReferenceTo(e.data.assetData);
-//				}
-//			})
+				}*/
+			}, false, 0, true);
 			
 			this.addEventListener(IDEvent.COMMENT_EDITED, function(e:IDEvent):void {
 				myMediaLinkPanel.hide();
-			});
+			}, false, 0, true);
 		}
 		
 		public function addMediaLinkPanelFiles(fileArray:Array):void {

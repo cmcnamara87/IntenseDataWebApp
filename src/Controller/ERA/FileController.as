@@ -66,6 +66,13 @@ package Controller.ERA {
 		public static var rmCode:String; // the code for hte rm we are in
 		public static var roomID:Number; // the id of the room we are in
 		
+		
+		// Stores whether we are in regular mode, or ref mode
+		// defaults to regular mode
+		// in REF MODE, a user has been directed to this page, to select/create an existing annotation
+		public static var refMode:Boolean = true;
+		
+		
 		//Calls the superclass, sets the AssetID
 		public function FileController() {
 			
@@ -170,6 +177,13 @@ package Controller.ERA {
 		}
 		/* =================================== END OF UPLOAD A NEW VERSION ========================================= */
 		
+		/* =================================== CLICKING BACK BUTTON =============================================== */
+		/**
+		 * Someone clicked the back button. If we are in the screening room, and we are a researcher or a monitor
+		 * There are special notices we have to ask them. 
+		 * @param e
+		 * 
+		 */
 		private function goBack(e:IDEvent):void {
 			if(roomType != Model_ERARoom.SCREENING_ROOM) {
 				Dispatcher.back();
@@ -226,6 +240,7 @@ package Controller.ERA {
 		private function lockOutStatusUpdated(status:Boolean):void {
 			// oh well.
 		}
+		/* =================================== END OF CLICKING BACK BUTTON =============================================== */
 		
 		/* =================================== DOWNLOAD A FILE ========================================= */
 		private function downloadFile(e:IDEvent):void {

@@ -277,7 +277,7 @@ package Controller {
 		 */		
 		public static function getNotifications():void {
 //			trace("@@@@@@@@@@@@@@@@@ Getting Notifications");
-			AppModel.getInstance().getAllNotifications(gotNotifications);
+			AppModel.getInstance().getAllNotifications(Model_ERANotification.SHOW_ALL, gotNotifications);
 		}
 		
 		/**

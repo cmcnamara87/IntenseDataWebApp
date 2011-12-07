@@ -22,6 +22,7 @@ package Model.Transactions.ERAProject
 		}
 		
 		public function sendMailFromNotification(notificationID:Number):void {
+			trace("sending mail from notification");
 			// Get out the ERA log item
 			var baseXML:XML = connection.packageRequest("asset.get", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
@@ -132,20 +133,26 @@ package Model.Transactions.ERAProject
 			this.subject = subject;
 			this.body = body;
 			
-			var baseXML:XML = connection.packageRequest("mail.send", new Object(), true);
-			var argsXML:XMLList = baseXML.service.args;
-			argsXML.to = toEmail;
-			argsXML.subject = subject;
-			argsXML.body = body;
+			// only send an email to peter or andrew
+			if(toEmail == "as.thomson@qut.edu.au" || toEmail == "p.hempenstall@qut.edu.au") {
+				var baseXML:XML = connection.packageRequest("mail.send", new Object(), true);
+				var argsXML:XMLList = baseXML.service.args;
+				argsXML.to = toEmail;
+				argsXML.subject = subject;
+				argsXML.body = body;
 			
-			connection.sendRequest(baseXML, mailSent);	
+				connection.sendRequest(baseXML, mailSent);
+			}
 		}
 		
 		private function mailSent(e:Event):void {
+			trace("mail sent");
 			var data:XML;
 			if((data = AppModel.getInstance().getData("sending mail", e)) == null) {
+				trace("MAIL SENT SUCCESSFULLY");
 				return;
 			} else {
+				trace("MAIL FAILED TO SEND");
 				return;
 			}
 		}

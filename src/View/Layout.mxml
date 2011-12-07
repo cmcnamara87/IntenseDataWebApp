@@ -25,6 +25,18 @@
 			
 			private var lastFilteredByID:Number = 0;
 			
+			// notification array for temporary rending
+			private var keepAdding:Boolean = true;
+			private var notificationArray:Array = null;
+			private var notificationCounter:Number = 0;
+			private var renderNumber:Number = 1; // how many notifications to render at a time
+			
+			private const ALL_NOTIFICATIONS = "all_notifications";
+			private const NEW_NOTIFICATIONS = "new_notifications";
+			private const READ_NOTIFICATIONS = "read_notifications";
+			
+			private var notificationMode = NEW_NOTIFICATIONS;
+			
 			public function allProgressEvents(percentage:Number, evidenceID:Number):void {
 				var progressEvent:IDEvent = new IDEvent(IDEvent.ERA_PROGRESS_EVENT, true);
 				progressEvent.data.percentage = percentage;
@@ -46,27 +58,15 @@
 				dispatchEvent(progressEvent);
 			}
 			
+			/**
+			 * Add cases to the view
+			 * @param caseArray	Array of @see Model_ERACase
+			 */
 			public function addNotifications(notificationsArray:Array):void {
 				
-				notificationList.removeAllElements();
-				
+				// Setup buttons
 				showAllNotificationsButton.visible = false;
 				showAllNotificationsButton.includeInLayout = false;
-				
-				for each(var notificationData:Model_ERANotification in notificationsArray) {
-//					if(notificationData.username == Auth.getInstance().getUsername()) continue;
-					
-					var notification:NotificationListItem = new NotificationListItem();
-					notification.notificationData = notificationData;
-					notificationList.addElement(notification);
-					
-					// make it invisible by default if its read
-					if(notification.isRead()) {
-						notification.visible = false;
-						notification.includeInLayout = false;
-					}
-				}
-				
 				// make sure only the 'unread' button is clicked
 				showAllButton.selected = false;
 				showReadButton.selected = false;
@@ -75,10 +75,88 @@
 				notificationFilterButton.visible = true;
 				notificationFilterButton.includeInLayout = true;
 				
-				trace("dispatching era notification event");
-				var notificationUpdatedEvent:IDEvent = new IDEvent(IDEvent.ERA_NOTIFICATIONS_UPDATED, true);
-				dispatchEvent(notificationUpdatedEvent);
+				// Add all the Cases
+				notificationList.removeAllElements();
+				
+				// Store it for temporary rendering
+				this.notificationArray = notificationsArray;
+			
+				notificationCounter = 0;
+				renderNumber = 1;
+				// Add the cases
+				addNotificationsToDisplay();
 			}
+			
+			private function addNotificationsToDisplay():void {
+				
+				if(notificationCounter < notificationArray.length) {
+					trace("here");
+					var notification:NotificationListItem = null;
+					for(var i:Number = 0; i < renderNumber && (i + notificationCounter) < notificationArray.length; i++) {
+						var notificationData:Model_ERANotification = notificationArray[notificationCounter + i] as Model_ERANotification;
+
+					
+						notification = new NotificationListItem();
+						notification.notificationData = notificationData;
+						notificationList.addElement(notification);
+						
+						if((showUnreadButton.selected && notificationData.read) || (showReadButton.selected && !notificationData.read)) {
+							notification.visible = false;
+							notification.includeInLayout = false;									
+						}
+						// now thats it added, lets run the filter by it, in case someone is searching while they are loading
+//						caseListItem.filter(caseFilterTextInput.text);
+						
+						/*if(caseListItem.getID() == CaseController.currentERACase.base_asset_id) {
+							// its the selected one, so scroll to it;
+							casePanelScroller.verticalScrollBar.value = caseListItem.y;
+							selectedCase = caseListItem;
+						}*/
+						
+					}
+					trace("here 2");
+					notificationCounter += renderNumber;
+					// increase the number we render, with a max of 10
+					renderNumber = Math.min(10, ++renderNumber);
+					
+					if(notification) {
+						// listen for the last one, of the batch we are rendering, to be finsihed
+						notification.addEventListener(FlexEvent.CREATION_COMPLETE, notificationCreated, false, 0, true);
+					} else {
+						trace("here 7");
+						/*loadingLabel.includeInLayout = false;
+						loadingLabel.visible = false;
+						
+						casePanelScroller.verticalScrollBar.value = selectedCase.y;*/
+					}
+					trace("here 3");
+					
+				} else {
+					trace("here 8");
+					/*loadingLabel.includeInLayout = false;
+					loadingLabel.visible = false;
+					
+					trace("selected case", selectedCase);
+					casePanelScroller.verticalScrollBar.value = selectedCase.y;*/
+					
+					var notificationUpdatedEvent:IDEvent = new IDEvent(IDEvent.ERA_NOTIFICATIONS_UPDATED, true);
+					dispatchEvent(notificationUpdatedEvent);
+					
+					trace("here 9");
+				}
+			}
+			
+			private function notificationCreated(e:FlexEvent):void {
+				(e.target as NotificationListItem).removeEventListener(FlexEvent.CREATION_COMPLETE, notificationCreated);
+				trace("here 4");
+				if(keepAdding) {
+					trace("here 5");	
+					//					caseCounter++;
+					addNotificationsToDisplay();
+				}
+				trace("here 6");
+			}	
+
 			
 			public function showAllNotifications():void {
 				

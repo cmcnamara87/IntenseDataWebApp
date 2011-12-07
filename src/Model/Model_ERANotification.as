@@ -43,6 +43,10 @@ package Model
 		public static const FILE_APPROVED_BY_MONITOR:String = "file_approved_by_monitor";
 		public static const FILE_NOT_APPROVED_BY_MONITOR:String = "file_not_approved_by_monitor";
 		
+		public static const SHOW_READ:String = "show_read";
+		public static const SHOW_UNREAD:String = "show_unread";
+		public static const SHOW_ALL:String = "show_all";
+		
 		public var type:String;
 		public var username:String;
 		public var firstName:String;

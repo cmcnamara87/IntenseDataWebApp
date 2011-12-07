@@ -70,7 +70,7 @@ package Controller.ERA
 				layout.notificationBar.showError("Could not retrieve any cases");
 				return;
 			}
-
+			trace("got all cases, adding to splash screen");
 			splashView.addCases(eraCaseArray);
 		
 			

@@ -1812,8 +1812,8 @@ package Model {
 			var getConverstion:Transaction_GetAllConversation = new Transaction_GetAllConversation(AppController.currentEraProject.year, objectID, roomID, _connection, callback);
 		}
 		
-		public function getAllNotifications(callback:Function):void {
-			var getAllNotifications:Transaction_GetAllNotifications = new Transaction_GetAllNotifications(_connection, callback);
+		public function getAllNotifications(readStatus:String, callback:Function):void {
+			var getAllNotifications:Transaction_GetAllNotifications = new Transaction_GetAllNotifications(readStatus, _connection, callback);
 		}
 		public function createERANotification(year:String, roomID:Number, username:String, firstName:String, lastName:String, type:String, caseID:Number=0, fileID:Number=0, commentID:Number=0) {
 			var createERANotification:Transaction_CreateERANotification = new Transaction_CreateERANotification(year, roomID, username, firstName, lastName, type, _connection, caseID, fileID, commentID);
@@ -1831,6 +1831,7 @@ package Model {
 				callback);
 		}
 		public function sendMailFromNotification(notificationID:Number):void {
+			trace("sending email");
 			var sendMail:Transaction_SendMail = new Transaction_SendMail(_connection);
 			sendMail.sendMailFromNotification(notificationID);
 		}			

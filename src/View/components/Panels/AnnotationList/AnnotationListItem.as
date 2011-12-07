@@ -216,7 +216,7 @@ package View.components.Panels.AnnotationList
 					addRefButton.percentWidth = 100;
 					
 					addRefButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-						var addRefEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL, true);
+						var addRefEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL_FILE, true);
 						addRefEvent.data.commentID = assetID;
 						addRefEvent.data.type = "annotation";
 						dispatchEvent(addRefEvent);

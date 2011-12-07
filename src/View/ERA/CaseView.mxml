@@ -268,13 +268,6 @@
 				
 				caseNav.height = 140;
 				
-				
-				/*
-				setTimeout(function():void {
-				trace("adjusting scroll bar", someY);
-				
-				}, 2000);*/
-				
 				showERAInDropdown();
 			}
 			

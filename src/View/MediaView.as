@@ -231,7 +231,7 @@ package View
 			
 			
 			// Asset Ref Code
-			this.addEventListener(IDEvent.OPEN_REF_PANEL, function(e:IDEvent):void {
+			this.addEventListener(IDEvent.OPEN_REF_PANEL_FILE, function(e:IDEvent):void {
 				currentlyAddingRefTo = e.data.type;
 				myMediaLinkPanel.show();
 			});

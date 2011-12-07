@@ -142,7 +142,10 @@ package Controller {
 			// Called when a user sets the end of an annotation
 			public static var ANNOTATION_END_SET:String = "recensio_annotationEndSet";
 		
-			public static var OPEN_REF_PANEL:String = "id_asdfasdadsfopenRefPanel";
+			// opens the ref panel for file linking
+			public static var OPEN_REF_PANEL_FILE:String = "id_asdfasdadsfopenRefPanel";
+			// opens the ref panel for annotation linking
+			public static var OPEN_REF_PANEL_ANNOTATION:String = "id_openRefPanelAnnotation";
 			public static var CLOSE_REF_PANEL:String = "id_closeRefPanel";
 			
 			public static var ASSET_ADD_AS_REF_COMMENT:String = "id_assetAddAsRef";

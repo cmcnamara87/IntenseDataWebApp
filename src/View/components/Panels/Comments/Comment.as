@@ -46,7 +46,8 @@ package View.components.Panels.Comments
 		private var creator:String;
 		private var commentText:String;
 		private var deleteButton:Button;
-		private var addReferenceButton:Button;
+		private var addFileReference:Button;
+		private var addAnnotationReference:Button;
 		private var mtime:Number;
 		private var deleteUpdateTimer:Timer;
 //		private var comment:Label;
@@ -229,13 +230,21 @@ package View.components.Panels.Comments
 					
 					// only show the re button if we are in the evidence manager
 					if(FileController.roomType == Model_ERARoom.EVIDENCE_ROOM) {
-						addReferenceButton = new Button();
-						addReferenceButton.setStyle("cornerRadius", "10");
+						// only in the evidence room, show the reference
+						addFileReference = new Button();
+						addFileReference.setStyle("cornerRadius", "10");
 						
-						addReferenceButton.percentHeight = 100;
-						addReferenceButton.percentWidth = 100;
-						addReferenceButton.label = "Add Ref";
-						buttonHGroup.addElement(addReferenceButton);
+						addFileReference.percentHeight = 100;
+						addFileReference.percentWidth = 100;
+						addFileReference.label = "Add Ref";
+						buttonHGroup.addElement(addFileReference);
+						
+						addAnnotationReference = new Button();
+						addAnnotationReference.setStyle("cornerRadius", "10");
+						addAnnotationReference.percentHeight = 100;
+						addAnnotationReference.percentWidth = 100;
+						addAnnotationReference.label = "Add Annotation Reference";
+						buttonHGroup.addElement(addAnnotationReference);
 					}
 				}
 				
@@ -248,10 +257,21 @@ package View.components.Panels.Comments
 			
 			/* ============ EVENT LISTENERS ================= */
 			
-				replyButton.addEventListener(MouseEvent.CLICK, replyButtonClicked);
-				if(addReferenceButton) {
-					addReferenceButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-						var addReferenceEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL, true);
+				replyButton.addEventListener(MouseEvent.CLICK, replyButtonClicked, false, 0, true);
+				if(addFileReference) {
+					addFileReference.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+						var addReferenceEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL_FILE, true);
+						addReferenceEvent.data.commentID = assetID;
+						addReferenceEvent.data.type = "comment";
+						trace("dispatching event with data", assetID);
+						dispatchEvent(addReferenceEvent);
+						
+						editMode = true;
+						render();
+					});
+					
+					addAnnotationReference.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+						var addReferenceEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL_ANNOTATION, true);
 						addReferenceEvent.data.commentID = assetID;
 						addReferenceEvent.data.type = "comment";
 						trace("dispatching event with data", assetID);
@@ -262,7 +282,7 @@ package View.components.Panels.Comments
 					});
 				}
 				if(deleteButton) {
-					deleteButton.addEventListener(MouseEvent.CLICK, deleteButtonClicked);
+					deleteButton.addEventListener(MouseEvent.CLICK, deleteButtonClicked, false, 0, true);
 				}
 			}
 		}

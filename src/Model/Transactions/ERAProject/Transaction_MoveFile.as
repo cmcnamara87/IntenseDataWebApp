@@ -79,14 +79,17 @@ package Model.Transactions.ERAProject
 			// only send the ontification, if we are moving the file to the screening lab
 
 			if(toRoomType == Model_ERARoom.SCREENING_ROOM) {
+				trace("creating screen room notification");
 				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, toRoomID, Auth.getInstance().getUsername(),
 					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
 					Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB, 0, fileID, 0);
 			} else if(toRoomType == Model_ERARoom.EXHIBIT) {
+				trace("creating exhibition notification");
 				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, toRoomID, Auth.getInstance().getUsername(),
 					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
 					Model_ERANotification.FILE_MOVED_TO_EXHIBITION, 0, fileID, 0);
 			} else if(toRoomType == Model_ERARoom.FORENSIC_LAB) {
+				trace("creating exhibition notification");
 				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, toRoomID, Auth.getInstance().getUsername(),
 					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
 					Model_ERANotification.FILE_MOVED_TO_FORENSIC_LAB, 0, fileID, 0);

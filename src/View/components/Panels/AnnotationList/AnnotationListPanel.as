@@ -66,7 +66,7 @@ package View.components.Panels.AnnotationList
 			maxMinButton.addEventListener(MouseEvent.CLICK, maxMinButtonClicked);
 			closeButton.addEventListener(MouseEvent.CLICK, closeButtonClicked);
 			
-			this.addEventListener(IDEvent.OPEN_REF_PANEL, function(e:IDEvent):void {
+			this.addEventListener(IDEvent.OPEN_REF_PANEL_FILE, function(e:IDEvent):void {
 				trace("CAUGHT open ref panel event", e.data.commentID);
 				editingAnnotationID = e.data.commentID;
 			});
