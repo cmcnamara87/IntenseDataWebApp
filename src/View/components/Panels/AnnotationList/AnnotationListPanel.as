@@ -16,8 +16,10 @@ package View.components.Panels.AnnotationList
 	import flash.events.MouseEvent;
 	import flash.sampler.Sample;
 	import flash.utils.getQualifiedClassName;
+	import flash.utils.setTimeout;
 	
 	import mx.controls.Button;
+	import mx.events.FlexEvent;
 	import mx.graphics.SolidColor;
 	import mx.graphics.SolidColorStroke;
 	
@@ -34,7 +36,9 @@ package View.components.Panels.AnnotationList
 		
 		private var maxMinButton:Button;
 		
-		private var editingAnnotationID:Number;
+		private static var editingAnnotationID:Number;
+		// Stores if we have finished rendering the comments
+		private var finishedRendering:Boolean = false;
 		
 		/**
 		 * The Annotations Panel sits on the right side on the media viewer
@@ -66,27 +70,50 @@ package View.components.Panels.AnnotationList
 			maxMinButton.addEventListener(MouseEvent.CLICK, maxMinButtonClicked);
 			closeButton.addEventListener(MouseEvent.CLICK, closeButtonClicked);
 			
-			this.addEventListener(IDEvent.OPEN_REF_PANEL_FILE, function(e:IDEvent):void {
-				trace("CAUGHT open ref panel event", e.data.commentID);
-				editingAnnotationID = e.data.commentID;
-			});
+			
+			this.addEventListener(IDEvent.OPEN_REF_PANEL_FILE, openRefPanelCaught);
+			this.addEventListener(IDEvent.OPEN_REF_PANEL_ANNOTATION, openRefPanelCaught);
 		}
 		
-		public function addReferenceTo(fileID:Number, fileTitle:String):void {
-//		public function addReferenceTo(mediaData:Model_Media):void {
-			trace("title of added asset is", fileTitle);
-			for(var i = 0; i < content.numElements; i++) {
-				var annotation:AnnotationListItem = content.getElementAt(i) as AnnotationListItem;
-				if(editingAnnotationID == annotation.getID()) {
-					annotation.addReference(fileID, fileTitle);
-					return;
+		public function showAnnotation(annotationID:Number):void {
+			trace("showing annotation");
+			if(finishedRendering) {
+				trace("finsihed rendering, finding annotation", annotationID);
+				trace("stuff in content", content.numElements);
+				for(var i:Number = 0; i < content.numElements; i++) {
+					var annotationListItem:AnnotationListItem = content.getElementAt(i) as AnnotationListItem;
+					if(annotationListItem.getID() == annotationID) {
+						trace("annotation found, highlighting");
+						myScroller.verticalScrollBar.value = annotationListItem.y;	
+						annotationListItem.highlight();
+					}
 				}
+			} else {
+				trace("annottion not ready");
+				setTimeout(showAnnotation, 1000, annotationID);
 			}
-			trace("media not found");
-//			var commentIndex:Number = this.getCommentIndexFromAssetID(editingCommentID);
-//			trace("found", editingCommentID, "at", commentIndex); 
-//			var comment:Comment = content.getElementAt(commentIndex) as Comment;
-//			comment.addReference(mediaData.base_asset_id, mediaData.meta_title);
+		}
+		
+		private function openRefPanelCaught(e:IDEvent):void {
+			trace("CAUGHT open ref panel event", e.data.commentID);
+			editingAnnotationID = e.data.commentID;
+			trace("saving thingy", editingAnnotationID);
+		}
+		
+		public function addReferenceTo(fileID:Number, fileTitle:String, annotationID:Number, annotationType:String):void {
+			if(finishedRendering) {
+				trace("title of added asset is", fileTitle);
+				for(var i = 0; i < content.numElements; i++) {
+					var annotation:AnnotationListItem = content.getElementAt(i) as AnnotationListItem;
+					if(editingAnnotationID == annotation.getID()) {
+						annotation.addReference(fileID, fileTitle, annotationID, annotationType);
+						return;
+					}
+				}
+			} else {
+				trace("not ready yet");
+				setTimeout(addReferenceTo, 1000, fileID, fileTitle, annotationID, annotationType);
+			}
 			
 		}
 		
@@ -108,17 +135,27 @@ package View.components.Panels.AnnotationList
 			this.enabled = true;
 			clearAnnotations();
 
+			var annotationListItem:AnnotationListItem = null;
 			for(var i:Number = 0; i < annotationArray.length; i++) {
 				var annotationData:Model_Commentary = annotationArray[i] as Model_Commentary;
 
 				if(annotationData.annotation_type == Model_Commentary.ANNOTATION_BOX_TYPE_ID) {
 					// Lets make an annotation
-					addPanelItem(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, Number(annotationData.base_mtime), "box", annotationData.text));
+					annotationListItem = new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, Number(annotationData.base_mtime), "box", annotationData.text);
+					addPanelItem(annotationListItem);
 				} else if (annotationData.annotation_type == Model_Commentary.ANNOTATION_PEN_TYPE_ID) {
-					addPanelItem(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, Number(annotationData.base_mtime), "free draw", annotationData.text));
+					annotationListItem = new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, Number(annotationData.base_mtime), "free draw", annotationData.text);
+					addPanelItem(annotationListItem);
 				} else {
-					addPanelItem(new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, Number(annotationData.base_mtime), "highlight", annotationData.text));
+					annotationListItem = new AnnotationListItem(annotationData.base_asset_id, annotationData.meta_creator, Number(annotationData.base_mtime), "highlight", annotationData.text);
+					addPanelItem(annotationListItem);
 				}
+			}
+			
+			if(annotationListItem) {
+				annotationListItem.addEventListener(FlexEvent.CREATION_COMPLETE, function(e:FlexEvent):void {
+					finishedRendering = true;
+				});	
 			}
 		}
 		

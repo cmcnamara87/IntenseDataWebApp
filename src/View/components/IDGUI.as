@@ -5,6 +5,7 @@ package View.components
 	import flash.display.DisplayObject;
 	import flash.geom.Point;
 	
+	import mx.controls.Alert;
 	import mx.graphics.SolidColorStroke;
 	
 	import spark.components.Button;
@@ -66,18 +67,19 @@ package View.components
 			return line;
 		}
 		
-		public static function getLinkHTML(text:String, color="#1122CC"):String {
+		public static function getTitleHTML(text:String):String {
 			var newCommentText:String = text;
+			trace("text", newCommentText);
 			var startRefLocation:Number = newCommentText.indexOf("{");
 			while(startRefLocation != -1) {
-//				trace("{ found at", startRefLocation);
+				trace("{ found at", startRefLocation);
 				var endRefLocation:Number = newCommentText.indexOf("}", startRefLocation);
 				
 				if(endRefLocation == -1) {
 					break;	
 				}
 				
-//				trace("} found at", endRefLocation);
+				trace("} found at", endRefLocation);
 				
 				var colonLocation:Number = newCommentText.indexOf(":", startRefLocation);
 				
@@ -85,20 +87,77 @@ package View.components
 					break;
 				}
 				
-//				trace(": found at", colonLocation);
+				var mediaTitle:String = newCommentText.substring(startRefLocation + 1, colonLocation);
+
+				trace("mediaTitle", mediaTitle);
+				var replacementString:String = mediaTitle;
+				newCommentText = newCommentText.substring(0, startRefLocation) + replacementString + newCommentText.substring(endRefLocation + 1);
+				
+				startRefLocation = newCommentText.indexOf("{", startRefLocation + replacementString.length);
+			}
+			return newCommentText;			
+		}
+		public static function getLinkHTML(text:String, color="#1122CC"):String {
+			var newCommentText:String = text;
+			trace("text", newCommentText);
+			var startRefLocation:Number = newCommentText.indexOf("{");
+			while(startRefLocation != -1) {
+				trace("{ found at", startRefLocation);
+				var endRefLocation:Number = newCommentText.indexOf("}", startRefLocation);
+				
+				if(endRefLocation == -1) {
+					break;	
+				}
+				
+				trace("} found at", endRefLocation);
+				
+				var colonLocation:Number = newCommentText.indexOf(":", startRefLocation);
+				
+				if(colonLocation == -1) {
+					break;
+				}
+				
+//				// lets see if we have another colon (for an annotaion reference)
+				var colonLocationTwo:Number = newCommentText.indexOf(":", colonLocation + 1);
+				
+				if(colonLocationTwo == -1) {
+					var refAssetID:String = newCommentText.substring(colonLocation + 1, endRefLocation);	
+				} else {
+					var refAssetID:String = newCommentText.substring(colonLocation + 1, colonLocationTwo);
+					var colonLocationThree:Number = newCommentText.indexOf(":", colonLocationTwo + 1);
+				}
 				
 				// we have everything we need
-				var refAssetID:String = newCommentText.substring(colonLocation + 1, endRefLocation);
+				
 				var mediaTitle:String = newCommentText.substring(startRefLocation + 1, colonLocation);
 				
 				
-//				trace("ref ID", refAssetID);
-//				trace("mediaTitle", mediaTitle);
+				if(colonLocationTwo != -1 && colonLocationThree == -1) {
+					// you ned to have boht the 2nd and 3rd colons
+					break;
+				} else if (colonLocationTwo != -1 && colonLocationThree != -1) {
+					trace("going between", colonLocationTwo + 1, "and", endRefLocation);
+					trace("new comment text", newCommentText);
+					var refAnnotationID:String = newCommentText.substring(colonLocationTwo + 1, colonLocationThree);
+					var refAnnotationType:String = newCommentText.substring(colonLocationThree + 1, endRefLocation);
+				}
+				
+				// 
+				
+				trace("ref ID", refAssetID);
+				trace("mediaTitle", mediaTitle);
+				trace("annotation ID", refAnnotationID);
 				
 				// for tomorrow, get out the length of the first part, after the </a> is put in, and start seraching from there
 				//"file/" + caseID + "/" + escape(rmCode) + "/" + roomType + "/" + roomID + "/"  + fileID);
 //				var replacementString:String = "(<font color='"+color+"'><u><a href='#go/" + refAssetID + "'>" + mediaTitle + "</a></u></font>)";
-				var replacementString:String = "(<font color='"+color+"'><u><a href='#file/" + FileController.caseID + "/" + FileController.rmCode + "/" + FileController.roomType + "/" + FileController.roomID + "/" + refAssetID + "'>" + mediaTitle + "</a></u></font>)";
+				var href:String = "#file/" + FileController.caseID + "/" + FileController.rmCode + "/" + FileController.roomType + "/" + FileController.roomID + "/" + refAssetID;
+				if(colonLocationTwo != -1) {
+					href += "/" + refAnnotationID + "/" + refAnnotationType;
+				}
+				
+				
+				var replacementString:String = "(<font color='"+color+"'><u><a href='" + href + "'>" + mediaTitle + "</a></u></font>)";
 				newCommentText = newCommentText.substring(0, startRefLocation) + replacementString + newCommentText.substring(endRefLocation + 1);
 				
 				startRefLocation = newCommentText.indexOf("{", startRefLocation + replacementString.length);

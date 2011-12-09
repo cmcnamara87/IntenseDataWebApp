@@ -275,10 +275,10 @@
 				
 				
 					if(caseCounter < caseArray.length) {
-						trace("here");
+//						trace("here");
 						var caseListItem:CaseListItem = null;
 						for(var i:Number = 0; i < renderNumber && (i + caseCounter) < caseArray.length; i++) {
-							trace("loading cas", i, caseCounter, i+caseCounter, caseArray.length);
+//							trace("loading cas", i, caseCounter, i+caseCounter, caseArray.length);
 							var eraCase:Model_ERACase = caseArray[caseCounter + i] as Model_ERACase;
 							var caseListItem:CaseListItem = new CaseListItem();
 							caseListItem.caseData = eraCase;
@@ -293,7 +293,7 @@
 							}
 							
 						}
-						trace("here 2");
+//						trace("here 2");
 						caseCounter += renderNumber;
 						renderNumber++;
 						renderNumber = Math.min(10, renderNumber);
@@ -301,34 +301,34 @@
 						if(caseListItem) {
 							caseListItem.addEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated, false, 0, true);
 						} else {
-							trace("here 7");
+//							trace("here 7");
 							loadingLabel.includeInLayout = false;
 							loadingLabel.visible = false;
 							
 							casePanelScroller.verticalScrollBar.value = selectedCase.y;
 						}
-						trace("here 3");
+//						trace("here 3");
 						
 					} else {
-						trace("here 8");
+//						trace("here 8");
 						loadingLabel.includeInLayout = false;
 						loadingLabel.visible = false;
 						
-						trace("selected case", selectedCase);
+//						trace("selected case", selectedCase);
 						casePanelScroller.verticalScrollBar.value = selectedCase.y;
-						trace("here 9");
+//						trace("here 9");
 					}
 			}
 			
 			private function caseListItemCreated(e:FlexEvent):void {
 				(e.target as CaseListItem).removeEventListener(FlexEvent.CREATION_COMPLETE, caseListItemCreated);
-				trace("here 4");
+//				trace("here 4");
 				if(keepAdding) {
-					trace("here 5");	
+//					trace("here 5");	
 //					caseCounter++;
 					addCasesToDisplay();
 				}
-				trace("here 6");
+//				trace("here 6");
 			}
 
 			protected function caseTag_clickHandler(event:MouseEvent):void

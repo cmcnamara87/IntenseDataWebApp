@@ -12,6 +12,16 @@ package Controller.Utilities {
 	
 	public class AssetLookup extends Object {
 		
+		// Comment icons
+		[Embed(source="Assets/Template/reply_icon.png")]
+		public static var reply_icon:Class;
+		[Embed(source="Assets/Template/delete_comment_icon.png")]
+		public static var delete_comment_icon:Class;
+		[Embed(source="Assets/Template/add_file_ref.png")]
+		public static var add_file_ref_icon:Class;
+		[Embed(source="Assets/Template/add_ann_ref.png")]
+		public static var add_ann_ref_icon:Class;
+		
 		// Media types
 		public static const VIDEO:String = "video";
 		public static const AUDIO:String = "audio";

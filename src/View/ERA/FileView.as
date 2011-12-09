@@ -201,6 +201,7 @@ package View.ERA
 			
 			// Add Add Annotation button
 			if(FileController.refMode) {
+				trace("IS IN REF MODE*****");
 				addAnnotationButton = IDGUI.makeButton("Add New Annotation");
 			} else {
 				addAnnotationButton = IDGUI.makeButton("Add Annotation");	
@@ -224,7 +225,9 @@ package View.ERA
 			hideShowAnnotationButton.setStyle("cornerRadius", "10");
 			hideShowAnnotationButton.setStyle("chromeColor", "0xFFFFFF");
 			hideShowAnnotationButton.height = 30;
-			hGroup1.addElement(hideShowAnnotationButton);
+			if(!FileController.refMode) {
+				hGroup1.addElement(hideShowAnnotationButton);
+			}
 			
 			var addAnnotationEditDetailsLine:Line = IDGUI.makeLine()
 //			myToolbar.addElement(addAnnotationEditDetailsLine);
@@ -257,8 +260,10 @@ package View.ERA
 			
 			// Add annotations button
 			if(FileController.refMode) {
+				trace("ref mode annotation list");
 				annotationListButton = IDGUI.makeButton('Choose Existing Annotation');
 			} else {
+				trace("non annotation list");
 				annotationListButton = IDGUI.makeButton('Annotation List');
 			}
 			annotationListButton.enabled = false;
@@ -314,6 +319,16 @@ package View.ERA
 //				this.hideButtonsForPureAssetView();	
 //			}
 			
+			if(FileController.refToAnnotationID > 0) {
+				if(FileController.refFromType == "comment") {	
+					myCommentsPanel.addReferenceTo(FileController.refToFileID, "Annotation in " + FileController.refToFileTitle, FileController.refToAnnotationID, FileController.refToType);
+					FileController.refToAnnotationID = 0;
+				} else if (FileController.refFromType == "annotation") {
+					trace("HELLO ****** ");
+					myAnnotationListPanel.addReferenceTo(FileController.refToFileID, "Annotation in " + FileController.refToFileTitle, FileController.refToAnnotationID, FileController.refToType);
+					FileController.refToAnnotationID = 0;
+				}
+			}
 			// Add Event Listeners
 			setupEventListeners();
 		}
@@ -355,45 +370,54 @@ package View.ERA
 			this.addEventListener(IDEvent.OPEN_REF_PANEL_FILE, function(e:IDEvent):void {
 				currentlyAddingRefTo = e.data.type;
 				referenceMode = FILE_REF_MODE;
+				
 				// Show the media panel
 				myMediaLinkPanel.show();
-			}, false, 0, true);
+			});
 			
 			// Asset Ref Code
-			this.addEventListener(IDEvent.OPEN_REF_PANEL_ANNOTATION, function(e:IDEvent):void {
-				currentlyAddingRefTo = e.data.type;
-				referenceMode = ANNOTATION_REF_MODE;
-				// Show the media panel
-				myMediaLinkPanel.show();
-			}, false, 0, true);
+			this.addEventListener(IDEvent.OPEN_REF_PANEL_ANNOTATION, openRefPanelAnnotation);
 			
 			this.addEventListener(IDEvent.CLOSE_REF_PANEL, function(e:IDEvent):void {
+				trace("opening ref panel");
 				myMediaLinkPanel.hide();
 				referenceMode = NO_REF_MODE;
-			}, false, 0, true);
+			});
 			
 			this.addEventListener(IDEvent.ERA_SHOW_FILE, function(e:IDEvent):void {
 				// Check what referencing mode we are in
 				if(referenceMode == FILE_REF_MODE) {
 					if(currentlyAddingRefTo == 'comment') {
-						myCommentsPanel.addReferenceTo(e.data.fileID, e.data.fileTitle);
+						myCommentsPanel.addReferenceTo(e.data.fileID, e.data.fileTitle, 0, "");
 					} else if (currentlyAddingRefTo == 'annotation') {
-						myAnnotationListPanel.addReferenceTo(e.data.fileID, e.data.fileTitle);
+						myAnnotationListPanel.addReferenceTo(e.data.fileID, e.data.fileTitle, 0, "");
 					}
 				} else if(referenceMode == ANNOTATION_REF_MODE) {
+					FileController.refMode = true;
+					FileController.refToFileID = e.data.fileID;
+					FileController.refToFileTitle = e.data.fileTitle;
+
 					Dispatcher.showFile(FileController.caseID, FileController.rmCode, FileController.roomType, FileController.roomID, e.data.fileID);
 				}
-				/*
-				if(currentlyAddingRefTo == 'comment') {
-					myCommentsPanel.addReferenceTo(e.data.fileID, e.data.fileTitle);
-				} else if (currentlyAddingRefTo == 'annotation') {
-					myAnnotationListPanel.addReferenceTo(e.data.fileID, e.data.fileTitle);
-				}*/
-			}, false, 0, true);
+			});
 			
 			this.addEventListener(IDEvent.COMMENT_EDITED, function(e:IDEvent):void {
 				myMediaLinkPanel.hide();
-			}, false, 0, true);
+			});
+		}
+		private function openRefPanelAnnotation(e:IDEvent):void {
+			trace("opening ref panel");
+			currentlyAddingRefTo = e.data.type;
+			referenceMode = ANNOTATION_REF_MODE;
+			
+			// Store information about how to get back here
+			// if we do happen to navigate away
+			FileController.refFromAssetID = this.mediaData.base_asset_id;
+//			FileController.refFromCommentaryID = e.data.commentID;
+			FileController.refFromType = e.data.type;
+			
+			// Show the media panel
+			myMediaLinkPanel.show();
 		}
 		
 		public function addMediaLinkPanelFiles(fileArray:Array):void {
@@ -631,14 +655,27 @@ package View.ERA
 		}
 		private function setCommentCount(count:Number):void {
 			this.commentCount = count;
-			commentsButton.label = "Comments (" + count + ")";
+			if(FileController.refMode) {
+				commentsButton.label = "Add New Or Choose Existing Comment (" + count + ")";
+			} else {
+				commentsButton.label = "Comments (" + count + ")";
+			}
 		}
 		
 		public function addAnnotations(annotationsArray:Array):void {
 			trace("Adding Annotations...", annotationsArray.length);
 			// Add annotations to annotations list
 			myAnnotationListPanel.addAnnotations(annotationsArray);
-			annotationListButton.label = "Annotation List (" + annotationsArray.length + ")";
+			
+			if(FileController.refMode) {
+				trace("ref mode annotation list");
+				annotationListButton.label = "Choose Existing Annotation (" + annotationsArray.length + ")";
+			} else {
+				trace("non annotation list");
+				annotationListButton.label = "Annotation List (" + annotationsArray.length + ")";
+			}
+			
+			
 			// Add annotation to viewer
 //			if(mediaViewer && BrowserController.currentCollectionID != BrowserController.ALLASSETID) {
 			if(mediaViewer) {
@@ -764,6 +801,22 @@ package View.ERA
 			mediaData.checkedOut = false;
 		}
 
+		public function showCommentsPanel(annotationID:Number):void {
+			// Hide all the panels
+			hideAllPanels();
+			myCommentsPanel.width = Panel.DEFAULT_WIDTH;
+			myCommentsPanel.visible = true;
+			myCommentsPanel.showComment(annotationID);
+		}
+		public function showAnnotationsPanel(annotationID:Number):void {
+			// Hide all the panels
+			hideAllPanels();
+			trace("annotation list button clicked");
+			myAnnotationListPanel.width = Panel.DEFAULT_WIDTH;
+			myAnnotationListPanel.visible = true;
+			myAnnotationListPanel.showAnnotation(annotationID);
+		}
+		
 		private function panelButtonClicked(event:MouseEvent):void {
 			
 			// Get out the button taht was clicked
@@ -878,10 +931,7 @@ package View.ERA
 			myEditPanel.visible = false;
 			viewerAndPanels.addElement(myEditPanel);
 			
-			myAnnotationListPanel = new AnnotationListPanel();
-			myAnnotationListPanel.width = 0;
-			myAnnotationListPanel.visible = false;
-			viewerAndPanels.addElement(myAnnotationListPanel);
+			
 			
 			// Lets add the Sharing Panel
 			mySharingPanel = new SharingPanel();
@@ -895,9 +945,32 @@ package View.ERA
 			viewerAndPanels.addElement(myPeoplePanel);
 			
 			// Lets add the Comments Panel
+			// we just came back from making ar eference
+			
 			myCommentsPanel = new CommentsPanel();
-			myCommentsPanel.width = 0;
-			myCommentsPanel.visible = false;
+			if(FileController.refToAnnotationID > 0 && FileController.refFromType == "comment") {
+				trace("SHOW ANNOTATION", FileController.showAnnotationID, "REF TYPE IS", FileController.refFromType);
+				myCommentsPanel.width = Panel.DEFAULT_WIDTH;
+				myCommentsPanel.visible = true;
+			} else {
+				trace("SHOW ANNOTATION", FileController.showAnnotationID, "REF TYPE IS", FileController.refFromType);
+				myCommentsPanel.width = 0;
+				myCommentsPanel.visible = false;
+			}
+			
+			myAnnotationListPanel = new AnnotationListPanel();
+			if(FileController.refToAnnotationID > 0 && FileController.refFromType == "annotation") {
+				trace("SHOW ANNOTATION", FileController.showAnnotationID, "REF TYPE IS", FileController.refFromType);
+				myAnnotationListPanel.width = Panel.DEFAULT_WIDTH;
+				myAnnotationListPanel.visible = true;
+			} else {
+				trace("SHOW ANNOTATION", FileController.showAnnotationID, "REF TYPE IS", FileController.refFromType);
+				myAnnotationListPanel.width = 0;
+				myAnnotationListPanel.visible = false;
+			}
+			viewerAndPanels.addElement(myAnnotationListPanel);
+			
+			
 			viewerAndPanels.addElement(myCommentsPanel);
 		}
 		
@@ -907,6 +980,7 @@ package View.ERA
 		 * Hides the panels from the view 
 		 */		
 		private function hideAllPanels():void {
+			trace("HIDING ALL PANELS");
 			// Set all the panels to have a width of 0
 			// So they aren't shown
 			myEditPanel.visible = false;

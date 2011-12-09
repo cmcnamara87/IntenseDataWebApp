@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
-		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" gap="0" xmlns:components="View.ERA.components.*">
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%" gap="0" xmlns:components="View.ERA.components.*"
+		  removedFromStage="vgroup1_removedFromStageHandler(event)">
 	<fx:Script>
 		<![CDATA[
 			import Controller.AppController;
@@ -127,6 +128,19 @@
 					}
 				}
 			}
+			
+			protected function vgroup1_removedFromStageHandler(event:Event):void
+			{
+				for each(var fileTile:FileTile in fileGroup) {
+					fileTile.destroyFileTile();
+				}
+				fileGroup.removeAllElements();
+				typeFiltersButtons.removeAllElements();
+				
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+				fileArray = null;
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>

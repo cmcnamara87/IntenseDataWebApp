@@ -4,6 +4,7 @@ package View.components.Panels.Comments
 	
 	import Controller.ERA.FileController;
 	import Controller.IDEvent;
+	import Controller.Utilities.AssetLookup;
 	import Controller.Utilities.Auth;
 	
 	import Model.Model_ERARoom;
@@ -22,6 +23,7 @@ package View.components.Panels.Comments
 	
 	import mx.containers.Canvas;
 	import mx.controls.Alert;
+	import mx.controls.Button;
 	import mx.controls.Text;
 	import mx.controls.TextArea;
 	import mx.core.UIComponent;
@@ -45,9 +47,9 @@ package View.components.Panels.Comments
 		private var reply:Boolean;
 		private var creator:String;
 		private var commentText:String;
-		private var deleteButton:Button;
-		private var addFileReference:Button;
-		private var addAnnotationReference:Button;
+		private var deleteButton:spark.components.Button;
+		private var addFileReference:mx.controls.Button;
+		private var addAnnotationReference:mx.controls.Button;
 		private var mtime:Number;
 		private var deleteUpdateTimer:Timer;
 //		private var comment:Label;
@@ -56,6 +58,10 @@ package View.components.Panels.Comments
 		private var saveButton:IDButton;
 		
 		private var editMode:Boolean = false;
+		
+		private var buttonHGroup:HGroup;
+		
+		private var username:Text;
 		
 		/**
 		 * Creates a comment gui item	 
@@ -84,6 +90,11 @@ package View.components.Panels.Comments
 			this.gap = 0;
 			
 			render();
+		}
+		
+		public function highlight():void {
+			username.setStyle('fontStyle', 'italic');
+			comment.setStyle('fontStyle', 'italic');
 		}
 		
 		private function render():void {
@@ -116,7 +127,7 @@ package View.components.Panels.Comments
 			usernameAndComment.paddingBottom = 10;
 			myHGroup.addElement(usernameAndComment);
 			
-			var username:Text = new Text();
+			username = new Text();
 			// Get the Capitalised first letter of hte username (should be persons name, but whatever)
 			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1)
 			username.percentWidth = 100;
@@ -133,9 +144,16 @@ package View.components.Panels.Comments
 				usernameAndComment.addElement(newComment);
 			} else {
 				trace("rendering in regular mode");
-	//			comment = new spark.components.Label();
+				
 				comment = new Text();
-				comment.htmlText = IDGUI.getLinkHTML(commentText);
+				// If we are in reference mode, dont display the lniks are links
+				// just display the title
+				if(FileController.refMode) {
+					comment.htmlText = IDGUI.getTitleHTML(commentText);
+				} else {
+					comment.htmlText = IDGUI.getLinkHTML(commentText);
+				}
+				
 				comment.percentWidth = 100;
 				usernameAndComment.addElement(comment);
 				if(commentText == "Comment Removed") {
@@ -152,10 +170,13 @@ package View.components.Panels.Comments
 				
 				usernameAndComment.addElement(timestamp);
 			}
-				
+			
+			// SET UP ALL THE COMMENT BUTTONS (and there are a lot)
+			
 			// Create a HGroup for the buttons
-			var buttonHGroup:HGroup 	= new HGroup();
+			buttonHGroup 	= new HGroup();
 			buttonHGroup.percentWidth 	= 100;
+			buttonHGroup.height = 34;
 			buttonHGroup.paddingBottom 	= 5;
 			buttonHGroup.paddingTop 	= 5;
 			buttonHGroup.paddingLeft 	= 5;
@@ -163,127 +184,162 @@ package View.components.Panels.Comments
 			usernameAndComment.addElement(buttonHGroup);
 			
 			if(editMode == true) {
-				saveButton = new IDButton("Save");
-				saveButton.setStyle("cornerRadius", "10");
-				saveButton.percentWidth = 100;
-				buttonHGroup.addElement(saveButton);
+				this.addEditModeButtons();
+			} else if (FileController.refMode) {
+				this.addRefModeButtons();
+			} else {
+				this.addStandardButtons();	
+			}
+			
+			// Add a horizontal rule at the bottom of the comment
+			var hLine:Line = new Line();
+			hLine.percentWidth = 100;
+			hLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
+			this.addElement(hLine);
+		}
+		
+		private function addEditModeButtons() {
+			saveButton = new IDButton("Save");
+			saveButton.setStyle("cornerRadius", "10");
+			saveButton.percentWidth = 100;
+			buttonHGroup.addElement(saveButton);
 
-				saveButton.addEventListener(MouseEvent.CLICK, saveButtonClicked);
+			saveButton.addEventListener(MouseEvent.CLICK, saveButtonClicked);
 				
-				var cancelButton:Button = new IDButton("Cancel");
-				cancelButton.setStyle("cornerRadius", "10");
-				cancelButton.percentWidth = 100;
-				buttonHGroup.addElement(cancelButton);
-				cancelButton.addEventListener(MouseEvent.CLICK, function(e:Event) {
-					editMode = false;
-					render();
+			var cancelButton:spark.components.Button = new IDButton("Cancel");
+			cancelButton.setStyle("cornerRadius", "10");
+			cancelButton.percentWidth = 100;
+			buttonHGroup.addElement(cancelButton);
+			cancelButton.addEventListener(MouseEvent.CLICK, function(e:Event) {
+				editMode = false;
+				render();
+				
+				var addReferenceEvent:IDEvent = new IDEvent(IDEvent.CLOSE_REF_PANEL, true);
+				dispatchEvent(addReferenceEvent);
+			});
+		}
+		
+		/* ====================== ADD REF MODE BUTTONS AND LISTENERS ========================== */
+		/**
+		 * Add the buttoms for a comments in ref mode 
+		 * @return 
+		 * 
+		 */		
+		private function addRefModeButtons() {
+			trace("adding ref mode buttons");
+			var selectComment:spark.components.Button 		= new spark.components.Button();
+			selectComment.setStyle("cornerRadius", "10");
+			selectComment.percentHeight 	= 100;
+			selectComment.percentWidth 	= 100;
+			selectComment.label 			= "Select Comment";
+			buttonHGroup.addElement(selectComment);
+			
+			selectComment.addEventListener(MouseEvent.CLICK, selectCommentButtonClicked);
+		}
+		private function selectCommentButtonClicked(e:MouseEvent):void {
+			// Create a new annotation ref saved event
+			var event:IDEvent = new IDEvent(IDEvent.ERA_ANNOTATION_CHOSEN_FOR_REFERENCE, true);
+			event.data.commentID = assetID;
+			event.data.type = "comment";
+			dispatchEvent(event);
+		}
+		
+		/* ====================== END OF ADD REF MODE BUTTONS AND LISTENERS ========================== */
+		
+		/**
+		 * Add the standard buttons for a comment 
+		 * @return 
+		 * 
+		 */
+		private function addStandardButtons() {
+			// Add reply button if not repky		
+			var replyButton:mx.controls.Button = new mx.controls.Button();
+			replyButton.width = 60;
+			replyButton.setStyle("cornerRadius", "10");
+			replyButton.setStyle('icon', AssetLookup.reply_icon);
+			replyButton.percentHeight = 100;
+			replyButton.toolTip	= "Reply";
+			if(!reply) {
+				// Only add the button, if this isnt a reply
+				// You cant reply to a reply.
+				buttonHGroup.addElement(replyButton);
+			}
+				
+			// If the current user is the author of this comment
+			// then add an Edit and a Delete button
+			if(creator == Auth.getInstance().getUsername() || Auth.getInstance().isSysAdmin()) {
+				
+				// Create a Delete button
+				trace("Is sys-admin?", Auth.getInstance().isSysAdmin());
+				
+				if(commentText != "Comment Removed" || Auth.getInstance().isSysAdmin()) {
 					
-					var addReferenceEvent:IDEvent = new IDEvent(IDEvent.CLOSE_REF_PANEL, true);
+					var deleteButton:mx.controls.Button = new mx.controls.Button();
+					deleteButton.width = 60;
+					deleteButton.setStyle("cornerRadius", "10");
+					deleteButton.setStyle('icon', AssetLookup.delete_comment_icon);
+					deleteButton.percentHeight = 100;
+					deleteButton.toolTip	= "Delete";
+
+					buttonHGroup.addElement(deleteButton);
+					
+					if(!Auth.getInstance().isSysAdmin()) {
+						// Not the sys admin, put the timer on the delete button
+						deleteUpdateTimer = new Timer(1000);
+						deleteUpdateTimer.addEventListener(TimerEvent.TIMER, updateDeleteButtonTime);
+						deleteUpdateTimer.start();
+					}
+				}
+					
+				// only show the re button if we are in the evidence manager
+				if(FileController.roomType == Model_ERARoom.EVIDENCE_ROOM) {
+					// only in the evidence room, show the reference
+					addFileReference = new mx.controls.Button();
+					addFileReference.width = 60;
+					addFileReference.setStyle("cornerRadius", "10");
+					addFileReference.setStyle('icon', AssetLookup.add_file_ref_icon);
+					addFileReference.percentHeight = 100;
+					addFileReference.toolTip	= "Add File Reference";
+					buttonHGroup.addElement(addFileReference);
+					
+					addAnnotationReference = new mx.controls.Button();
+					addAnnotationReference.width = 60;
+					addAnnotationReference.setStyle("cornerRadius", "10");
+					addAnnotationReference.setStyle('icon', AssetLookup.add_ann_ref_icon);
+					addAnnotationReference.percentHeight = 100;
+					addAnnotationReference.toolTip	= "Add Annotation Reference";
+					buttonHGroup.addElement(addAnnotationReference);
+				}
+			}
+				
+			/* ============ EVENT LISTENERS ================= */
+		
+			replyButton.addEventListener(MouseEvent.CLICK, replyButtonClicked, false, 0, true);
+			if(addFileReference) {
+				addFileReference.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+					var addReferenceEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL_FILE, true);
+					addReferenceEvent.data.commentID = assetID;
+					addReferenceEvent.data.type = "comment";
+					trace("dispatching event with data", assetID);
 					dispatchEvent(addReferenceEvent);
+					
+					editMode = true;
+					render();
 				});
 				
-			} else {
-				// Create the reply button
-				var replyButton:Button 		= new Button();
-				replyButton.setStyle("cornerRadius", "10");
-				replyButton.percentHeight 	= 100;
-				replyButton.percentWidth 	= 100;
-				replyButton.label 			= "Reply";
-				if(!reply) {
-					// Only add the button, if this isnt a reply
-					// You cant reply to a reply.
-					buttonHGroup.addElement(replyButton);
-				}
-				
-				// If the current user is the author of this comment
-				// then add an Edit and a Delete button
-				if(creator == Auth.getInstance().getUsername() || Auth.getInstance().isSysAdmin()) {
-					// Create the Edit Button
-					// DEPRECATED THE EDIT BUTTON
-					var editButton:Button 		= new Button();
-					editButton.percentHeight	= 100;
-					editButton.percentWidth 	= 100;
-					editButton.label			= "Edit";
-					buttonHGroup.addElement(editButton);
-					editButton.visible = false;
-					editButton.includeInLayout = false;
+				addAnnotationReference.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+					var addReferenceEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL_ANNOTATION, true);
+					addReferenceEvent.data.commentID = assetID;
+					addReferenceEvent.data.type = "comment";
+					trace("dispatching event with data", assetID);
+					dispatchEvent(addReferenceEvent);
 					
-					// Create a Delete button
-					trace("Is sys-admin?", Auth.getInstance().isSysAdmin());
-					
-					if(commentText != "Comment Removed" || Auth.getInstance().isSysAdmin()) {
-						deleteButton		= new Button();
-						deleteButton.setStyle("cornerRadius", "10");
-						
-						deleteButton.percentHeight 	= 100;
-						deleteButton.percentWidth	= 100;
-						deleteButton.label			= "Delete";
-						buttonHGroup.addElement(deleteButton);
-						
-						if(!Auth.getInstance().isSysAdmin()) {
-							// Not the sys admin, put the timer on the delete button
-							deleteUpdateTimer = new Timer(1000);
-							deleteUpdateTimer.addEventListener(TimerEvent.TIMER, updateDeleteButtonTime);
-							deleteUpdateTimer.start();
-						}
-					}
-					
-					// only show the re button if we are in the evidence manager
-					if(FileController.roomType == Model_ERARoom.EVIDENCE_ROOM) {
-						// only in the evidence room, show the reference
-						addFileReference = new Button();
-						addFileReference.setStyle("cornerRadius", "10");
-						
-						addFileReference.percentHeight = 100;
-						addFileReference.percentWidth = 100;
-						addFileReference.label = "Add Ref";
-						buttonHGroup.addElement(addFileReference);
-						
-						addAnnotationReference = new Button();
-						addAnnotationReference.setStyle("cornerRadius", "10");
-						addAnnotationReference.percentHeight = 100;
-						addAnnotationReference.percentWidth = 100;
-						addAnnotationReference.label = "Add Annotation Reference";
-						buttonHGroup.addElement(addAnnotationReference);
-					}
-				}
-				
-				// Add a horizontal rule at the bottom of the comment
-				var hLine:Line = new Line();
-				hLine.percentWidth = 100;
-				hLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
-				this.addElement(hLine);
-			
-			
-			/* ============ EVENT LISTENERS ================= */
-			
-				replyButton.addEventListener(MouseEvent.CLICK, replyButtonClicked, false, 0, true);
-				if(addFileReference) {
-					addFileReference.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-						var addReferenceEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL_FILE, true);
-						addReferenceEvent.data.commentID = assetID;
-						addReferenceEvent.data.type = "comment";
-						trace("dispatching event with data", assetID);
-						dispatchEvent(addReferenceEvent);
-						
-						editMode = true;
-						render();
-					});
-					
-					addAnnotationReference.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-						var addReferenceEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL_ANNOTATION, true);
-						addReferenceEvent.data.commentID = assetID;
-						addReferenceEvent.data.type = "comment";
-						trace("dispatching event with data", assetID);
-						dispatchEvent(addReferenceEvent);
-						
-						editMode = true;
-						render();
-					});
-				}
-				if(deleteButton) {
-					deleteButton.addEventListener(MouseEvent.CLICK, deleteButtonClicked, false, 0, true);
-				}
+					editMode = true;
+					render();
+				});
+			}
+			if(deleteButton) {
+				deleteButton.addEventListener(MouseEvent.CLICK, deleteButtonClicked, false, 0, true);
 			}
 		}
 		
@@ -360,8 +416,25 @@ package View.components.Panels.Comments
 			}
 		}
 		
-		public function addReference(refAssetID:Number, refMediaTitle:String):void {
-			newComment.text = newComment.text.substring(0, newComment.selectionBeginIndex) + "{" + refMediaTitle + ":" + refAssetID + "}" + newComment.text.substring(newComment.selectionEndIndex); 
+		/**
+		 * Adds a reference into the comment
+		 * @param refAssetID
+		 * @param refMediaTitle
+		 * @param refAnnotation
+		 * 
+		 */		
+		public function addReference(refAssetID:Number, refMediaTitle:String, refAnnotation:Number, refAnnotationType:String):void {
+			if(!editMode) {
+				editMode = true;
+				this.render();
+			}
+			trace("comment ref", "file id", refAssetID, "title", refMediaTitle, "annotation", refAnnotation);
+			if(refAnnotation > 0 && refAnnotationType != "") {
+				newComment.text = newComment.text.substring(0, newComment.selectionBeginIndex) + "{" + refMediaTitle + ":" + refAssetID + ":" + refAnnotation + ":" + refAnnotationType + "}" + newComment.text.substring(newComment.selectionEndIndex);
+			} else {
+				newComment.text = newComment.text.substring(0, newComment.selectionBeginIndex) + "{" + refMediaTitle + ":" + refAssetID + "}" + newComment.text.substring(newComment.selectionEndIndex);
+			}
+			
 		}
 		
 		/* GETTERS/SETTERS */

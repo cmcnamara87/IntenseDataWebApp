@@ -123,7 +123,9 @@ package Controller {
 		}
 		
 		public static function back():void {
-			Dispatcher.call(Router.getInstance().getPreviousURL());	
+			var previousURL:String = Router.getInstance().getPreviousURL();
+			trace("**************** GOING BACK TO", previousURL);
+			Dispatcher.call(previousURL);	
 		}
 		// Called when the user manually switches URLs
 		private static function URLChanged(e:IDEvent):void {
@@ -161,6 +163,7 @@ package Controller {
 					
 //			trace("CALLED WITH URL", url);
 			Router.getInstance().setURL(url);
+			trace("********* URL SET TO", url);
 			url = Router.getInstance().getURL();
 			
 //			trace("CONTROLLER IS", Router.getInstance().getController(url));

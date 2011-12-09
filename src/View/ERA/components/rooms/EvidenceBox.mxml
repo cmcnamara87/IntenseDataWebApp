@@ -121,6 +121,9 @@
 			protected function vgroup1_removedFromStageHandler(event:Event):void
 			{
 				// TODO Auto-generated method stub
+				for each(var fileTile:FileTile in fileGroup) {
+					fileTile.destroyFileTile();
+				}
 				fileGroup.removeAllElements();
 				typeFiltersButtons.removeAllElements();
 				

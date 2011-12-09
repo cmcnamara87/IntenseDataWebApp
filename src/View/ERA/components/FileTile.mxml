@@ -6,8 +6,7 @@
 		  mouseOut="vgroup1_mouseOutHandler(event)" 
 		  
 		  mouseMove="vgroup1_mouseMoveHandler(event)" xmlns:components="View.ERA.components.*"
-		  creationComplete="vgroup1_creationCompleteHandler(event)"
-		  removedFromStage="vgroup1_removedFromStageHandler(event)">
+		  creationComplete="vgroup1_creationCompleteHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
@@ -129,7 +128,7 @@
 				description = _fileData.description;
 				fileID = _fileData.base_asset_id;
 				hot = _fileData.hot;
-				trace("SETTING FILE ID!!!!!", fileID);
+//				trace("SETTING FILE ID!!!!!", fileID);
 				type = _fileData.type;
 				ext = _fileData.fileExt;
 				version = _fileData.version;
@@ -279,29 +278,28 @@
 			}
 			
 
-			protected function vgroup1_removedFromStageHandler(event:Event):void
+			public function destroyFileTile():void
 			{
-//				trace("CLEAR: Removing File Tile");	
-//				trace("transcode timer is", transcodeTimer);
-//				if(transcodeTimer) {
-//					transcodeTimer.removeEventListener(TimerEvent.TIMER, checkIfTranscoded);
-//				}
-//				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
-//				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
-//
-//				_fileData = null;
-//				title = null;
-//				description = null;
-//				fileID = null;
-//				type = null;
-//				ext = null;
-//				version = null;
-//				screeningCount = null;
-//				exhibitionCount = null
-//				rootMetaType = null;
-//				checkedOut = null;
-//				notificationCount = null;
-//				transcodeTimer = null;
+				trace("CLEAR: Removing File Tile");	
+				trace("transcode timer is", transcodeTimer);
+				if(transcodeTimer) {
+					transcodeTimer.removeEventListener(TimerEvent.TIMER, checkIfTranscoded);
+				}
+				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
+				
+				_fileData = null;
+				title = null;
+				description = null;
+				fileID = null;
+				type = null;
+				ext = null;
+				version = null;
+				screeningCount = null;
+				exhibitionCount = null
+				rootMetaType = null;
+				checkedOut = null;
+				notificationCount = null;
+				transcodeTimer = null;
 			}
 
 

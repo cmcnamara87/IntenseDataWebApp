@@ -329,8 +329,13 @@
 			
 			<s:VGroup id="caseSelect" width="100%" horizontalAlign="left" height="100%" visible="false">
 				<s:Label text="Select a Case" color="0xFFFFFF" fontSize="24" paddingTop="30" paddingBottom="10" filters="{myFilter}" />
-				<s:DropDownList id="caseERADropdown" width="100%" height="30" chromeColor="0x444444" borderColor="0x444444" contentBackgroundColor="0x444444" color="0xFFFFFF">
-				</s:DropDownList>
+				<s:HGroup width="100%" verticalAlign="middle">
+					<s:Label color="0xFFFFFF" width="80">
+						ERA Edition:
+					</s:Label>
+					<s:DropDownList id="caseERADropdown" width="100%" height="30" chromeColor="0x444444" borderColor="0x444444" contentBackgroundColor="0x444444" color="0xFFFFFF">
+					</s:DropDownList>
+				</s:HGroup>
 				<s:TextInput id="caseSearch" width="100%" height="30" color="0xFFFFFF" text="" contentBackgroundColor="0x444444" enabled="false" change="caseSearch_changeHandler(event)" focusIn="caseSearch_focusInHandler(event)" focusOut="caseSearch_focusOutHandler(event)"/>
 				
 				<s:Scroller id="casePanelScroller" width="100%" chromeColor="0x444444" height="100%">

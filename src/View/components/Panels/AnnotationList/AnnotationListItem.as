@@ -22,6 +22,7 @@ package View.components.Panels.AnnotationList
 	
 	import mx.containers.Canvas;
 	import mx.controls.Alert;
+	import mx.controls.Button;
 	import mx.controls.Image;
 	import mx.controls.Text;
 	import mx.controls.TextArea;
@@ -39,7 +40,9 @@ package View.components.Panels.AnnotationList
 	{
 		private var assetID:Number;
 		
-		private var deleteButton:Button; // The delete button on the annotation
+		private var deleteButton:mx.controls.Button; // The delete button on the annotation
+		private var addFileReference:mx.controls.Button;
+		private var addAnnotationReference:mx.controls.Button;
 		private var annotationText:String;
 		private var creator:String;
 		private var annotationType:String
@@ -47,6 +50,9 @@ package View.components.Panels.AnnotationList
 		private var deleteUpdateTimer:Timer;
 		private var editMode:Boolean = false;
 		private var newComment:TextArea;
+		private var buttonHGroup:HGroup;
+		private var username:spark.components.Label;
+		private var comment:Text;
 		/**
 		 * Creates a comment 
 		 * @param assetID		The ID of the comment in the database
@@ -82,6 +88,12 @@ package View.components.Panels.AnnotationList
 			
 		}
 		
+		public function highlight():void {
+			username.setStyle('fontStyle', 'italic');
+			comment.setStyle('fontStyle', 'italic');
+		}
+		
+		
 		private function render() {
 			this.removeAllElements();
 			
@@ -89,7 +101,7 @@ package View.components.Panels.AnnotationList
 			usernameAndIcon.percentWidth = 100;
 			this.addElement(usernameAndIcon);
 			
-			var username:spark.components.Label = new spark.components.Label();
+			username = new spark.components.Label();
 			// Get the Capitalised first letter of hte username (should be persons name, but whatever)
 			username.text = creator.substr(0,1).toUpperCase() + creator.substr(1);
 			username.percentWidth = 100;
@@ -120,8 +132,13 @@ package View.components.Panels.AnnotationList
 				this.addElement(newComment);
 			} else {
 				trace('edit mode is off');
-				var comment:Text = new Text();
-				comment.htmlText = IDGUI.getLinkHTML(annotationText);
+				comment = new Text();
+				if(FileController.refMode) {
+					comment.htmlText = IDGUI.getTitleHTML(annotationText);
+				} else {
+					comment.htmlText = IDGUI.getLinkHTML(annotationText);
+				}
+				
 				comment.percentWidth = 100;
 				this.addElement(comment);
 				
@@ -136,7 +153,7 @@ package View.components.Panels.AnnotationList
 			}
 			
 			// Create a HGroup for the buttons
-			var buttonHGroup:HGroup 	= new HGroup();
+			buttonHGroup 	= new HGroup();
 			buttonHGroup.percentWidth 	= 100;
 			buttonHGroup.paddingBottom 	= 5;
 			buttonHGroup.paddingTop 	= 5;
@@ -144,91 +161,12 @@ package View.components.Panels.AnnotationList
 			buttonHGroup.paddingRight 	= 5;
 			this.addElement(buttonHGroup);
 			
-			if(editMode) {
-				var saveButton:IDButton = new IDButton("Save");
-				saveButton.setStyle("cornerRadius", "10");
-				saveButton.setStyle("chromeColor", "0xFFFFFF");
-				
-				buttonHGroup.addElement(saveButton);
-				saveButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-					editMode = false;
-					annotationText = newComment.text;
-					render();
-					
-					var myEvent:IDEvent = new IDEvent(IDEvent.COMMENT_EDITED, true);
-					myEvent.data.commentID = assetID;
-					myEvent.data.commentText = annotationText;
-					dispatchEvent(myEvent);
-				});
-				
-				var cancelButton:IDButton = new IDButton("Cancel");
-				cancelButton.setStyle("cornerRadius", "10");
-				cancelButton.setStyle("chromeColor", "0xFFFFFF");
-				
-				buttonHGroup.addElement(cancelButton);
-				cancelButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-					editMode = false;	
-					render();
-					
-					var addReferenceEvent:IDEvent = new IDEvent(IDEvent.CLOSE_REF_PANEL, true);
-					dispatchEvent(addReferenceEvent);
-				});
-				
+			if(editMode == true) {
+				this.addEditModeButtons();
+			} else if (FileController.refMode) {
+				this.addRefModeButtons();
 			} else {
-				// If the current user is the author of this annotation
-				// Or if the current user is a sys-admin
-				// then add an Edit and a Delete button
-				if(creator == Auth.getInstance().getUsername() || Auth.getInstance().isSysAdmin()) {
-	//				// Create the Edit Button
-	//				var editButton:Button 		= new Button();
-	//				editButton.percentHeight	= 100;
-	//				editButton.percentWidth 	= 100;
-	//				editButton.label			= "Edit";
-	//				buttonHGroup.addElement(editButton);
-	//				
-	//				// Create a Delete button
-					trace("Creating delete button");
-					deleteButton		= new Button();
-					deleteButton.setStyle("cornerRadius", "10");
-					
-					deleteButton.percentHeight 	= 100;
-					deleteButton.percentWidth	= 100;
-					deleteButton.label			= "Delete";
-					buttonHGroup.addElement(deleteButton);
-					
-					deleteButton.addEventListener(MouseEvent.CLICK, deleteButtonClicked);
-					
-					if(!Auth.getInstance().isSysAdmin()) {
-						// Not the system admin, so put the timer on the delete button
-						deleteButton.visible = false;
-						deleteButton.includeInLayout = false;
-						
-						deleteUpdateTimer = new Timer(1000);
-						deleteUpdateTimer.addEventListener(TimerEvent.TIMER, updateDeleteButtonTime);
-						deleteUpdateTimer.start();
-					}
-				}
-				
-				if(FileController.roomType == Model_ERARoom.EVIDENCE_ROOM) {
-					var addRefButton:IDButton = new IDButton("Add Ref");
-					addRefButton.setStyle("cornerRadius", "10");
-					
-					addRefButton.percentWidth = 100;
-					
-					addRefButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
-						var addRefEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL_FILE, true);
-						addRefEvent.data.commentID = assetID;
-						addRefEvent.data.type = "annotation";
-						dispatchEvent(addRefEvent);
-						editMode = true;
-						render();
-					});
-					
-					buttonHGroup.addElement(addRefButton);
-				}
-				
-				
-				
+				this.addStandardButtons();	
 			}
 			
 			// Add a horizontal rule at the bottom of the comment
@@ -237,16 +175,158 @@ package View.components.Panels.AnnotationList
 			hLine.stroke = new SolidColorStroke(0xBBBBBB,1,1);
 			this.addElement(hLine);
 			
-			
 			/* ============ EVENT LISTENERS ================= */
 			this.addEventListener(MouseEvent.MOUSE_OVER, annotationMouseOver);
-			this.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);
-			
-			
+			this.addEventListener(MouseEvent.MOUSE_OUT, annotationMouseOut);			
 		}
 		
-		public function addReference(refAssetID:Number, refMediaTitle:String):void {
-			newComment.text = newComment.text.substring(0, newComment.selectionBeginIndex) + "{" + refMediaTitle + ":" + refAssetID + "}" + newComment.text.substring(newComment.selectionEndIndex); 
+		private function addEditModeButtons():void {
+			var saveButton:IDButton = new IDButton("Save");
+			saveButton.setStyle("cornerRadius", "10");
+			saveButton.setStyle("chromeColor", "0xFFFFFF");
+			
+			buttonHGroup.addElement(saveButton);
+			saveButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+				editMode = false;
+				annotationText = newComment.text;
+				render();
+				
+				var myEvent:IDEvent = new IDEvent(IDEvent.COMMENT_EDITED, true);
+				myEvent.data.commentID = assetID;
+				myEvent.data.commentText = annotationText;
+				dispatchEvent(myEvent);
+			});
+			
+			var cancelButton:IDButton = new IDButton("Cancel");
+			cancelButton.setStyle("cornerRadius", "10");
+			cancelButton.setStyle("chromeColor", "0xFFFFFF");
+			
+			buttonHGroup.addElement(cancelButton);
+			cancelButton.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+				editMode = false;	
+				render();
+				
+				var addReferenceEvent:IDEvent = new IDEvent(IDEvent.CLOSE_REF_PANEL, true);
+				dispatchEvent(addReferenceEvent);
+			});
+		}
+		/* ====================== ADD REF MODE BUTTONS AND LISTENERS ========================== */
+		private function addRefModeButtons():void {
+			trace("adding ref mode buttons");
+			var selectComment:spark.components.Button 		= new spark.components.Button();
+			selectComment.setStyle("cornerRadius", "10");
+			selectComment.percentHeight 	= 100;
+			selectComment.percentWidth 	= 100;
+			selectComment.label 			= "Select Annotation";
+			buttonHGroup.addElement(selectComment);
+			
+			selectComment.addEventListener(MouseEvent.CLICK, selectCommentButtonClicked);
+		}
+		private function selectCommentButtonClicked(e:MouseEvent):void {
+			// Create a new annotation ref saved event
+			var event:IDEvent = new IDEvent(IDEvent.ERA_ANNOTATION_CHOSEN_FOR_REFERENCE, true);
+			event.data.commentID = assetID;
+			event.data.type = "annotation";
+			dispatchEvent(event);
+		}
+		/* ====================== END OF ADD REF MODE BUTTONS AND LISTENERS ========================== */
+		
+		private function addStandardButtons():void {
+			// If the current user is the author of this annotation
+			// Or if the current user is a sys-admin
+			// then add an Edit and a Delete button
+			if(creator == Auth.getInstance().getUsername() || Auth.getInstance().isSysAdmin()) {
+				//				// Create the Edit Button
+				//				var editButton:Button 		= new Button();
+				//				editButton.percentHeight	= 100;
+				//				editButton.percentWidth 	= 100;
+				//				editButton.label			= "Edit";
+				//				buttonHGroup.addElement(editButton);
+				//				
+				//				// Create a Delete button
+				trace("Creating delete button");
+				deleteButton = new mx.controls.Button();
+				deleteButton.width = 60;
+				deleteButton.setStyle("cornerRadius", "10");
+				deleteButton.setStyle('icon', AssetLookup.delete_comment_icon);
+				deleteButton.percentHeight = 100;
+				deleteButton.toolTip	= "Delete";
+				buttonHGroup.addElement(deleteButton);
+				
+				deleteButton.addEventListener(MouseEvent.CLICK, deleteButtonClicked);
+				
+				if(!Auth.getInstance().isSysAdmin()) {
+					// Not the system admin, so put the timer on the delete button
+					deleteButton.visible = false;
+					deleteButton.includeInLayout = false;
+					
+					deleteUpdateTimer = new Timer(1000);
+					deleteUpdateTimer.addEventListener(TimerEvent.TIMER, updateDeleteButtonTime);
+					deleteUpdateTimer.start();
+				}
+			}
+			
+			if(FileController.roomType == Model_ERARoom.EVIDENCE_ROOM) {
+				addFileReference = new mx.controls.Button();
+				addFileReference.width = 60;
+				addFileReference.setStyle("cornerRadius", "10");
+				addFileReference.setStyle('icon', AssetLookup.add_file_ref_icon);
+				addFileReference.percentHeight = 100;
+				addFileReference.toolTip	= "Add File Reference";
+				buttonHGroup.addElement(addFileReference);
+				
+				addAnnotationReference = new mx.controls.Button();
+				addAnnotationReference.width = 60;
+				addAnnotationReference.setStyle("cornerRadius", "10");
+				addAnnotationReference.setStyle('icon', AssetLookup.add_ann_ref_icon);
+				addAnnotationReference.percentHeight = 100;
+				addAnnotationReference.toolTip	= "Add Annotation Reference";
+				buttonHGroup.addElement(addAnnotationReference);
+				
+				addFileReference.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+					var addReferenceEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL_FILE, true);
+					addReferenceEvent.data.commentID = assetID;
+					addReferenceEvent.data.type = "annotation";
+					trace("dispatching event with data", assetID);
+					dispatchEvent(addReferenceEvent);
+					
+					editMode = true;
+					render();
+				});
+				
+				addAnnotationReference.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void {
+					var addReferenceEvent:IDEvent = new IDEvent(IDEvent.OPEN_REF_PANEL_ANNOTATION, true);
+					addReferenceEvent.data.commentID = assetID;
+					addReferenceEvent.data.type = "annotation";
+					trace("dispatching event with data", assetID);
+					dispatchEvent(addReferenceEvent);
+					
+					editMode = true;
+					render();
+				});
+			}
+		}
+
+		
+		
+		/**
+		 * Adds a reference into the comment
+		 * @param refAssetID
+		 * @param refMediaTitle
+		 * @param refAnnotation
+		 * 
+		 */		
+		public function addReference(refAssetID:Number, refMediaTitle:String, refAnnotation:Number, refAnnotationType:String):void {
+			if(!editMode) {
+				editMode = true;
+				this.render();
+			}
+			trace("comment ref", "file id", refAssetID, "title", refMediaTitle, "annotation", refAnnotation);
+			if(refAnnotation > 0 && refAnnotationType != "") {
+				newComment.text = newComment.text.substring(0, newComment.selectionBeginIndex) + "{" + refMediaTitle + ":" + refAssetID + ":" + refAnnotation + ":" + refAnnotationType + "}" + newComment.text.substring(newComment.selectionEndIndex);
+			} else {
+				newComment.text = newComment.text.substring(0, newComment.selectionBeginIndex) + "{" + refMediaTitle + ":" + refAssetID + "}" + newComment.text.substring(newComment.selectionEndIndex);
+			}
 		}
 		
 		

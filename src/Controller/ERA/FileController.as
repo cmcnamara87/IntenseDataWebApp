@@ -65,13 +65,21 @@ package Controller.ERA {
 		public static var caseID:Number; // the id of the case we are in
 		public static var rmCode:String; // the code for hte rm we are in
 		public static var roomID:Number; // the id of the room we are in
-		
+		public static var showAnnotationID:Number = 0; // the annotation we should highlight in this room
 		
 		// Stores whether we are in regular mode, or ref mode
 		// defaults to regular mode
 		// in REF MODE, a user has been directed to this page, to select/create an existing annotation
-		public static var refMode:Boolean = true;
+		public static var refMode:Boolean = false; // when this is start, we want to select an annotation
+		public static var refToAnnotationID:Number = 0; // when this is set, we are coming back from selecting an annotaiton
+		public static var refToFileID:Number = 0;
+		public static var refToFileTitle:String = "";
+		public static var refToType:String = "";
 		
+		public static var refFromAssetID:Number = 0;
+		public static var refFromType:String = ""; // "comment" or "annotation";
+		
+//		public static var refFromCommentaryID:Number = 0; // the id of the annotationo r comment where we are making the link from
 		
 		//Calls the superclass, sets the AssetID
 		public function FileController() {
@@ -85,6 +93,7 @@ package Controller.ERA {
 		}
 		
 		//INIT
+		
 		override public function init():void {
 			layout.header.adminToolButtons.visible = false;
 			layout.header.adminToolButtons.includeInLayout = false;
@@ -92,7 +101,7 @@ package Controller.ERA {
 			
 			// Get out the assets ID
 			trace("number of args", Dispatcher.getArgs().length, Dispatcher.getArgs());
-			if(Dispatcher.getArgs().length != 5) {
+			if(!(Dispatcher.getArgs().length != 5  || Dispatcher.getArgs().length != 7)) {
 				Dispatcher.call('case');
 				return;
 			}
@@ -102,6 +111,20 @@ package Controller.ERA {
 			roomType = Dispatcher.getArgs()[2];
 			roomID = Dispatcher.getArgs()[3];
 			currentAssetID = Dispatcher.getArgs()[4];
+			if(Dispatcher.getArgs().length == 7) {
+				showAnnotationID = Dispatcher.getArgs()[5];
+				var annotationType:String = Dispatcher.getArgs()[6];
+				trace("annotation type is", annotationType);
+				if(annotationType == "annotation") {
+					fileView.showAnnotationsPanel(showAnnotationID);
+				} else if (annotationType == "comment") {
+					fileView.showCommentsPanel(showAnnotationID);	
+				}
+				// we have turned off the annotation, so next time, its not a big deal
+				showAnnotationID = 0;
+			} else {
+				showAnnotationID = 0;
+			}
 			trace("Media Asset ID:", currentAssetID);
 			
 			
@@ -145,6 +168,17 @@ package Controller.ERA {
 			fileView.addEventListener(IDEvent.ERA_DOWNLOAD_SEGMENT, downloadMediaSegment, false, 0, true);
 			
 			fileView.addEventListener(IDEvent.ERA_GO_BACK, goBack, false, 0, true);
+			
+			fileView.addEventListener(IDEvent.ERA_ANNOTATION_CHOSEN_FOR_REFERENCE, annotationChosenForReference, false, 0, true);
+		}
+		
+		private function annotationChosenForReference(e:IDEvent):void {
+			// Save that value 
+			FileController.refToAnnotationID = e.data.commentID;
+			FileController.refToType = e.data.type;
+			// Turn of ref mode (for when we go back)
+			FileController.refMode = false;
+			Dispatcher.back();
 		}
 		
 		/* =================================== UPLOAD A NEW VERSION ========================================= */
@@ -185,6 +219,11 @@ package Controller.ERA {
 		 * 
 		 */
 		private function goBack(e:IDEvent):void {
+			if(FileController.refMode) {
+				FileController.refMode = false;
+			}
+				
+				
 			if(roomType != Model_ERARoom.SCREENING_ROOM) {
 				Dispatcher.back();
 //				Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
@@ -325,7 +364,9 @@ package Controller.ERA {
 					newFileArray.push(file);
 				}
 			}
-			fileView.addMediaLinkPanelFiles(newFileArray);
+			if(fileView) {
+				fileView.addMediaLinkPanelFiles(newFileArray);
+			}
 		}
 		
 		/**

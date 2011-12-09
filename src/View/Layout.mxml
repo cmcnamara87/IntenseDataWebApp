@@ -90,7 +90,7 @@
 			private function addNotificationsToDisplay():void {
 				
 				if(notificationCounter < notificationArray.length) {
-					trace("here");
+//					trace("here");
 					var notification:NotificationListItem = null;
 					for(var i:Number = 0; i < renderNumber && (i + notificationCounter) < notificationArray.length; i++) {
 						var notificationData:Model_ERANotification = notificationArray[notificationCounter + i] as Model_ERANotification;
@@ -114,25 +114,25 @@
 						}*/
 						
 					}
-					trace("here 2");
+//					trace("here 2");
 					notificationCounter += renderNumber;
 					// increase the number we render, with a max of 10
-					renderNumber = Math.min(10, ++renderNumber);
+					renderNumber = Math.min(5, ++renderNumber);
 					
 					if(notification) {
 						// listen for the last one, of the batch we are rendering, to be finsihed
 						notification.addEventListener(FlexEvent.CREATION_COMPLETE, notificationCreated, false, 0, true);
 					} else {
-						trace("here 7");
+//						trace("here 7");
 						/*loadingLabel.includeInLayout = false;
 						loadingLabel.visible = false;
 						
 						casePanelScroller.verticalScrollBar.value = selectedCase.y;*/
 					}
-					trace("here 3");
+//					trace("here 3");
 					
 				} else {
-					trace("here 8");
+//					trace("here 8");
 					/*loadingLabel.includeInLayout = false;
 					loadingLabel.visible = false;
 					
@@ -142,19 +142,19 @@
 					var notificationUpdatedEvent:IDEvent = new IDEvent(IDEvent.ERA_NOTIFICATIONS_UPDATED, true);
 					dispatchEvent(notificationUpdatedEvent);
 					
-					trace("here 9");
+//					trace("here 9");
 				}
 			}
 			
 			private function notificationCreated(e:FlexEvent):void {
 				(e.target as NotificationListItem).removeEventListener(FlexEvent.CREATION_COMPLETE, notificationCreated);
-				trace("here 4");
+//				trace("here 4");
 				if(keepAdding) {
-					trace("here 5");	
+//					trace("here 5");	
 					//					caseCounter++;
 					addNotificationsToDisplay();
 				}
-				trace("here 6");
+//				trace("here 6");
 			}	
 
 			
@@ -381,8 +381,6 @@
 		</s:Group>
 
 	</s:VGroup> 
-	
-	
 	
 	<s:BorderContainer backgroundColor="0xFFFFFF"
 					   id="notificationPanel"

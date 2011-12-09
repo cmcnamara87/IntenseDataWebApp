@@ -203,7 +203,7 @@
 				_notificationData = null;
 				notificationText = null;
 				timeStamp = null;
-				trace("REMOVING NOTIFICAITOn LIST ITEM");
+//				trace("REMOVING NOTIFICAITOn LIST ITEM");
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, canvas1_removedFromStageHandler);
 			}
 			

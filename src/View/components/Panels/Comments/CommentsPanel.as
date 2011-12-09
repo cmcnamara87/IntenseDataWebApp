@@ -16,7 +16,9 @@ package View.components.Panels.Comments
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.setTimeout;
 	
+	import mx.controls.Alert;
 	import mx.controls.Button;
+	import mx.events.FlexEvent;
 	import mx.graphics.SolidColor;
 	import mx.graphics.SolidColorStroke;
 	
@@ -35,7 +37,11 @@ package View.components.Panels.Comments
 		private var maxMinButton:Button;
 		private var addCommentButton:Button;
 		
-		private var editingCommentID:Number;
+		// Stores the comment we are editing
+		private static var editingCommentID:Number;
+		// Stores if we have finished rendering the comments
+		private var finishedRendering:Boolean = false;
+		
 		/**
 		 * The Comments Panel sits on the right side on the main asset browser 
 		 * and shows all the comments a specific collection has.
@@ -96,10 +102,29 @@ package View.components.Panels.Comments
 			// Listen for someone wanting to add a reference to a comment
 			// we have to save the ID of the current comment being edited, so when they give back the
 			// annotation to add, we know who to add it to
-			this.addEventListener(IDEvent.OPEN_REF_PANEL_FILE, function(e:IDEvent):void {
-				trace("CAUGHT open ref panel event", e.data.commentID);
-				editingCommentID = e.data.commentID;
-			});
+			this.addEventListener(IDEvent.OPEN_REF_PANEL_FILE, openRefPanelCaught);
+			this.addEventListener(IDEvent.OPEN_REF_PANEL_ANNOTATION, openRefPanelCaught);
+		}
+		
+		public function showComment(annotationID:Number):void {
+			if(finishedRendering) {
+				
+				for(var i:Number = 0; i < content.numElements; i++) {
+					var comment:Comment = content.getElementAt(i) as Comment;
+					if(comment.getID() == annotationID) {
+						myScroller.verticalScrollBar.value = comment.y;	
+						comment.highlight();
+					}
+				}
+			} else {
+				setTimeout(showComment, 1000, annotationID);
+			}
+		}
+		
+		private function openRefPanelCaught(e:IDEvent):void {
+			trace("CAUGHT open ref panel event", e.data.commentID);
+			editingCommentID = e.data.commentID;
+			trace("saving thingy", editingCommentID);
 		}
 //		
 		
@@ -128,6 +153,7 @@ package View.components.Panels.Comments
 			for(var i:Number = 0; i < commentArray.length; i++) {
 				var commentData:Model_Commentary = commentArray[i] as Model_Commentary;
 				
+				var myComment:Comment = null;
 				// Check if this comment is a reply
 				if(commentData.annotation_start > 0) {					
 					// This comment is a reply
@@ -141,18 +167,27 @@ package View.components.Panels.Comments
 						// So we can put the comment, at the end of all the other replies that are already there
 						var nonReplyIndex:Number = this.getNonReplyCommentIndexAfter(commentIndex);
 						
-						addPanelItemAtIndex(	new Comment(commentData.base_asset_id, commentData.meta_creator, Number(commentData.base_mtime), 
-												commentData.text, true),
-												nonReplyIndex);
+						myComment = new Comment(commentData.base_asset_id, commentData.meta_creator, Number(commentData.base_mtime), 
+							commentData.text, true);
+						addPanelItemAtIndex(myComment, nonReplyIndex);
 					} else {
 						// We didnt find the comment, that this one is replying to.
 						// Lets just insert it at the bottom, as not a reply
-						addPanelItem(new Comment(commentData.base_asset_id, commentData.meta_creator, Number(commentData.base_mtime), commentData.text, false));
+						myComment = new Comment(commentData.base_asset_id, commentData.meta_creator, Number(commentData.base_mtime), commentData.text, false);
+						addPanelItem(myComment);
 					}
 				} else {
-					addPanelItem(new Comment(commentData.base_asset_id, commentData.meta_creator, Number(commentData.base_mtime), commentData.text, false));
+					myComment = new Comment(commentData.base_asset_id, commentData.meta_creator, Number(commentData.base_mtime), commentData.text, false)
+					addPanelItem(myComment);
 				}
 			}
+			
+			if(myComment) {
+				myComment.addEventListener(FlexEvent.CREATION_COMPLETE, function(e:FlexEvent):void {
+					finishedRendering = true;
+				});	
+			}
+			
 		}
 		
 		/**
@@ -183,13 +218,18 @@ package View.components.Panels.Comments
 		}
 		
 //		public function addReferenceTo(mediaData:Model_Media):void {
-		public function addReferenceTo(fileID:Number, fileTitle:String):void {
-			trace("title of added asset is", fileTitle);
-			var commentIndex:Number = this.getCommentIndexFromAssetID(editingCommentID);
-			trace("found", editingCommentID, "at", commentIndex); 
-			var comment:Comment = content.getElementAt(commentIndex) as Comment;
-			comment.addReference(fileID, fileTitle);
-			
+		public function addReferenceTo(fileID:Number, fileTitle:String, annotationID:Number, annotationType:String):void {
+			if(finishedRendering) {
+				trace("title of added asset is", fileTitle);
+				var commentIndex:Number = this.getCommentIndexFromAssetID(editingCommentID);
+				trace("found", editingCommentID, "at", commentIndex); 
+				var comment:Comment = content.getElementAt(commentIndex) as Comment;
+				trace("comments panel", "adding ref to", "file id", fileID, "file title", fileTitle, "anno", annotationID);
+				comment.addReference(fileID, fileTitle, annotationID, annotationType);
+			} else {
+				trace("not ready yet");
+				setTimeout(addReferenceTo, 1000, fileID, fileTitle, annotationID, annotationType);
+			}
 		}
 		
 		/* =========== EVENT LISTENER FUNCTIONS =================== */

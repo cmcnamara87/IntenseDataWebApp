@@ -184,6 +184,8 @@ package Controller {
 			public static var ERA_PROGRESS_EVENT:String = "era_progressEvent";
 			public static var ERA_COMPLETE_EVENT:String = "era_completeEvent";
 			
+			public static var ERA_ANNOTATION_CHOSEN_FOR_REFERENCE:String = "era_AnnotationChosenForReference";
+			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 		}
