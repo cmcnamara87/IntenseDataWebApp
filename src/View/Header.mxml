@@ -94,7 +94,7 @@
 			</s:Button>
 			<s:Button id="caseCreatorButton" label="Case Creator" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
 			</s:Button>
-			<s:Button id="reportButton" enabled="false" label="Reports" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" visible="false" includeInLayout="false">
+			<s:Button id="reportButton" label="Reports" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
 			</s:Button>
 		</s:HGroup>
 		<s:HGroup width="100%">

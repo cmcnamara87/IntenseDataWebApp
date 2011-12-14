@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	
+	<fx:Script>
+		<![CDATA[
+			import Controller.ERA.Admin.ReportController;
+			import Controller.Utilities.Auth;
+			
+			import Model.Model_ERAUser;
+			
+			
+			
+			
+			/*[Embed(source="/Assets/Fonts/Helvetica.ttf", mimeType="application/octet-stream")]
+			public var textfieldFont:String;*/
+			
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<!-- TITLE BAR WITH CREATION BUTTON -->
+	<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
+		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
+			<s:VGroup width="100%" paddingTop="10">
+				
+				<s:Label text="Reports" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+					<!--<s:filters>
+					<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
+					</s:filters>-->
+				</s:Label>
+				
+			</s:VGroup>
+		</s:HGroup>
+	</s:BorderContainer>
+	<!-- END OF TITLE BAR WITH CREATION BUTTON -->
+	
+	<s:VGroup width="100%" height="100%" horizontalAlign="center">
+		<s:VGroup width="960" paddingTop="20">
+			<s:Label text="Please select a report. Certain reports may take longer to generate." />
+			<s:HGroup width="100%" verticalAlign="middle" paddingTop="10">
+				<s:Label text="Report: "/>
+				<s:DropDownList id="reportDropdown" width="100%">
+					<s:ArrayCollection>
+						<fx:Object data="{ReportController.REPORT_RESEARCHERS_IN_SCHOOLS}" label="Researchers in School" />
+						<fx:Object data="{ReportController.REPORT_CASES_IN_EXHIBITION}" label="Cases in Exhibition" />
+						<fx:Object data="{ReportController.REPORT_CASES_NOT_COLLECTED}" label="Cases with Evidence Not Collected" />
+						<fx:Object data="{ReportController.REPORT_CHECKED_OUT}" label="Files Checked Out" />
+						<fx:Object data="{ReportController.REPORT_RESEARCHERS_NOT_INVOLVED}" label="Cases with No Researcher Involvement" />
+					</s:ArrayCollection>
+				</s:DropDownList>
+				<s:Button id="generateButton" label="Generate" cornerRadius="10" />
+			</s:HGroup>
+		</s:VGroup>
+	</s:VGroup>
+</s:VGroup>

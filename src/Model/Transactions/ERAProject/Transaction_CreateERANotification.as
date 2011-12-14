@@ -165,8 +165,9 @@ package Model.Transactions.ERAProject
 			var notificationID:Number = data.reply.result.id;
 			
 			// Send mail
-//			AppModel.getInstance().sendMailFromNotification(notificationID);
-			
+			if(Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP) {
+				AppModel.getInstance().sendMailFromNotification(notificationID);
+			}
 		}
 	}
 }

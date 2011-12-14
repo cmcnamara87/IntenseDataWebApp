@@ -308,7 +308,7 @@
 		<s:VGroup width="385" height="100%" left="100" horizontalAlign="right">
 			<mx:Image source="{Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP ? AssetLookup.splash_QUT : AssetLookup.splash_IDS}" ></mx:Image>
 			<s:VGroup paddingRight="27">
-				<mx:Image source="{AssetLookup.qut_logo_grey}"></mx:Image>	
+				<mx:Image visible="{Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP}" source="{AssetLookup.qut_logo_grey}"></mx:Image>	
 			</s:VGroup>
 		</s:VGroup>
 		<s:VGroup width="620" height="100%" right="150" horizontalAlign="left">

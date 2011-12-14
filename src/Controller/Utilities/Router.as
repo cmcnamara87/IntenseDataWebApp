@@ -3,6 +3,7 @@ package Controller.Utilities {
 	import Controller.ERA.Admin.CaseCreatorController;
 	import Controller.ERA.Admin.DashboardController;
 	import Controller.ERA.Admin.ERASetupController;
+	import Controller.ERA.Admin.ReportController;
 	import Controller.ERA.Admin.UserAdminController;
 	import Controller.ERA.AppSauce;
 	import Controller.ERA.CaseController;
@@ -34,6 +35,11 @@ package Controller.Utilities {
 		
 		// The valid routes/controllers for the application
 		private static var routes:Array = new Array(
+			{
+				url: 'reports',
+				title: 'Reports',
+				classname: ReportController
+			},
 			{
 				url: 'splash',
 				title: 'nQuisitor',

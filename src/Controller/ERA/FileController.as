@@ -302,9 +302,11 @@ package Controller.ERA {
 			fileView.downloadButton.label = "Checked out by " + Auth.getInstance().getUserDetails().firstName + " " + Auth.getInstance().getUserDetails().lastName;
 			fileView.downloadButton.enabled = false;
 			
+			
 			// Download it now
 			var url:String = currentMediaData.getDownloadURL();
 			var req:URLRequest = new URLRequest(url);
+			
 			navigateToURL(req, 'Download');
 		}
 		/* =================================== END OF DOWNLOAD A FILE ========================================= */

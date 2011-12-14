@@ -7,6 +7,11 @@ package Model {
 	import Model.Transactions.Access.Transaction_ChangeAccess;
 	import Model.Transactions.Access.Transaction_CopyAccess;
 	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
+	import Model.Transactions.ERAProject.Reports.Transaction_GetCasesInExhibition;
+	import Model.Transactions.ERAProject.Reports.Transaction_GetCasesNotCollected;
+	import Model.Transactions.ERAProject.Reports.Transaction_GetCheckedInOutFilesPerCase;
+	import Model.Transactions.ERAProject.Reports.Transaction_GetResearcherInvolvement;
+	import Model.Transactions.ERAProject.Reports.Transaction_GetResearchersInSchools;
 	import Model.Transactions.ERAProject.Transaction_AddRoleToUser;
 	import Model.Transactions.ERAProject.Transaction_CreateConversation;
 	import Model.Transactions.ERAProject.Transaction_CreateERACase;
@@ -1841,6 +1846,22 @@ package Model {
 		
 		public function recoverPassword(username:String, callback:Function):void {
 			var transaction:Transaction_RecoverPassword = new Transaction_RecoverPassword(username, _connection, callback);
+		}
+		
+		public function getResearchersInSchools(schoolsArray:Array, callback:Function):void {
+			var transaction:Transaction_GetResearchersInSchools = new Transaction_GetResearchersInSchools(schoolsArray, _connection, callback);
+		}
+		public function getCasesInExhibition(callback:Function):void {
+			var transaction:Transaction_GetCasesInExhibition = new Transaction_GetCasesInExhibition(_connection, callback);
+		}
+		public function getCasesNotCollection(callback:Function):void {
+			var transaction:Transaction_GetCasesNotCollected = new Transaction_GetCasesNotCollected(_connection, callback);
+		}
+		public function getCheckedInOutFilesPerCase(callback:Function):void {
+			var transaction:Transaction_GetCheckedInOutFilesPerCase = new Transaction_GetCheckedInOutFilesPerCase(AppController.currentEraProject.year, _connection, callback);
+		}
+		public function getCasesResearchersNoInvolvement(callback:Function):void {
+			var transaction:Transaction_GetResearcherInvolvement = new Transaction_GetResearcherInvolvement(AppController.currentEraProject.year, _connection, callback);
 		}
 	}
 		

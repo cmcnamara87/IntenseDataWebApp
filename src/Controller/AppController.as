@@ -87,6 +87,7 @@ package Controller {
 			layout.header.dashboardButton.addEventListener(MouseEvent.CLICK, dashboardButtonClicked);
 			layout.header.userAdminButton.addEventListener(MouseEvent.CLICK, userAdminButtonClicked);
 			layout.header.caseCreatorButton.addEventListener(MouseEvent.CLICK, caseCreatorButtonClicked);
+			layout.header.reportButton.addEventListener(MouseEvent.CLICK, reportButtonClicked, false, 0, true);
 			
 			// Changing ERA years
 			layout.header.eraDropDown.addEventListener(IndexChangeEvent.CHANGE, eraChanged);
@@ -206,6 +207,9 @@ package Controller {
 		}
 		private static function caseCreatorButtonClicked(e:MouseEvent):void {
 			Dispatcher.call("casecreator");
+		}
+		private static function reportButtonClicked(e:MouseEvent):void {
+			Dispatcher.call("reports");
 		}
 		
 		/**

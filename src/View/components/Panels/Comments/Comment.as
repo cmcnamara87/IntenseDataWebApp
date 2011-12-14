@@ -47,7 +47,7 @@ package View.components.Panels.Comments
 		private var reply:Boolean;
 		private var creator:String;
 		private var commentText:String;
-		private var deleteButton:spark.components.Button;
+		private var deleteButton:mx.controls.Button;
 		private var addFileReference:mx.controls.Button;
 		private var addAnnotationReference:mx.controls.Button;
 		private var mtime:Number;
@@ -274,12 +274,13 @@ package View.components.Panels.Comments
 				
 				if(commentText != "Comment Removed" || Auth.getInstance().isSysAdmin()) {
 					
-					var deleteButton:mx.controls.Button = new mx.controls.Button();
+					deleteButton = new mx.controls.Button();
 					deleteButton.width = 60;
 					deleteButton.setStyle("cornerRadius", "10");
 					deleteButton.setStyle('icon', AssetLookup.delete_comment_icon);
 					deleteButton.percentHeight = 100;
 					deleteButton.toolTip	= "Delete";
+					deleteButton.label = "Delete";
 
 					buttonHGroup.addElement(deleteButton);
 					
