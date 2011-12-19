@@ -5,12 +5,16 @@
 
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
 			import Controller.IDEvent;
 			
 			import Model.Model_ERAUser;
 			
+			import flash.utils.setTimeout;
+			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
+			import mx.events.FlexEvent;
 			
 			import spark.events.IndexChangeEvent;
 			
@@ -113,14 +117,58 @@
 				addUserButton.setStyle("chromeColor", 0x8FAFF7);
 			}
 
+			protected function email_changeHandler(event:Event):void
+			{
+				trace("EMAIL CHANGLED to", this.email.selected ? "true":"false", "number of users",currentUsers.numElements);
+				for(var i:Number = 0; i < currentUsers.numElements; i++) {
+					var userRoleItem:UserRoleItem = currentUsers.getElementAt(i) as UserRoleItem;
+					trace("changing current users to", this.email.selected ? "true" : "false");
+					userRoleItem.email.selected = this.email.selected;
+				}
+				
+				
+				// create a new event to sve the change
+				var changeEmailNotification:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS, true);
+				changeEmailNotification.data.role = role;
+				changeEmailNotification.data.enabled = email.selected;
+				dispatchEvent(changeEmailNotification);
+				
+				
+			}
+
+			/*protected function vgroup1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.addEventListener(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS, changingUserEmailOptions);
+			}
+			private function changingUserEmailOptions(e:IDEvent):void {
+				trace("caught");
+				if(this.email.selected && e.data.enabled == false) {
+					this.email.selected = false;
+					setTimeout(function(username:String):void {
+						trace("settign email to true for", username);
+						for(var i:Number = 0; i < currentUsers.numElements; i++) {
+							var userRoleItem:UserRoleItem = currentUsers.getElementAt(i) as UserRoleItem;
+							if(userRoleItem.username != e.data.username) {
+								userRoleItem.sendEmailOptionsChangeEvent(true);
+							}
+						}	
+					}, 5000, e.data.username);
+					
+				}
+			}*/
+			
 		]]>
 	</fx:Script>
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Label id="roleTitle" text="{Model_ERAUser.getRolePrettyName(role)}" fontSize="15" fontWeight="bold" color="0x5e6469">
-	</s:Label>
+	<s:HGroup width="100%">
+		<s:Label id="roleTitle" text="{Model_ERAUser.getRolePrettyName(role)}" fontSize="15" fontWeight="bold" color="0x5e6469" width="100%">
+		</s:Label>
+		<mx:CheckBox id="email" labelPlacement="right" label="Enable Email" change="email_changeHandler(event)" selected="{AppController.currentEraProject.isEmailEnabled(role)}" />
+	</s:HGroup>
 	<s:Label text="{Model_ERAUser.getRoleDescription(role)}" color="0x5e6469" />
 	<s:HGroup width="100%" paddingTop="5">
 		<s:DropDownList id="allUsers" width="100%" change="allUsers_changeHandler(event)">

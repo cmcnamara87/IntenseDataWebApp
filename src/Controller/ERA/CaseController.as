@@ -211,6 +211,7 @@ package Controller.ERA
 		}
 		/* ====================================== GOT ALL THE LOG ITEMS ===================================== */
 		private function gotAllLogItems(status:Boolean, logItemArray:Array):void {
+			if(!caseView) return;
 			caseView.showEvidenceManagement(logItemArray);
 			
 		}
@@ -220,6 +221,8 @@ package Controller.ERA
 		/*==================================== SHOW FORENSIC LAB ===========================================*/
 		private function showForensicLab(e:Event=null):void {
 			// @todo add use permission checking
+			if(!caseView) return;
+			
 			if(!(Auth.getInstance().isSysAdmin() || isProductionManager || isTeamManager)) {
 				caseView.showAccessDenied("Sorry, the Forensic Lab can only be accessed by the System Administrator or Production Team");
 				return;
@@ -250,6 +253,8 @@ package Controller.ERA
 		
 		
 		private function showExhibition(e:Event=null):void {
+			if(!caseView) return;
+			
 			if(!(Auth.getInstance().isSysAdmin() || isProductionManager 
 				|| Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year))) {
 				caseView.showAccessDenied("Sorry, the Exhibition can only be accessed by the System Administrator, Production Manager or Monitor.");
@@ -275,6 +280,9 @@ package Controller.ERA
 		}
 		/*==================================== SHOW SCREENING BOX ===========================================*/
 		private function showScreeningLab(e:Event=null):void {
+			
+			if(!caseView) return;
+			
 			if(!(Auth.getInstance().isSysAdmin() || isProductionManager || isResearcher 
 				|| Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year))) {
 				caseView.showAccessDenied("Sorry, the Screening Lab can only be accessed by the System Administrator, Production Manager, Researcher or Monitor");
@@ -321,6 +329,7 @@ package Controller.ERA
 		
 		/*==================================== SHOW EVIDENCE BOX ===========================================*/
 		private function showEvidenceBox(e:Event=null):void {
+			if(!caseView) return;
 			
 			if(!(Auth.getInstance().isSysAdmin() || isProductionManager || isTeamManager || isResearcher 
 				|| Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year))) {
@@ -390,6 +399,9 @@ package Controller.ERA
 				layout.notificationBar.showError("Could not retrieve any cases");
 				return;
 			}
+			
+			if(!caseView) return;
+			
 			
 			this.eraCaseArray = eraCaseArray;
 			

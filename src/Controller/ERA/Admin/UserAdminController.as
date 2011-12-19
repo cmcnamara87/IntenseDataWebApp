@@ -4,6 +4,7 @@ package Controller.ERA.Admin
 	import Controller.IDEvent;
 	
 	import Model.AppModel;
+	import Model.Model_ERAProject;
 	import Model.Model_ERAUser;
 	import Model.Model_User;
 	
@@ -57,6 +58,8 @@ package Controller.ERA.Admin
 			
 			// Listen for user being removed from a role
 			userAdminView.addEventListener(IDEvent.ERA_REMOVE_USER_FROM_ROLE, removeUserFromRole);
+			
+			userAdminView.addEventListener(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS, changeEmailOptions, false, 0, true);
 		}
 		
 		/* ========================================== CREATING ERA USER ========================================== */
@@ -181,10 +184,12 @@ package Controller.ERA.Admin
 				"Are you sure you wish to remove user: " + username + " from " + Model_ERAUser.getRolePrettyName(role), "Remove User", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
 					if (e.detail==Alert.OK) {
 						layout.notificationBar.showProcess("Removing " + username);
+
+						roleComponent.removeUser(username);
 						
 						AppModel.getInstance().removeRoleFromERAUser(username, role, roleComponent, userRemovedFromRole);
 					}
-				}, null, Alert.CANCEL);
+				}, null, Alert.OK);
 		}
 			
 			
@@ -194,10 +199,37 @@ package Controller.ERA.Admin
 				return;
 			}
 			layout.notificationBar.showGood("Role removed from " + username);
-			roleComponent.removeUser(username);
+//			roleComponent.removeUser(username);
 			
 		}
 		/* ========================================== END OF REMOVING A ROLE FROM A USER ========================================== */
+		
+		/* ========================================== CHANGE EMAIL OPTIONS ========================================== */
+		private function changeEmailOptions(e:IDEvent):void {
+			trace("Changing email options");
+			var role:String = e.data.role;
+			var enabled:Boolean = e.data.enabled;
+			var username:String = "";
+			if(e.data.username) {
+				username = e.data.username;
+			}
+			
+			trace("changing email option", role, enabled ? 'true' : 'false', username);
+			AppModel.getInstance().changeEmailOptions(role, username, enabled, emailOptionsChanged);
+		}
+		
+		
+		private function emailOptionsChanged(status:Boolean, eraProject:Model_ERAProject=null):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to change email options");
+				return;
+			}
+			layout.notificationBar.showGood("Email options changed.");
+			// Update the current era project
+			AppController.currentEraProject = eraProject;
+		}
+		/* ========================================== END OF CHANGE EMAIL OPTIONS ========================================== */
+		
 		
 		
 		/* ======================================= GET USERS WITH ROLE ========================================== */

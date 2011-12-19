@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <components:UserListItem xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					xmlns:s="library://ns.adobe.com/flex/spark" 
-					xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:Admin="View.components.Admin.*" xmlns:components="View.ERA.components.*">
+					xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:Admin="View.components.Admin.*" xmlns:components="View.ERA.components.*"
+					 creationComplete="userlistitem1_creationCompleteHandler(event)">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -9,9 +10,9 @@
 		<![CDATA[
 			import Controller.IDEvent;
 			
-			
 			import mx.collections.ArrayList;
 			import mx.controls.Alert;
+			import mx.events.FlexEvent;
 			
 			public var roleComponent:ERARole = null;
 			public var role:String = "";
@@ -28,6 +29,25 @@
 				deleteEvent.data.roleComponent = roleComponent;
 				deleteEvent.data.role = role;
 				dispatchEvent(deleteEvent);
+			}
+			
+			override protected function email_changeHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				sendEmailOptionsChangeEvent(email.selected);
+			}
+			
+			public function sendEmailOptionsChangeEvent(selected:Boolean) {
+				var changeEmailNotification:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS, true);
+				changeEmailNotification.data.role = role;
+				changeEmailNotification.data.enabled = selected;
+				changeEmailNotification.data.username = username;
+				dispatchEvent(changeEmailNotification);
+			}
+			
+			protected function userlistitem1_creationCompleteHandler(event:FlexEvent):void
+			{
+				showEmail = true;				
 			}
 			
 		]]>

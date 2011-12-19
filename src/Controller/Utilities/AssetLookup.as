@@ -12,6 +12,10 @@ package Controller.Utilities {
 	
 	public class AssetLookup extends Object {
 		
+		// Report header
+		[Embed(source="Assets/Template/report_header.jpg", mimeType="application/octet-stream")]
+		public static var report_header:Class;
+		
 		// Comment icons
 		[Embed(source="Assets/Template/reply_icon.png")]
 		public static var reply_icon:Class;

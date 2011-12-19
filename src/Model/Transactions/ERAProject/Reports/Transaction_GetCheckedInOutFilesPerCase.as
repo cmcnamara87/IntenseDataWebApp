@@ -67,11 +67,12 @@ package Model.Transactions.ERAProject.Reports
 			
 			argsXML.where = "namespace>='ERA/" + year + "' ";
 			argsXML.where += "and class>='recensio:base/resource/media' ";
+			argsXML.where += "and ERA-evidence/checked_out=true ";
 			argsXML.where += "and related to{room} (type>=ERA/room and ERA-room/room_type='forensiclab' ";
 			argsXML.where += "and related to{case} (id=" + currentERACase.base_asset_id + "))"
 			argsXML.action = "get-meta";
 			
-			trace("query", baseXML);
+//			trace("query", baseXML);
 			connection.sendRequest(baseXML, gotFiles);
 		}
 		
@@ -81,15 +82,20 @@ package Model.Transactions.ERAProject.Reports
 				callback(false, null);
 				return;
 			}
+			
 			var fileArray:Array = AppModel.getInstance().parseResults(data, Model_ERAFile);
+			trace("found files", fileArray.length);
 			fileArray.sortOn(["checkedOut"], [Array.CASEINSENSITIVE]);
 			
-			// now lets store this in the object
-			var caseFileObject:Object = new Object();
-			caseFileObject.eraCase = currentERACase;
-			caseFileObject.files = fileArray;
-			
-			caseFileArray.push(caseFileObject);
+			// if there are files, lets store it
+			// since we only want to show cases with files checked out (apparently)
+			if(fileArray.length) {
+				// now lets store this in the object
+				var caseFileObject:Object = new Object();
+				caseFileObject.eraCase = currentERACase;
+				caseFileObject.files = fileArray;
+				caseFileArray.push(caseFileObject);
+			}
 			
 			eraCaseCounter++;
 			

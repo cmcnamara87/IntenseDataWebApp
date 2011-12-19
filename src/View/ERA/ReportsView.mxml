@@ -46,11 +46,11 @@
 				<s:Label text="Report: "/>
 				<s:DropDownList id="reportDropdown" width="100%">
 					<s:ArrayCollection>
-						<fx:Object data="{ReportController.REPORT_RESEARCHERS_IN_SCHOOLS}" label="Researchers in School" />
-						<fx:Object data="{ReportController.REPORT_CASES_IN_EXHIBITION}" label="Cases in Exhibition" />
-						<fx:Object data="{ReportController.REPORT_CASES_NOT_COLLECTED}" label="Cases with Evidence Not Collected" />
-						<fx:Object data="{ReportController.REPORT_CHECKED_OUT}" label="Files Checked Out" />
-						<fx:Object data="{ReportController.REPORT_RESEARCHERS_NOT_INVOLVED}" label="Cases with No Researcher Involvement" />
+						<fx:Object data="{ReportController.REPORT_RESEARCHERS_IN_SCHOOLS}" label="{ReportController.getReportPrettyName(ReportController.REPORT_RESEARCHERS_IN_SCHOOLS)}" />
+						<fx:Object data="{ReportController.REPORT_CASES_IN_EXHIBITION}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CASES_IN_EXHIBITION)}" />
+						<fx:Object data="{ReportController.REPORT_CASES_NOT_COLLECTED}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CASES_NOT_COLLECTED)}" />
+						<fx:Object data="{ReportController.REPORT_CHECKED_OUT}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CHECKED_OUT)}" />
+						<fx:Object data="{ReportController.REPORT_RESEARCHERS_NOT_INVOLVED}" label="{ReportController.getReportPrettyName(ReportController.REPORT_RESEARCHERS_NOT_INVOLVED)}" />
 					</s:ArrayCollection>
 				</s:DropDownList>
 				<s:Button id="generateButton" label="Generate" cornerRadius="10" />

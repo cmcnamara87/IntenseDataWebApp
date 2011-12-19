@@ -17,6 +17,28 @@ package Model.Transactions.ERAProject
 			this.connection = connection;
 			this.callback = callback;
 		
+			// Delete all files in the case
+			deleteFiles();
+		}
+		
+		private function deleteFiles():void {
+			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			
+			argsXML.where = "related to{room} (related to{case} (id=" + caseID + "))";
+			argsXML.action = "pipe";
+			argsXML.service.@name = "asset.destroy";
+			
+			connection.sendRequest(baseXML, contentsDeleted);
+		}
+		
+		private function contentsDeleted(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("deleting era case", e)) == null) {
+				callback(false);
+				return;
+			} 
+			trace("case contents deleted");
 			deleteNotifications();
 		}
 		

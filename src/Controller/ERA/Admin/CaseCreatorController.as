@@ -298,8 +298,24 @@ package Controller.ERA.Admin
 					if (e.detail==Alert.OK) {
 						var caseID:Number = (caseCreatorView.currentCases.selectedItem.data as Model_ERACase).base_asset_id;
 						AppModel.getInstance().deleteERACase(caseID, caseDeleted);
+						
+						// Replace the case with the new one
+						for(var i:Number = 0; i < eraCaseArray.length; i++) {
+							var eraCase:Model_ERACase = eraCaseArray[i] as Model_ERACase;
+							if(eraCase.base_asset_id == caseID) {
+								eraCaseArray.splice(i, 1);
+								break;
+							}
+						}
+						
+						caseCreatorView.addAllCases(eraCaseArray);
+						if(eraCaseArray.length != 0) {
+							caseCreatorView.currentCases.selectedIndex = -1;
+							caseCreatorView.currentCases.selectedIndex = 0;
+							caseCreatorView.showCase(eraCaseArray[0]);
+						}
 					}
-				}, null, Alert.CANCEL);
+				}, null, Alert.OK);
 			
 		}
 		private function caseDeleted(status:Boolean, caseID:Number):void {
@@ -310,7 +326,7 @@ package Controller.ERA.Admin
 			
 			layout.notificationBar.showGood("Case Deleted");
 			
-			// Replace the case with the new one
+			/*// Replace the case with the new one
 			for(var i:Number = 0; i < this.eraCaseArray.length; i++) {
 				var eraCase:Model_ERACase = this.eraCaseArray[i] as Model_ERACase;
 				if(eraCase.base_asset_id == caseID) {
@@ -320,10 +336,11 @@ package Controller.ERA.Admin
 			}
 			
 			caseCreatorView.addAllCases(eraCaseArray);
-				if(eraCaseArray.length != 0) {
+			if(eraCaseArray.length != 0) {
+				caseCreatorView.currentCases.selectedIndex = -1;
 				caseCreatorView.currentCases.selectedIndex = 0;
 				caseCreatorView.showCase(eraCaseArray[0]);
-			}
+			}*/
 			
 		}
 		

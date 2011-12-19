@@ -13,6 +13,7 @@ package Model {
 	import Model.Transactions.ERAProject.Reports.Transaction_GetResearcherInvolvement;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetResearchersInSchools;
 	import Model.Transactions.ERAProject.Transaction_AddRoleToUser;
+	import Model.Transactions.ERAProject.Transaction_ChangeEmailOptions;
 	import Model.Transactions.ERAProject.Transaction_CreateConversation;
 	import Model.Transactions.ERAProject.Transaction_CreateERACase;
 	import Model.Transactions.ERAProject.Transaction_CreateERALogItem;
@@ -36,6 +37,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetAllUsers;
 	import Model.Transactions.ERAProject.Transaction_GetAudioSegment;
 	import Model.Transactions.ERAProject.Transaction_GetERAProjects;
+	import Model.Transactions.ERAProject.Transaction_GetERAUserRoles;
 	import Model.Transactions.ERAProject.Transaction_GetFile;
 	import Model.Transactions.ERAProject.Transaction_GetUser;
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
@@ -44,7 +46,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_RecoverPassword;
 	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
 	import Model.Transactions.ERAProject.Transaction_RemoveUserFromCase;
-	import Model.Transactions.ERAProject.Transaction_SendMail;
+	import Model.Transactions.ERAProject.Transaction_SendMailFromNotification;
 	import Model.Transactions.ERAProject.Transaction_UpdateCheckoutStatus;
 	import Model.Transactions.ERAProject.Transaction_UpdateERACase;
 	import Model.Transactions.ERAProject.Transaction_UpdateERAProject;
@@ -1837,7 +1839,7 @@ package Model {
 		}
 		public function sendMailFromNotification(notificationID:Number):void {
 			trace("sending email");
-			var sendMail:Transaction_SendMail = new Transaction_SendMail(_connection);
+			var sendMail:Transaction_SendMailFromNotification = new Transaction_SendMailFromNotification(_connection);
 			sendMail.sendMailFromNotification(notificationID);
 		}			
 		public function removeUserFromCase(caseID:Number, removeUsername:String, callback:Function):void {
@@ -1862,6 +1864,12 @@ package Model {
 		}
 		public function getCasesResearchersNoInvolvement(callback:Function):void {
 			var transaction:Transaction_GetResearcherInvolvement = new Transaction_GetResearcherInvolvement(AppController.currentEraProject.year, _connection, callback);
+		}
+		public function changeEmailOptions(role:String, username:String, enabled:Boolean, callback:Function):void {
+			var transaction:Transaction_ChangeEmailOptions = new Transaction_ChangeEmailOptions(AppController.currentEraProject.base_asset_id, role, username, enabled, _connection, callback);
+		}
+		public function getERAUserRoles(username:String, callback:Function):void {
+			var transaction:Transaction_GetERAUserRoles = new Transaction_GetERAUserRoles(username, _connection, callback);
 		}
 	}
 		

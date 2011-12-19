@@ -43,6 +43,7 @@ package Controller {
 		public static var notificationsArray:Array = new Array();
 		
 		public static var eraProjectArray:Array = new Array(); // an array of all the era projects in the system
+		[Bindable]
 		public static var currentEraProject:Model_ERAProject; // the current era project we are looking at
 //		public static var ERARoles:Array = new Array("sys_admin", "monitor", "researcher", "production_manager", "production_team", "viewer");
 		

@@ -31,9 +31,12 @@
 			
 			[Bindable]
 			public var lastName:String;
-			
+
 			[Bindable]
 			public var deleteEventToThrow:String = ""; // the even to throw when the delete button is clicked
+			
+			[Bindable]
+			protected var showEmail:Boolean = false;
 
 			protected function deleteButton_clickHandler(event:MouseEvent):void
 			{
@@ -59,6 +62,11 @@
 				canvasColor = 0xFFFFFF;
 			}
 
+			protected function email_changeHandler(event:Event):void
+			{
+				throw new Error("Email handler called for non-UserRoleItem in UserListItem");
+			}
+			
 		]]>
 	</fx:Script>
 	<s:HGroup width="100%" verticalAlign="middle">
@@ -66,5 +74,6 @@
 		</mx:Text>
 		<s:Button label="Remove" width="80" height="20" id="deleteButton" click="deleteButton_clickHandler(event)" >
 		</s:Button>
+		<mx:CheckBox id="email" labelPlacement="right" label="Enable Email" change="email_changeHandler(event)" visible="{showEmail}" includeInLayout="{showEmail}"/>
 	</s:HGroup>
 </mx:Canvas>

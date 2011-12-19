@@ -25,6 +25,7 @@ package Model.Transactions.ERAProject
 		private var fileID:Number;
 		private var commentID:Number;
 		private var eraCase:Model_ERACase;
+		private var eraRoom:Model_ERARoom;
 		
 		public function Transaction_CreateERANotification(year:String, roomID:Number, username:String, firstName:String, lastName:String, type:String, connection:Connection, caseID:Number=0, fileID:Number=0, commentID:Number=0)
 		{
@@ -41,12 +42,12 @@ package Model.Transactions.ERAProject
 			this.commentID = commentID;
 			
 			// if we havent been given a case id, we have to get it from the room, so lets do that			
-			if(caseID == 0) {
+//			if(caseID == 0) {
 				// We need to the case id from somewhere
-				getRoomDetails();
-			} else {
-				getCaseUsers();
-			}
+			getRoomDetails();
+//			} else {
+//				getCaseUsers();
+//			}
 		}
 		
 		private function getRoomDetails():void {
@@ -62,7 +63,7 @@ package Model.Transactions.ERAProject
 				return;
 			}
 
-			var eraRoom:Model_ERARoom = new Model_ERARoom();
+			eraRoom = new Model_ERARoom();
 			eraRoom.setData(data.reply.result.asset[0]);
 			
 			caseID = eraRoom.caseID;
@@ -120,39 +121,14 @@ package Model.Transactions.ERAProject
 			}
 			
 			//Setup who to notify
-			
-			// Setup the access for the admin for the year
-			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.SYS_ADMIN + "_" + year + '</actor><access>read-write</access></acl>'));
-			
-			// Set up access for production managers
-			for each(var productionManager:Model_ERAUser in eraCase.productionManagerArray) {
-				// dont notify you, unless you are doing an upload (then its actually useful)
-				if(productionManager.username == Auth.getInstance().getUsername() && type !=  Model_ERANotification.FILE_UPLOADED) continue;
-				argsXML.appendChild(XML('<acl><actor type="user">system:' + productionManager.username + '</actor><access>read-write</access></acl>'));	
+			var userObject:Object = Model_ERANotification.getWhoToNotify(type, eraCase, eraRoom);
+			for each(var role:String in userObject.roles) {
+				argsXML.appendChild(XML('<acl><actor type="role">' + role + '</actor><access>read-write</access></acl>'));
 			}
-			
-			for each(var productionTeamMember:Model_ERAUser in eraCase.productionTeamArray) {
-				if(productionTeamMember.username == Auth.getInstance().getUsername() && type !=  Model_ERANotification.FILE_UPLOADED) continue;
-				argsXML.appendChild(XML('<acl><actor type="user">system:' + productionTeamMember.username + '</actor><access>read-write</access></acl>'));	
-			}
-			
-			// If we are adding it to the screening room, we need to notify the researcher
-			if(type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB || type == Model_ERANotification.EVIDENCE_READY_FOR_COLLECTION) {
-				for each(var researcher:Model_ERAUser in eraCase.researchersArray) {
-					if(researcher.username == Auth.getInstance().getUsername()) continue;
-					argsXML.appendChild(XML('<acl><actor type="user">system:' + researcher.username + '</actor><access>read-write</access></acl>'));
-				}
-			}
-			
-			if(type == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB) {
-				// Notify the monitor when fiels are ready to be screened or exhibited
-				argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.MONITOR + "_" + year + '</actor><access>read-write</access></acl>'));
+			for each(var username:String in userObject.users) {
+				argsXML.appendChild(XML('<acl><actor type="user">system:' + username + '</actor><access>read-write</access></acl>'));
 			}
 
-			//trace("era notification", argsXML);
-			// todo mail goes in here!!
-//			AppController.layout.header.mything.text += baseXML;
-			
 			connection.sendRequest(baseXML, notificationCreated);
 		}
 		
@@ -165,9 +141,9 @@ package Model.Transactions.ERAProject
 			var notificationID:Number = data.reply.result.id;
 			
 			// Send mail
-			if(Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP) {
+//			if(Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP) {
 				AppModel.getInstance().sendMailFromNotification(notificationID);
-			}
+//			}
 		}
 	}
 }

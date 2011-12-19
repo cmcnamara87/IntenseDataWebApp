@@ -97,12 +97,12 @@ package Controller.Utilities {
 			},
 			{
 				url: 'casecreator',
-				title: 'Case Creator',
+				title: 'Case Manager',
 				classname: CaseCreatorController
 			},
 			{
 				url: 'case',
-				title: 'Case Manager',
+				title: 'Case Builder',
 				classname: CaseController
 			},
 			{
