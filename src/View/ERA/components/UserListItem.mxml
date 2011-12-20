@@ -14,6 +14,7 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
 			import Controller.IDEvent;
 			
 			import mx.collections.ArrayList;
@@ -37,6 +38,8 @@
 			
 			[Bindable]
 			protected var showEmail:Boolean = false;
+			
+			public var role:String = "";
 
 			protected function deleteButton_clickHandler(event:MouseEvent):void
 			{
@@ -72,7 +75,7 @@
 	<s:HGroup width="100%" verticalAlign="middle">
 		<mx:Text text="{lastName}, {firstName} ({username})" width="100%">
 		</mx:Text>
-		<s:Button label="Remove" width="80" height="20" id="deleteButton" click="deleteButton_clickHandler(event)" >
+		<s:Button label="Remove" height="20" id="deleteButton" click="deleteButton_clickHandler(event)" width="85" >
 		</s:Button>
 		<mx:CheckBox id="email" labelPlacement="right" label="Enable Email" change="email_changeHandler(event)" visible="{showEmail}" includeInLayout="{showEmail}"/>
 	</s:HGroup>

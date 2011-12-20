@@ -60,6 +60,8 @@ package Controller.ERA.Admin
 			userAdminView.addEventListener(IDEvent.ERA_REMOVE_USER_FROM_ROLE, removeUserFromRole);
 			
 			userAdminView.addEventListener(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS, changeEmailOptions, false, 0, true);
+			
+			userAdminView.addEventListener(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS_ARRAY, changeEmailOptionsArray, false, 0, true);
 		}
 		
 		/* ========================================== CREATING ERA USER ========================================== */
@@ -229,7 +231,22 @@ package Controller.ERA.Admin
 			AppController.currentEraProject = eraProject;
 		}
 		/* ========================================== END OF CHANGE EMAIL OPTIONS ========================================== */
-		
+		private function changeEmailOptionsArray(e:IDEvent):void {
+			trace("changing email options array");
+			var role:String = e.data.role;
+			var usernameArray = e.data.usernameArray;
+			trace("usenrame array", usernameArray);
+			AppModel.getInstance().changeEmailOptionsUserArray(role, usernameArray, usernameEmailOptionsChanged);
+		}
+		private function usernameEmailOptionsChanged(status:Boolean, eraProject:Model_ERAProject=null):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to change email options");
+				return;
+			}
+			layout.notificationBar.showGood("Email options changed.");
+			// Update the current era project
+			AppController.currentEraProject = eraProject;
+		}
 		
 		
 		/* ======================================= GET USERS WITH ROLE ========================================== */

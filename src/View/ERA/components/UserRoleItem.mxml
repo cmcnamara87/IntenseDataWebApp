@@ -8,6 +8,7 @@
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			import Controller.AppController;
 			import Controller.IDEvent;
 			
 			import mx.collections.ArrayList;
@@ -15,7 +16,7 @@
 			import mx.events.FlexEvent;
 			
 			public var roleComponent:ERARole = null;
-			public var role:String = "";
+			
 			
 			override protected function deleteButton_clickHandler(event:MouseEvent):void
 			{
@@ -38,16 +39,18 @@
 			}
 			
 			public function sendEmailOptionsChangeEvent(selected:Boolean) {
-				var changeEmailNotification:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS, true);
+				var changeEmailNotification:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS_USER, true);
 				changeEmailNotification.data.role = role;
 				changeEmailNotification.data.enabled = selected;
 				changeEmailNotification.data.username = username;
+				trace("dispatching", selected ? "yes":"no");
 				dispatchEvent(changeEmailNotification);
 			}
 			
 			protected function userlistitem1_creationCompleteHandler(event:FlexEvent):void
 			{
-				showEmail = true;				
+				showEmail = true;	
+				email.selected= AppController.currentEraProject.isEmailEnabled(role, username);
 			}
 			
 		]]>

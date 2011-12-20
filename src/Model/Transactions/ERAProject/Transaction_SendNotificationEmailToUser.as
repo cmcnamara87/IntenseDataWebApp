@@ -35,19 +35,19 @@ package Model.Transactions.ERAProject
 			// lets check if they are a researcher for this case
 			for each(var researcher:Model_ERAUser in notification.eraCase.researchersArray) {
 				if(researcher.username == username) {
-					isResearcher = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.RESEARCHER);
+					isResearcher = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.RESEARCHER, username);
 				}
 			}
 			
 			for each(var productionManager:Model_ERAUser in notification.eraCase.productionManagerArray) {
 				if(productionManager.username == username) {
-					isProductionManager = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.PRODUCTION_MANAGER);
+					isProductionManager = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.PRODUCTION_MANAGER, username);
 				}
 			}
 			
 			for each(var productionTeam:Model_ERAUser in notification.eraCase.productionTeamArray) {
 				if(productionTeam.username == username) {
-					isProductionTeam = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.PRODUCTION_TEAM);
+					isProductionTeam = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.PRODUCTION_TEAM, username);
 				}
 			}
 			
@@ -64,11 +64,11 @@ package Model.Transactions.ERAProject
 			// need to check if they are a monitor or a researcher, because they get special notifications
 			for each(var role:String in rolesArray) {
 				if(role == Model_ERAUser.MONITOR + "_" + AppController.currentEraProject.year) {
-					isMonitor = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.MONITOR);
+					isMonitor = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.MONITOR, username);
 				}	
 				if(role == Model_ERAUser.SYS_ADMIN + "_" + AppController.currentEraProject.year) {
 					trace(username, "is a sys admin");
-					isSysAdmin = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.SYS_ADMIN);;
+					isSysAdmin = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.SYS_ADMIN, username);
 				}	
 			}
 			trace("Sending email to", username, 

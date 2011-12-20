@@ -14,6 +14,7 @@ package Model {
 	import Model.Transactions.ERAProject.Reports.Transaction_GetResearchersInSchools;
 	import Model.Transactions.ERAProject.Transaction_AddRoleToUser;
 	import Model.Transactions.ERAProject.Transaction_ChangeEmailOptions;
+	import Model.Transactions.ERAProject.Transaction_ChangeEmailOptionsUserArray;
 	import Model.Transactions.ERAProject.Transaction_CreateConversation;
 	import Model.Transactions.ERAProject.Transaction_CreateERACase;
 	import Model.Transactions.ERAProject.Transaction_CreateERALogItem;
@@ -1867,6 +1868,9 @@ package Model {
 		}
 		public function changeEmailOptions(role:String, username:String, enabled:Boolean, callback:Function):void {
 			var transaction:Transaction_ChangeEmailOptions = new Transaction_ChangeEmailOptions(AppController.currentEraProject.base_asset_id, role, username, enabled, _connection, callback);
+		}
+		public function changeEmailOptionsUserArray(role:String, usernameArray:Array, callback:Function) {
+			var transaction:Transaction_ChangeEmailOptionsUserArray = new Transaction_ChangeEmailOptionsUserArray(AppController.currentEraProject.base_asset_id, role, usernameArray, _connection, callback);
 		}
 		public function getERAUserRoles(username:String, callback:Function):void {
 			var transaction:Transaction_GetERAUserRoles = new Transaction_GetERAUserRoles(username, _connection, callback);

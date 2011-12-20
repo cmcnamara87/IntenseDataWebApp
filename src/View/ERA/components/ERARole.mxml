@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%">
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%"
+		 creationComplete="vgroup1_creationCompleteHandler(event)"
+		 removedFromStage="vgroup1_removedFromStageHandler(event)">
 
 	<fx:Script>
 		<![CDATA[
@@ -19,7 +21,7 @@
 			import spark.events.IndexChangeEvent;
 			
 			[Bindable]
-			public var role:String = "Role";
+			public var role:String = "";
 			
 			private var allERAUsers:Array;
 			private var userArray:Array;
@@ -119,44 +121,70 @@
 
 			protected function email_changeHandler(event:Event):void
 			{
-				trace("EMAIL CHANGLED to", this.email.selected ? "true":"false", "number of users",currentUsers.numElements);
+				trace("EMAIL CHANGLED to", this.emailCheckbox.selected ? "true":"false", "number of users",currentUsers.numElements);
 				for(var i:Number = 0; i < currentUsers.numElements; i++) {
 					var userRoleItem:UserRoleItem = currentUsers.getElementAt(i) as UserRoleItem;
-					trace("changing current users to", this.email.selected ? "true" : "false");
-					userRoleItem.email.selected = this.email.selected;
+					trace("changing current users to", this.emailCheckbox.selected ? "true" : "false");
+					userRoleItem.email.selected = this.emailCheckbox.selected;
 				}
 				
 				
 				// create a new event to sve the change
 				var changeEmailNotification:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS, true);
 				changeEmailNotification.data.role = role;
-				changeEmailNotification.data.enabled = email.selected;
+				changeEmailNotification.data.enabled = emailCheckbox.selected;
 				dispatchEvent(changeEmailNotification);
-				
-				
 			}
 
-			/*protected function vgroup1_creationCompleteHandler(event:FlexEvent):void
+			protected function vgroup1_creationCompleteHandler(event:FlexEvent):void
 			{
-				// TODO Auto-generated method stub
-				this.addEventListener(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS, changingUserEmailOptions);
+				trace("*ESFJESDKJSDGJIDSGS");
+
+				this.addEventListener(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS_USER, changingUserEmailOptions);
 			}
 			private function changingUserEmailOptions(e:IDEvent):void {
-				trace("caught");
-				if(this.email.selected && e.data.enabled == false) {
-					this.email.selected = false;
-					setTimeout(function(username:String):void {
-						trace("settign email to true for", username);
-						for(var i:Number = 0; i < currentUsers.numElements; i++) {
-							var userRoleItem:UserRoleItem = currentUsers.getElementAt(i) as UserRoleItem;
-							if(userRoleItem.username != e.data.username) {
-								userRoleItem.sendEmailOptionsChangeEvent(true);
-							}
-						}	
-					}, 5000, e.data.username);
+				trace("got email user options");
+				// do we have all the role set to 'on'
+				if(emailCheckbox.selected == false) {
+					// its just a regular user one, lets send it the way we always have done it
+					// pass it up
+					var changeEmailNotification:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS, true);
+					changeEmailNotification.data.role = role;
+					changeEmailNotification.data.enabled = e.data.enabled;
+					changeEmailNotification.data.username = e.data.username;
+					dispatchEvent(changeEmailNotification);
+					
+				} else if(emailCheckbox.selected && e.data.enabled == false) {
+					// this is the sepcial case, when we need to serialize turning on a whole bunch of user ones
+					// cause we are removing 
+					// turn off the 'all email' checkbox, since thats no longer true
+					emailCheckbox.selected = false;
+					
+					trace("deselecting the one while role is on");
+					// lets get all the users
+					var usernameArray:Array = new Array();
+					for(var i:Number = 0; i < currentUsers.numElements; i++) {
+						var userRoleItem:UserRoleItem = currentUsers.getElementAt(i) as UserRoleItem;
+						if(userRoleItem.username != e.data.username) {
+							usernameArray.push(userRoleItem.username);
+						}
+					}
+					
+					var changeEmailNotification:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS_ARRAY, true);
+					changeEmailNotification.data.role = role;
+					changeEmailNotification.data.usernameArray = usernameArray;
+					dispatchEvent(changeEmailNotification);	
+					
 					
 				}
-			}*/
+			}			
+			
+			protected function vgroup1_removedFromStageHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				this.removeEventListener(FlexEvent.CREATION_COMPLETE, vgroup1_creationCompleteHandler);
+				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
+			}
 			
 		]]>
 	</fx:Script>
@@ -167,14 +195,16 @@
 	<s:HGroup width="100%">
 		<s:Label id="roleTitle" text="{Model_ERAUser.getRolePrettyName(role)}" fontSize="15" fontWeight="bold" color="0x5e6469" width="100%">
 		</s:Label>
-		<mx:CheckBox id="email" labelPlacement="right" label="Enable Email" change="email_changeHandler(event)" selected="{AppController.currentEraProject.isEmailEnabled(role)}" />
+		<mx:CheckBox id="emailCheckbox" labelPlacement="right" label="Enable Email" change="email_changeHandler(event)" selected="{AppController.currentEraProject.isEmailEnabled(role)}" />
 	</s:HGroup>
 	<s:Label text="{Model_ERAUser.getRoleDescription(role)}" color="0x5e6469" />
 	<s:HGroup width="100%" paddingTop="5">
 		<s:DropDownList id="allUsers" width="100%" change="allUsers_changeHandler(event)">
 		</s:DropDownList>
-		<s:Button label="Assign Role" id="addUserButton" click="addUserButton_clickHandler(event)">
+		<s:Button label="Assign Role" id="addUserButton" click="addUserButton_clickHandler(event)" width="85">
 		</s:Button>
+		<s:Group width="92">
+		</s:Group>
 	</s:HGroup>
 	<s:VGroup id="currentUsers" width="100%" paddingTop="10" resizeEffect="Resize">
 	</s:VGroup>

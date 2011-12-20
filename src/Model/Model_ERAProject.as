@@ -45,14 +45,17 @@ package Model {
 		public function isEmailEnabled(role:String, username:String=""):Boolean {
 			// given role - need to match role only
 			// given role and username - need to match either role alone, or role + username
+			trace("** CHECKING MATCH FOR", role, username);
 			
 			for each(var emailOptionsObject:Object in emailOptionArray) {
+				trace(" checking match with", emailOptionsObject.role, emailOptionsObject.username);
 				// given role only
 				if(username == "" && emailOptionsObject.role == role && emailOptionsObject.username == "") return true;
 				// we have been given a user
 				// if there is a role only enabled, return true
 				// or if there is a match to both rule and username return true
-				if(username != "" && (emailOptionsObject.role == role && (emailOptionsObject.username == undefined || emailOptionsObject.username == username))) return true;
+				
+				if(username != "" && (emailOptionsObject.role == role && (emailOptionsObject.username == "" || emailOptionsObject.username == username))) return true;
 			}
 			return false;
 		}

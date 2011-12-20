@@ -186,7 +186,9 @@ package Controller {
 			
 			public static var ERA_ANNOTATION_CHOSEN_FOR_REFERENCE:String = "era_AnnotationChosenForReference";
 			
-			public static var ERA_CHANGE_ERA_EMAIL_OPTIONS:String = "era_ChangeERAEmailOptions"; 
+			public static var ERA_CHANGE_ERA_EMAIL_OPTIONS:String = "era_ChangeERAEmailOptions";
+			public static var ERA_CHANGE_ERA_EMAIL_OPTIONS_USER:String = "era_ChangeERAEmailOptionsUser";
+			public static var ERA_CHANGE_ERA_EMAIL_OPTIONS_ARRAY:String = "era_ChangeERAEmailOptionsArray";
 			
 		public function IDEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);

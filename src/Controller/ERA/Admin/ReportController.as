@@ -79,6 +79,9 @@ package Controller.ERA.Admin
 		}
 		
 		override public function init():void {
+			layout.header.unhighlightAllButtons();
+			layout.header.reportButton.setStyle("chromeColor", "0x000000");
+			
 			// Create our font
 			myriadFont = new EmbeddedFont(new fontStream(), new afmStream(), CodePage.CP1254);
 			
@@ -470,6 +473,7 @@ package Controller.ERA.Admin
 		}
 		//When the controller is destroyed/switched
 		override public function dealloc():void {
+			reportsView = null;
 			super.dealloc();
 		}
 	}
