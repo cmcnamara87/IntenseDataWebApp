@@ -1,5 +1,7 @@
 package Model.Transactions.ERAProject.Reports
 {
+	import Controller.AppController;
+	
 	import Model.AppModel;
 	import Model.Model_ERACase;
 	import Model.Model_ERANotification;
@@ -50,14 +52,15 @@ package Model.Transactions.ERAProject.Reports
 			trace("got cases");
 			//trace("something", data);
 			eraCaseArray = AppModel.getInstance().parseResults(data, Model_ERACase);
-			
+			eraCaseArray.sortOn(["rmCode"], [Array.CASEINSENSITIVE]);
 			
 			// lets see all the files that were approved or not approved
 			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
-			argsXML.where = "xpath(ERA-notification/type)='file_approve_by_researcher' or ";
-			argsXML.where = "xpath(ERA-notification/type)='file_not_approve_by_researcher'";
+			argsXML.where = "namespace>='ERA/" + AppController.currentEraProject.year + "' and ";
+			argsXML.where += "xpath(ERA-notification/type)='file_approve_by_researcher' or ";
+			argsXML.where += "xpath(ERA-notification/type)='file_not_approve_by_researcher'";
 			argsXML.action = "get-meta";
 			
 //			trace("getting ", baseXML);
@@ -114,7 +117,8 @@ package Model.Transactions.ERAProject.Reports
 			var baseXML:XML = connection.packageRequest("asset.count", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
-			argsXML.where = "type>=ERA/case and ";
+			argsXML.where = "namespace>='ERA/" + AppController.currentEraProject.year + "' and ";
+			argsXML.where += "type>=ERA/case and ";
 			argsXML.where += "id=" + currentERACase.base_asset_id + " and ";
 			argsXML.where += "related to{rooms} (type>=ERA/room and related to{evidence} (related to{conversation} (r_base/creator='" + currentResearcher.username + "') ) )";
 			trace("query", baseXML);

@@ -102,7 +102,7 @@ package Controller.Utilities {
 			},
 			{
 				url: 'case',
-				title: 'Case Builder',
+				title: 'Line of Inquiry',
 				classname: CaseController
 			},
 			{

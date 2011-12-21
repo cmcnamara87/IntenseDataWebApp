@@ -78,6 +78,7 @@ package Model {
 					researcherLastName = researcherXML["last_name"];
 				}
 			}
+			researchersArray.sortOn(["lastName", "firstName"], [Array.CASEINSENSITIVE]);
 			
 			// add the qut school
 			this.qutSchool = eraCase["qut_school"];

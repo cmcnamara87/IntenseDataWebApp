@@ -5,6 +5,7 @@ package Controller {
 	import Model.AppModel;
 	import Model.Model_ERANotification;
 	import Model.Model_ERAProject;
+	import Model.Model_ERAUser;
 	import Model.Model_Notification;
 	
 	import View.Layout;
@@ -128,7 +129,11 @@ package Controller {
 			showAdminToolButtons();
 			
 			// load the Dashboard (which is the default admin tool)
-			Dispatcher.call("casecreator");
+			if(Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, currentEraProject.year)) {
+				Dispatcher.call("reports");
+			} else {
+				Dispatcher.call("casecreator");
+			}
 		}
 		
 		/**
@@ -161,6 +166,21 @@ package Controller {
 			// make them visible
 			layout.header.adminToolButtons.visible = true;
 			layout.header.adminToolButtons.includeInLayout = true;
+			
+			// special stuff for a monitor
+			if(Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, currentEraProject.year)) {
+				layout.header.newERAButton.visible = false;
+				layout.header.newERAButton.includeInLayout = false;
+				
+				layout.header.userAdminButton.visible = false;
+				layout.header.userAdminButton.includeInLayout = false;
+				
+				layout.header.caseCreatorButton.visible = false;
+				layout.header.caseCreatorButton.includeInLayout = false;
+				
+				layout.header.eraDropDown.visible = false;
+				layout.header.eraDropDown.includeInLayout = false;
+			}
 			
 			// Add the era to the list
 			updateERADropdownList();
@@ -218,7 +238,7 @@ package Controller {
 		 * 
 		 */
 		private static function setupButtons():void {
-			if(Auth.getInstance().isSysAdmin()) {
+			if(Auth.getInstance().isSysAdmin() || Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)) {
 				layout.header.adminToolButtons.visible = true;
 				layout.header.adminToolButtons.includeInLayout = true;
 				layout.header.adminToolsButton.includeInLayout = true;

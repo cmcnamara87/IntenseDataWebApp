@@ -1,5 +1,7 @@
 package Model.Transactions.ERAProject.Reports
 {
+	import Controller.AppController;
+	
 	import Model.AppModel;
 	import Model.Model_ERACase;
 	import Model.Utilities.Connection;
@@ -24,7 +26,8 @@ package Model.Transactions.ERAProject.Reports
 			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
-			argsXML.where = "type>=ERA/case and related to{rooms} (type>=ERA/room and ERA-room/room_type='exhibit' and related to{evidence} any)";
+			argsXML.where = "namespace>='ERA/" + AppController.currentEraProject.year + "' and ";
+			argsXML.where += "type>=ERA/case and related to{rooms} (type>=ERA/room and ERA-room/room_type='exhibit' and related to{evidence} any)";
 			argsXML.action = "get-meta";
 			
 			trace("query", baseXML);
@@ -37,6 +40,7 @@ package Model.Transactions.ERAProject.Reports
 				return;
 			}
 			var eraCaseArray:Array = AppModel.getInstance().parseResults(data, Model_ERACase);
+			eraCaseArray.sortOn(["rmCode"], [Array.CASEINSENSITIVE]);
 			
 			callback(true, eraCaseArray);
 		}

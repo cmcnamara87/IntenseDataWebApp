@@ -28,7 +28,7 @@
 		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
 			<s:VGroup width="100%" paddingTop="10">
 				
-				<s:Label text="Reports" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+				<s:Label text="Activity Reports" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
 					<!--<s:filters>
 					<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
 					</s:filters>-->
@@ -41,19 +41,22 @@
 	
 	<s:VGroup width="100%" height="100%" horizontalAlign="center">
 		<s:VGroup width="960" paddingTop="20">
-			<s:Label text="Please select a report. Certain reports may take longer to generate." />
+			<s:Label text="Select an Activity Report from the drop down menu, and then click the 'Generate Report' button. Certain reports may take longer to generate." />
 			<s:HGroup width="100%" verticalAlign="middle" paddingTop="10">
-				<s:Label text="Report: "/>
+				<s:Label text="Acitivty Report: "/>
 				<s:DropDownList id="reportDropdown" width="100%">
 					<s:ArrayCollection>
+						
 						<fx:Object data="{ReportController.REPORT_RESEARCHERS_IN_SCHOOLS}" label="{ReportController.getReportPrettyName(ReportController.REPORT_RESEARCHERS_IN_SCHOOLS)}" />
 						<fx:Object data="{ReportController.REPORT_CASES_IN_EXHIBITION}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CASES_IN_EXHIBITION)}" />
 						<fx:Object data="{ReportController.REPORT_CASES_NOT_COLLECTED}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CASES_NOT_COLLECTED)}" />
 						<fx:Object data="{ReportController.REPORT_CHECKED_OUT}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CHECKED_OUT)}" />
-						<fx:Object data="{ReportController.REPORT_RESEARCHERS_NOT_INVOLVED}" label="{ReportController.getReportPrettyName(ReportController.REPORT_RESEARCHERS_NOT_INVOLVED)}" />
+						<!--<fx:Object data="{ReportController.REPORT_RESEARCHERS_NOT_INVOLVED}" label="{ReportController.getReportPrettyName(ReportController.REPORT_RESEARCHERS_NOT_INVOLVED)}" />-->
+						<fx:Object data="{ReportController.REPORT_EVIDENCE_NOT_UPLOADED}" label="{ReportController.getReportPrettyName(ReportController.REPORT_EVIDENCE_NOT_UPLOADED)}" />
+						<fx:Object data="{ReportController.REPORT_CASES_WITH_EVIDENCE_UNDER_REVIEW}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CASES_WITH_EVIDENCE_UNDER_REVIEW)}" />
 					</s:ArrayCollection>
 				</s:DropDownList>
-				<s:Button id="generateButton" label="Generate" cornerRadius="10" />
+				<s:Button id="generateButton" label="Generate Report" cornerRadius="10" />
 			</s:HGroup>
 		</s:VGroup>
 	</s:VGroup>

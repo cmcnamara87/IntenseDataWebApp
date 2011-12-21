@@ -1,5 +1,7 @@
 package Model.Transactions.ERAProject.Reports
 {
+	import Controller.AppController;
+	
 	import Model.AppModel;
 	import Model.Model_ERACase;
 	import Model.Model_ERAUser;
@@ -32,7 +34,8 @@ package Model.Transactions.ERAProject.Reports
 			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
-			argsXML.where = "ERA-case/qut_school='" + schoolArray[schoolCounter] + "'";
+			argsXML.where = "namespace>='ERA/" + AppController.currentEraProject.year + "' and ";
+			argsXML.where += "ERA-case/qut_school='" + schoolArray[schoolCounter] + "'";
 			argsXML.action = "get-meta";
 			
 			trace("query", baseXML);
@@ -51,6 +54,7 @@ package Model.Transactions.ERAProject.Reports
 			researcherObject[currentSchool] = new Array();
 			trace("researcher object current school", researcherObject[currentSchool]);
 			var eraCaseArray:Array = AppModel.getInstance().parseResults(data, Model_ERACase);
+			eraCaseArray.sortOn(["rmCode"], [Array.CASEINSENSITIVE]);
 			
 			trace("looking at school", currentSchool, eraCaseArray.length);
 			
@@ -79,6 +83,7 @@ package Model.Transactions.ERAProject.Reports
 			
 			trace("researcher object current school length", (researcherObject[currentSchool] as Array).length);
 			
+			(researcherObject[currentSchool] as Array).sortOn(["lastName", "firstName"], [Array.CASEINSENSITIVE]);
 			if(++schoolCounter >= schoolArray.length) {
 				callback(true, researcherObject);
 			} else {

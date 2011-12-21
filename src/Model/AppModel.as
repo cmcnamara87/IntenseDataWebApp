@@ -9,6 +9,8 @@ package Model {
 	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetCasesInExhibition;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetCasesNotCollected;
+	import Model.Transactions.ERAProject.Reports.Transaction_GetCasesWithEvidenceUnderReview;
+	import Model.Transactions.ERAProject.Reports.Transaction_GetCasesWithoutEvidence;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetCheckedInOutFilesPerCase;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetResearcherInvolvement;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetResearchersInSchools;
@@ -1669,6 +1671,28 @@ package Model {
 			transaction.deleteNotificationForUser(notificationID);
 		}
 		
+		/* =============== SEND AN EMAIL THROUGH MEDIADFLUX ================ */
+		public function sendEmail(emailAddress:String, subject:String, body:String):void {
+			var baseXML:XML = _connection.packageRequest("mail.send", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			argsXML.to = emailAddress;
+			argsXML.subject = subject;
+			argsXML.body = body;
+			_connection.sendRequest(baseXML, mailSent);
+		}
+		
+		private function mailSent(e:Event):void {
+			trace("mail sent");
+			var data:XML;
+			if((data = AppModel.getInstance().getData("sending mail", e)) == null) {
+				trace("Done: MAIL FAILED TO SEND");
+				return;
+			} else {
+				trace("Done: MAIL SENT SUCCESSFULLY");
+				return;
+			}
+		}
+		/* =============== END OF SEND AN EMAIL THROUGH MEDIADFLUX ================ */
 		
 		/* =============================================== ERA STUFF =============================================== */
 		/**
@@ -1843,6 +1867,7 @@ package Model {
 			var sendMail:Transaction_SendMailFromNotification = new Transaction_SendMailFromNotification(_connection);
 			sendMail.sendMailFromNotification(notificationID);
 		}			
+		
 		public function removeUserFromCase(caseID:Number, removeUsername:String, callback:Function):void {
 			var removeUserFromCase:Transaction_RemoveUserFromCase = new Transaction_RemoveUserFromCase(caseID, removeUsername, _connection, callback);
 		}
@@ -1860,8 +1885,14 @@ package Model {
 		public function getCasesNotCollection(callback:Function):void {
 			var transaction:Transaction_GetCasesNotCollected = new Transaction_GetCasesNotCollected(_connection, callback);
 		}
+		public function getCasesWithoutEvidence(callback:Function):void {
+			var transaction:Transaction_GetCasesWithoutEvidence = new Transaction_GetCasesWithoutEvidence(_connection, callback);
+		}
 		public function getCheckedInOutFilesPerCase(callback:Function):void {
 			var transaction:Transaction_GetCheckedInOutFilesPerCase = new Transaction_GetCheckedInOutFilesPerCase(AppController.currentEraProject.year, _connection, callback);
+		}
+		public function getCasesWithEvidenceUnderReview(callback:Function):void {
+			var transaction:Transaction_GetCasesWithEvidenceUnderReview = new Transaction_GetCasesWithEvidenceUnderReview(AppController.currentEraProject.year, _connection, callback);
 		}
 		public function getCasesResearchersNoInvolvement(callback:Function):void {
 			var transaction:Transaction_GetResearcherInvolvement = new Transaction_GetResearcherInvolvement(AppController.currentEraProject.year, _connection, callback);

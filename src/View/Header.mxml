@@ -94,7 +94,7 @@
 			</s:Button>
 			<s:Button id="caseCreatorButton" label="Case Manager" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
 			</s:Button>
-			<s:Button id="reportButton" label="Reports" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
+			<s:Button id="reportButton" label="Activity Reports" chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE">
 			</s:Button>
 		</s:HGroup>
 		<s:HGroup width="100%">
@@ -104,7 +104,7 @@
 			<s:HGroup id="switchingModeButtonGroup"  width="100%">
 				<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="adminToolsButton" height="20" label="Admin Manager" toolTip="Switch to Admin View" >
 				</s:Button>
-				<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="productionToolsButton" height="20" label="Case Builder" toolTip="Switch to Case View" >
+				<s:Button chromeColor="0x222222" cornerRadius="10" color="0xEEEEEE" id="productionToolsButton" height="20" label="Line of Inquiry" toolTip="Switch to Case View" >
 				</s:Button>
 			</s:HGroup>
 			

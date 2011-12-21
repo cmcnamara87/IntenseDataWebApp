@@ -88,11 +88,11 @@ package Controller.ERA.Admin
 //			}
 			
 			// Get QUT school
-//			if(caseCreatorView.qutSchool.selectedIndex == -1) {
-//				layout.notificationBar.showError("Please Select a QUT School");
-//				return false;
-//			}
-//			var qutSchool:String = caseCreatorView.qutSchool.selectedItem.data;
+			if(caseCreatorView.qutSchool.selectedIndex == -1) {
+				layout.notificationBar.showError("Please Select a QUT School");
+				return false;
+			}
+			var qutSchool:String = caseCreatorView.qutSchool.selectedItem.data;
 			
 			// get researchers
 			var researcherUsernames:Array = caseCreatorView.chosenResearchersArray;
