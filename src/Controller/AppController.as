@@ -168,7 +168,7 @@ package Controller {
 			layout.header.adminToolButtons.includeInLayout = true;
 			
 			// special stuff for a monitor
-			if(Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, currentEraProject.year)) {
+			if(Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, currentEraProject.year) && !Auth.getInstance().isSysAdmin()) {
 				layout.header.newERAButton.visible = false;
 				layout.header.newERAButton.includeInLayout = false;
 				
@@ -180,6 +180,18 @@ package Controller {
 				
 				layout.header.eraDropDown.visible = false;
 				layout.header.eraDropDown.includeInLayout = false;
+			} else {
+				layout.header.newERAButton.visible = true;
+				layout.header.newERAButton.includeInLayout = true;
+				
+				layout.header.userAdminButton.visible = true;
+				layout.header.userAdminButton.includeInLayout = true;
+				
+				layout.header.caseCreatorButton.visible = true;
+				layout.header.caseCreatorButton.includeInLayout = true;
+				
+				layout.header.eraDropDown.visible = true;
+				layout.header.eraDropDown.includeInLayout = true;
 			}
 			
 			// Add the era to the list

@@ -143,10 +143,10 @@ package Model
 			
 			
 			if(isStaff) {
-				messageObject.subject = "nQuisitor Notification  (Case RM " + notificationData.eraCase.rmCode + "): ";
+				messageObject.subject = "nQuisitor notification  (Case: RM " + notificationData.eraCase.rmCode + "): ";
 				messageObject.body = "You have a new nQuisitor notification:\n\n";
 			} else if(isExternal) {
-				messageObject.subject = "nQusitor notification (Case RM " + notificationData.eraCase.rmCode + "): ";
+				messageObject.subject = "nQuisitor notification (Case: RM " + notificationData.eraCase.rmCode + "): ";
 				messageObject.body = "";
 			}
 			
@@ -154,134 +154,162 @@ package Model
 			
 			switch(notificationData.type) {
 				case Model_ERANotification.FILE_APPROVED_BY_RESEARCHER:
-					messageObject.subject += "An Evidence item has been APPROVED for CIF ERA " + AppController.currentEraProject.year +" submission by researcher";
+					
 					if(isStaff) {
-						messageObject.body += "Researcher, " + notificationData.fullName + ", has APPROVED the evidence item \"" + notificationData.file.title + 
-							"\", in the " + notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + "\" for the CIF ERA " + AppController.currentEraProject.year + " submission.";
+						// DONE
+						messageObject.subject += " An Evidence item has been APPROVED for CIF ERA " + AppController.currentEraProject.year + " submission by researcher";
+						messageObject.body += "Researcher, " + notificationData.fullName + ", has APPROVED the evidence item: \"" + notificationData.file.title + 
+							"\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
 					} else if (isExternal) {
-						messageObject.body += "This email confirms that researcher, " + notificationData.fullName + ", has APPROVED the evidence item \"" + 
-							notificationData.file.title + " in the " + notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + "\" for the CIF ERA " + AppController.currentEraProject.year + " submission.";
+						// DONE
+						messageObject.subject += "An Evidence item has been APPROVED for CIF ERA " + AppController.currentEraProject.year +" submission";
+						messageObject.body += "This email confirms that researcher, " + notificationData.fullName + ", has APPROVED the evidence item: \"" + 
+							notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
 					}
 					break;
 				case Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER:
-					messageObject.subject += "An Evidence item has NOT BEEN APPROVED for CIF ERA " + AppController.currentEraProject.year +" submission by researcher";
 					if(isStaff) {
-						messageObject.body += "Researcher, " + notificationData.fullName + ", has NOT APPROVED the evidence item \"" + notificationData.file.title + 
-							"\" in the " + notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + "\" for the CIF ERA " + AppController.currentEraProject.year + " submission.";
+						// DONE
+						messageObject.subject += "An Evidence item has NOT BEEN APPROVED for CIF ERA " + AppController.currentEraProject.year +" submission";
+						messageObject.body += "Researcher, " + notificationData.fullName + ", has NOT APPROVED the evidence item: \"" + notificationData.file.title + 
+							"\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
 					} else if (isExternal) {
-						messageObject.body += "This email confirms that researcher, " + notificationData.fullName + ", has NOT APPROVED the evidence item \"" + 
-							notificationData.file.title + "\" in the " + notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + 
+						// DONE
+						messageObject.subject += "An Evidence item has NOT BEEN APPROVED for CIF ERA " + AppController.currentEraProject.year + " by a researcher";
+						messageObject.body += "This email confirms that researcher, " + notificationData.fullName + ", has NOT APPROVED the evidence item: \"" + 
+							notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + 
 							"\", for the CIF ERA " + AppController.currentEraProject.year + " submission.";
 					}
 					break;
 				case Model_ERANotification.FILE_APPROVED_BY_MONITOR:
-					messageObject.subject += "An Evidence item has been APPROVED for ERA submission";
 					if(isStaff) {
-						messageObject.body += "nQuisitor Monitor, " + notificationData.fullName + ", has APPROVED the evidence item \"" + notificationData.file.title + 
-							"\" in the " + notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + "\" for the CIF ERA " + AppController.currentEraProject.year + " submission.";
+						// DONE
+						messageObject.subject += "An Evidence item has been APPROVED for ERA submission";
+						messageObject.body += "nQuisitor Monitor, " + notificationData.fullName + ", has APPROVED the evidence item: \"" + notificationData.file.title + 
+							"\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission.";
 					} else if (isExternal) {
-						messageObject.body += "This email confirms that nQuisitor Monitor, " + notificationData.fullName + ", has APPROVED the evidence item \"" 
-							+ notificationData.file.title + "\" in the " + notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + 
-							"\" for the CIF ERA " + AppController.currentEraProject.year + " submission.";
+						// DONE
+						messageObject.subject += "An Evidence item has been APPROVED for CIF ERA " + AppController.currentEraProject.year + " submission";
+						messageObject.body += "This email confirms that nQuisitor Monitor, " + notificationData.fullName + ", has APPROVED the evidence item: \"" 
+							+ notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + 
+							"\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
 					}
 					break;
 				case Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR:
-					messageObject.subject += "An Evidence item has NOT BEEN APPROVED for ERA submission";
+					
 					if(isStaff) {
-						messageObject.body += "nQusitor Monitor, " + notificationData.fullName + ", has NOT APPROVED the evidence item \"" + notificationData.file.title + 
-							"\" in the " + notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + "\" for the CIF ERA " + AppController.currentEraProject.year + " submission.";
+						// DONE
+						messageObject.subject += "An Evidence item has NOT BEEN APPROVED for ERA submission";
+						messageObject.body += "nQusitor Monitor, " + notificationData.fullName + ", has NOT APPROVED the evidence item: \"" + notificationData.file.title + 
+							"\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\" for the CIF ERA " + AppController.currentEraProject.year + " submission.";
 					} else if (isExternal) {
-						messageObject.body += "This email confirms that nQusitor Monitor, " + notificationData.fullName + ", has NOT APPROVED the evidence item \"" + 
-							notificationData.file.title + "\" in the " + notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title 
-							+ "\" for the CIF ERA " + AppController.currentEraProject.year + " submission."; // the CIF ERA " + AppController.currentEraProject.year + " submission.";
+						// DONE
+						messageObject.subject += "An Evidence item has NOT BEEN APPROVED for CIF ERA " + AppController.currentEraProject.year + " Submission";
+						messageObject.body += "This email confirms that nQuisitor Monitor, " + notificationData.fullName + ", has NOT APPROVED the evidence item: \"" + 
+							notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title 
+							+ "\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
 					}
 					break;
 				case Model_ERANotification.FILE_UPLOADED:					
 					
 					if(isStaff) {
-						messageObject.subject += "New evidence item uploaded";
-						messageObject.body += notificationData.fullName + " uploaded \"" + notificationData.file.title + "\" to the " + 
-							notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + "\".";
+						// DONE
+						messageObject.subject += "A new piece of evidence has been uploaded to nQuisitor";
+						messageObject.body += notificationData.fullName + " uploaded: \"" + notificationData.file.title + "\" to the " + 
+							notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\".";
 					} else if(isExternal) {
-						messageObject.subject += "Evidence Item now uploaded to the nQuisitor Evidence Box";
-						messageObject.body += "This email confirms that a component of your research evidence, \"" + notificationData.file.title + 
-							"\", for the case \"" + notificationData.eraCase.title + "\", has now been digitized and is available in the online nQusitior " +
-							"Evidence Box ready for your comments.";
+						// DONE
+						messageObject.subject += "A piece of evidence has been uploaded to the nQuisitor Evidence Box";
+						messageObject.body += "This email confirms that a component of your research evidence: \"" + notificationData.file.title + 
+							"\", for the Case: \"" + notificationData.eraCase.title + "\", has now been digitized and is available for your comments. " +
+							"You will find this piece of evidence in the nQuisitor Evidence Box."; 
 					}
 					
 					break;
 				case Model_ERANotification.ROOM_COMMENT:
 					if(isStaff) {
-						messageObject.subject += "New comment";
-						messageObject.body += notificationData.fullName + " commented \"" + notificationData.comment_room.text + "\" on the " + 
-							notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + "\".";
+						// DONE
+						messageObject.subject += "New comment alert";
+						messageObject.body += notificationData.fullName + " commented: \"" + notificationData.comment_room.text + "\" in the " + 
+							notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\".";
 					} else if (isExternal) {
+						// Done
 						messageObject.subject += "Your research evidence has attracted some commentary";
-						messageObject.body += "An nQuisitor collaborator, " + notificationData.fullName + ", commented \"" + 
-							notificationData.comment_room.text + "\" in the " + notificationData.room.roomTitle + " for the case \"" + 
-							notificationData.eraCase.title + "\". To view the comment open the \"Comments\" tab for the " + notificationData.room.roomTitle + "."; 
+						messageObject.body += "An nQuisitor collaborator, " + notificationData.fullName + ", commented, \"" + 
+							notificationData.comment_room.text + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + 
+							notificationData.eraCase.title + "\". To view the comment, open the \"Comments\" Tab in the " + notificationData.room.roomTitle + ".";
 					}
 					break;
 				case Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB:
 				case Model_ERANotification.FILE_MOVED_TO_EXHIBITION:
 				case Model_ERANotification.FILE_MOVED_TO_FORENSIC_LAB:
 					if(isStaff) {
+						// DONE
 						messageObject.subject += "Evidence item moved";
-						messageObject.body += "" + notificationData.fullName + " moved \"" + notificationData.file.title + "\" to the " + 
-							notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + "\".";
+						messageObject.body += notificationData.fullName + " moved: \"" + notificationData.file.title + "\", to the " + 
+							notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\".";
 					} else if (isExternal) {
-						messageObject.subject += "Proposed ERA submission evidence item ready for your review in the " + notificationData.room.roomTitle;
-						messageObject.body += "This email confirms that an nQuisitor collaborator has placed a proposed CIF ERA " + AppController.currentEraProject.year + " submission evidence item, \"" + 
-							notificationData.file.title + "\", in the " + notificationData.room.roomTitle +  " for the case \"" + notificationData.eraCase.title + "\". " +
-								"Please log in to nQuisitor and review the evidence. If it is ready for the Exhibition Room, please " +
-								"mark it as 'Approved' when you have completed reviewing the evidence item. If the evidence requires alterations, please mark it as 'Disapproved'. \n" +
-								"Comments: You may also leave any comments or directions concerning the evidence marked as 'Disapproved'.";
+						// DONE
+						messageObject.subject += "An ERA submission evidence item is ready for your review";
+						messageObject.body += "This email confirms that an nQuisitor collaborator has placed a CIF ERA " + AppController.currentEraProject.year + " submission evidence item: \"" +
+							notificationData.file.title + "\" , in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\". " +
+								"Please log in to nQuisitor and review the evidence. If it is ready to be moved to the Exhibition Room, please mark it as 'Approved', " +
+								"when you have completed reviewing it. If the evidence item requires alterations, please mark it as 'Disapproved'.";
 					}
 					break;
 				case Model_ERANotification.FILE_COMMENT:
 					if(isStaff) {
-						messageObject.subject += "New comment";
-						messageObject.body += "" + notificationData.fullName + " commented \"" + notificationData.comment_file.annotation_text + "\" on the evidence item \"" + 
-							notificationData.file.title + "\" in the " + notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + "\".";
+						// DONE
+						messageObject.subject += "New comment alert";
+						messageObject.body += notificationData.fullName + " commented: \"" + notificationData.comment_file.annotation_text + "\", about the evidence item: \"" + 
+							notificationData.file.title + "\" in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\".";
 					} else if (isExternal) {
+						// Done
 						messageObject.subject += "Your research evidence has attracted some commentary";
-						messageObject.body += "An nQuisitor collaborator, " + notificationData.fullName + ", commented \"" + 
-							notificationData.comment_file.annotation_text + "\" on \"" + notificationData.file.title + "\" in the " + notificationData.room.roomTitle + 
-							" for the case \"" + notificationData.eraCase.title + "\". To view the comment, open the \"Comments\" panel for the file in nQuisitor.";
+						messageObject.body += "An nQuisitor collaborator, " + notificationData.fullName + ", commented, \"" + 
+							notificationData.comment_file.annotation_text + "\", on \"" + notificationData.file.title + "\" in the " + notificationData.room.roomTitle + 
+							" for the Case: \"" + notificationData.eraCase.title + "\". To view the comment, open the \"Comments\" Tab for the file in nQuisitor."; 
 					}
 					break
 				case Model_ERANotification.ANNOTATION:
 					if(isStaff) {
-						messageObject.subject += "New annotation";
-						messageObject.body += notificationData.fullName + " made the following annotation \"" + notificationData.comment_file.annotation_text + "\" on the evidence item \"" 
-							+ notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + "\".";
+						// DONE
+						messageObject.subject += "New annotation alert";
+						messageObject.body += notificationData.fullName + " made the following annotation: \"" + notificationData.comment_file.annotation_text + "\", about the evidence item: \"" 
+							+ notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\"."; 
 					} else if (isExternal) {
+						// DONE
 						messageObject.subject += "Your research evidence has attracted some commentary";
-						messageObject.body += "An nQuisitor collaborator, " + notificationData.fullName + ", made the following annotation \"" + notificationData.comment_file.annotation_text + 
-							"\" on the evidence item \"" + notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + "\". " +
-							"To view the annotation, open the \"Annotations\" panel for the file in nQuisitor.";
+						messageObject.body += "An nQuisitor collaborator, " + notificationData.fullName + ", made the following annotation,  \"" + notificationData.comment_file.annotation_text + 
+							"\", on the evidence item: \"" + notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\". " +
+							"To view the annotation, open the \"Annotations\" Tab for the file in nQuisitor.";
 					}
 					break;
 				case Model_ERANotification.EVIDENCE_COLLECTED:
 					if(isStaff) {
+						// DONE
 						messageObject.subject += "Evidence collected";
-						messageObject.body = "" + notificationData.fullName + " confirmed that \"" + notificationData.logItem.title + "\" has been COLLECTED by a researcher " +
-							"for the case \"" + notificationData.eraCase.title + "\".";	
+						messageObject.body = notificationData.fullName + " confirmed that \"" + notificationData.logItem.title + "\" has been COLLECTED by a researcher " +
+							"for the Case:  \"" + notificationData.eraCase.title + "\".";		
 					} else if (isExternal) {
-						messageObject.subject += "Physical evidence has been collected";
-						messageObject.body = "This email confirms that the evidence item \"" + notificationData.logItem.title + "\" has been registered as SIGNED OFF and " +
-							"COLLECTED by a researcher from Case \"" + notificationData.eraCase.title + "\". If you have any queries please email the ERA Production Team highlighting your concerns.";
+						// DONE
+						messageObject.subject += "A piece of physical evidence has been collected";
+						messageObject.body = "This email confirms that the evidence item: \"" + notificationData.logItem.title + "\", has been registered as SIGNED OFF and " +
+							"COLLECTED by a researcher from Case: \"" + notificationData.eraCase.title + "\".";
 					}
 					break;
 				case Model_ERANotification.EVIDENCE_READY_FOR_COLLECTION:
 					if(isStaff) {
+						// DONE
 						messageObject.subject += "Evidence ready for collection";
-						messageObject.body += "" + notificationData.fullName + " confirmed that \"" + notificationData.logItem.title + "\" is ready for collection in the " + 
-							notificationData.room.roomTitle + " for the case \"" + notificationData.eraCase.title + "\".";
+						messageObject.body += notificationData.fullName + " confirmed that: \"" + notificationData.logItem.title + "\" is ready for collection in the " + 
+							notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\"."; 
+
 					} else if (isExternal) {
-						messageObject.subject += "Physical research now ready for collection";
-						messageObject.body += "This email confirms that a piece of physical evidence related to the research evidence \"" + notificationData.logItem.title + "\" has been digitized " +
-							"and is ready for collection in the ERA production room Z2-106.";
+						// DONE
+						messageObject.subject += "A piece of physical evidence is ready for collection";
+						messageObject.body += "This email confirms that the piece of physical evidence: \"" + notificationData.logItem.title + "\", has been digitized " +
+							"and is now ready for collection in the ERA production room Z2-106."; 
 					}
 					break;
 				default:
@@ -302,179 +330,14 @@ package Model
 				signOff += "Queensland University of Technology\n";
 				signOff += "p.hempenstall@qut.edu.au\n\n\n";
 				
-				var disclaimer:String = "QUT disclaims all warranties with regard to this information, including all implied warranties of merchantability " +
-					"and fitness, in no event shall QUT be liable or any special, indirect or consequential damages or any damages " +
-					"whatsoever resulting from loss of use, data or profits, whether in an action of contract, negligence or other tortious " +
-					"action, arising out of or in connection with the use or performance of this information.\n\n";
-				disclaimer += "This information may include technical inaccuracies or typographical errors.\n\n";
-				disclaimer += "QUT is not responsible to you or anyone else for any loss, direct or incidental, suffered in connection with the use of" +
-					"this website or any of the content.\n\n";
-				disclaimer += "QUT makes no warranties or representations about this website or any of the content. We exclude, to the maximum " +
-					"extent permitted by law, any liability which may arise as a result of the use of this website, its content or the" +
-					"information on it.";
-				disclaimer += "Where liability cannot be excluded, any liability incurred by us in relation to the use of this website or the content is " +
-					"limited as provided under the Trade Practices Act 1974 (s68A). We will never be liable for any indirect, incidental, " +
-					"special or consequential loss arising out of the use of this website, including loss of business profits. " +
-					"QUT may make improvements and/or changes in the information at any time."
-				
+				var disclaimer:String = "QUT disclaims all warranties with regard to this information, including all implied warranties of merchantability and fitness, in no event shall QUT be liable or any special, indirect or consequential damages or any damages whatsoever resulting from loss of use, data or profits, whether in an action of contract, negligence or other tortious action, arising out of or in connection with the use or performance of this information.\n\nThis information may include technical inaccuracies or typographical errors.\n\nQUT is not responsible to you or anyone else for any loss, direct or incidental, suffered in connection with the use of this website or any of the content.\n\nQUT makes no warranties or representations about this website or any of the content. We exclude, to the maximum extent permitted by law, any liability which may arise as a result of the use of this website, its content or the information on it. Where liability cannot be excluded, any liability incurred by us in relation to the use of this website or the content is limited as provided under the Trade Practices Act 1974 (s68A). We will never be liable for any indirect, incidental, special or consequential loss arising out of the use of this website, including loss of business profits. QUT may make improvements and/or changes in the information at any time.";
+
 				messageObject.body += signOff + disclaimer;
 				
 			}
 			return messageObject;
 		}
 
-				
-		/*public static function getEmailMessage(notificationData:Model_ERANotification, isStaff:Boolean, isExternal:Boolean):Object {
-			var messageObject = new Object();
-			
-			if(isStaff) {
-				messageObject.subject = "New nQuisitor Notification  (RM " + notificationData.eraCase.rmCode + "): ";
-				messageObject.body = "Hi, You have a new nQuisitor Notification:\n\n";
-			} else if(isExternal) {
-				messageObject.subject = "nQusitor Notification (RM " + notificationData.eraCase.rmCode + "): ";
-				messageObject.body = "";
-			}
-			
-			switch(notificationData.type) {
-				case Model_ERANotification.FILE_APPROVED_BY_RESEARCHER:
-					messageObject.subject += "File Approved for ERA Submission by Researcher";
-					if(isStaff) {
-						messageObject.body += "Researcher " + notificationData.fullName + " approved file " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for ERA submission.";
-					} else if (isExternal) {
-						messageObject.body += "This is an email to confirm that Researcher " + notificationData.fullName + " approved file " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for case '" + notificationData.eraCase.title + "' for ERA submission.";
-					}
-					break;
-				case Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER:
-					messageObject.subject += "File Not Approved for ERA Submission by Researcher";
-					if(isStaff) {
-						messageObject.body += "Researcher " + notificationData.fullName + " has not approved file " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for ERA submission.";
-					} else if (isExternal) {
-						messageObject.body += "This is an email to confirm that Researcher " + notificationData.fullName + " has not approved file " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for case '" + notificationData.eraCase.title + "' for ERA submission.";
-					}
-					break;
-				case Model_ERANotification.FILE_APPROVED_BY_MONITOR:
-					messageObject.subject += "File Approved for ERA Submission by Monitor";
-					if(isStaff) {
-						messageObject.body += "Monitor " + notificationData.fullName + " approved file " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for ERA submission.";
-					} else if (isExternal) {
-						messageObject.body += "This is an email to confirm that Monitor " + notificationData.fullName + " approved file " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for case '" + notificationData.eraCase.title + "' for ERA submission.";
-					}
-					break;
-				case Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR:
-					messageObject.subject += "File Not Approved for ERA Submission by Monitor";
-					if(isStaff) {
-						messageObject.body += "Monitor " + notificationData.fullName + " has not approved file " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for ERA submission.";
-					} else if (isExternal) {
-						messageObject.body += "This is an email to confirm that Monitor " + notificationData.fullName + " has not approved file " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for case '" + notificationData.eraCase.title + "' for ERA submission.";
-					}
-					break;
-				case Model_ERANotification.FILE_UPLOADED:					
-				
-					if(isStaff) {
-						messageObject.subject += "New File Uploaded";
-						messageObject.body += notificationData.fullName + " uploaded '" + notificationData.file.title + "' to " + notificationData.room.roomTitle + " for case '" + notificationData.eraCase.title + "'.";
-					} else if(isExternal) {
-						messageObject.subject += "Evidence now uploaded to nQuisitor Evidence Box";
-						messageObject.body += "This is an email to confirm that a piece of your research evidence \"" + notificationData.file.title + "\" for case '" + notificationData.eraCase.title + "' has now been digitized and is available in the online nQusitior Evidence Box ready for your comments.";
-					}
-
-					break;
-				case Model_ERANotification.ROOM_COMMENT:
-					if(isStaff) {
-						messageObject.subject += "New Comment";
-						messageObject.body += notificationData.fullName + " wrote \"" + notificationData.comment_room.text + "\" on " + notificationData.room.roomTitle + " for case '" + notificationData.eraCase.title + "'";
-					} else if (isExternal) {
-						messageObject.subject += "Your Researcher has Attacted Commentary";
-						messageObject.body += "An nQuisitor collaborator (" + notificationData.fullName + ") commented \"" + notificationData.comment_room.text + "\" on " + notificationData.room.roomTitle + " for case '" + notificationData.eraCase.title + "'"; 
-					}
-					break;
-				case Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB:
-				case Model_ERANotification.FILE_MOVED_TO_EXHIBITION:
-				case Model_ERANotification.FILE_MOVED_TO_FORENSIC_LAB:
-					if(isStaff) {
-						messageObject.subject += "File Moved";
-						messageObject.body += "" + notificationData.fullName + " moved " + notificationData.file.title + " to " + notificationData.room.roomTitle + " for case '" + notificationData.eraCase.title + "'";
-					} else if (isExternal) {
-						messageObject.subject += "Proposed ERA Submission Piece Ready for Review in " + notificationData.room.roomTitle;
-						messageObject.body += "This is an email to confirm that an nQuisitor Collaborator has placed a proposed ERA submission piece \"" + notificationData.file.title + "\" in the " + notificationData.room.roomTitle +  " for case '" + notificationData.eraCase.title + "'. Please log in, review (by commenting) and approve or disapprove this file for ERA submission";
-					}
-					break;
-				case Model_ERANotification.FILE_COMMENT:
-					if(isStaff) {
-						messageObject.subject += "New Comment";
-						messageObject.body += "" + notificationData.fullName + " commented \"" + notificationData.comment_file.annotation_text + "\" on " + notificationData.file.title + " in " + notificationData.room.roomTitle + ".";
-					} else if (isExternal) {
-						messageObject.subject += "Your Researcher has Attacted Commentary";
-						messageObject.body += "An nQuisitor collaborator (" + notificationData.fullName + ") commented \"" + notificationData.comment_file.annotation_text + "\" on " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for case '" + notificationData.eraCase.title + "'";
-					}
-					break
-				case Model_ERANotification.ANNOTATION:
-					if(isStaff) {
-						messageObject.subject += "New Annotation";
-						messageObject.body += notificationData.fullName + " commented \"" + notificationData.comment_file.annotation_text + "\" on " + notificationData.file.title + " in " + notificationData.room.roomTitle + ".";
-					} else if (isExternal) {
-						messageObject.subject += "Your Researcher has Attacted Commentary";
-						messageObject.body += "An nQuisitor collaborator (" + notificationData.fullName + ") commented \"" + notificationData.comment_file.annotation_text + "\" on " + notificationData.file.title + " in " + notificationData.room.roomTitle + " for case '" + notificationData.eraCase.title + "'";
-					}
-					break;
-				case Model_ERANotification.EVIDENCE_COLLECTED:
-					if(isStaff) {
-						messageObject.subject += "Evidence Collected";
-						messageObject.body = "" + notificationData.fullName + " marked " + notificationData.logItem.title + " as collected by a researcher in " + notificationData.room.roomTitle + ".";	
-					} else if (isExternal) {
-						messageObject.subject += "Physical Evidence Has Been Collected";
-						messageObject.body = "This is an email to confirm that evidence item \"" + notificationData.logItem.title + " has been signed up and collected by you from case " + notificationData.eraCase.title + ". If youy have any queries please return this email highlighting your concerns.";
-					}
-					break;
-				case Model_ERANotification.EVIDENCE_READY_FOR_COLLECTION:
-					if(isStaff) {
-						messageObject.subject += "Evidence Ready for Collection";
-						messageObject.body += "" + notificationData.fullName + " marked " + notificationData.logItem.title + " as ready for collection in " + notificationData.room.roomTitle + ".";
-					} else if (isExternal) {
-						messageObject.subject += "Physical Research Now Ready for Collection";
-						messageObject.body += "This email is to indicate that a physical element of your research \"" + notificationData.logItem.title + "\" has been digitized and is ready for collection in the ERA production room.";
-					}
-					break;
-				default:
-					break;
-			}
-			
-			messageObject.body += "\n\nVisit nQuisitor at http://cifera.qut.edu.au/";
-			
-			if(isExternal) {
-				// Add the external disclaimer
-			
-				// attach footer stuff
-				var signOff:String = "\n\nRegards\n\n";
-				signOff += "Peter Hempenstall\n\n";
-				signOff += "Senior Research Assistant\n";
-				signOff += "CIF - ERA Coordinator\n";
-				signOff += "Non-Traditional Research Outputs\n";
-				signOff += "Queensland University of Technology\n";
-				signOff += "p.hempenstall@qut.edu.au\n\n\n";
-				
-				var disclaimer:String = "QUT disclaims all warranties with regard to this information, including all implied warranties of merchantability " +
-					"and fitness, in no event shall QUT be liable or any special, indirect or consequential damages or any damages " +
-					"whatsoever resulting from loss of use, data or profits, whether in an action of contract, negligence or other tortious " +
-					"action, arising out of or in connection with the use or performance of this information.\n\n";
-				disclaimer += "This information may include technical inaccuracies or typographical errors.\n\n";
-				disclaimer += "QUT is not responsible to you or anyone else for any loss, direct or incidental, suffered in connection with the use of" +
-					"this website or any of the content.\n\n";
-				disclaimer += "QUT makes no warranties or representations about this website or any of the content. We exclude, to the maximum " +
-					"extent permitted by law, any liability which may arise as a result of the use of this website, its content or the" +
-					"information on it.";
-				disclaimer += "Where liability cannot be excluded, any liability incurred by us in relation to the use of this website or the content is " +
-					"limited as provided under the Trade Practices Act 1974 (s68A). We will never be liable for any indirect, incidental, " +
-					"special or consequential loss arising out of the use of this website, including loss of business profits. " +
-					"QUT may make improvements and/or changes in the information at any time."
-					
-				messageObject.body += signOff + disclaimer;
-
-			}		
-			
-			return messageObject;
-		}*/
-		
 		public static function getWhoToNotify(notificationType:String, eraCase:Model_ERACase, eraRoom:Model_ERARoom):Object {
 			var userObject:Object = new Object();
 			userObject.roles = new Array();

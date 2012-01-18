@@ -62,7 +62,7 @@ package Controller.ERA
 				view = new NoERAFound();
 			}
 		
-			var test:Model_ERANotification = new Model_ERANotification();
+			/*var test:Model_ERANotification = new Model_ERANotification();
 			test.eraCase = new Model_ERACase();
 			test.eraCase.rmCode = "123456789";
 			test.eraCase.title = "Test Case";
@@ -78,7 +78,7 @@ package Controller.ERA
 			test.logItem = new Model_ERALogItem();
 			test.logItem.title = "Test Log Item Title";
 			
-			/*for each(var notificationType:String in Model_ERANotification.NOTIFICATION_TYPE_ARRAY) {
+			for each(var notificationType:String in Model_ERANotification.NOTIFICATION_TYPE_ARRAY) {
 				test.type = notificationType;
 				var emailObjectStaff:Object = Model_ERANotification.getEmailMessage(test, true, false);
 				AppModel.getInstance().sendEmail("mark@intensedata.com.au", emailObjectStaff.subject, emailObjectStaff.body);

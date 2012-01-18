@@ -255,7 +255,7 @@ package Controller.ERA.Admin
 				return;
 			}
 			layout.notificationBar.showGood("Finished Generating");
-			reportsView.generateButton.label = 'Download Report';
+			reportsView.generateButton.label = 'Open Report';
 			
 			var p:PDF = makeReportWithHeader(getReportPrettyName(REPORT_CASES_WITH_EVIDENCE_UNDER_REVIEW));
 			
@@ -317,7 +317,7 @@ package Controller.ERA.Admin
 				return;
 			}
 			layout.notificationBar.showGood("Finished Generating");
-			reportsView.generateButton.label = 'Download Report';
+			reportsView.generateButton.label = 'Open Report';
 			
 			var p:PDF = makeReportWithHeader(getReportPrettyName(REPORT_EVIDENCE_NOT_UPLOADED));
 			
@@ -371,7 +371,7 @@ package Controller.ERA.Admin
 				return;
 			}
 			layout.notificationBar.showGood("Finished Generating");
-			reportsView.generateButton.label = 'Download Report';
+			reportsView.generateButton.label = 'Open Report';
 			
 			var p:PDF = makeReportWithHeader(getReportPrettyName(REPORT_RESEARCHERS_NOT_INVOLVED));
 
@@ -426,7 +426,7 @@ package Controller.ERA.Admin
 				return;
 			}
 			layout.notificationBar.showGood("Finished Generating");
-			reportsView.generateButton.label = 'Download Report';
+			reportsView.generateButton.label = 'Open Report';
 			
 			var p:PDF = makeReportWithHeader(getReportPrettyName(REPORT_CHECKED_OUT));
 
@@ -487,7 +487,7 @@ package Controller.ERA.Admin
 				return;
 			}
 			layout.notificationBar.showGood("Finished Generating");
-			reportsView.generateButton.label = 'Download Report';
+			reportsView.generateButton.label = 'Open Report';
 			
 			var p:PDF = makeReportWithHeader(getReportPrettyName(REPORT_CASES_NOT_COLLECTED));
 		
@@ -545,7 +545,7 @@ package Controller.ERA.Admin
 				return;
 			}
 			layout.notificationBar.showGood("Finished Generating");
-			reportsView.generateButton.label = 'Download Report';
+			reportsView.generateButton.label = 'Open Report';
 			
 			var p:PDF = makeReportWithHeader(getReportPrettyName(REPORT_CASES_IN_EXHIBITION));
 			
@@ -599,7 +599,7 @@ package Controller.ERA.Admin
 				return;
 			}
 			layout.notificationBar.showGood("Finished Generating");
-			reportsView.generateButton.label = 'Download Report';
+			reportsView.generateButton.label = 'Open Report';
 			
 			trace("got researchers", researcherSchoolObject);
 			
