@@ -187,6 +187,8 @@ package Controller.ERA
 			}
 		}
 		/* ======================================== END OF MOVE FILE TO DIFFERENT ROOM =============================== */
+		
+		/* ======================================== CHANGE A FILE IN FORENSIC LAB TO BE ACTIVE/INACTIVE =============================== */
 		private function changeTemperature(e:IDEvent):void {
 			var fileID:Number = e.data.fileID;
 			var hot:Boolean = e.data.hot;
@@ -204,6 +206,7 @@ package Controller.ERA
 				layout.notificationBar.showError("Failed to Changed Activity Level");
 			}
 		}
+		/* ======================================== END OF CHANGE A FILE IN FORENSIC LAB TO BE ACTIVE/INACTIVE =============================== */
 		
 		private function saveComment(e:IDEvent):void {
 			var text:String = e.data.text;
@@ -283,8 +286,11 @@ package Controller.ERA
 			if(!caseView) return;
 			
 			if(!(Auth.getInstance().isSysAdmin() || isProductionManager 
-				|| Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year))) {
-				caseView.showAccessDenied("Sorry, the Exhibition can only be accessed by the System Administrator, Production Manager or Monitor.");
+				|| Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)
+				|| Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year))) {
+				caseView.showAccessDenied("Sorry, the Exhibition can only be accessed by the " + Model_ERAUser.SYS_ADMIN + ", " + Model_ERAUser.PRODUCTION_MANAGER + 
+					", " + Model_ERAUser.MONITOR + " or " + Model_ERAUser.LIBRARY_ADMIN);
+				
 				return;
 			}
 			

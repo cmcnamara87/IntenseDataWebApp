@@ -78,6 +78,7 @@ package Model.Transactions.ERAProject
 			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.SYS_ADMIN + '</actor><access>read-write</access></acl>'));
 			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.MONITOR + "_" + year + '</actor><access>read-write</access></acl>'));
 			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.VIEWER + "_" + year + '</actor><access>read-write</access></acl>'));
+			argsXML.appendChild(XML('<acl><actor type="role">' + Model_ERAUser.LIBRARY_ADMIN + "_" + year + '</actor><access>read-write</access></acl>'));
 //			
 			// only the researchers specified
 			for each(var researcher:Model_ERAUser in researcherArray) {

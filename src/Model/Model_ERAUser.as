@@ -13,8 +13,9 @@ package Model {
 		public static const PRODUCTION_MANAGER:String = "production_manager";
 		public static const PRODUCTION_TEAM:String = "production_team";
 		public static const VIEWER:String = "viewer";
+		public static const LIBRARY_ADMIN:String = "library_admin";
 		
-		public static var ERARoles:Array = new Array(SYS_ADMIN, MONITOR, RESEARCHER, PRODUCTION_MANAGER, PRODUCTION_TEAM, VIEWER);
+		public static var ERARoles:Array = new Array(SYS_ADMIN, MONITOR, RESEARCHER, PRODUCTION_MANAGER, PRODUCTION_TEAM, VIEWER, LIBRARY_ADMIN);
 		
 		public function Model_ERAUser() {
 			super();
@@ -31,18 +32,20 @@ package Model {
 		
 		public static function getRolePrettyName(role:String):String {
 			switch(role) {
-				case "sys_admin":
+				case SYS_ADMIN:
 					return "System Administrator";
-				case "monitor":
+				case MONITOR:
 					return "Monitor";
-				case "researcher":
+				case RESEARCHER:
 					return "Researcher";
-				case "production_manager":
+				case PRODUCTION_MANAGER:
 					return "Production Manager";
-				case "production_team":
+				case PRODUCTION_TEAM:
 					return "Production Team";
-				case "viewer":
+				case VIEWER:
 					return "External Viewer"
+				case LIBRARY_ADMIN:
+					return "Library Admin";
 				default:
 					return "Unknown Role"
 			}
@@ -50,18 +53,20 @@ package Model {
 		
 		public static function getRoleDescription(role:String):String {
 			switch(role) {
-				case "sys_admin":
+				case SYS_ADMIN:
 					return "Users with access to all of the administration tools available and all cases.";
-				case "monitor":
+				case MONITOR:
 					return "Users with access to all cases, and view and comment in the Screening Lab and view the Exhibition.";
-				case "researcher":
+				case RESEARCHER:
 					return "A QUT Researcher account. These users have access to view and comment in the Screening Lab of cases they are assigned to. ";
-				case "production_manager":
+				case PRODUCTION_MANAGER:
 					return "Users with access to all cases they are assigned to for all sections.";
-				case "production_team":
+				case PRODUCTION_TEAM:
 					return "Users with access to all cases they are assigned to for all sections except the Exhibition.";
-				case "viewer":
+				case VIEWER:
 					return "Users with access to all cases, and view and comment in the Screening Lab and view the Exhibition.";
+				case LIBRARY_ADMIN:
+					return "User with access to download files from Exhibition for library purposes.";
 				default:
 					return "Unknown Role"
 			}
