@@ -17,6 +17,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_AddRoleToUser;
 	import Model.Transactions.ERAProject.Transaction_ChangeEmailOptions;
 	import Model.Transactions.ERAProject.Transaction_ChangeEmailOptionsUserArray;
+	import Model.Transactions.ERAProject.Transaction_ChangeFileCount;
 	import Model.Transactions.ERAProject.Transaction_CreateConversation;
 	import Model.Transactions.ERAProject.Transaction_CreateERACase;
 	import Model.Transactions.ERAProject.Transaction_CreateERALogItem;
@@ -30,6 +31,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_DeleteERAProject;
 	import Model.Transactions.ERAProject.Transaction_DeleteERAUser;
 	import Model.Transactions.ERAProject.Transaction_DeleteRelatedNotifications;
+	import Model.Transactions.ERAProject.Transaction_DownloadExhibitionFiles;
 	import Model.Transactions.ERAProject.Transaction_ERAChangeUserPassword;
 	import Model.Transactions.ERAProject.Transaction_GetAllCases;
 	import Model.Transactions.ERAProject.Transaction_GetAllConversation;
@@ -45,6 +47,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_GetUser;
 	import Model.Transactions.ERAProject.Transaction_GetUsersWithRole;
 	import Model.Transactions.ERAProject.Transaction_GetVideoSegment;
+	import Model.Transactions.ERAProject.Transaction_MoveAllFiles;
 	import Model.Transactions.ERAProject.Transaction_MoveFile;
 	import Model.Transactions.ERAProject.Transaction_RecoverPassword;
 	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
@@ -1768,6 +1771,7 @@ package Model {
 		public function createERACase(year:String,
 									  rmCode:String, 
 									  title:String,
+									  fileCount:Number,
 									  researcherArray:Array,
 									  qutSchool:String, 
 									  forArray:Array,
@@ -1775,10 +1779,10 @@ package Model {
 									  productionManagerUsernameArray:Array,
 									  productionTeamUsernameArray:Array,
 									  callback:Function):void {
-			var createERACase:Transaction_CreateERACase = new Transaction_CreateERACase(AppController.currentEraProject.base_asset_id, year, rmCode, title, researcherArray, qutSchool, forArray, categoryArray, productionManagerUsernameArray, productionTeamUsernameArray, _connection, callback);
+			var createERACase:Transaction_CreateERACase = new Transaction_CreateERACase(AppController.currentEraProject.base_asset_id, year, rmCode, title, fileCount, researcherArray, qutSchool, forArray, categoryArray, productionManagerUsernameArray, productionTeamUsernameArray, _connection, callback);
 		}
-		public function updateERACase(caseID:Number, rmCode:String, title:String, researcherArray:Array, qutSchool:String, forArray:Array, categoryArray:Array, productionManagerArray:Array, productionTeamArray:Array, callback:Function):void {
-			var updateERACase:Transaction_UpdateERACase = new Transaction_UpdateERACase(AppController.currentEraProject.year, caseID, rmCode, title, researcherArray, qutSchool, forArray, categoryArray, productionManagerArray, productionTeamArray, _connection, callback); 
+		public function updateERACase(caseID:Number, rmCode:String, title:String, fileCount:Number, researcherArray:Array, qutSchool:String, forArray:Array, categoryArray:Array, productionManagerArray:Array, productionTeamArray:Array, callback:Function):void {
+			var updateERACase:Transaction_UpdateERACase = new Transaction_UpdateERACase(AppController.currentEraProject.year, caseID, rmCode, title, fileCount, researcherArray, qutSchool, forArray, categoryArray, productionManagerArray, productionTeamArray, _connection, callback); 
 		}
 		public function deleteERACase(caseID:Number, callback:Function):void {
 			var deleteERACase:Transaction_DeleteERACase = new Transaction_DeleteERACase(caseID, _connection, callback);
@@ -1824,8 +1828,11 @@ package Model {
 		public function getERAFile(fileID:Number, callback:Function):void {
 			var getERAFile:Transaction_GetFile = new Transaction_GetFile(fileID, _connection, callback);
 		}
-		public function moveERAFile(fileID:Number, fromRoomID:Number, toRoomID:Number, toRoomType:String, callback:Function):void {
-			var moveERAFile:Transaction_MoveFile = new Transaction_MoveFile(fileID, fromRoomID, toRoomID, toRoomType, _connection, callback);
+		public function moveAllERAFiles(fileIDArray:Array, fromRoomID:Number, toRoomID:Number, toRoomType:String, callback:Function):void {
+			var moveERAFiles:Transaction_MoveAllFiles= new Transaction_MoveAllFiles(fileIDArray, fromRoomID, toRoomID, toRoomType, _connection, callback);
+		}
+		public function moveERAFile(fileID:Number, fromRoomID:Number, toRoomID:Number, toRoomType:String, callback:Function, sendNotification:Boolean=true):void {
+			var moveERAFile:Transaction_MoveFile = new Transaction_MoveFile(fileID, fromRoomID, toRoomID, toRoomType, sendNotification, _connection, callback);
 		}
 		public function updateERAFileTemperature(fileID:Number, hot:Boolean, callback:Function):void {
 			var updateERAFile:Transaction_UpdateFileTemperature = new Transaction_UpdateFileTemperature(fileID, hot, _connection, callback);
@@ -1905,6 +1912,12 @@ package Model {
 		}
 		public function getERAUserRoles(username:String, callback:Function):void {
 			var transaction:Transaction_GetERAUserRoles = new Transaction_GetERAUserRoles(username, _connection, callback);
+		}
+		public function downloadExhibitionFiles(caseID:Number, downloaderUsername:String, callback:Function):void {
+			var transaction:Transaction_DownloadExhibitionFiles = new Transaction_DownloadExhibitionFiles(caseID, downloaderUsername, _connection, callback);
+		}
+		public function eraChangeFileCountForCase(caseID:Number, fileCount:Number, callback:Function):void {
+			var transaction:Transaction_ChangeFileCount = new Transaction_ChangeFileCount(caseID, fileCount, _connection, callback);
 		}
 	}
 		

@@ -52,7 +52,9 @@ package Controller.ERA.Admin
 		}
 		
 		private function setupEventListeners():void {
+			// Listne for create case button
 			caseCreatorView.createCaseButton.addEventListener(MouseEvent.MOUSE_UP, createCase);
+			// Listen for save case button (used when updating)
 			caseCreatorView.saveButton.addEventListener(MouseEvent.CLICK, saveChangesToCase);
 			caseCreatorView.deleteCaseButton.addEventListener(MouseEvent.CLICK, deleteCase);
 		}
@@ -160,6 +162,9 @@ package Controller.ERA.Admin
 			// Get title
 			var title:String = caseCreatorView.title.text;
 			
+			// Get file count
+			var fileCount:Number = Number(caseCreatorView.fileCount.text);
+			
 			// Get QUT school
 			var qutSchool:String = "";
 			if(caseCreatorView.qutSchool.selectedIndex != -1) {
@@ -186,6 +191,7 @@ package Controller.ERA.Admin
 				caseID,
 				rmCode,
 				title,
+				fileCount,
 				researcherUsernames,
 				qutSchool,
 				forArray,
@@ -236,11 +242,15 @@ package Controller.ERA.Admin
 			// Get title
 			var title:String = caseCreatorView.title.text;
 			
+			// Get file count
+			var fileCount:Number = Number(caseCreatorView.fileCount.text);
+			
 			// Get QUT school
 			var qutSchool:String = "";
 			if(caseCreatorView.qutSchool.selectedIndex != -1) {
 				qutSchool = caseCreatorView.qutSchool.selectedItem.data;
 			}
+			
 			
 			// get researchers
 			var researcherUsernames:Array = caseCreatorView.chosenResearchersArray;
@@ -262,6 +272,7 @@ package Controller.ERA.Admin
 				AppController.currentEraProject.year,
 				rmCode,
 				title, 
+				fileCount,
 				researcherUsernames, 
 				qutSchool, 
 				forArray,

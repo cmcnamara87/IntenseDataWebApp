@@ -117,11 +117,21 @@ package Controller.ERA
 			// Move files between the different rooms
 			caseView.addEventListener(IDEvent.ERA_MOVE_FILE, moveFile, false, 0, true);
 			
+			// Move all files to a different room
+			caseView.addEventListener(IDEvent.ERA_MOVE_ALL_FILES, moveAllFiles, false, 0, true);
+			
+			// Listen for downloading package
+			caseView.addEventListener(IDEvent.ERA_DOWNLOAD_PACKAGE, downloadPackage, false, 0, true);
+			
 			// Change the temperature of the file
 			caseView.addEventListener(IDEvent.ERA_CHANGE_FILE_TEMPERATURE, changeTemperature, false, 0, true);
 			
 			// Listne for comment creation
 			caseView.addEventListener(IDEvent.ERA_SAVE_COMMENT, saveComment, false, 0, true);
+			
+			caseView.addEventListener(IDEvent.ERA_CHANGE_FILE_COUNT_FOR_CASE, changeFileCount, false, 0, true);
+			
+			
 			
 			// Listen for errors to show
 			caseView.addEventListener(IDEvent.ERA_ERROR, function(e:IDEvent):void {
@@ -160,6 +170,58 @@ package Controller.ERA
 			
 //			trace("displatching to", "file/" + caseID + "/" + escape(currentERACase.rmCode) + "/" + roomType + "/" + fileID);
 			Dispatcher.showFile(caseID, currentERACase.rmCode, roomType, currentRoom.base_asset_id, fileID);
+		}
+		
+		/* ======================================= MOVE ALL FILES TO DIFFERENT ROOM ======================================= */
+		private function moveAllFiles(e:IDEvent):void {
+			var fileIDArray:Array = e.data.fileIDArray;
+			
+		// move from and to
+			var moveToRoomType = e.data.moveToRoomType;
+			trace('move to room type', moveToRoomType);
+			
+			AppModel.getInstance().moveAllERAFiles(fileIDArray, currentRoom.base_asset_id, getRoom(moveToRoomType).base_asset_id, moveToRoomType, allFilesMoved);
+			
+			// if the file is a hot file, we need to descrease the number of hot files i nthe room
+			// its going to be hot for every room, except the forensic lab inactive section
+			/*if(e.data.hot) {
+				caseView.changeRoomEvidenceCount(currentRoom.roomType, false);
+			}*/
+		}
+		private function allFilesMoved(status:Boolean):void {
+			if(status) {
+				layout.notificationBar.showGood("Files Moved");
+				// tell the view to update its icons
+			} else {
+				layout.notificationBar.showError("Failed to Move Files");
+			}
+		}
+		/* ====================================== END OF MOVE ALL FILES TO DIFFERENT ROOM ================================= */
+		
+		private function downloadPackage(e:IDEvent):void {
+			AppModel.getInstance().downloadExhibitionFiles(caseID, Auth.getInstance().getUsername(), packageDownloaded);
+		}
+		private function packageDownloaded(status:Boolean):void {
+			if(status) {
+				layout.notificationBar.showGood("Package Downloaded");
+				// tell the view to update its icons
+			} else {
+				layout.notificationBar.showError("Failed to Download");
+			}
+		}
+		
+		
+		private function changeFileCount(e:IDEvent):void {
+			var fileCount:Number = e.data.fileCount;
+			AppModel.getInstance().eraChangeFileCountForCase(caseID, fileCount, fileCountChanged);
+		}
+		private function fileCountChanged(status:Boolean):void {
+			if(status) {
+				layout.notificationBar.showGood("File Count Changed");
+				// tell the view to update its icons
+			} else {
+				layout.notificationBar.showError("Failed to Change File Count");
+			}
 		}
 		
 		/* ======================================= MOVE FILE TO DIFFERENT ROOM ======================================= */
@@ -318,7 +380,7 @@ package Controller.ERA
 			
 			if(!(Auth.getInstance().isSysAdmin() || isProductionManager || isResearcher 
 				|| Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year))) {
-				caseView.showAccessDenied("Sorry, the Screening Lab can only be accessed by the System Administrator, Production Manager, Researcher or Monitor");
+				caseView.showAccessDenied("Sorry, the " + Model_ERARoom.getPrettyRoomName(Model_ERARoom.SCREENING_ROOM) + " can only be accessed by the System Administrator, Production Manager, Researcher or Monitor");
 				return;
 			}
 			

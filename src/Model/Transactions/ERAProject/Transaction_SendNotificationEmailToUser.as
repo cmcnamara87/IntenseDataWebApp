@@ -18,6 +18,7 @@ package Model.Transactions.ERAProject
 		
 		private var rolesArray:Array;
 		private var isMonitor:Boolean = false;
+		private var isLibraryAdmin:Boolean = false
 		private var isResearcher:Boolean = false;
 		private var isSysAdmin:Boolean = false;
 		private var isProductionManager:Boolean = false;
@@ -65,7 +66,10 @@ package Model.Transactions.ERAProject
 			for each(var role:String in rolesArray) {
 				if(role == Model_ERAUser.MONITOR + "_" + AppController.currentEraProject.year) {
 					isMonitor = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.MONITOR, username);
-				}	
+				}
+				if(role == Model_ERAUser.MONITOR + "_" + AppController.currentEraProject.year) {
+					isLibraryAdmin = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.LIBRARY_ADMIN, username);
+				}
 				if(role == Model_ERAUser.SYS_ADMIN + "_" + AppController.currentEraProject.year) {
 					trace(username, "is a sys admin");
 					isSysAdmin = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.SYS_ADMIN, username);
@@ -88,7 +92,7 @@ package Model.Transactions.ERAProject
 			if(isSysAdmin || isProductionManager || isProductionTeam) {
 				var messageObject:Object = Model_ERANotification.getEmailMessage(notification, true, false);
 				sendMailToUser(username, messageObject.subject, messageObject.body);
-			} else if(isMonitor || isResearcher) {
+			} else if(isMonitor || isResearcher || isLibraryAdmin) {
 				var messageObject:Object = Model_ERANotification.getEmailMessage(notification, false, true);
 				
  				// p.hempenstall@qut.edu.au

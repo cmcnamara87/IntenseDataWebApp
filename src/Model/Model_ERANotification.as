@@ -41,6 +41,9 @@ package Model
 		
 		public static const FILE_MOVED_TO_FORENSIC_LAB:String = "file_moved_to_forensic_lab";
 		
+		public static const ALL_FILES_MOVED_TO_SCREENING_LAB:String = "allFilesMovedToScreeningLab";
+		public static const ALL_FILES_MOVED_TO_EXHIBITION:String = "allFilesMovedToExhibition";
+		
 		// file uploaded
 		public static const FILE_UPLOADED:String =  "file_uploaded";
 		// {user} uploaded {file name/id} to {room name/id} -> have file id, room id, room name (nothing needed)
@@ -153,7 +156,35 @@ package Model
 			
 			
 			switch(notificationData.type) {
-				case Model_ERANotification.FILE_APPROVED_BY_RESEARCHER:
+				case ALL_FILES_MOVED_TO_EXHIBITION:
+					if(isStaff) {
+						// DONE
+						messageObject.subject += " Files moved to Exhibition ";
+						messageObject.body += notificationData.fullName + " moved all files from Review Lab to Exhibition for the Case: \"" + notificationData.eraCase.title + "\"."; 
+					} else if (isExternal) {
+						// DONE
+						/*messageObject.subject += "An Evidence item has been APPROVED for CIF ERA " + AppController.currentEraProject.year +" submission";
+						messageObject.body += "This email confirms that researcher, " + notificationData.fullName + ", has APPROVED the evidence item: \"" + 
+							notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission.";*/
+						messageObject.subject += " Files moved to Exhibition ";
+						messageObject.body += notificationData.fullName + " moved all files from Review Lab to Exhibition for the Case: \"" + notificationData.eraCase.title + "\".";
+					}
+					
+					break;
+				case ALL_FILES_MOVED_TO_SCREENING_LAB:
+					if(isStaff) {
+						// DONE
+						messageObject.subject += " Files moved to Exhibition ";
+						messageObject.body += notificationData.fullName + " moved all files from Review Lab to Exhibition for the Case: \"" + notificationData.eraCase.title + "\".";
+						
+					} else if (isExternal) {
+						// DONE
+						messageObject.subject += " Files moved to Exhibition ";
+						messageObject.body += notificationData.fullName + " moved all files from Review Lab to Exhibition for the Case: \"" + notificationData.eraCase.title + "\"."; 
+					}
+					break;
+				
+				case FILE_APPROVED_BY_RESEARCHER:
 					
 					if(isStaff) {
 						// DONE
@@ -167,7 +198,7 @@ package Model
 							notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
 					}
 					break;
-				case Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER:
+				case FILE_NOT_APPROVED_BY_RESEARCHER:
 					if(isStaff) {
 						// DONE
 						messageObject.subject += "An Evidence item has NOT BEEN APPROVED for CIF ERA " + AppController.currentEraProject.year +" submission";
@@ -181,7 +212,7 @@ package Model
 							"\", for the CIF ERA " + AppController.currentEraProject.year + " submission.";
 					}
 					break;
-				case Model_ERANotification.FILE_APPROVED_BY_MONITOR:
+				case FILE_APPROVED_BY_MONITOR:
 					if(isStaff) {
 						// DONE
 						messageObject.subject += "An Evidence item has been APPROVED for ERA submission";
@@ -195,7 +226,7 @@ package Model
 							"\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
 					}
 					break;
-				case Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR:
+				case FILE_NOT_APPROVED_BY_MONITOR:
 					
 					if(isStaff) {
 						// DONE
@@ -210,7 +241,7 @@ package Model
 							+ "\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
 					}
 					break;
-				case Model_ERANotification.FILE_UPLOADED:					
+				case FILE_UPLOADED:					
 					
 					if(isStaff) {
 						// DONE
@@ -226,7 +257,7 @@ package Model
 					}
 					
 					break;
-				case Model_ERANotification.ROOM_COMMENT:
+				case ROOM_COMMENT:
 					if(isStaff) {
 						// DONE
 						messageObject.subject += "New comment alert";
@@ -240,9 +271,9 @@ package Model
 							notificationData.eraCase.title + "\". To view the comment, open the \"Comments\" Tab in the " + notificationData.room.roomTitle + ".";
 					}
 					break;
-				case Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB:
-				case Model_ERANotification.FILE_MOVED_TO_EXHIBITION:
-				case Model_ERANotification.FILE_MOVED_TO_FORENSIC_LAB:
+				case FILE_MOVED_TO_SCREENING_LAB:
+				case FILE_MOVED_TO_EXHIBITION:
+				case FILE_MOVED_TO_FORENSIC_LAB:
 					if(isStaff) {
 						// DONE
 						messageObject.subject += "Evidence item moved";
@@ -257,7 +288,7 @@ package Model
 								"when you have completed reviewing it. If the evidence item requires alterations, please mark it as 'Disapproved'.";
 					}
 					break;
-				case Model_ERANotification.FILE_COMMENT:
+				case FILE_COMMENT:
 					if(isStaff) {
 						// DONE
 						messageObject.subject += "New comment alert";
@@ -271,7 +302,7 @@ package Model
 							" for the Case: \"" + notificationData.eraCase.title + "\". To view the comment, open the \"Comments\" Tab for the file in nQuisitor."; 
 					}
 					break
-				case Model_ERANotification.ANNOTATION:
+				case ANNOTATION:
 					if(isStaff) {
 						// DONE
 						messageObject.subject += "New annotation alert";
@@ -285,7 +316,7 @@ package Model
 							"To view the annotation, open the \"Annotations\" Tab for the file in nQuisitor.";
 					}
 					break;
-				case Model_ERANotification.EVIDENCE_COLLECTED:
+				case EVIDENCE_COLLECTED:
 					if(isStaff) {
 						// DONE
 						messageObject.subject += "Evidence collected";
@@ -298,7 +329,7 @@ package Model
 							"COLLECTED by a researcher from Case: \"" + notificationData.eraCase.title + "\".";
 					}
 					break;
-				case Model_ERANotification.EVIDENCE_READY_FOR_COLLECTION:
+				case EVIDENCE_READY_FOR_COLLECTION:
 					if(isStaff) {
 						// DONE
 						messageObject.subject += "Evidence ready for collection";
@@ -390,6 +421,11 @@ package Model
 				(userObject.roles as Array).push(Model_ERAUser.MONITOR + "_" + AppController.currentEraProject.year);
 			}
 			
+			// Librarian
+			if(notificationType == Model_ERANotification.ALL_FILES_MOVED_TO_EXHIBITION ||
+				notificationType == Model_ERANotification.ALL_FILES_MOVED_TO_SCREENING_LAB) {
+				(userObject.roles as Array).push(Model_ERAUser.LIBRARY_ADMIN + "_" + AppController.currentEraProject.year);
+			}
 			
 			return userObject;
 		}

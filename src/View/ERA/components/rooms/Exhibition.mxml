@@ -7,11 +7,13 @@
 		<![CDATA[
 			import Controller.AppController;
 			import Controller.ERA.CaseController;
+			import Controller.IDEvent;
 			import Controller.Utilities.AssetLookup;
 			import Controller.Utilities.Auth;
 			
 			import Model.Model_ERAConversation;
 			import Model.Model_ERAFile;
+			import Model.Model_ERARoom;
 			
 			import View.ERA.components.FileTile;
 			
@@ -55,6 +57,7 @@
 					// Create the file tile
 					var fileTile:FileTile = new FileTile();
 					fileTile.fileData = file;
+					fileTile.dragEnabled = false;
 					fileTile.loadURL(file.base_asset_id);
 					fileGroup.addElement(fileTile);
 				}
@@ -139,6 +142,30 @@
 				
 			}
 			
+			protected function moveFilesToReviewButton_clickHandler(event:MouseEvent):void
+			{
+				// Get together all the files we need to move
+				var fileIDArray:Array = new Array();
+				for(var i:Number = 0; i < fileGroup.numElements; i++) {
+					var fileTile:FileTile = fileGroup.getElementAt(i) as FileTile;
+					fileIDArray.push(fileTile.fileID);
+					trace("constructing file id array", fileTile.fileID);
+				}
+
+				var fileMoveEvent:IDEvent = new IDEvent(IDEvent.ERA_MOVE_ALL_FILES, true);
+				fileMoveEvent.data.fileIDArray = fileIDArray;
+				fileMoveEvent.data.moveToRoomType = Model_ERARoom.SCREENING_ROOM;
+				this.dispatchEvent(fileMoveEvent);
+					
+				fileGroup.removeAllElements();
+			}
+			
+			protected function downloadFilesButton_clickHandler(event:MouseEvent):void
+			{
+				var downloadPackageEvent:IDEvent = new IDEvent(IDEvent.ERA_DOWNLOAD_PACKAGE, true);
+				this.dispatchEvent(downloadPackageEvent);
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -154,7 +181,8 @@
 				<s:Label text="RM {CaseController.currentERACase.rmCode} - Exhibition" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
 				</s:Label>
 			</s:VGroup>
-			<!--<s:ToggleButton id="showConversationButton" chromeColor="0xFFFFFF" cornerRadius="10" label="Conversation (0)" height="30" />-->
+			<s:Button id="moveFilesToReviewButton" chromeColor="0xFFFFFF" cornerRadius="10" label="← Move All Files to Review Lab" height="30" click="moveFilesToReviewButton_clickHandler(event)" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}"/>
+			<s:Button id="downloadFilesButton" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="↓ Download Files" click="downloadFilesButton_clickHandler(event)" />
 		</s:HGroup>
 	</s:BorderContainer>
 	<!-- END OF TITLE BAR WITH CREATION BUTTON -->

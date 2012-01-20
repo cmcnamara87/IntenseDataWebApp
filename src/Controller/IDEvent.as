@@ -175,6 +175,9 @@ package Controller {
 			public static var ERA_SHOW_EXHIBITION:String = "era_showExhibition";
 			public static var ERA_SHOW_FILE:String = "era_showFile";
 			public static var ERA_MOVE_FILE:String = "era_moveFile";
+			public static var ERA_MOVE_ALL_FILES:String = "era_moveAllFiles";
+			public static var ERA_DOWNLOAD_PACKAGE:String = "era_downloadPackage";
+			public static var ERA_CHANGE_FILE_COUNT_FOR_CASE:String = "era_changeFileCountForCase";
 			public static var ERA_CHANGE_FILE_TEMPERATURE:String = "era_changeFileTemperate";
 			public static var ERA_SAVE_COMMENT:String = "era_saveComment";
 			public static var ERA_NOTIFICATIONS_UPDATED:String = "era_notificationsUpdated";

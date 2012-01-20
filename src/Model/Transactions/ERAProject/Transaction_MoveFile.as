@@ -18,14 +18,16 @@ package Model.Transactions.ERAProject
 		private var connection:Connection;
 		private var callback:Function;
 		private var toRoomType:String;
+		private var notifications:Boolean; // true if we should send notifications
 		
-		public function Transaction_MoveFile(fileID:Number, fromRoomID:Number, toRoomID:Number, toRoomType:String, connection:Connection, callback:Function)
+		public function Transaction_MoveFile(fileID:Number, fromRoomID:Number, toRoomID:Number, toRoomType:String, notifications:Boolean, connection:Connection, callback:Function)
 		{
 			this.fileID = fileID;
 			this.fromRoomID = fromRoomID;
 			this.toRoomID = toRoomID;
 			this.toRoomType = toRoomType;
 			this.connection = connection;
+			this.notifications = notifications;
 			this.callback = callback;
 			
 			moveFile();
@@ -67,7 +69,9 @@ package Model.Transactions.ERAProject
 				return;
 			}
 			
-			sendNotification();
+			if(notifications) {
+				sendNotification();
+			}
 			
 			AppModel.getInstance().updateERAFileTemperature(fileID, true, function(status:Boolean):void {
 				trace("Made file hot");

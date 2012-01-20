@@ -7,11 +7,13 @@
 		<![CDATA[
 			import Controller.AppController;
 			import Controller.ERA.CaseController;
+			import Controller.IDEvent;
 			import Controller.Utilities.AssetLookup;
 			import Controller.Utilities.Auth;
 			
 			import Model.Model_ERAConversation;
 			import Model.Model_ERAFile;
+			import Model.Model_ERARoom;
 			
 			import View.ERA.components.FileTile;
 			
@@ -40,6 +42,15 @@
 					label.text = "Loading...";
 					fileGroup.addElement(label);
 					return;
+				}
+				
+				// Set the X of Y file count
+				currentFileCount.text = fileArray.length + " of ";
+				fileCount.text = CaseController.currentERACase.fileCount + "";
+				if(fileArray.length == CaseController.currentERACase.fileCount) {
+					moveFilesToExhibitionButton.enabled = true;
+				} else {
+					moveFilesToExhibitionButton.enabled = false;
 				}
 				
 				if(fileArray.length == 0) {
@@ -141,6 +152,38 @@
 				fileArray = null;
 			}
 			
+			protected function moveFilesToExhibitionButton_clickHandler(event:MouseEvent):void
+			{
+				// Get together all the files we need to move
+				var fileIDArray:Array = new Array();
+				for(var i:Number = 0; i < fileGroup.numElements; i++) {
+					trace("constructing file id array");
+					var fileTile:FileTile = fileGroup.getElementAt(i) as FileTile;
+					fileIDArray.push(fileTile.fileID);
+				}
+				
+				var fileMoveEvent:IDEvent = new IDEvent(IDEvent.ERA_MOVE_ALL_FILES, true);
+				fileMoveEvent.data.fileIDArray = fileIDArray;
+				fileMoveEvent.data.moveToRoomType = Model_ERARoom.EXHIBIT;
+				this.dispatchEvent(fileMoveEvent);
+				
+				fileGroup.removeAllElements();
+			}
+			
+			protected function renameFilesButton_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				Alert.show("Rename Files Button");
+			}
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stu
+				var fileMoveEvent:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_FILE_COUNT_FOR_CASE, true);
+				fileMoveEvent.data.fileCount = fileCount.text;
+				this.dispatchEvent(fileMoveEvent);
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -157,12 +200,20 @@
 				</s:Label>
 			</s:VGroup>
 			<s:ToggleButton id="showConversationButton" chromeColor="0xFFFFFF" cornerRadius="10" label="Conversation (0)" height="30" />
+			<s:Button id="renameFilesButton" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="Rename Files" click="renameFilesButton_clickHandler(event)"/>
+			<s:Button id="moveFilesToExhibitionButton" enabled="false" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}" chromeColor="0xFFFFFF" cornerRadius="10" label="Move All Files to Exhibition →" height="30" click="moveFilesToExhibitionButton_clickHandler(event)" />
 		</s:HGroup>
 	</s:BorderContainer>
 	<!-- END OF TITLE BAR WITH CREATION BUTTON -->
 	
 	<s:BorderContainer width="100%" height="40" borderVisible="false" backgroundColor="0xEEEFF1">
 		<s:HGroup verticalAlign="middle" paddingBottom="10" paddingLeft="20" paddingRight="10" paddingTop="10">
+			<s:Label text="File Count:" color="0x828F9A"/>
+			<s:Label id="currentFileCount" color="0x828F9A" fontWeight="bold"/>
+			<s:TextInput id="fileCount"  color="0x828F9A" fontWeight="bold" width="40" textAlign="center"/>
+			<s:Label color="0x828F9A" fontWeight="bold" text="Files"/>
+			<s:Button height="100%" label="Save" chromeColor="0xFFFFFF" cornerRadius="10" click="button1_clickHandler(event)"/>
+			<s:Label paddingLeft="10" />
 			<s:Label text="Total File Size:" color="0x828F9A"/>
 			<s:Label id="totalFileSizeLabel" color="0xFF0000" fontWeight="bold"/>
 			<s:Label text="Filter By Type:" color="0x828F9A"/>

@@ -50,6 +50,10 @@ package Model.Transactions.ERAProject
 //			}
 		}
 		
+		/**
+		 * Get the details of the room where this has happened 
+		 * 
+		 */		
 		private function getRoomDetails():void {
 			var baseXML:XML = connection.packageRequest("asset.get", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
@@ -71,6 +75,10 @@ package Model.Transactions.ERAProject
 			getCaseUsers();
 		}
 		
+		/**
+		 * We can now get the people involved in the case, because we found out the room, so we know the case. 
+		 * 
+		 */		
 		private function getCaseUsers():void {
 			var baseXML:XML = connection.packageRequest("asset.get", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;

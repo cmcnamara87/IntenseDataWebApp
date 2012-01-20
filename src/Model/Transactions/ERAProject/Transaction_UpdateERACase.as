@@ -18,6 +18,7 @@ package Model.Transactions.ERAProject
 		private var caseID:Number;
 		private var rmCode:String;
 		private var title:String;
+		private var fileCount:Number;
 		private var researcherArray:Array;
 		private var qutSchool:String;
 		private var forArray:Array;
@@ -38,6 +39,7 @@ package Model.Transactions.ERAProject
 												  caseID:Number,
 												  rmCode:String, 
 												  title:String,
+												  fileCount:Number,
 												  researcherArray:Array,
 												  qutSchool:String, 
 												  forArray:Array,
@@ -51,6 +53,7 @@ package Model.Transactions.ERAProject
 			this.caseID = caseID;	
 			this.rmCode = rmCode;
 			this.title = title;
+			this.fileCount = fileCount;
 			this.researcherArray = researcherArray;
 			this.qutSchool = qutSchool;
 			this.forArray = forArray;
@@ -79,6 +82,8 @@ package Model.Transactions.ERAProject
 			if(this.title != "") {
 				argsXML.meta["ERA-case"]["title"] = this.title;
 			}
+			
+			argsXML.meta["ERA-case"]["file_count"] = this.fileCount;
 			
 			// setup the researchers
 			for each(var researcher:Model_ERAUser in researcherArray) {

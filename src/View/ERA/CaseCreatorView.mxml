@@ -263,6 +263,9 @@
 				// Set the title for the case
 				title.text = eraCase.title;
 				
+				// set the file count
+				fileCount.text = eraCase.fileCount + "";
+				
 				// Add all the production managers
 				chosenProductionManagersArray = eraCase.productionManagerArray;
 				renderProductionManagers();
@@ -559,6 +562,12 @@
 					</components:content>
 				</components:FormGroup>
 				
+				<components:FormGroup title="Number of Output Files">
+					<components:content>
+						<s:TextInput id="fileCount" text="" borderAlpha="0.5" width="100%"/>
+					</components:content>
+				</components:FormGroup>
+				
 				<components:FormGroup title="QUT School">
 					<components:content>
 						<s:DropDownList id="qutSchool" width="100%">
@@ -597,6 +606,8 @@
 						</s:VGroup>
 					</components:content>
 				</components:FormGroup>
+				
+				
 				
 				<components:FormGroup title="Category">
 					<components:content>

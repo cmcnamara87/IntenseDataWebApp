@@ -4,20 +4,27 @@ package Model {
 	
 	public class Model_ERACase extends Model_Base {
 		
+		// The case RM code
 		public var rmCode:String;
+		// The title of the case
 		public var title:String;
+		// the number of files expected to be in the era case for exhibition
+		public var fileCount:Number = 0;
+		// The researches for hte case (an array of usernames)
 		public var researchersArray:Array = new Array();
+		// the first name of the first researcher
 		public var researcherFirstName:String = "";
+		// the last name of the last researcher
 		public var researcherLastName:String = "";
 		
+		// the QUT school
 		public var qutSchool:String;
 		public var forArray:Array = new Array(); // array of FOR_Models
+		// an array of categories for hte case
 		public var categoryArray:Array = new Array();
 		public var productionManagerArray:Array = new Array();
 		public var productionTeamArray:Array = new Array();
-		
-		public var fileCount:Number = 0;
-		
+
 		public static const CAT1:String = "Original Creative Works - Visual Art Work (NP-A1)";
 		public static const CAT2:String = "Original Creative Works - Design/Architectual Work (NP-A2)";
 		public static const CAT3:String = "Original Creative Works - Textural Work (NP-A3)";
@@ -63,6 +70,11 @@ package Model {
 			// set the title of the case
 			this.title = eraCase["title"];
 			
+			// set the number of files expected in the exhibition
+			if(eraCase["file_count"].length() > 0) {
+				this.fileCount = eraCase["file_count"];
+			}
+				
 			// add all the researchers usernames
 			var blah:Number = 0;
 			for each(var researcherXML:XML in eraCase["researcher_username"]) {
