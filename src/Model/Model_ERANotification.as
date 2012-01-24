@@ -44,6 +44,9 @@ package Model
 		public static const ALL_FILES_MOVED_TO_SCREENING_LAB:String = "allFilesMovedToScreeningLab";
 		public static const ALL_FILES_MOVED_TO_EXHIBITION:String = "allFilesMovedToExhibition";
 		
+		// When the librarian has downloaded a packge
+		public static const LIBRARIAN_PACKAGE_DOWNLOADED:String = "packageDOwnloaded";
+		
 		// file uploaded
 		public static const FILE_UPLOADED:String =  "file_uploaded";
 		// {user} uploaded {file name/id} to {room name/id} -> have file id, room id, room name (nothing needed)
@@ -156,6 +159,13 @@ package Model
 			
 			
 			switch(notificationData.type) {
+				case LIBRARIAN_PACKAGE_DOWNLOADED:
+					if(isStaff) {
+						// DONE
+						messageObject.subject += " Library Downloaded Files ";
+						messageObject.body += notificationData.fullName + " downloaded the Exhibition package for Case: \"" + notificationData.eraCase.title + "\"."; 
+					}					
+					break;
 				case ALL_FILES_MOVED_TO_EXHIBITION:
 					if(isStaff) {
 						// DONE

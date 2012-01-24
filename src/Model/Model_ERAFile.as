@@ -11,6 +11,7 @@ package Model {
 		public var fileName:String; // the name of the file (the original file name)
 		public var fileType:String; // the type of the file (from the evidence manager drop down list)
 		public var title:String; // the title for the file
+		public var downloadTitle:String;
 		public var description:String;
 		
 		public var fileExt:String = "Unknown"; // the file extension
@@ -63,6 +64,8 @@ package Model {
 			
 			// set the title of the item
 			this.title = eraEvidenceItem["title"];
+			
+			this.downloadTitle = eraEvidenceItem["download_title"];
 			
 			this.description = eraEvidenceItem["description"];
 			

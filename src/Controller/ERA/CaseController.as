@@ -28,6 +28,8 @@ package Controller.ERA
 	
 	import flash.events.Event;
 	import flash.net.FileReference;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
 	
 	import mx.controls.Alert;
 	import mx.events.IndexChangedEvent;
@@ -120,6 +122,9 @@ package Controller.ERA
 			// Move all files to a different room
 			caseView.addEventListener(IDEvent.ERA_MOVE_ALL_FILES, moveAllFiles, false, 0, true);
 			
+			// Add package file names and folder name
+			caseView.addEventListener(IDEvent.ERA_SAVE_PACKAGE_FILE_NAMES, savePackageFileNames, false, 0, true);
+						
 			// Listen for downloading package
 			caseView.addEventListener(IDEvent.ERA_DOWNLOAD_PACKAGE, downloadPackage, false, 0, true);
 			
@@ -180,7 +185,16 @@ package Controller.ERA
 			var moveToRoomType = e.data.moveToRoomType;
 			trace('move to room type', moveToRoomType);
 			
-			AppModel.getInstance().moveAllERAFiles(fileIDArray, currentRoom.base_asset_id, getRoom(moveToRoomType).base_asset_id, moveToRoomType, allFilesMoved);
+			AppModel.getInstance().moveAllERAFiles(caseID, fileIDArray, currentRoom.base_asset_id, getRoom(moveToRoomType).base_asset_id, moveToRoomType, allFilesMoved);
+			
+			for(var i = 0; i < fileIDArray.length; i++) {
+				caseView.changeRoomEvidenceCount(currentRoom.roomType, false);
+			}
+			
+			for(var i = 0; i < fileIDArray.length; i++) {
+				caseView.changeRoomEvidenceCount(moveToRoomType, true);
+			}
+			
 			
 			// if the file is a hot file, we need to descrease the number of hot files i nthe room
 			// its going to be hot for every room, except the forensic lab inactive section
@@ -196,14 +210,34 @@ package Controller.ERA
 				layout.notificationBar.showError("Failed to Move Files");
 			}
 		}
+		
+		
+		private function savePackageFileNames(e:IDEvent):void {
+			var files:Array = e.data.files;
+			var folderName:String = e.data.folderName;
+
+			AppModel.getInstance().eraUpdatePackageNames(currentERACase.base_asset_id, files, folderName, packageFileNamesSaved);
+		}
+		
+		private function packageFileNamesSaved(status:Boolean) {
+			if(!status) {
+				AppController.layout.notificationBar.showError("Could not update package names");
+			} else {
+				AppController.layout.notificationBar.showGood("Package Names Updated");
+			}
+		}
 		/* ====================================== END OF MOVE ALL FILES TO DIFFERENT ROOM ================================= */
 		
 		private function downloadPackage(e:IDEvent):void {
-			AppModel.getInstance().downloadExhibitionFiles(caseID, Auth.getInstance().getUsername(), packageDownloaded);
+			AppModel.getInstance().downloadExhibitionFiles(caseID, currentERACase.downloadTitle, getRoom(Model_ERARoom.EXHIBIT).base_asset_id, Auth.getInstance().getUsername(), packageDownloaded);
 		}
-		private function packageDownloaded(status:Boolean):void {
+		private function packageDownloaded(status:Boolean, packageUri:String = ""):void {
 			if(status) {
 				layout.notificationBar.showGood("Package Downloaded");
+				
+				var req:URLRequest = new URLRequest("http://" + Recensio_Flex_Beta.serverAddress+ "/" + packageUri);
+				navigateToURL(req, 'Download');
+				
 				// tell the view to update its icons
 			} else {
 				layout.notificationBar.showError("Failed to Download");
@@ -213,6 +247,7 @@ package Controller.ERA
 		
 		private function changeFileCount(e:IDEvent):void {
 			var fileCount:Number = e.data.fileCount;
+			currentERACase.fileCount = e.data.fileCount;
 			AppModel.getInstance().eraChangeFileCountForCase(caseID, fileCount, fileCountChanged);
 		}
 		private function fileCountChanged(status:Boolean):void {

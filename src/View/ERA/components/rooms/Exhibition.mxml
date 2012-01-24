@@ -14,6 +14,7 @@
 			import Model.Model_ERAConversation;
 			import Model.Model_ERAFile;
 			import Model.Model_ERARoom;
+			import Model.Model_ERAUser;
 			
 			import View.ERA.components.FileTile;
 			
@@ -182,13 +183,17 @@
 				</s:Label>
 			</s:VGroup>
 			<s:Button id="moveFilesToReviewButton" chromeColor="0xFFFFFF" cornerRadius="10" label="← Move All Files to Review Lab" height="30" click="moveFilesToReviewButton_clickHandler(event)" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}"/>
-			<s:Button id="downloadFilesButton" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="↓ Download Files" click="downloadFilesButton_clickHandler(event)" />
+			<s:Button id="downloadFilesButton" visible="{Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year) || Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year) || Auth.getInstance().isSysAdmin()}" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="↓ Download Files" click="downloadFilesButton_clickHandler(event)" />
 		</s:HGroup>
 	</s:BorderContainer>
 	<!-- END OF TITLE BAR WITH CREATION BUTTON -->
 	
 	<s:BorderContainer width="100%" height="40" borderVisible="false" backgroundColor="0xEEEFF1">
 		<s:HGroup verticalAlign="middle" paddingBottom="10" paddingLeft="20" paddingRight="10" paddingTop="10">
+			<s:Label visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}" text="Download Status:" color="0x828F9A"/>
+			<s:Label id="downloadStatus" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}" color="0x828F9A" fontWeight="bold" text="{CaseController.currentERACase.libraryDownloaded ? 'Downloaded by ' + CaseController.currentERACase.libraryDownloadUsername + ' @ ' + CaseController.currentERACase.libraryDownloadTime : 'Not Downloaded'}"/>
+			<s:Label visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}" paddingLeft="10" />
+			
 			<s:Label text="Total File Size:" color="0x828F9A"/>
 			<s:Label id="totalFileSizeLabel" color="0xFF0000" fontWeight="bold"/>
 			<s:Label text="Filter By Type:" color="0x828F9A"/>

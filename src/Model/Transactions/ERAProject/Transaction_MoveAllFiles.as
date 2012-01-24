@@ -12,6 +12,7 @@ package Model.Transactions.ERAProject
 	
 	public class Transaction_MoveAllFiles
 	{
+		private var caseID:Number;
 		private var fileIDArray:Array;
 		private var fromRoomID:Number;
 		private var toRoomID:Number;
@@ -20,8 +21,9 @@ package Model.Transactions.ERAProject
 		private var toRoomType:String;
 		private var fileMovedCount:Number = 0;
 		
-		public function Transaction_MoveAllFiles(fileIDArray:Array, fromRoomID:Number, toRoomID:Number, toRoomType:String, connection:Connection, callback:Function)
+		public function Transaction_MoveAllFiles(caseID:Number, fileIDArray:Array, fromRoomID:Number, toRoomID:Number, toRoomType:String, connection:Connection, callback:Function)
 		{
+			this.caseID = caseID;
 			this.fileIDArray = fileIDArray;
 			this.fromRoomID = fromRoomID;
 			this.toRoomID = toRoomID;
@@ -52,7 +54,21 @@ package Model.Transactions.ERAProject
 				}
 				
 				// Let it be known its done :D
-				callback(true);
+				if(toRoomType == Model_ERARoom.EXHIBIT) {
+					// we need to reset the downlaod status
+					// as the librarian will not have downloaded this version
+					// now we need to mark that its been downloaded
+					var baseXML:XML = connection.packageRequest("asset.set", new Object(), true);
+					var argsXML:XMLList = baseXML.service.args;
+					
+					// Setup the era meta-data
+					argsXML.id = caseID;
+					argsXML.meta["ERA-case"]["library_downloaded"] = false;
+					connection.sendRequest(baseXML, filesMarkAsNotDownloaded);
+					
+				} else {
+					callback(true);
+				}
 								
 				return;
 			}
@@ -69,5 +85,17 @@ package Model.Transactions.ERAProject
 			fileMovedCount++;
 			moveFile();
 		}
+		
+		
+		 private function filesMarkAsNotDownloaded(e:Event):void {
+			  var data:XML;
+			  if((data = AppModel.getInstance().getData("marking case as not downloaded", e)) == null) {
+				  callback(false);
+				  return;
+			  }
+			  callback(true);
+		 }
+													  
+													  
 	}
 }

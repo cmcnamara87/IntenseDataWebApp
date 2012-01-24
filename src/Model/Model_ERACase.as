@@ -8,8 +8,15 @@ package Model {
 		public var rmCode:String;
 		// The title of the case
 		public var title:String;
+		public var downloadTitle:String;
 		// the number of files expected to be in the era case for exhibition
 		public var fileCount:Number = 0;
+		
+		// has the library downloaded the package
+		public var libraryDownloaded:Boolean = false;
+		public var libraryDownloadTime:String = "";
+		public var libraryDownloadUsername:String = "";
+		
 		// The researches for hte case (an array of usernames)
 		public var researchersArray:Array = new Array();
 		// the first name of the first researcher
@@ -49,8 +56,8 @@ package Model {
 		
 		public static const CATEGORY_ARRAY:Array = new Array(CAT1, CAT2, CAT3, CAT4, CAT5, CAT6, CAT7, CAT8, CAT9, CAT10, CAT11, CAT12, CAT13, CAT14, CAT15, CAT16, CAT17, CAT18);
 		
-		public static const FOR_CODE = "for_code";
-		public static const PERCENTAGE = "percentage";
+		public static const FOR_CODE:String = "for_code";
+		public static const PERCENTAGE:String = "percentage";
 		
 		public var notificationCount:Number = 0;
 		public var notificationArray:Array = new Array();
@@ -70,9 +77,19 @@ package Model {
 			// set the title of the case
 			this.title = eraCase["title"];
 			
+			this.downloadTitle = eraCase["download_title"];
+			
 			// set the number of files expected in the exhibition
 			if(eraCase["file_count"].length() > 0) {
 				this.fileCount = eraCase["file_count"];
+			}
+			
+			if(eraCase["library_downloaded"].length() > 0) {
+				this.libraryDownloaded = eraCase["library_downloaded"] == "true";
+				if(this.libraryDownloaded) {
+					if(eraCase["library_download_time"].length() > 0) this.libraryDownloadTime = eraCase["library_download_time"];
+					if(eraCase["library_download_username"].length() > 0) this.libraryDownloadUsername = eraCase["library_download_username"];
+				}
 			}
 				
 			// add all the researchers usernames

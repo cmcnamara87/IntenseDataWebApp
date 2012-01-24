@@ -60,6 +60,7 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_UpdateFileTemperature;
 	import Model.Transactions.ERAProject.Transaction_UpdateLogItemBooleanValue;
 	import Model.Transactions.ERAProject.Transaction_UpdateNotificationReadStatus;
+	import Model.Transactions.ERAProject.Transaction_UpdatePackageNames;
 	import Model.Transactions.ERAProject.Transaction_UploadERAFile;
 	import Model.Transactions.ERAProject.Transaction_UploadFileVersion;
 	import Model.Transactions.Share.Transaction_SetUserAssetShare;
@@ -1828,8 +1829,8 @@ package Model {
 		public function getERAFile(fileID:Number, callback:Function):void {
 			var getERAFile:Transaction_GetFile = new Transaction_GetFile(fileID, _connection, callback);
 		}
-		public function moveAllERAFiles(fileIDArray:Array, fromRoomID:Number, toRoomID:Number, toRoomType:String, callback:Function):void {
-			var moveERAFiles:Transaction_MoveAllFiles= new Transaction_MoveAllFiles(fileIDArray, fromRoomID, toRoomID, toRoomType, _connection, callback);
+		public function moveAllERAFiles(caseID:Number, fileIDArray:Array, fromRoomID:Number, toRoomID:Number, toRoomType:String, callback:Function):void {
+			var moveERAFiles:Transaction_MoveAllFiles= new Transaction_MoveAllFiles(caseID, fileIDArray, fromRoomID, toRoomID, toRoomType, _connection, callback);
 		}
 		public function moveERAFile(fileID:Number, fromRoomID:Number, toRoomID:Number, toRoomType:String, callback:Function, sendNotification:Boolean=true):void {
 			var moveERAFile:Transaction_MoveFile = new Transaction_MoveFile(fileID, fromRoomID, toRoomID, toRoomType, sendNotification, _connection, callback);
@@ -1907,17 +1908,21 @@ package Model {
 		public function changeEmailOptions(role:String, username:String, enabled:Boolean, callback:Function):void {
 			var transaction:Transaction_ChangeEmailOptions = new Transaction_ChangeEmailOptions(AppController.currentEraProject.base_asset_id, role, username, enabled, _connection, callback);
 		}
-		public function changeEmailOptionsUserArray(role:String, usernameArray:Array, callback:Function) {
+		public function changeEmailOptionsUserArray(role:String, usernameArray:Array, callback:Function):void {
 			var transaction:Transaction_ChangeEmailOptionsUserArray = new Transaction_ChangeEmailOptionsUserArray(AppController.currentEraProject.base_asset_id, role, usernameArray, _connection, callback);
 		}
 		public function getERAUserRoles(username:String, callback:Function):void {
 			var transaction:Transaction_GetERAUserRoles = new Transaction_GetERAUserRoles(username, _connection, callback);
 		}
-		public function downloadExhibitionFiles(caseID:Number, downloaderUsername:String, callback:Function):void {
-			var transaction:Transaction_DownloadExhibitionFiles = new Transaction_DownloadExhibitionFiles(caseID, downloaderUsername, _connection, callback);
+		public function downloadExhibitionFiles(caseID:Number, packageDownloadTitle:String, exhibitionRoomID:Number, downloaderUsername:String, callback:Function):void {
+			var transaction:Transaction_DownloadExhibitionFiles = new Transaction_DownloadExhibitionFiles(caseID, packageDownloadTitle, exhibitionRoomID, downloaderUsername, _connection, callback);
 		}
 		public function eraChangeFileCountForCase(caseID:Number, fileCount:Number, callback:Function):void {
 			var transaction:Transaction_ChangeFileCount = new Transaction_ChangeFileCount(caseID, fileCount, _connection, callback);
+		}
+		
+		public function eraUpdatePackageNames(caseID:Number, filesArray:Array, folderName:String, callback:Function):void {
+			var transaction:Transaction_UpdatePackageNames = new Transaction_UpdatePackageNames(caseID, folderName, filesArray, _connection, callback);
 		}
 	}
 		

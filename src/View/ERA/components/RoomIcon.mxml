@@ -114,8 +114,8 @@
 
 			protected function vgroup1_dragEnterHandler(event:DragEvent):void
 			{
-				// make it so that you cannot drag items into the evidence manager, or evidence box
-				if(	_roomType == Model_ERARoom.EVIDENCE_MANAGEMENT || _roomType == Model_ERARoom.EVIDENCE_ROOM || _roomType == Model_ERARoom.POST_MORTEM) return;
+				// make it so that you cannot drag items into the evidence manager, or evidence box, or exhibition
+				if(	_roomType == Model_ERARoom.EVIDENCE_MANAGEMENT || _roomType == Model_ERARoom.EVIDENCE_ROOM || _roomType == Model_ERARoom.POST_MORTEM || _roomType == Model_ERARoom.EXHIBIT) return;
 				
 				// make it so you cant drag into the one you are currently in (its selected)
 				if(selected) return;
