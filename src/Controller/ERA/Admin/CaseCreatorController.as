@@ -186,7 +186,7 @@ package Controller.ERA.Admin
 			
 			layout.notificationBar.showProcess("Saving Case...");
 			
-			// Create a era case now lol
+			// Update a era case now lol
 			AppModel.getInstance().updateERACase(
 				caseID,
 				rmCode,
@@ -200,6 +200,7 @@ package Controller.ERA.Admin
 				productionTeamArray,
 				eraCaseUpdated);
 		}
+		
 		private function eraCaseUpdated(status:Boolean, eraCaseUpdated:Model_ERACase):void {
 			if(!status) {
 				layout.notificationBar.showError("Error Updating Case");
@@ -223,10 +224,13 @@ package Controller.ERA.Admin
 			
 			caseCreatorView.exitCreationMode();
 			
-			caseCreatorView.showCase(eraCaseArray[i]);
+			caseCreatorView.currentCases.selectedIndex = eraCaseArray.length - 1;
+			caseCreatorView.showCase(eraCaseArray[eraCaseArray.length - 1]);
+			
+//			caseCreatorView.showCase(eraCaseArray[i]);
 			
 			trace("selecting index", i);
-			caseCreatorView.currentCases.selectedIndex = i;
+//			caseCreatorView.currentCases.selectedIndex = i;
 		}
 		/* ====================================== END OF UPDATE A CASE ===================================== */
 		
@@ -288,7 +292,7 @@ package Controller.ERA.Admin
 			}
 			
 			layout.notificationBar.showGood("Case Created");
-			// Add the case
+			// Add the case to the end of the array
 			this.eraCaseArray.push(eraCase);
 			
 			// Add it to the view
@@ -296,6 +300,8 @@ package Controller.ERA.Admin
 			
 			caseCreatorView.exitCreationMode();
 			
+			// Select the last one (which is the latest one)
+			// and then show it
 			caseCreatorView.currentCases.selectedIndex = eraCaseArray.length - 1;
 			caseCreatorView.showCase(eraCaseArray[eraCaseArray.length - 1]);
 		}

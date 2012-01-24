@@ -39,6 +39,7 @@
 			public function addAllCases(caseArray:Array):void {
 				
 				if(caseArray.length == 0) {
+					// We havent been given any cases, so we default to creation mode
 					currentCases.dataProvider = new ArrayList(caseArray);
 					enterCreationMode();
 					return;
@@ -238,6 +239,9 @@
 				// Show RM Code
 				rmCode.text = eraCase.rmCode;
 				
+				// Show file count
+				fileCount.text = eraCase.fileCount + "";
+				
 				// Show QUT School
 				qutSchool.selectedIndex = -1;
 				for(var i:Number = 0; i < qutSchool.dataProvider.length; i++) {
@@ -318,6 +322,7 @@
 				
 				// Clear all values
 				rmCode.text = "";
+				fileCount.text = "";
 				qutSchool.selectedIndex = -1;
 				researcherList.removeAllElements();
 				allResearchers.selectedIndex = -1;

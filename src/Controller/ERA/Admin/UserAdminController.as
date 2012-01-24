@@ -70,6 +70,17 @@ package Controller.ERA.Admin
 			var firstName:String = userAdminView.firstName.text;
 			var lastName:String = userAdminView.lastName.text;
 			
+			var alreadyExists:Boolean = false;
+			for each(var existingUser:Model_ERAUser in this.usersArray) {
+				if(existingUser.username == qutUsername) {
+					alreadyExists = true;
+				}
+			}
+			if(alreadyExists) {
+				layout.notificationBar.showError("A user with this email already exists.");
+				return;
+			}
+			
 			if(qutUsername == "") {
 				layout.notificationBar.showError("Please fill in a QUT email address");
 				return;

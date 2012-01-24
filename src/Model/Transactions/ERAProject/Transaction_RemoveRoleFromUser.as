@@ -57,21 +57,21 @@ package Model.Transactions.ERAProject
 			if((data = AppModel.getInstance().getData("remove role " + role +  " from user", e)) == null) {
 				callback(false);
 				return;
-			} else {
-				// TODO work out what happens for 'sys-admin' role (non-year version)
-				if(role != Model_ERAUser.SYS_ADMIN) {
-					callback(true, username, roleComponent);
-					return;
-				}				
-				
-				// we need to see if hte user is still a sys-admin for any of the previous eras
-				//actor.describe :type user :name system:test@qut.edu.au
-				var baseXML:XML = connection.packageRequest("actor.describe", new Object(), true);
-				var argsXML:XMLList = baseXML.service.args;
-				argsXML.type = "user";
-				argsXML.name = "system:" + username;
-				connection.sendRequest(baseXML, gotRoles);
-			}
+			} 
+			
+			if(role != Model_ERAUser.SYS_ADMIN) {
+				callback(true, username, roleComponent);
+				return;
+			}				
+			
+			// we need to see if hte user is still a sys-admin for any of the previous eras
+			//actor.describe :type user :name system:test@qut.edu.au
+			var baseXML:XML = connection.packageRequest("actor.describe", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			argsXML.type = "user";
+			argsXML.name = "system:" + username;
+			connection.sendRequest(baseXML, gotRoles);
+			
 		}
 		
 		private function gotRoles(e:Event):void {
