@@ -15,13 +15,52 @@ package Model.Transactions.ERAProject
 		private var callback:Function;
 		private var username:String;
 		
+		
+		private var needToRemoveCount:Number = 0;
+		private var removedCount:Number = 0;
+		
 		public function Transaction_DeleteERAUser(username:String, connection:Connection, callback:Function)
 		{
 			this.username = username;
 			this.connection = connection;
 			this.callback = callback;
 			
-			deleteUser();
+			trace("*******************deleting user");
+			findInvalidCases();
+		}
+		
+		
+		private function findInvalidCases():void {
+			trace("*******************find invalid case");
+			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			
+			argsXML.where = "type>=ERA/case and (xpath(ERA-case/researcher_username/username)='"+username+"' or  xpath(ERA-case/production_manager_username/username)='"+username+"' or xpath(ERA-case/production_team_username/username)='"+username+"')";
+			
+			connection.sendRequest(baseXML, gotAllCases);
+		}
+		
+		private function gotAllCases(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("find cases that need to be upadted", e)) == null) {		
+				callback(false);
+				return;
+			}
+			
+			var idList:XMLList = data.reply.result.id;
+			needToRemoveCount = idList.length();
+			
+			for each(var caseID:Number in idList) {
+				trace("*******************removing user from case", caseID, username);
+				AppModel.getInstance().removeUserFromCase(caseID, username, removedUserFromCase);
+			}
+		}
+		private function removedUserFromCase(status:Boolean):void {
+			trace("removed user from case", status);
+			removedCount++;
+			if(removedCount == needToRemoveCount) {
+				deleteUser();
+			}
 		}
 		
 		private function deleteUser():void {
@@ -42,37 +81,10 @@ package Model.Transactions.ERAProject
 				callback(false);
 				return;
 			} else {
-				
-				findInvalidCases();
-				
 				callback(true, username);
 				return;
 			}
 		}
-		
-		private function findInvalidCases():void {
-			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
-			var argsXML:XMLList = baseXML.service.args;
-			
-			argsXML.where = "type>=ERA/case and (xpath(ERA-case/researcher_username/username)='"+username+"' or  xpath(ERA-case/production_manager_username/username)='"+username+"' or xpath(ERA-case/production_team_username/username)='"+username+"')";
-			
-			connection.sendRequest(baseXML, gotAllCases);
-		}
-		
-		private function gotAllCases(e:Event):void {
-			var data:XML;
-			if((data = AppModel.getInstance().getData("find cases that need to be upadted", e)) == null) {				
-				return;
-			}
-			
-			var idList:XMLList = data.reply.result.id;
-			
-			for each(var caseID:Number in idList) {
-				AppModel.getInstance().removeUserFromCase(caseID, username, removedUserFromCase);
-			}
-		}
-		private function removedUserFromCase(status:Boolean):void {
-			trace("removed user from case", status);
-		}
+
 	}
 }

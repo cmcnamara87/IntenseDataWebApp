@@ -16,6 +16,8 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ArrayList;
+			import mx.events.CollectionEvent;
+			import mx.events.FlexEvent;
 			
 			import spark.events.IndexChangeEvent;
 			
@@ -33,10 +35,13 @@
 			// the selected categories
 			public var chosenCategories:Array = new Array();
 			
+			private var selectedIndex:Number = 0;
 			/**
 			 * Adds all the cases for the current ERA 
 			 */
-			public function addAllCases(caseArray:Array):void {
+			public function addAllCases(caseArray:Array, selectedIndex:Number = 0):void {
+				
+				
 				
 				if(caseArray.length == 0) {
 					// We havent been given any cases, so we default to creation mode
@@ -48,6 +53,8 @@
 				currentCases.enabled = true;
 				deleteCaseButton.enabled = true;
 				
+				this.selectedIndex = selectedIndex;
+				
 				var dropdownData:ArrayCollection = new ArrayCollection();
 				for each(var eraCase:Model_ERACase in caseArray) {
 					var object:Object = new Object();
@@ -57,7 +64,14 @@
 					object.label = researcher.lastName + ", " + researcher.firstName + " - " + eraCase.title + " (RM " + eraCase.rmCode + ")";
 					dropdownData.addItem(object);
 				}
+				currentCases.addEventListener(FlexEvent.UPDATE_COMPLETE, dropdownUpdated);
 				currentCases.dataProvider = dropdownData;
+				
+			}
+			private function dropdownUpdated(e:FlexEvent) {
+				currentCases.removeEventListener(FlexEvent.UPDATE_COMPLETE, dropdownUpdated);
+				currentCases.selectedIndex = selectedIndex;
+				trace("SELECTING INDEX>>>>>>>>>>>>", selectedIndex);	
 			}
 			
 			private function renderProductionManagers():void {
@@ -236,6 +250,7 @@
 			 * Show the details for a specific case in the view
 			 */
 			public function showCase(eraCase:Model_ERACase):void {
+				trace("showing case", eraCase.base_asset_id);
 				// Show RM Code
 				rmCode.text = eraCase.rmCode;
 				

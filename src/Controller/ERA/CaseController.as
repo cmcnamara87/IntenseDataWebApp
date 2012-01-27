@@ -181,7 +181,9 @@ package Controller.ERA
 		private function moveAllFiles(e:IDEvent):void {
 			var fileIDArray:Array = e.data.fileIDArray;
 			
-		// move from and to
+			AppController.layout.notificationBar.showProcess("Moving files...");
+			
+			// move from and to
 			var moveToRoomType = e.data.moveToRoomType;
 			trace('move to room type', moveToRoomType);
 			
@@ -229,7 +231,7 @@ package Controller.ERA
 		/* ====================================== END OF MOVE ALL FILES TO DIFFERENT ROOM ================================= */
 		
 		private function downloadPackage(e:IDEvent):void {
-			AppModel.getInstance().downloadExhibitionFiles(caseID, currentERACase.downloadTitle, getRoom(Model_ERARoom.EXHIBIT).base_asset_id, Auth.getInstance().getUsername(), packageDownloaded);
+			AppModel.getInstance().downloadExhibitionFiles(caseID, currentERACase.downloadTitle == "" ? currentERACase.rmCode : currentERACase.downloadTitle, getRoom(Model_ERARoom.EXHIBIT).base_asset_id, Auth.getInstance().getUsername(), packageDownloaded);
 		}
 		private function packageDownloaded(status:Boolean, packageUri:String = ""):void {
 			if(status) {
@@ -511,7 +513,13 @@ package Controller.ERA
 				roomType = Dispatcher.getArgs()[1];
 			} else {
 				// No room type given, lets set it
-				roomType = Model_ERARoom.EVIDENCE_MANAGEMENT;
+			
+				// If they are the librarian, lets default them to the 'exhibition'
+				if(Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year)) {
+					roomType = Model_ERARoom.EXHIBIT;
+				} else {
+					roomType = Model_ERARoom.EVIDENCE_MANAGEMENT;
+				}
 			}
 			
 			// Get all the ERA cases for this ERA

@@ -171,25 +171,56 @@ package Model.Transactions.ERAProject
 			var argsXML:XMLList = baseXML.service.args;
 			argsXML.id = caseID;
 			
+
 			// only the researchers specified
+			var foundUserToRemove:Boolean = false;
 			for each(var aclXML:XML in aclList) {
 				if(aclXML.actor.@type == "user") {
-
+					foundUserToRemove = true;
 					argsXML.appendChild(XML('<acl><actor type="user">' + aclXML.actor + '</actor></acl>'));
 				}
 			}
 
-			trace('acls to remove', argsXML);
-			connection.sendRequest(baseXML, aclsRemoved);
+			if(foundUserToRemove) {
+				trace('acls to remove', argsXML);
+				connection.sendRequest(baseXML, aclsRemoved);
+			} else {
+				grantAccess();
+			}
 		}
 		
 		private function aclsRemoved(e:Event):void{
 			var data:XML;
-			if((data = AppModel.getInstance().getData("removing era acls", e)) == null) {
+			if((data = AppModel.getInstance().getData("removing era acls - Transaction_UpdateERACase", e)) == null) {
+				cleanUpACLS();
+				return;
+			}
+			
+			grantAccess();
+		}
+		
+		/**
+		 * Finds all instances where the actor for an ACL is invalid
+		 * and removes the ACL (doesnt just do it for this user, but works on all invalids acls) 
+		 * 
+		 */		
+		private function cleanUpACLS():void {
+			var baseXML:XML = connection.packageRequest("asset.acl.invalid.remove", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			argsXML.id = caseID;
+			connection.sendRequest(baseXML, aclsCleanedUp);
+		}
+		
+		private function aclsCleanedUp(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("cleaning up", e)) == null) {
 				callback(false, null);
 				return;
 			}
-						
+			grantAccess();
+		}
+		
+		private function grantAccess():void {
 			// Now grant the new acls
 			var baseXML:XML = connection.packageRequest("asset.acl.grant", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;

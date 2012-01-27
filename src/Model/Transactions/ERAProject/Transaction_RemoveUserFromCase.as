@@ -75,6 +75,7 @@ package Model.Transactions.ERAProject
 		
 		private function caseUpdated(e:Event):void {
 			var data:XML;
+			trace("merged!", e);
 			if((data = AppModel.getInstance().getData("updating case", e)) == null) {
 				callback(false);
 				return;
@@ -95,7 +96,28 @@ package Model.Transactions.ERAProject
 		
 		private function aclsRemoved(e:Event):void{
 			var data:XML;
-			if((data = AppModel.getInstance().getData("removing era acls", e)) == null) {
+			if((data = AppModel.getInstance().getData("removing era acls - Transaction_RemoveUserFromCase", e)) == null) {
+				cleanUpACLS();
+				return;
+			}
+			callback(true);
+		}
+		
+		/**
+		 * Finds all instances where the actor for an ACL is invalid
+		 * and removes the ACL (doesnt just do it for this user, but works on all invalids acls) 
+		 * 
+		 */		
+		private function cleanUpACLS():void {
+			var baseXML:XML = connection.packageRequest("asset.acl.invalid.remove", new Object(), true);
+			var argsXML:XMLList = baseXML.service.args;
+			argsXML.id = caseID;
+			connection.sendRequest(baseXML, aclsCleanedUp);
+		}
+		
+		private function aclsCleanedUp(e:Event):void {
+			var data:XML;
+			if((data = AppModel.getInstance().getData("cleaning up", e)) == null) {
 				callback(false);
 				return;
 			}

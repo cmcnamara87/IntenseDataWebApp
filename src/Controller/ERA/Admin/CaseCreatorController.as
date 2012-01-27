@@ -220,11 +220,11 @@ package Controller.ERA.Admin
 			this.eraCaseArray.push(eraCaseUpdated);
 			
 			// Add it to the view
-			caseCreatorView.addAllCases(eraCaseArray);
+			caseCreatorView.addAllCases(eraCaseArray, eraCaseArray.length - 1);
 			
 			caseCreatorView.exitCreationMode();
 			
-			caseCreatorView.currentCases.selectedIndex = eraCaseArray.length - 1;
+//			caseCreatorView.currentCases.selectedIndex = ;
 			caseCreatorView.showCase(eraCaseArray[eraCaseArray.length - 1]);
 			
 //			caseCreatorView.showCase(eraCaseArray[i]);
@@ -296,13 +296,13 @@ package Controller.ERA.Admin
 			this.eraCaseArray.push(eraCase);
 			
 			// Add it to the view
-			caseCreatorView.addAllCases(eraCaseArray);
+			caseCreatorView.addAllCases(eraCaseArray, eraCaseArray.length - 1);
 			
 			caseCreatorView.exitCreationMode();
 			
 			// Select the last one (which is the latest one)
 			// and then show it
-			caseCreatorView.currentCases.selectedIndex = eraCaseArray.length - 1;
+//			caseCreatorView.currentCases.selectedIndex = eraCaseArray.length - 1;
 			caseCreatorView.showCase(eraCaseArray[eraCaseArray.length - 1]);
 		}
 		/* ====================================== END OF CREATE A CASE ===================================== */

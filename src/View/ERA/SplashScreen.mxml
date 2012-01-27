@@ -194,6 +194,19 @@
 					exhibitionButton.includeInLayout = false;
 					postMortemButton.visible = false;
 					postMortemButton.includeInLayout = false;
+				} else if (Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year)) {
+					evidenceManagementButton.visible = false;
+					evidenceManagementButton.includeInLayout = false;
+					evidenceBoxButton.visible = false;
+					evidenceBoxButton.includeInLayout = false;
+					forensicLabButton.visible = false;
+					forensicLabButton.includeInLayout = false;
+					screeningLabButton.visible = false;
+					screeningLabButton.includeInLayout = false;
+					exhibitionButton.visible = true;
+					exhibitionButton.includeInLayout = true;
+					postMortemButton.visible = false;
+					postMortemButton.includeInLayout = false;
 				}
 				
 				trace('visible');

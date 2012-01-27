@@ -48,6 +48,20 @@
 				this.read = notificationData.read;
 				
 				switch(notificationData.type) {
+					/*public static const ALL_FILES_MOVED_TO_SCREENING_LAB:String = "allFilesMovedToScreeningLab";
+					public static const ALL_FILES_MOVED_TO_EXHIBITION:String = "allFilesMovedToExhibition";
+					
+					// When the librarian has downloaded a packge
+					public static const LIBRARIAN_PACKAGE_DOWNLOADED:String = "packageDOwnloaded";*/
+
+					
+						
+					case Model_ERANotification.LIBRARIAN_PACKAGE_DOWNLOADED:
+						if(!notificationData.eraCase || !notificationData.room) break;
+						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
+						if(roomURL == currentURL) roomURL = '';
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - Librarian <b>" + notificationData.fullName + "</b> downloaded the package for Case: RM " + notificationData.eraCase.rmCode + " from <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						break;
 					case Model_ERANotification.FILE_APPROVED_BY_RESEARCHER:
 //						trace("notification id is", notificationData.base_asset_id);
 						// check if its broken
@@ -128,7 +142,14 @@
 						if(roomURL == currentURL) roomURL = '';
 						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> moved <a href='" + fileURL + "'>" + notificationData.file.title + "</a></font> to <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
 						break;
-					
+					case Model_ERANotification.ALL_FILES_MOVED_TO_SCREENING_LAB:
+					case Model_ERANotification.ALL_FILES_MOVED_TO_EXHIBITION:
+						// check if its broken
+						if(!notificationData.eraCase || !notificationData.room) break;
+						var roomURL:String = "#case/" + notificationData.eraCase.base_asset_id + "/" + notificationData.room.roomType;
+						if(roomURL == currentURL) roomURL = '';
+						notificationText = "RM " + notificationData.eraCase.rmCode + " - <b>" + notificationData.fullName + "</b> moved files to <font color='#0000FF'><a href='" + roomURL + "'>" + notificationData.room.roomTitle + "</a></font>.";
+						break;
 					case Model_ERANotification.FILE_COMMENT:
 						
 						// check if its broken

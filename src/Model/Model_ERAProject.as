@@ -45,7 +45,7 @@ package Model {
 		public function isEmailEnabled(role:String, username:String=""):Boolean {
 			// given role - need to match role only
 			// given role and username - need to match either role alone, or role + username
-			trace("** CHECKING MATCH FOR", role, username);
+//			trace("** CHECKING MATCH FOR", role, username);
 			
 			for each(var emailOptionsObject:Object in emailOptionArray) {
 				trace(" checking match with", emailOptionsObject.role, emailOptionsObject.username);

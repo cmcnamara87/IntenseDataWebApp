@@ -176,8 +176,11 @@ package Model
 						/*messageObject.subject += "An Evidence item has been APPROVED for CIF ERA " + AppController.currentEraProject.year +" submission";
 						messageObject.body += "This email confirms that researcher, " + notificationData.fullName + ", has APPROVED the evidence item: \"" + 
 							notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission.";*/
-						messageObject.subject += " Files moved to Exhibition ";
-						messageObject.body += notificationData.fullName + " moved all files from Review Lab to Exhibition for the Case: \"" + notificationData.eraCase.title + "\".";
+						messageObject.subject += " CIF - ERA Non Traditional Research Outputs - Ready for Download ";
+						messageObject.body += "The most recent QUT CIF - ERA, Non Traditional Research Outputs for the Case: \"" + notificationData.eraCase.title + "\", are now ready for you to download" +
+							" from the nQuisitor website.\n\nClick on this link and enter your Username and Password. You then will be directed to the Exhibition room to download the case."; 
+							
+							notificationData.fullName + " moved all files from Review Lab to Exhibition .";
 					}
 					
 					break;

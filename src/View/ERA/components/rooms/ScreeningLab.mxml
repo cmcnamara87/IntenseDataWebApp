@@ -20,6 +20,7 @@
 			import View.ERA.components.RenameFileItem;
 			
 			import mx.controls.Alert;
+			import mx.events.CloseEvent;
 			
 			import spark.components.Button;
 			
@@ -173,6 +174,35 @@
 			
 			protected function moveFilesToExhibitionButton_clickHandler(event:MouseEvent):void
 			{
+				// Lets check that all the files have been renamed
+				// get all the renamed file names
+				var allGood:Boolean = true;
+				for(var i:Number = 0; i < renameFiles.numElements; i++) {
+					var renameFileItem:RenameFileItem = renameFiles.getElementAt(i) as RenameFileItem;
+					if(renameFileItem.getModel().title == "") {
+						allGood = false;
+						break;
+					}
+				}
+				if(!(allGood && CaseController.currentERACase.downloadTitle != "")) {
+					// all files / package hasnt been renamed
+					var myAlert:Alert = Alert.show(
+						"Not all files have been assigned a specific download name, are you should you wish to proceed?", "Move Files", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
+							if (e.detail==Alert.OK) {
+								moveFiles();
+							}
+						}, null, Alert.CANCEL);
+					
+				} else {
+					// all files have been renamed
+					// so lets move them
+					moveFiles();
+				}
+			} 
+			
+			private function moveFiles():void {
+
+					
 				// Get together all the files we need to move
 				var fileIDArray:Array = new Array();
 				for(var i:Number = 0; i < fileGroup.numElements; i++) {
@@ -275,7 +305,7 @@
 					</s:Label>
 				</s:VGroup>
 				<s:ToggleButton id="showConversationButton" chromeColor="0xFFFFFF" cornerRadius="10" label="Conversation (0)" height="30" />
-				<s:Button id="renameFilesButton" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="Rename Files" click="renameFilesButton_clickHandler(event)"/>
+				<s:Button id="renameFilesButton" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="Assign Package Names" click="renameFilesButton_clickHandler(event)"/>
 				<s:Button id="moveFilesToExhibitionButton" enabled="false" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}" chromeColor="0xFFFFFF" cornerRadius="10" label="Move All Files to Exhibition →" height="30" click="moveFilesToExhibitionButton_clickHandler(event)" />
 			</s:HGroup>
 		</s:BorderContainer>
@@ -328,7 +358,8 @@
 	<s:VGroup id="renamePopup" includeInLayout="false" visible="false" width="400" maxHeight="600" paddingBottom="30" paddingLeft="10" paddingRight="10" paddingTop="30" horizontalCenter="0" verticalCenter="0">
 		<s:BorderContainer width="100%" height="100%" backgroundColor="0xFFFFFF">
 			<s:VGroup width="100%" height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
-				<s:Label text="Rename Files" fontSize="30" fontWeight="bold" color="0x5e6469" paddingBottom="20" />
+				<s:Label text="Assign Package Names" fontSize="30" fontWeight="bold" color="0x5e6469" paddingBottom="10" />
+				<s:Label width="100%" text="This area lets you set the name of the files when they are downloaded in a package and set the name of that package." fontSize="12" color="0x5e6469" paddingBottom="20" />
 				<s:HGroup verticalAlign="middle">
 					<s:Label text="Case Folder Download Name:" />
 					<s:TextInput id="caseFolderName" />
