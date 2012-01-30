@@ -20,6 +20,17 @@ package Model.Transactions.ERAProject
 		private var toRoomType:String;
 		private var notifications:Boolean; // true if we should send notifications
 		
+		/**
+		 * Moves a file from one Room to another.  
+		 * @param fileID			The ID of the file to move
+		 * @param fromRoomID		The ID room to move it from
+		 * @param toRoomID			The ID of the room to move it to
+		 * @param toRoomType		The type of the room to move it to
+		 * @param notifications		True/False if you should send a notification about the move
+		 * @param connection		The connection to mediaflux
+		 * @param callback			The function to call on completion
+		 * 
+		 */		
 		public function Transaction_MoveFile(fileID:Number, fromRoomID:Number, toRoomID:Number, toRoomType:String, notifications:Boolean, connection:Connection, callback:Function)
 		{
 			this.fileID = fileID;
@@ -87,17 +98,20 @@ package Model.Transactions.ERAProject
 				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, toRoomID, Auth.getInstance().getUsername(),
 					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
 					Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB, 0, fileID, 0);
-			} else if(toRoomType == Model_ERARoom.EXHIBIT) {
-				trace("creating exhibition notification");
-				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, toRoomID, Auth.getInstance().getUsername(),
-					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
-					Model_ERANotification.FILE_MOVED_TO_EXHIBITION, 0, fileID, 0);
 			} else if(toRoomType == Model_ERARoom.FORENSIC_LAB) {
 				trace("creating exhibition notification");
 				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, toRoomID, Auth.getInstance().getUsername(),
 					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
 					Model_ERANotification.FILE_MOVED_TO_FORENSIC_LAB, 0, fileID, 0);
 			}
+			/*
+			} else if(toRoomType == Model_ERARoom.EXHIBIT) {
+				trace("creating exhibition notification");
+				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, toRoomID, Auth.getInstance().getUsername(),
+					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
+					Model_ERANotification.FILE_MOVED_TO_EXHIBITION, 0, fileID, 0);
+			*/
+			
 		}
 	}
 }

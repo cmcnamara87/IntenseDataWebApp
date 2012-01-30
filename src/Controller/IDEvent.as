@@ -177,6 +177,7 @@ package Controller {
 			public static var ERA_MOVE_FILE:String = "era_moveFile";
 			public static var ERA_MOVE_ALL_FILES:String = "era_moveAllFiles";
 			public static var ERA_DOWNLOAD_PACKAGE:String = "era_downloadPackage";
+			public static var ERA_RESEND_LIBRARY_NOTIFICATION:String = "era_resendLibraryNotification";
 			public static var ERA_CHANGE_FILE_COUNT_FOR_CASE:String = "era_changeFileCountForCase";
 			public static var ERA_SAVE_PACKAGE_FILE_NAMES:String = "era_savePackageFilenames";
 			public static var ERA_CHANGE_FILE_TEMPERATURE:String = "era_changeFileTemperate";

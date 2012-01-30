@@ -268,7 +268,7 @@
 
 			protected function vgroup1_creationCompleteHandler(event:FlexEvent):void
 			{
-				AppController.layout.addEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
+				AppController.layout.notificationPanel.addEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
 			}
 
 			private function eraNotificationsUpdated(e:Event):void {
@@ -285,7 +285,7 @@
 				if(transcodeTimer) {
 					transcodeTimer.removeEventListener(TimerEvent.TIMER, checkIfTranscoded);
 				}
-				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
+				AppController.layout.notificationPanel.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
 				
 				_fileData = null;
 				title = null;
@@ -306,7 +306,7 @@
 			protected function notificationBadge_clickHandler(event:MouseEvent):void
 			{
 				// Show notifications in the notification panel (filters to only show ones relating to this object)
-				AppController.layout.filterFileNotifications(this.fileID);
+				AppController.layout.notificationPanel.filterNotifications(this.fileID);
 			}
 
 		]]>

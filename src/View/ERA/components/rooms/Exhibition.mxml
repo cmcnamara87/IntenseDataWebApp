@@ -25,7 +25,7 @@
 			private var fileArray:Array = new Array(); // Stores all the forensic lab items
 			
 			/**
-			 * Add all the lot items to the display
+			 * Add all the file items to the display
 			 */
 			public function addFiles(fileArray:Array):void {
 				
@@ -75,7 +75,9 @@
 				renderFileFilters();
 			}
 			
-			/* Adds the file filters that are needed for these files to the display */
+			/**
+			 * Adds the file filters that are needed for these files to the display 
+			 */
 			private function renderFileFilters():void {
 				typeFiltersButtons.removeAllElements();
 				var allFilterButton:Button=  new Button();
@@ -167,6 +169,15 @@
 				this.dispatchEvent(downloadPackageEvent);
 			}
 			
+			/**
+			 * The resend notification button has been clicked
+			 */
+			protected function resendNotification_clickHandler(event:MouseEvent):void
+			{
+				var resendNotificationEvent:IDEvent = new IDEvent(IDEvent.ERA_RESEND_LIBRARY_NOTIFICATION, true);
+				this.dispatchEvent(resendNotificationEvent);
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -182,6 +193,7 @@
 				<s:Label text="RM {CaseController.currentERACase.rmCode} - Exhibition" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
 				</s:Label>
 			</s:VGroup>
+			<s:Button id="resendNotification" chromeColor="0xFFFFFF" cornerRadius="10" label="Resend Notifications" height="30" click="resendNotification_clickHandler(event)" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}"/>
 			<s:Button id="moveFilesToReviewButton" chromeColor="0xFFFFFF" cornerRadius="10" label="← Move All Files to Review Lab" height="30" click="moveFilesToReviewButton_clickHandler(event)" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}"/>
 			<s:Button id="downloadFilesButton" visible="{Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year) || Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year) || Auth.getInstance().isSysAdmin()}" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="↓ Download Files" click="downloadFilesButton_clickHandler(event)" />
 		</s:HGroup>

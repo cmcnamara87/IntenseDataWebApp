@@ -146,20 +146,20 @@
 
 			protected function vgroup1_creationCompleteHandler(event:FlexEvent):void
 			{
-				AppController.layout.addEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated, false, 0, true);
+				AppController.layout.notificationPanel.addEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated, false, 0, true);
 			}
 			
 			private function eraNotificationsUpdated(e:Event):void {
 				if(!_roomData) return; // we havnet set any room data info yet
 				_roomData.updateNotificationCount();
 				this.notificationCount = _roomData.notificationCount;
-				trace("Updating Room", roomName, "notification count", this.notificationCount);
+//				trace("Updating Room", roomName, "notification count", this.notificationCount);
 				notificationBadge.notificationCount = this.notificationCount;
 			}
 
 			protected function vgroup1_removedFromStageHandler(event:Event):void
 			{
-				AppController.layout.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
+				AppController.layout.notificationPanel.removeEventListener(IDEvent.ERA_NOTIFICATIONS_UPDATED, eraNotificationsUpdated);
 				this.removeEventListener(Event.REMOVED_FROM_STAGE, vgroup1_removedFromStageHandler);
 				
 				trace("CLEAR: Removing Room Icon");
@@ -205,7 +205,7 @@
 			protected function notificationBadge_clickHandler(event:MouseEvent):void
 			{
 				// Show notifications in the notification panel (filters to only show ones relating to this object)
-				AppController.layout.filterRoomNotifications(this._roomData.base_asset_id);
+				AppController.layout.notificationPanel.filterNotifications(this._roomData.base_asset_id);
 			}
 
 			protected function vgroup1_mouseOverHandler(event:MouseEvent):void

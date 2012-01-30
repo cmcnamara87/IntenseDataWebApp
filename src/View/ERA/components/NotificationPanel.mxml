@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   
+				   backgroundColor="0xFFFFFF"
+				   left="{IDGUI.localToLocal(AppController.layout.header, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x}"
+				   width="275" visible="false"
+				   maxHeight="500" showEffect="{fadeIn}" hideEffect="{fadeOut}" resizeEffect="Resize"
+				   borderVisible="false"
+				   >
+	
+	<fx:Script>
+		<![CDATA[
+			import Controller.AppController;
+			import Controller.IDEvent;
+			import Controller.Utilities.Auth;
+			
+			import Model.Model_ERANotification;
+			
+			import View.ERA.components.NotificationListItem;
+			import View.components.IDGUI;
+			
+			import mx.controls.HRule;
+			import mx.controls.Text;
+			import mx.events.FlexEvent;
+			
+			import spark.components.Label;
+			
+			
+			private var lastFilteredByID:Number = 0;
+			
+			// notification array for temporary rending
+			private var keepAdding:Boolean = true;
+			private var notificationArray:Array = null;
+			private var notificationCounter:Number = 0;
+			private var renderNumber:Number = 1; // how many notifications to render at a time
+			
+			/*private const ALL_NOTIFICATIONS = "all_notifications";
+			private const NEW_NOTIFICATIONS = "new_notifications";
+			private const READ_NOTIFICATIONS = "read_notifications";
+			
+			private var notificationMode = NEW_NOTIFICATIONS;*/
+			
+			// Stores if there are new notifications to render, that we havent rendered because the panel was visible
+			private var notificationsAwaitingRender:Boolean = false;
+			
+			/**
+			 * Shows this panel.
+			 * 
+			 * Shows the panel in 
+			 */
+			public function showPanel() {
+				// we want to show the panel in 'new notifications' mode
+				this.visible = true;
+			}
+			
+			/**
+			 * Hides this panel
+			 */
+			public function hidePanel() {
+				this.visible = false;
+				
+				// if we have notifications awaiting render, lets render them now its invisible
+				if(this.notificationsAwaitingRender) {
+					// render now
+					renderNotifications();
+				}
+			}
+			
+			/**
+			 * Add notifications to the notificaiton panel
+			 * 
+			 * Notifications can be added at any time, however! they will not appear while the panel is visible. They will be rendered in the background 
+			 * only when the panel is hidden.
+			 * 
+			 * @param notificationsArray	Array of @see Model_notification
+			 */
+			public function addNotifications(notificationsArray:Array):void {
+				
+				// Store it for temporary rendering
+				this.notificationArray = notificationsArray;
+				
+				trace("######## ADDING NOTIFICATIONS", this.visible ? 'visible' : 'not visible');
+				// If we are showing the panel, dont render any notifications!
+				// we will wait until its invisible
+				if(this.visible) {
+					this.notificationsAwaitingRender = true;
+					trace("######## ITS SHOWING, AWAIT RENDER");
+					return;
+				}
+				trace("######## ITS NOT SHOWING, RENDER AWAY");
+				renderNotifications();
+			}
+			
+			
+			private function renderNotifications() {
+				trace("######## RENDERING NOW");
+				// Setup buttons
+				showAllNotificationsButton.visible = false;
+				showAllNotificationsButton.includeInLayout = false;
+				// make sure only the 'unread' button is clicked
+				showAllButton.selected = false;
+				showReadButton.selected = false;
+				showUnreadButton.selected = true;
+				
+				notificationFilterButtonsGroup.visible = true;
+				notificationFilterButtonsGroup.includeInLayout = true;
+				
+				// Clear the current notifications
+				notificationList.removeAllElements();
+				
+				notificationCounter = 0;
+				renderNumber = 1;
+				// Add the cases
+				addNotificationsToDisplay();
+			}
+			
+			private function addNotificationsToDisplay():void {
+				
+				// Basically each time, we render a few more notifications at a time
+				// it starts out at rendering 1, then 2, then 3 etc
+				if(notificationCounter < notificationArray.length) {
+					var notification:NotificationListItem = null;
+					for(var i:Number = 0; i < renderNumber && (i + notificationCounter) < notificationArray.length; i++) {
+						
+						// Make a new notification item
+						var notificationData:Model_ERANotification = notificationArray[notificationCounter + i] as Model_ERANotification;
+						notification = new NotificationListItem();
+						notification.notificationData = notificationData;
+						notificationList.addElement(notification);
+						
+						if((showUnreadButton.selected && notificationData.read) || (showReadButton.selected && !notificationData.read)) {
+							notification.visible = false;
+							notification.includeInLayout = false;									
+						}
+						// Filter if we are in filter mode
+						if(lastFilteredByID != 0) {
+							filterNotifications(lastFilteredByID);
+						}
+					}
+
+					notificationCounter += renderNumber;
+					// increase the number we render, with a max of 10
+					renderNumber = Math.min(5, ++renderNumber);
+					
+					if(notification) {
+						// listen for the last one, of the batch we are rendering, to be finsihed
+						notification.addEventListener(FlexEvent.CREATION_COMPLETE, notificationCreated, false, 0, true);
+					} else {
+						
+					}					
+				} else {
+					var notificationUpdatedEvent:IDEvent = new IDEvent(IDEvent.ERA_NOTIFICATIONS_UPDATED, true);
+					dispatchEvent(notificationUpdatedEvent);
+				}
+			}
+			
+			private function notificationCreated(e:FlexEvent):void {
+				(e.target as NotificationListItem).removeEventListener(FlexEvent.CREATION_COMPLETE, notificationCreated);
+				if(keepAdding) {
+					addNotificationsToDisplay();
+				}
+			}	
+			
+			
+			/**
+			 * Shows all notifications
+			 */
+			public function showAllNotifications():void {
+				
+				showAllNotificationsButton.visible = false;
+				showAllNotificationsButton.includeInLayout = false;
+				
+				notificationFilterButtonsGroup.visible = true;
+				notificationFilterButtonsGroup.includeInLayout = true;
+				
+				
+				showAllButton.selected = true;
+				showAllButton_changeHandler();
+			}
+			
+			/**
+			 * @returns false if already filtered, true otherwise
+			 */
+			private function setupFiltering(id:Number):Boolean {
+				// If we have it open, and we already filtered by it, turn it off (toggle it off)
+				if(this.visible && id == lastFilteredByID) {
+					this.hidePanel();
+					lastFilteredByID = 0;
+					return false;
+				}
+				
+				// Save the filtering ID
+				lastFilteredByID = id; 
+				
+				this.showPanel();
+				showAllNotificationsButton.visible = true;
+				showAllNotificationsButton.includeInLayout = true;
+				notificationFilterButtonsGroup.visible = false;
+				notificationFilterButtonsGroup.includeInLayout = false;
+				
+				AppController.layout.notificationPanel.x = 	IDGUI.localToLocal(AppController.layout.header.globalButtonGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x - AppController.layout.header.notificationButton.width/2;
+				
+				return true;
+			}
+			
+			public function filterNotifications(id:Number):void {
+				
+				if(!setupFiltering(id)) return;
+				
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					
+					// if the notification is read, we will skip it, we only show 'unread' notofications when we filter
+					if(notificationListItem.isRead()) {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+						continue;
+					}
+					
+					// Now lets just see if we match the ID to any of the assets properties
+					// be that Case ID, Room ID or File ID
+					// we show the notification (this works because the IDs are unique, we arent going to find a room id, with the same id as a file id etc)
+					
+					if((notificationListItem.notificationData.room && notificationListItem.notificationData.room.base_asset_id == id) ||
+						(notificationListItem.notificationData.eraCase && notificationListItem.notificationData.eraCase.base_asset_id == id) ||
+						(notificationListItem.notificationData.file && notificationListItem.notificationData.file.base_asset_id == id)) {
+						
+						notificationListItem.visible = true;
+						notificationListItem.includeInLayout = true;
+					} else {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+					}
+				}
+			}
+			
+			/*public function filterRoomNotifications(roomID:Number):void {
+				
+				if(!setupFiltering(roomID)) return;
+				
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					
+					if(notificationListItem.isRead()) {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+						continue;
+					}
+					if(notificationListItem.notificationData.room) { 
+						if(notificationListItem.notificationData.room.base_asset_id != roomID) {
+							notificationListItem.visible = false;
+							notificationListItem.includeInLayout = false;
+						} else {
+							notificationListItem.visible = true;
+							notificationListItem.includeInLayout = true;
+						}
+					}
+				}
+			}
+			
+			public function filterCaseNotifications(caseID:Number):void {
+				
+				if(!setupFiltering(caseID)) return;
+				
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					
+					if(notificationListItem.isRead()) {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+						continue;
+					}
+					
+					if(notificationListItem.notificationData.eraCase) { 
+						if(notificationListItem.notificationData.eraCase.base_asset_id != caseID) {
+							notificationListItem.visible = false;
+							notificationListItem.includeInLayout = false;
+						} else {
+							notificationListItem.visible = true;
+							notificationListItem.includeInLayout = true;
+						}
+					}
+				}
+			}
+			
+			public function filterFileNotifications(fileID:Number):void {
+				
+				if(!setupFiltering(fileID)) return;
+				
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					
+					if(notificationListItem.isRead()) {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+						continue;
+					}
+					
+					if(notificationListItem.notificationData.file) { 
+						if(notificationListItem.notificationData.file.base_asset_id != fileID) {
+							notificationListItem.visible = false;
+							notificationListItem.includeInLayout = false;
+						} else {
+							notificationListItem.visible = true;
+							notificationListItem.includeInLayout = true;
+						}
+					} else {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+					}
+					
+				}
+			} */
+			
+			protected function label1_clickHandler(event:MouseEvent):void
+			{
+				showAllNotifications();
+			}
+			
+			
+			protected function showReadButton_changeHandler(event:Event):void
+			{
+				if(!showReadButton.selected) {
+					// the button has been un selected,
+					// so lets switch it to show all
+					showAllButton.selected = true;
+					showAllButton_changeHandler();
+					return;
+				}
+				
+				
+				showAllButton.selected = false;
+				showUnreadButton.selected = false;
+				
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					if(notificationListItem.isRead()) {
+						notificationListItem.visible = true;
+						notificationListItem.includeInLayout = true;
+					} else {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+					}
+				}
+			}
+			
+			
+			protected function showUnreadButton_changeHandler(event:Event):void
+			{
+				if(!showUnreadButton.selected) {
+					// the button has been un selected,
+					// so lets switch it to show all
+					showAllButton.selected = true;
+					showAllButton_changeHandler();
+					return;
+				}
+				
+				
+				showAllButton.selected = false;
+				showReadButton.selected = false;
+				
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					if(!notificationListItem.isRead()) {
+						notificationListItem.visible = true;
+						notificationListItem.includeInLayout = true;
+					} else {
+						notificationListItem.visible = false;
+						notificationListItem.includeInLayout = false;
+					}
+				}
+			}
+			
+			
+			protected function showAllButton_changeHandler(event:Event=null):void
+			{
+				if(!showAllButton.selected) {
+					// the button has been un selected,
+					// make it so that you cant unselect it
+					showAllButton.selected = true;
+					return;
+				}
+				
+				// Turn off other buttons
+				showReadButton.selected = false;
+				showUnreadButton.selected = false;
+				
+				// Make all visible
+				for(var i:Number = 0; i < notificationList.numElements; i++) {
+					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+					notificationListItem.visible = true;
+					notificationListItem.includeInLayout = true;
+				}
+			}			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:Fade duration="200" alphaFrom="0" alphaTo="1" id="fadeIn" />   
+		<s:Fade duration="200" alphaFrom="1" alphaTo="0" id="fadeOut" />
+		<s:DropShadowFilter id="shadowy" distance="8" angle="90" color="0x000000" alpha="0.2" blurX="8" blurY="8" inner="true"/>
+		
+	</fx:Declarations>
+	
+	<s:VGroup width="100%" height="100%" gap="0">
+		<s:BorderContainer id="notificationFilterButtonsGroup" backgroundColor="0xFFFFFF" borderStyle="solid" borderColor="0xEEEEEE" height="40" width="100%">
+			<s:HGroup  verticalAlign="middle" height="40" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%">
+				<s:Label text="Show:" fontSize="11" />
+				<s:ToggleButton id="showAllButton" label="All" chromeColor="0xFFFFFFF" cornerRadius="8" fontSize="11" selected="true" width="100%" change="showAllButton_changeHandler(event)" />
+				<s:ToggleButton id="showUnreadButton" label="Unread" chromeColor="0xFFFFFFF" cornerRadius="8" fontSize="11" width="100%" change="showUnreadButton_changeHandler(event)"/>
+				<s:ToggleButton id="showReadButton" label="Read" chromeColor="0xFFFFFFF" cornerRadius="8" fontSize="11" width="100%" change="showReadButton_changeHandler(event)" />
+			</s:HGroup>	
+		</s:BorderContainer>
+		
+		<s:VGroup paddingBottom="10" paddingTop="15" id="showAllNotificationsButton" visible="false" includeInLayout="false" width="100%">
+			<s:Label width="100%" textAlign="center" text="Show All Notifications" color="0x0000FF" click="label1_clickHandler(event)" />	
+		</s:VGroup>
+		<s:Scroller id="notificationScroller" chromeColor="0xFFFFFF" width="100%" height="100%" filters="{notificationScroller.verticalScrollBar.value > 0 ? shadowy : null}">
+			<s:VGroup id="notificationList" width="100%" height="100%" gap="0"/>
+		</s:Scroller>	
+	</s:VGroup>
+	
+	<s:Path x="38" y="-19" data="M 0 20 L 20 20 L 10 0 L  0 20">
+		<!-- Define the border color of the rectangle. -->
+		<s:stroke>
+			<s:SolidColorStroke color="0xFFFFFF"/>
+		</s:stroke>
+		<s:fill>
+			<s:SolidColor color="0xFFFFFF" />
+		</s:fill>
+	</s:Path>
+	
+	<s:filters>
+		<s:DropShadowFilter distance="3" angle="0" alpha="0.5" color="0x000000" blurX="20" blurY="20"/>
+	</s:filters>
+	
+</s:BorderContainer>

@@ -23,6 +23,7 @@
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			
+			import spark.components.BorderContainer;
 			import spark.components.Group;
 			
 			private var fileReference:FileReference = new FileReference();;

@@ -61,7 +61,7 @@ package Controller {
 				setupEventListeners();
 			});
 			
-			notificationTimer.addEventListener(TimerEvent.TIMER, updateNotifications);
+			//notificationTimer.addEventListener(TimerEvent.TIMER, updateNotifications);
 			
 			// The content has finished loading
 			// means we have gone to another page, so lets update whats on the buttons
@@ -106,7 +106,6 @@ package Controller {
 				hideNotifications();
 				return;
 			}
-			
 			
 			if(layout.notificationPanel.visible == false) {
 				showNotifications();
@@ -304,16 +303,16 @@ package Controller {
 		}
 		/* ============================ END OF CHANGING READ STATUS =========================== */
 		
-		private static function updateNotifications(e:TimerEvent):void {
+		/*private static function updateNotifications(e:TimerEvent):void {
 			getNotifications();
-		}
+		}*/
 		
 		/**
 		 * Get the notification for a the current user from the database. 
 		 * 
 		 */		
 		public static function getNotifications():void {
-//			trace("@@@@@@@@@@@@@@@@@ Getting Notifications");
+			trace("@@@@@@@@@@@@@@@@@ Getting Notifications");
 			AppModel.getInstance().getAllNotifications(Model_ERANotification.SHOW_ALL, gotNotifications);
 		}
 		
@@ -326,7 +325,7 @@ package Controller {
 		 * 
 		 */		
 		private static function gotNotifications(status:Boolean, notificationsArray:Array=null):void {
-//			trace("@@@@@@@@@@@@@@@@@ Got Notifications");
+			trace("@@@@@@@@@@@@@@@@@ Got Notifications");
 			if(!status) return;
 			
 			allNotificationsArray = notificationsArray;
@@ -345,7 +344,13 @@ package Controller {
 				}
 			}
 			AppController.notificationsArray = someArray.reverse(); 
-
+			
+			updateNotificationButtonColour(unreadNotificationCount);
+			
+			layout.notificationPanel.addNotifications(AppController.notificationsArray);
+		}
+		private static function updateNotificationButtonColour(unreadNotificationCount:Number) {
+			// Setup the colour of the button
 			layout.header.notificationButton.label = unreadNotificationCount + "";
 			if(unreadNotificationCount > 0) {
 				layout.header.notificationButton.setStyle('chromeColor', "0x649ccf");
@@ -354,7 +359,6 @@ package Controller {
 				layout.header.notificationButton.setStyle('chromeColor', "0x222222");
 				layout.header.notificationButton.setStyle('font-weight', "normal");
 			}
-			layout.addNotifications(AppController.notificationsArray);
 		}
 		
 		/**
@@ -363,23 +367,17 @@ package Controller {
 		 * 
 		 */		
 		private static function showNotifications():void {
-			layout.notificationPanel.visible = true;
-			trace("&&&&&&&", AppController.layout.header.notificationButton.x);
-			trace("local", IDGUI.localToLocal(AppController.layout.header.globalButtonGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x);
+			// show the panel
+			layout.notificationPanel.showPanel();
+			// position it near the notifiaction panel button
 			AppController.layout.notificationPanel.x = 	IDGUI.localToLocal(AppController.layout.header.globalButtonGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x - AppController.layout.header.notificationButton.width/2;
 			
-//			layout.notificationPanel.x = layout.header.notificationButton.x;
-//			if(notificationsArray) {
-//				layout.header.notificationButton.label = notificationsArray.length + "";
-//				layout.addNotifications(notificationsArray);
-//				layout.notificationPanel.addNotifications(notificationsArray);
-//			} else {
-//				trace("Something went wrong, and we dont have any notifications stored");
-//			}
+			/*trace("&&&&&&&", AppController.layout.header.notificationButton.x);
+			trace("local", IDGUI.localToLocal(AppController.layout.header.globalButtonGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x);*/
 		}
 		
 		private static function hideNotifications():void {
-			layout.notificationPanel.visible = false;
+			layout.notificationPanel.hidePanel();
 			getNotifications();
 		}
 		

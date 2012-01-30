@@ -196,10 +196,7 @@
 						notificationBadge = null;
 					}
 				}
-				
-
- 
-				trace("Updating ERA Case", _eraCaseData.title, "notification count", this.notificationCount);
+//				trace("Updating ERA Case", _eraCaseData.title, "notification count", this.notificationCount);
 			}
 
 			protected function canvas1_removedFromStageHandler(event:Event):void
@@ -231,7 +228,7 @@
 			protected function notificationBadge_clickHandler(event:MouseEvent):void
 			{
 				// Show notifications in the notification panel (filters to only show ones relating to this object)
-				AppController.layout.filterCaseNotifications(_eraCaseData.base_asset_id);
+				AppController.layout.notificationPanel.filterNotifications(_eraCaseData.base_asset_id);
 			}
 
 

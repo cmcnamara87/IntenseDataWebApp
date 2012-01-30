@@ -136,7 +136,8 @@ package Controller.ERA
 			
 			caseView.addEventListener(IDEvent.ERA_CHANGE_FILE_COUNT_FOR_CASE, changeFileCount, false, 0, true);
 			
-			
+			// Listen for resend library notification button being clicked
+			caseView.addEventListener(IDEvent.ERA_RESEND_LIBRARY_NOTIFICATION, resendLibraryNotification, false, 0, true);
 			
 			// Listen for errors to show
 			caseView.addEventListener(IDEvent.ERA_ERROR, function(e:IDEvent):void {
@@ -175,45 +176,9 @@ package Controller.ERA
 			
 //			trace("displatching to", "file/" + caseID + "/" + escape(currentERACase.rmCode) + "/" + roomType + "/" + fileID);
 			Dispatcher.showFile(caseID, currentERACase.rmCode, roomType, currentRoom.base_asset_id, fileID);
-		}
+		}		
 		
-		/* ======================================= MOVE ALL FILES TO DIFFERENT ROOM ======================================= */
-		private function moveAllFiles(e:IDEvent):void {
-			var fileIDArray:Array = e.data.fileIDArray;
-			
-			AppController.layout.notificationBar.showProcess("Moving files...");
-			
-			// move from and to
-			var moveToRoomType = e.data.moveToRoomType;
-			trace('move to room type', moveToRoomType);
-			
-			AppModel.getInstance().moveAllERAFiles(caseID, fileIDArray, currentRoom.base_asset_id, getRoom(moveToRoomType).base_asset_id, moveToRoomType, allFilesMoved);
-			
-			for(var i = 0; i < fileIDArray.length; i++) {
-				caseView.changeRoomEvidenceCount(currentRoom.roomType, false);
-			}
-			
-			for(var i = 0; i < fileIDArray.length; i++) {
-				caseView.changeRoomEvidenceCount(moveToRoomType, true);
-			}
-			
-			
-			// if the file is a hot file, we need to descrease the number of hot files i nthe room
-			// its going to be hot for every room, except the forensic lab inactive section
-			/*if(e.data.hot) {
-				caseView.changeRoomEvidenceCount(currentRoom.roomType, false);
-			}*/
-		}
-		private function allFilesMoved(status:Boolean):void {
-			if(status) {
-				layout.notificationBar.showGood("Files Moved");
-				// tell the view to update its icons
-			} else {
-				layout.notificationBar.showError("Failed to Move Files");
-			}
-		}
-		
-		
+		/* ====================================== SAVE PACKAGE FILE NAMES ================================= */		
 		private function savePackageFileNames(e:IDEvent):void {
 			var files:Array = e.data.files;
 			var folderName:String = e.data.folderName;
@@ -228,8 +193,10 @@ package Controller.ERA
 				AppController.layout.notificationBar.showGood("Package Names Updated");
 			}
 		}
-		/* ====================================== END OF MOVE ALL FILES TO DIFFERENT ROOM ================================= */
+		/* ====================================== END OF SAVE PACKAGE FILE NAMES ================================= */
 		
+		
+		/* ====================================== DOWNLOAD PACKAGE ================================= */
 		private function downloadPackage(e:IDEvent):void {
 			AppModel.getInstance().downloadExhibitionFiles(caseID, currentERACase.downloadTitle == "" ? currentERACase.rmCode : currentERACase.downloadTitle, getRoom(Model_ERARoom.EXHIBIT).base_asset_id, Auth.getInstance().getUsername(), packageDownloaded);
 		}
@@ -245,8 +212,17 @@ package Controller.ERA
 				layout.notificationBar.showError("Failed to Download");
 			}
 		}
+		/* ====================================== END OF DOWNLOAD PACKAGE ================================= */
 		
 		
+		private function resendLibraryNotification(e:IDEvent):void {
+			layout.notificationBar.showProcess("Sending Library Notification");
+		}
+		private function libraryNotificationSent(status:Boolean):void {
+			
+		}
+		
+		/* ======================================= Change File Count ======================================= */
 		private function changeFileCount(e:IDEvent):void {
 			var fileCount:Number = e.data.fileCount;
 			currentERACase.fileCount = e.data.fileCount;
@@ -254,12 +230,13 @@ package Controller.ERA
 		}
 		private function fileCountChanged(status:Boolean):void {
 			if(status) {
-				layout.notificationBar.showGood("File Count Changed");
+				layout.notificationBar.showGood("File Quota Changed");
 				// tell the view to update its icons
 			} else {
-				layout.notificationBar.showError("Failed to Change File Count");
+				layout.notificationBar.showError("Failed to Change File Quota");
 			}
 		}
+		/* ======================================= End Of Change File Count ======================================= */
 		
 		/* ======================================= MOVE FILE TO DIFFERENT ROOM ======================================= */
 		private function moveFile(e:IDEvent):void {
@@ -286,6 +263,45 @@ package Controller.ERA
 			}
 		}
 		/* ======================================== END OF MOVE FILE TO DIFFERENT ROOM =============================== */
+		
+		
+		/* ======================================= MOVE ALL FILES TO DIFFERENT ROOM ======================================= */
+		private function moveAllFiles(e:IDEvent):void {
+			var fileIDArray:Array = e.data.fileIDArray;
+			
+			AppController.layout.notificationBar.showProcess("Moving files...");
+			
+			// move from and to
+			var moveToRoomType = e.data.moveToRoomType;
+			trace('move to room type', moveToRoomType);
+			
+			AppModel.getInstance().moveAllERAFiles(caseID, fileIDArray, currentRoom.base_asset_id, getRoom(moveToRoomType).base_asset_id, moveToRoomType, allFilesMoved);
+			
+			for(var i = 0; i < fileIDArray.length; i++) {
+				caseView.changeRoomEvidenceCount(currentRoom.roomType, false);
+			}
+			
+			for(var i = 0; i < fileIDArray.length; i++) {
+				caseView.changeRoomEvidenceCount(moveToRoomType, true);
+			}
+			
+			
+			// if the file is a hot file, we need to descrease the number of hot files i nthe room
+			// its going to be hot for every room, except the forensic lab inactive section
+			/*if(e.data.hot) {
+			caseView.changeRoomEvidenceCount(currentRoom.roomType, false);
+			}*/
+		}
+		private function allFilesMoved(status:Boolean):void {
+			if(status) {
+				layout.notificationBar.showGood("Files Moved");
+				// tell the view to update its icons
+			} else {
+				layout.notificationBar.showError("Failed to Move Files");
+			}
+		}
+		/* ====================================== END OF MOVE ALL FILES TO DIFFERENT ROOM ================================= */
+		
 		
 		/* ======================================== CHANGE A FILE IN FORENSIC LAB TO BE ACTIVE/INACTIVE =============================== */
 		private function changeTemperature(e:IDEvent):void {
