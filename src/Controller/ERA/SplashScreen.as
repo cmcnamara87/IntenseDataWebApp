@@ -76,13 +76,20 @@ package Controller.ERA
 			trace("got all cases, adding to splash screen");
 			
 			if(Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year)) {
-				for(var i:Number; i < eraCaseArray.length; i++) {
+				trace("is a library admin");
+				for(var i:Number = 0; i < eraCaseArray.length; i++) {
+					trace("for loop");
 					var eraCase:Model_ERACase = eraCaseArray[i] as Model_ERACase;
 					if(!(eraCase.readyForDownload && !eraCase.libraryDownloaded)) {
+						trace("removing case", eraCase.title);
 						eraCaseArray.splice(i, 1);
 						i--; // correcting for it being removed from the list
+					} else {
+						trace("leaving case", eraCase.title);
 					}
 				}
+			} else {
+				trace("isnt a library admin");
 			}
 			splashView.addCases(eraCaseArray);
 		

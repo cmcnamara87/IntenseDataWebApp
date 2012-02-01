@@ -3,6 +3,7 @@ package Model.Transactions.ERAProject.Reports
 	import Controller.AppController;
 	
 	import Model.AppModel;
+	import Model.Model_ERACase;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
