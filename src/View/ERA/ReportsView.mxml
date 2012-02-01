@@ -45,11 +45,11 @@
 			<s:HGroup width="100%" verticalAlign="middle" paddingTop="10">
 				<s:Label text="Acitivty Report: "/>
 				<s:DropDownList id="reportDropdown" width="100%">
-					<s:ArrayCollection>
-						
+					<s:ArrayCollection>						
 						<fx:Object data="{ReportController.REPORT_RESEARCHERS_IN_SCHOOLS}" label="{ReportController.getReportPrettyName(ReportController.REPORT_RESEARCHERS_IN_SCHOOLS)}" />
 						<fx:Object data="{ReportController.REPORT_CASES_IN_EXHIBITION}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CASES_IN_EXHIBITION)}" />
 						<fx:Object data="{ReportController.REPORT_CASES_NOT_COLLECTED}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CASES_NOT_COLLECTED)}" />
+						<fx:Object data="{ReportController.REPORT_CASES_DOWNLOADED}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CASES_DOWNLOADED)}" />
 						<fx:Object data="{ReportController.REPORT_CHECKED_OUT}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CHECKED_OUT)}" />
 						<!--<fx:Object data="{ReportController.REPORT_RESEARCHERS_NOT_INVOLVED}" label="{ReportController.getReportPrettyName(ReportController.REPORT_RESEARCHERS_NOT_INVOLVED)}" />-->
 						<fx:Object data="{ReportController.REPORT_EVIDENCE_NOT_UPLOADED}" label="{ReportController.getReportPrettyName(ReportController.REPORT_EVIDENCE_NOT_UPLOADED)}" />

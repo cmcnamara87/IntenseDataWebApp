@@ -36,7 +36,7 @@ package Model
 		public static const FILE_MOVED_TO_SCREENING_LAB:String = "file_moved_to_screening_lab";
 		// {user} moved {file name/id} to {room name/id} -> have file id, room id, room name (nothing needed)
 		
-		/*public static const FILE_MOVED_TO_EXHIBITION:String = "file_moved_to_exhibition";*/
+		public static const FILE_MOVED_TO_EXHIBITION:String = "file_moved_to_exhibition";
 		// {user} moved {file name/id} to {room name/id} -> have file id, room id, room name (nothing needed)
 		
 		public static const FILE_MOVED_TO_FORENSIC_LAB:String = "file_moved_to_forensic_lab";
@@ -178,7 +178,7 @@ package Model
 							notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission.";*/
 						messageObject.subject += " CIF - ERA Non Traditional Research Outputs - Ready for Download ";
 						messageObject.body += "The most recent QUT CIF - ERA, Non Traditional Research Outputs for the Case: \"" + notificationData.eraCase.title + "\", are now ready for you to download" +
-							" from the nQuisitor website.\n\nClick on this link and enter your Username and Password. You then will be directed to the Exhibition room to download the case."; 
+							" from the nQuisitor website.\n\nClick on this link and enter your Username and Password. You then will be directed to the Exhibition Room to download the case."; 
 							
 							notificationData.fullName + " moved all files from Review Lab to Exhibition .";
 					}
@@ -201,57 +201,58 @@ package Model
 					
 					if(isStaff) {
 						// DONE
-						messageObject.subject += " An Evidence item has been APPROVED for CIF ERA " + AppController.currentEraProject.year + " submission by researcher";
-						messageObject.body += "Researcher, " + notificationData.fullName + ", has APPROVED the evidence item: \"" + notificationData.file.title + 
-							"\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
+						messageObject.subject += " An Evidence item has been marked as FINALISED for CIF ERA " + AppController.currentEraProject.year + " submission by researcher";
+						messageObject.body += "Researcher, " + notificationData.fullName + ", has marked the evidence item: \"" + notificationData.file.title + 
+							"\" as FINALISED, in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
 					} else if (isExternal) {
 						// DONE
-						messageObject.subject += "An Evidence item has been APPROVED for CIF ERA " + AppController.currentEraProject.year +" submission";
-						messageObject.body += "This email confirms that researcher, " + notificationData.fullName + ", has APPROVED the evidence item: \"" + 
-							notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
+						messageObject.subject += "An Evidence item has been marked as FINALISED for CIF ERA " + AppController.currentEraProject.year +" submission";
+						messageObject.body += "This email confirms that researcher, " + notificationData.fullName + ", has marked the evidence item: \"" + 
+							notificationData.file.title + "\" as FINALISED, in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + 
+							AppController.currentEraProject.year + " submission. You will find this Evidence item in the nQuisitor Review Lab."; 
 					}
 					break;
 				case FILE_NOT_APPROVED_BY_RESEARCHER:
 					if(isStaff) {
 						// DONE
-						messageObject.subject += "An Evidence item has NOT BEEN APPROVED for CIF ERA " + AppController.currentEraProject.year +" submission";
-						messageObject.body += "Researcher, " + notificationData.fullName + ", has NOT APPROVED the evidence item: \"" + notificationData.file.title + 
-							"\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
+						messageObject.subject += "An Evidence item has been marked as NOT FINALISED for CIF ERA " + AppController.currentEraProject.year +" submission";
+						messageObject.body += "Researcher, " + notificationData.fullName + ", has marked the evidence item: \"" + notificationData.file.title + 
+							"\" as NOT FINALISED, in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
 					} else if (isExternal) {
 						// DONE
-						messageObject.subject += "An Evidence item has NOT BEEN APPROVED for CIF ERA " + AppController.currentEraProject.year + " by a researcher";
-						messageObject.body += "This email confirms that researcher, " + notificationData.fullName + ", has NOT APPROVED the evidence item: \"" + 
-							notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + 
-							"\", for the CIF ERA " + AppController.currentEraProject.year + " submission.";
+						messageObject.subject += "An Evidence item has been marked as NOT FINALISED for CIF ERA " + AppController.currentEraProject.year + " by a researcher";
+						messageObject.body += "This email confirms that researcher, " + notificationData.fullName + ", has marked the evidence item: \"" + 
+							notificationData.file.title + "\" as NOT FINALISED, in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + 
+							"\", for the CIF ERA " + AppController.currentEraProject.year + " submission. You will find this Evidence item in the nQuisitor Review Lab.";
 					}
 					break;
 				case FILE_APPROVED_BY_MONITOR:
 					if(isStaff) {
 						// DONE
-						messageObject.subject += "An Evidence item has been APPROVED for ERA submission";
-						messageObject.body += "nQuisitor Monitor, " + notificationData.fullName + ", has APPROVED the evidence item: \"" + notificationData.file.title + 
-							"\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission.";
+						messageObject.subject += "An Evidence item has been marked as FINALISED for ERA submission";
+						messageObject.body += "nQuisitor Monitor, " + notificationData.fullName + ", has marked the evidence item: \"" + notificationData.file.title + 
+							"\" as FINALISED, in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission.";
 					} else if (isExternal) {
 						// DONE
-						messageObject.subject += "An Evidence item has been APPROVED for CIF ERA " + AppController.currentEraProject.year + " submission";
-						messageObject.body += "This email confirms that nQuisitor Monitor, " + notificationData.fullName + ", has APPROVED the evidence item: \"" 
-							+ notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + 
-							"\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
+						messageObject.subject += "An Evidence item has been marked as FINALISED for CIF ERA " + AppController.currentEraProject.year + " submission";
+						messageObject.body += "This email confirms that nQuisitor Monitor, " + notificationData.fullName + ", has marked the evidence item: \"" 
+							+ notificationData.file.title + "\" as FINALISED, in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + 
+							"\", for the CIF ERA " + AppController.currentEraProject.year + " submission. You will find this Evidence item in the nQuisitor Review Lab."; 
 					}
 					break;
 				case FILE_NOT_APPROVED_BY_MONITOR:
 					
 					if(isStaff) {
 						// DONE
-						messageObject.subject += "An Evidence item has NOT BEEN APPROVED for ERA submission";
-						messageObject.body += "nQusitor Monitor, " + notificationData.fullName + ", has NOT APPROVED the evidence item: \"" + notificationData.file.title + 
-							"\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\" for the CIF ERA " + AppController.currentEraProject.year + " submission.";
+						messageObject.subject += "An Evidence item has been marked as NOT FINALISED for ERA submission";
+						messageObject.body += "nQusitor Monitor, " + notificationData.fullName + ", has marked the evidence item: \"" + notificationData.file.title + 
+							"\" as NOT FINALISED, in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\" for the CIF ERA " + AppController.currentEraProject.year + " submission.";
 					} else if (isExternal) {
 						// DONE
-						messageObject.subject += "An Evidence item has NOT BEEN APPROVED for CIF ERA " + AppController.currentEraProject.year + " Submission";
-						messageObject.body += "This email confirms that nQuisitor Monitor, " + notificationData.fullName + ", has NOT APPROVED the evidence item: \"" + 
-							notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title 
-							+ "\", for the CIF ERA " + AppController.currentEraProject.year + " submission."; 
+						messageObject.subject += "An Evidence item has been marked as NOT FINALISED for CIF ERA " + AppController.currentEraProject.year + " Submission";
+						messageObject.body += "This email confirms that nQuisitor Monitor, " + notificationData.fullName + ", has marked the evidence item: \"" + 
+							notificationData.file.title + "\" as NOT FINALISED, in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title 
+							+ "\", for the CIF ERA " + AppController.currentEraProject.year + " submission. You will find this Evidence item in the nQuisitor Review Lab."; 
 					}
 					break;
 				case FILE_UPLOADED:					
@@ -428,7 +429,8 @@ package Model
 			// Monitor
 			if(notificationType == Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB ||
 				notificationType == Model_ERANotification.FILE_APPROVED_BY_MONITOR || 
-				notificationType == Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR
+				notificationType == Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR ||
+				notificationType == Model_ERANotification.LIBRARIAN_PACKAGE_DOWNLOADED
 			) {
 				// Notify the monitor when fiels are ready to be screened or exhibited
 				(userObject.roles as Array).push(Model_ERAUser.MONITOR + "_" + AppController.currentEraProject.year);
@@ -436,7 +438,7 @@ package Model
 			
 			// Librarian
 			if(notificationType == Model_ERANotification.ALL_FILES_MOVED_TO_EXHIBITION ||
-				notificationType == Model_ERANotification.ALL_FILES_MOVED_TO_SCREENING_LAB) {
+				notificationType == Model_ERANotification.LIBRARIAN_PACKAGE_DOWNLOADED) {
 				(userObject.roles as Array).push(Model_ERAUser.LIBRARY_ADMIN + "_" + AppController.currentEraProject.year);
 			}
 			

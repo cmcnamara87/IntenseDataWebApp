@@ -48,6 +48,9 @@
 					return;
 				}
 				
+				resendNotification.enabled = true;
+				downloadFilesButton.enabled = true;
+				
 				var totalFileSize:Number = 0;
 				
 				for each(var file:Model_ERAFile in fileArray) {
@@ -166,6 +169,8 @@
 			protected function downloadFilesButton_clickHandler(event:MouseEvent):void
 			{
 				var downloadPackageEvent:IDEvent = new IDEvent(IDEvent.ERA_DOWNLOAD_PACKAGE, true);
+				downloadFilesButton.enabled = false;
+				downloadFilesButton.label = "Processing...";
 				this.dispatchEvent(downloadPackageEvent);
 			}
 			
@@ -178,6 +183,10 @@
 				this.dispatchEvent(resendNotificationEvent);
 			}
 			
+			public function enableDownloadButton():void {
+				downloadFilesButton.label = "↓ Download Files";
+				downloadFilesButton.enabled = true;
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -190,12 +199,12 @@
 			<s:VGroup width="100%" paddingTop="10">
 				<s:Label text="ERA {AppController.currentEraProject.year} / RM {CaseController.currentERACase.rmCode} - {CaseController.currentERACase.title}" fontSize="16" fontWeight="bold" color="0x828F9A">
 				</s:Label>
-				<s:Label text="RM {CaseController.currentERACase.rmCode} - Exhibition" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+				<s:Label text="RM {CaseController.currentERACase.rmCode} - Exhibition Room" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
 				</s:Label>
 			</s:VGroup>
-			<s:Button id="resendNotification" chromeColor="0xFFFFFF" cornerRadius="10" label="Resend Notifications" height="30" click="resendNotification_clickHandler(event)" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}"/>
-			<s:Button id="moveFilesToReviewButton" chromeColor="0xFFFFFF" cornerRadius="10" label="← Move All Files to Review Lab" height="30" click="moveFilesToReviewButton_clickHandler(event)" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}"/>
-			<s:Button id="downloadFilesButton" visible="{Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year) || Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year) || Auth.getInstance().isSysAdmin()}" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="↓ Download Files" click="downloadFilesButton_clickHandler(event)" />
+			<s:Button id="resendNotification" enabled="false" chromeColor="0xFFFFFF" cornerRadius="10" label="Resend Notifications" height="30" click="resendNotification_clickHandler(event)" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}"/>
+			<s:Button id="moveFilesToReviewButton" chromeColor="0xFFFFFF" cornerRadius="10" label="← Move Files to Review Lab" height="30" click="moveFilesToReviewButton_clickHandler(event)" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}"/>
+			<s:Button id="downloadFilesButton" enabled="false" visible="{Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year) || Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year) || Auth.getInstance().isSysAdmin()}" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="↓ Download Files" click="downloadFilesButton_clickHandler(event)" />
 		</s:HGroup>
 	</s:BorderContainer>
 	<!-- END OF TITLE BAR WITH CREATION BUTTON -->

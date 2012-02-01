@@ -176,6 +176,8 @@ package Controller.Utilities {
 			this.isSystemAdministrator = false;
 			this.isUser = false;
 			
+			userRoleArray = new Array();
+			
 			// In case we are just forcing a logout, because the internet connection has been lossed
 			// we only actually try to log out, if we have a connection
 			if(useConnection) {

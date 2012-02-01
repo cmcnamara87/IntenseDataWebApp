@@ -367,10 +367,12 @@ package Controller {
 		 * 
 		 */		
 		private static function showNotifications():void {
+						
 			// show the panel
 			layout.notificationPanel.showPanel();
 			// position it near the notifiaction panel button
-			AppController.layout.notificationPanel.x = 	IDGUI.localToLocal(AppController.layout.header.globalButtonGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x - AppController.layout.header.notificationButton.width/2;
+			AppController.layout.notificationPanel.x = 	IDGUI.localToLocal(AppController.layout.header.logoNotificationGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x - AppController.layout.header.notificationButton.width/2;
+			AppController.layout.notificationPanel.x -= 28;
 			
 			/*trace("&&&&&&&", AppController.layout.header.notificationButton.x);
 			trace("local", IDGUI.localToLocal(AppController.layout.header.globalButtonGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x);*/

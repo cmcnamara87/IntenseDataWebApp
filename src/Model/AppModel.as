@@ -7,6 +7,7 @@ package Model {
 	import Model.Transactions.Access.Transaction_ChangeAccess;
 	import Model.Transactions.Access.Transaction_CopyAccess;
 	import Model.Transactions.Access.Transaction_CopyCollectionAccess;
+	import Model.Transactions.ERAProject.Reports.Transaction_GetCasesDownloaded;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetCasesInExhibition;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetCasesNotCollected;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetCasesWithEvidenceUnderReview;
@@ -14,6 +15,7 @@ package Model {
 	import Model.Transactions.ERAProject.Reports.Transaction_GetCheckedInOutFilesPerCase;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetResearcherInvolvement;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetResearchersInSchools;
+	import Model.Transactions.ERAProject.Transaction_AddFileApproval;
 	import Model.Transactions.ERAProject.Transaction_AddRoleToUser;
 	import Model.Transactions.ERAProject.Transaction_ChangeEmailOptions;
 	import Model.Transactions.ERAProject.Transaction_ChangeEmailOptionsUserArray;
@@ -1890,6 +1892,9 @@ package Model {
 		public function getCasesInExhibition(callback:Function):void {
 			var transaction:Transaction_GetCasesInExhibition = new Transaction_GetCasesInExhibition(_connection, callback);
 		}
+		public function getCasesDownloaded(callback:Function):void {
+			var transaction:Transaction_GetCasesDownloaded = new Transaction_GetCasesDownloaded(_connection, callback);
+		}
 		public function getCasesNotCollection(callback:Function):void {
 			var transaction:Transaction_GetCasesNotCollected = new Transaction_GetCasesNotCollected(_connection, callback);
 		}
@@ -1923,6 +1928,10 @@ package Model {
 		
 		public function eraUpdatePackageNames(caseID:Number, filesArray:Array, folderName:String, callback:Function):void {
 			var transaction:Transaction_UpdatePackageNames = new Transaction_UpdatePackageNames(caseID, folderName, filesArray, _connection, callback);
+		}
+		
+		public function eraAddFileApproval(year:String, caseID:Number, roomID:Number, fileID:Number, role:String, approval:Boolean, callback:Function):void {
+			var transaction:Transaction_AddFileApproval = new Transaction_AddFileApproval(year, caseID, roomID, fileID, role, approval, _connection, callback);
 		}
 	}
 		

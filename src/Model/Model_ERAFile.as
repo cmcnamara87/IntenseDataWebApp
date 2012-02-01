@@ -30,8 +30,8 @@ package Model {
 		
 		public var notificationCount:Number = 0;
 		public var notificationArray:Array = new Array();
-		public var screeningCount:Number = 0;
-		public var exhibitionCount:Number;
+		public var screeningCount:Number = 100;
+		public var exhibitionCount:Number = 100;
 		
 		public var researcherApproved:Array = new Array();
 		public var researcherNotApproved:Array = new Array();
@@ -116,6 +116,7 @@ package Model {
 				}
 			}
 			
+			// Store if the file is locked for the current user
 			if(eraEvidenceItem["locked_for_user"].length()) {
 				for each(var lockedUsername:String in eraEvidenceItem["locked_for_user"]) {
 					if(lockedUsername == Auth.getInstance().getUsername()) {
@@ -123,6 +124,49 @@ package Model {
 					}
 				}
 			}
+			
+			if(eraEvidenceItem["exhibition_approval"].length()) {
+				for each(var approvalXML:XML in eraEvidenceItem["exhibition_approval"]) {
+					var approvalString:String = approvalXML.name + " (" + approvalXML.username + ") - " + approvalXML.date;
+					if(approvalXML.role == Model_ERAUser.RESEARCHER && (approvalXML.approval == "true")) {
+						this.researcherApproved.push(approvalString);
+					} else if(approvalXML.role == Model_ERAUser.RESEARCHER && (approvalXML.approval == "false")) {
+						this.researcherNotApproved.push(approvalString);
+					} else if (approvalXML.role == Model_ERAUser.MONITOR && (approvalXML.approval == "true")) {
+						this.monitorApproved.push(approvalString);
+					} else if (approvalXML.role == Model_ERAUser.MONITOR && (approvalXML.approval == "false")) {
+						this.monitorNotApproved.push(approvalString);
+					}
+				}
+			}
+			
+			if(eraEvidenceItem["review_count"].length()) {
+				this.screeningCount = Number(eraEvidenceItem["review_count"]);
+			}
+			
+			if(eraEvidenceItem["exhibition_count"].length()) {
+				this.exhibitionCount = Number(eraEvidenceItem["exhibition_count"]);
+			}
+			
+			/*this.researcherApproved = new Array();
+			this.researcherNotApproved = new Array();
+			this.monitorApproved = new Array();
+			this.monitorNotApproved = new Array();
+			
+			case Model_ERANotification.FILE_APPROVED_BY_RESEARCHER:
+			this.researcherApproved.push(notificationData.firstName + " " + notificationData.lastName + " (" + notificationData.username + ")");
+			break;
+			case Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER:
+			this.researcherNotApproved.push(notificationData.firstName + " " + notificationData.lastName + " (" + notificationData.username + ")");
+			break;
+			case Model_ERANotification.FILE_APPROVED_BY_MONITOR:
+			this.monitorApproved.push(notificationData.firstName + " " + notificationData.lastName + " (" + notificationData.username + ")");
+			break;
+			case Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR:
+			this.monitorNotApproved.push(notificationData.firstName + " " + notificationData.lastName + " (" + notificationData.username + ")");
+			break;
+			default:
+			break;*/
 			
 			updateNotificationCount();
 		}
@@ -141,12 +185,9 @@ package Model {
 				}
 			}
 			
-			this.screeningCount = 0;
+			/*this.screeningCount = 0;
 			this.exhibitionCount = 0;
-			this.researcherApproved = new Array();
-			this.researcherNotApproved = new Array();
-			this.monitorApproved = new Array();
-			this.monitorNotApproved = new Array();
+			
 			for each(var notificationData:Model_ERANotification in AppController.allNotificationsArray) {
 				if(notificationData.file && notificationData.file.base_asset_id == this.base_asset_id) {
 					switch(notificationData.type) {
@@ -156,24 +197,9 @@ package Model {
 						case Model_ERANotification.FILE_MOVED_TO_EXHIBITION:
 							this.exhibitionCount++;
 							break;
-						case Model_ERANotification.FILE_APPROVED_BY_RESEARCHER:
-							this.researcherApproved.push(notificationData.firstName + " " + notificationData.lastName + " (" + notificationData.username + ")");
-							break;
-						case Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER:
-							this.researcherNotApproved.push(notificationData.firstName + " " + notificationData.lastName + " (" + notificationData.username + ")");
-							break;
-						case Model_ERANotification.FILE_APPROVED_BY_MONITOR:
-							this.monitorApproved.push(notificationData.firstName + " " + notificationData.lastName + " (" + notificationData.username + ")");
-							break;
-						case Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR:
-							this.monitorNotApproved.push(notificationData.firstName + " " + notificationData.lastName + " (" + notificationData.username + ")");
-							break;
-						default:
-							break;
 					}
-					
 				}
-			}			
+			}*/
 		}
 		
 		

@@ -226,25 +226,31 @@ package Controller.ERA {
 				
 			if(roomType != Model_ERARoom.SCREENING_ROOM) {
 				Dispatcher.back();
-//				Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
-			} else {
-				// its the screening lab, so we need to ask 'do they want to save changes'
-				// if they are a reserachers
-				trace("*************** is researcher", CaseController.isResearcher ? "yes" : "no", "is moniotor", Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year) ? "yes" : "no");
-				if((CaseController.isResearcher || Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)) && !currentMediaData.lockedOut) {
-					var myAlert:Alert = Alert.show("Have you finished commenting on this file for Review?", "Finished Commenting?", Alert.YES | Alert.NO, null, finishedCommenting, null, Alert.YES);
-					myAlert.height = 100;
-					myAlert.width = 300;
-				} else {
-//					Dispatcher.call("case/" + FileController.caseID + "/" + FileController.roomType);
-					Dispatcher.back();
-				}
+				return;
 			}
+			
+			// its the screening lab, so we need to ask 'do they want to save changes'
+			// if they are a reserachers
+			trace("*************** is researcher", CaseController.isResearcher ? "yes" : "no", "is moniotor", Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year) ? "yes" : "no");
+			if((CaseController.isResearcher || Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)) && !currentMediaData.lockedOut) {
+				var myAlert:Alert = Alert.show("Are you sure you have finished reviewing this file?", "Finalise Review", Alert.YES | Alert.NO, null, finishedCommenting, null, Alert.YES);
+				myAlert.height = 100;
+				myAlert.width = 300;
+			} else {
+				Dispatcher.back();
+			}
+			
 		}
 		
+			
+		/**
+		 * The user has marked that we hvae finished reviewing the file, ask them about the review status 
+		 * @param e
+		 * 
+		 */
 		private function finishedCommenting(e:CloseEvent):void {
 			if (e.detail==Alert.YES) {
-				var myAlert:Alert = Alert.show("Do you approve of this file for ERA submission?", "File Approval", Alert.YES | Alert.NO, null, fileApproved, null, Alert.YES);
+				var myAlert:Alert = Alert.show("Is this file now finalised for the Exhibition Room?", "File Finalisation", Alert.YES | Alert.NO, null, fileApproved, null, Alert.YES);
 				myAlert.height = 100;
 				myAlert.width = 300;
 			} else {
@@ -258,18 +264,18 @@ package Controller.ERA {
 				trace("finished commenting an approve", currentAssetID);
 				
 				if(CaseController.isResearcher) {
-					AppModel.getInstance().updateFileLockOutStatus(roomID, Model_ERANotification.FILE_APPROVED_BY_RESEARCHER, caseID, currentAssetID, lockOutStatusUpdated);
+					AppModel.getInstance().eraAddFileApproval(AppController.currentEraProject.year, caseID, roomID, currentAssetID, Model_ERAUser.RESEARCHER, true, lockOutStatusUpdated);
 				}
 				if(Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)) {
-					AppModel.getInstance().updateFileLockOutStatus(roomID, Model_ERANotification.FILE_APPROVED_BY_MONITOR, caseID, currentAssetID, lockOutStatusUpdated);
+					AppModel.getInstance().eraAddFileApproval(AppController.currentEraProject.year, caseID, roomID, currentAssetID, Model_ERAUser.MONITOR, true, lockOutStatusUpdated);
 				}
 			} else {
 				trace("finished commenting an DO NOT approve");
 				if(CaseController.isResearcher) {
-					AppModel.getInstance().updateFileLockOutStatus(roomID, Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER, caseID, currentAssetID, lockOutStatusUpdated);
+					AppModel.getInstance().eraAddFileApproval(AppController.currentEraProject.year, caseID, roomID, currentAssetID, Model_ERAUser.RESEARCHER, false, lockOutStatusUpdated);
 				}
 				if(Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)) {
-					AppModel.getInstance().updateFileLockOutStatus(roomID, Model_ERANotification.FILE_NOT_APPROVED_BY_MONITOR, caseID, currentAssetID, lockOutStatusUpdated);
+					AppModel.getInstance().eraAddFileApproval(AppController.currentEraProject.year, caseID, roomID, currentAssetID, Model_ERAUser.MONITOR, false, lockOutStatusUpdated);
 				}
 			}
 			

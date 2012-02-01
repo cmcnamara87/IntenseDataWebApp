@@ -39,6 +39,7 @@ package Model.Transactions.ERAProject
 			if(fileMovedCount == fileIDArray.length) {
 				// Success
 				
+				
 				// Determine the type of notification to send
 				var notificationType:String = "";
 				if(toRoomType == Model_ERARoom.SCREENING_ROOM) {
@@ -53,6 +54,8 @@ package Model.Transactions.ERAProject
 						notificationType, 0, 0, 0);	
 				}
 				
+				
+				
 				// Let it be known its done :D
 				if(toRoomType == Model_ERARoom.EXHIBIT) {
 					// we need to reset the downlaod status
@@ -64,6 +67,16 @@ package Model.Transactions.ERAProject
 					// Setup the era meta-data
 					argsXML.id = caseID;
 					argsXML.meta["ERA-case"]["library_downloaded"] = false;
+					argsXML.meta["ERA-case"]["ready_for_download"] = true;
+					connection.sendRequest(baseXML, filesMarkAsNotDownloaded);
+					
+				} else if (toRoomType == Model_ERARoom.SCREENING_ROOM) {
+					var baseXML:XML = connection.packageRequest("asset.set", new Object(), true);
+					var argsXML:XMLList = baseXML.service.args;
+					
+					// Setup the era meta-data
+					argsXML.id = caseID;
+					argsXML.meta["ERA-case"]["ready_for_download"] = false;
 					connection.sendRequest(baseXML, filesMarkAsNotDownloaded);
 					
 				} else {

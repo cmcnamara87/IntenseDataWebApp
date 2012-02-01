@@ -200,8 +200,9 @@
 				notificationFilterButtonsGroup.visible = false;
 				notificationFilterButtonsGroup.includeInLayout = false;
 				
-				AppController.layout.notificationPanel.x = 	IDGUI.localToLocal(AppController.layout.header.globalButtonGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x - AppController.layout.header.notificationButton.width/2;
-				
+				AppController.layout.notificationPanel.x = 	IDGUI.localToLocal(AppController.layout.header.logoNotificationGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x - AppController.layout.header.notificationButton.width/2;
+				AppController.layout.notificationPanel.x -= 28;
+
 				return true;
 			}
 			
@@ -422,7 +423,7 @@
 		</s:Scroller>	
 	</s:VGroup>
 	
-	<s:Path x="38" y="-19" data="M 0 20 L 20 20 L 10 0 L  0 20">
+	<s:Path x="68" y="-19" data="M 0 20 L 20 20 L 10 0 L  0 20">
 		<!-- Define the border color of the rectangle. -->
 		<s:stroke>
 			<s:SolidColorStroke color="0xFFFFFF"/>

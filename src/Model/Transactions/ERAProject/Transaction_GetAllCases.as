@@ -1,7 +1,11 @@
 package Model.Transactions.ERAProject
 {
+	import Controller.AppController;
+	import Controller.Utilities.Auth;
+	
 	import Model.AppModel;
 	import Model.Model_ERACase;
+	import Model.Model_ERAUser;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
@@ -45,6 +49,9 @@ package Model.Transactions.ERAProject
 			
 			var eraCaseArray:Array = AppModel.getInstance().parseResults(data, Model_ERACase);
 			
+			// Now we need to do some specialized stripping of cases here
+			// if someone is a librarian only! we need to strip out cases that arent ready
+
 			eraCaseArray.sortOn(["researcherLastName", "researcherFirstName"], [Array.CASEINSENSITIVE]);
 			
 			callback(true, eraCaseArray);

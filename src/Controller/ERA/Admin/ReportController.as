@@ -68,6 +68,7 @@ package Controller.ERA.Admin
 		
 		public static const REPORT_RESEARCHERS_IN_SCHOOLS:String = "REPORT_RESEARCHERS_IN_SCHOOLS";
 		public static const REPORT_CASES_IN_EXHIBITION:String = "REPORT_CASES_IN_EXHIBITION";
+		public static const REPORT_CASES_DOWNLOADED:String = "REPORT_CASES_DOWNLOADED";
 		public static const REPORT_CASES_NOT_COLLECTED:String = "REPORT_CASES_NOT_COLLECTED";
 		public static const REPORT_CHECKED_OUT:String = "REPORT_CHECKED_OUT";
 		public static const REPORT_RESEARCHERS_NOT_INVOLVED:String = "REPORT_RESEARCHERS_NO_ACTIVITY";
@@ -107,9 +108,16 @@ package Controller.ERA.Admin
 					break;
 				case REPORT_CASES_IN_EXHIBITION:
 					if(download) {
-						return "Exhibition - Cases ready to be exhibited";
+						return "Exhibition Room - Cases ready to be exhibited";
 					} else {
-						return "Exhibition: Cases ready to be exhibited";
+						return "Exhibition Room: Cases ready to be exhibited";
+					}
+					break;
+				case REPORT_CASES_DOWNLOADED:
+					if(download) {
+						return "Exhibition Room - Cases Downloaded";
+					} else {
+						return "Exhibition Room: Cases Downloaded";
 					}
 					break;
 				case REPORT_CASES_NOT_COLLECTED:
@@ -214,6 +222,9 @@ package Controller.ERA.Admin
 					break;
 				case REPORT_CASES_IN_EXHIBITION:
 					makeCasesInExhibitionReport();
+					break;
+				case REPORT_CASES_DOWNLOADED:
+					makeCasesDownloadedReport();
 					break;
 				case REPORT_CASES_NOT_COLLECTED:
 					makeCasesNotCollectedReport();
@@ -528,6 +539,58 @@ package Controller.ERA.Admin
 		/* =============================== END OF MAKE CASES EVIDENCE NOT COLLECTED ===================================== */
 		
 		
+		private function makeCasesDownloadedReport():void {
+			// Change button to say Generating...
+			reportsView.generateButton.label = "Generating...";
+			layout.notificationBar.showProcess("Generating Report...");
+			
+			AppModel.getInstance().getCasesInExhibition(gotCasesDownloaded);
+		}
+		private function gotCasesDownloaded(status:Boolean, eraCaseArray:Array=null):void {
+			if(!status) {
+				reportsView.generateButton.label = "Generate";
+				layout.notificationBar.showError("Failed to generate Report");
+				return;
+			}
+			layout.notificationBar.showGood("Finished Generating");
+			reportsView.generateButton.label = 'Open Report';
+			
+			var p:PDF = makeReportWithHeader(getReportPrettyName(REPORT_CASES_DOWNLOADED));
+			
+			var dp:ArrayCollection = new ArrayCollection();
+			
+			p.setFont(myriadFont, 10);
+			p.textStyle( new RGBColor ( 0x000000) );
+			
+			for each(var eraCase:Model_ERACase in eraCaseArray) {
+				// get all the researchers into a string
+				var researchersString:String = "";
+				for each(var caseResearcher:Model_ERAUser in eraCase.researchersArray) {
+					researchersString += caseResearcher.lastName + ", " + caseResearcher.firstName + "\n";
+				}
+				
+				// add a table row
+				dp.addItem( { rmCode : eraCase.rmCode, title : eraCase.title, researchers : researchersString } );
+			}
+			
+			// create columns to specify the column order
+			// 155 pixels wide?
+			var gridColumnAge:GridColumn = new GridColumn("RM Code", "rmCode", 30, Align.LEFT, Align.LEFT);
+			var gridColumnEmail:GridColumn = new GridColumn("Title", "title", 120, Align.LEFT, Align.LEFT);
+			var gridColumnFirstName:GridColumn = new GridColumn("Researchers", "researchers", 40, Align.LEFT, Align.LEFT);
+			//			var gridColumnLastName:GridColumn = new GridColumn("Last Name", "lastName", 45, Align.LEFT, Align.LEFT);
+			
+			// create a columns Array
+			// it determines the order shown in the PDF
+			var columns:Array = new Array (gridColumnAge, gridColumnEmail, gridColumnFirstName);
+			
+			// create a Grid object as usual
+			var grid:Grid = new Grid( dp.toArray(), 200, 120, new RGBColor ( 0xAAAAAA ), new RGBColor (0xCCCCCC), true, new RGBColor(0x666666), 1, null, columns );
+			
+			p.addGrid(grid);
+			
+			sendPDFtoPHP(p);
+		}
 		
 		
 		/* =============================== MAKE EXHIBITION CASES REPORT ===================================== */

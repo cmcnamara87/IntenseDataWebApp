@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
 	
 	<fx:Script>
 		<![CDATA[
+			import Controller.Utilities.AssetLookup;
+			
 			import Model.Model_ERAFile;
 			
 			private var model:Model_ERAFile;
@@ -13,6 +15,12 @@
 				title.text = model.title;
 				this.model = model;
 				downloadName.text = this.model.downloadTitle;
+				
+				if (model.thumbnailURL != "") {
+					icon.source = model.thumbnailURL;
+				} else {
+					icon.source = AssetLookup.getAssetImageClass(model.rootMetaType);
+				}
 			}
 			
 			public function getModel():Model_ERAFile {
@@ -30,9 +38,13 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<s:Label id="title" fontWeight="bold" />
-	<s:HGroup verticalAlign="middle">
-		<s:Label text="Download Name:" />
-		<s:TextInput id="downloadName" width="100%" />
-	</s:HGroup>
-</s:VGroup>
+	<mx:Image id="icon" maintainAspectRatio="true" width="50" height="50" verticalAlign="top"/>
+	<s:VGroup width="100%" height="100%">
+		<s:Label id="title" fontWeight="bold" />
+		<s:HGroup verticalAlign="middle">
+			<s:Label text="Download Name:" />
+			<s:TextInput id="downloadName" width="100%" />
+		</s:HGroup>	
+	</s:VGroup>
+	
+</s:HGroup>

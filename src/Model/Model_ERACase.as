@@ -13,6 +13,7 @@ package Model {
 		public var fileCount:Number = 0;
 		
 		// has the library downloaded the package
+		public var readyForDownload:Boolean = false;
 		public var libraryDownloaded:Boolean = false;
 		public var libraryDownloadTime:String = "";
 		public var libraryDownloadUsername:String = "";
@@ -90,6 +91,10 @@ package Model {
 					if(eraCase["library_download_time"].length() > 0) this.libraryDownloadTime = eraCase["library_download_time"];
 					if(eraCase["library_download_username"].length() > 0) this.libraryDownloadUsername = eraCase["library_download_username"];
 				}
+			}
+			
+			if(eraCase["ready_for_download"].length()) {
+				this.readyForDownload = eraCase["ready_for_download"] == "true";
 			}
 				
 			// add all the researchers usernames

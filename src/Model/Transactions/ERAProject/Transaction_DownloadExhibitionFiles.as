@@ -6,6 +6,7 @@ package Model.Transactions.ERAProject
 	import Model.AppModel;
 	import Model.Model_ERAFile;
 	import Model.Model_ERANotification;
+	import Model.Model_ERAUser;
 	import Model.Utilities.Connection;
 	
 	import flash.events.Event;
@@ -88,9 +89,12 @@ package Model.Transactions.ERAProject
 			}
 			
 			// Send the downloaded notification
-			AppModel.getInstance().createERANotification(AppController.currentEraProject.year, exhibitionRoomID, Auth.getInstance().getUsername(),
-				Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
-				Model_ERANotification.LIBRARIAN_PACKAGE_DOWNLOADED, caseID, 0, 0);
+			// Only send the notification if the person was a librarian
+			if(Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year)) {
+				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, exhibitionRoomID, Auth.getInstance().getUsername(),
+					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
+					Model_ERANotification.LIBRARIAN_PACKAGE_DOWNLOADED, caseID, 0, 0);
+			}
 			
 			callback(true, packageUri);
 			

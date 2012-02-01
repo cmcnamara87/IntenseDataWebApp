@@ -80,6 +80,9 @@ package Model.Transactions.ERAProject
 				return;
 			}
 			
+			// Update the move count
+			var moveCountUpdate:Transaction_UpdateMoveCount = new Transaction_UpdateMoveCount(fileID, toRoomType, connection);
+			
 			if(notifications) {
 				sendNotification();
 			}

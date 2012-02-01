@@ -16,6 +16,9 @@ package Controller.Utilities {
 		[Embed(source="Assets/Template/report_header.jpg", mimeType="application/octet-stream")]
 		public static var report_header:Class;
 		
+		[Embed(source="Assets/Template/lineofinquirygraphic.png")] 
+		public static var line_of_inquiry_graphic:Class;
+		
 		// Comment icons
 		[Embed(source="Assets/Template/reply_icon.png")]
 		public static var reply_icon:Class;

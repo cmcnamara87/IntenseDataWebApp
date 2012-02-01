@@ -30,6 +30,33 @@
 				showConversationButton.label = "Comments (" + conversationArray.length + ")";
 				conversationPanel.addConversation(conversationArray);
 			}
+			
+			private function setupFileCountDisplay(fileCountNow:Number, expectedTotal:Number):void {
+				// Set the X of Y file count
+				currentFileCount.text = fileCountNow + " of ";
+				fileCount.text = expectedTotal + "";
+				fileCountLocked.text = expectedTotal + " Files";
+				
+				if(fileCountNow == expectedTotal) {
+					moveFilesToExhibitionButton.enabled = true;
+					moveFilesToExhibitionButton.setStyle('chromeColor', '0x0AAF00');
+					moveFilesToExhibitionButton.setStyle('color', '0xFFFFFF');
+					this.showFileCountBar("ready");
+				} else if(fileCountNow >  expectedTotal) {
+					this.showFileCountBar("exceeded");
+					moveFilesToExhibitionButton.setStyle('chromeColor', '0xFFFFFF');
+					moveFilesToExhibitionButton.setStyle('color', '0x000000');
+					moveFilesToExhibitionButton.enabled = false;
+					moveFilesToExhibitionButton.toolTip = "Too many files. Please adjust file quota.";
+				} else {
+					moveFilesToExhibitionButton.setStyle('chromeColor', '0xFFFFFF');
+					moveFilesToExhibitionButton.setStyle('color', '0x000000');
+					this.showFileCountBar("off");
+					moveFilesToExhibitionButton.enabled = false;
+					moveFilesToExhibitionButton.toolTip = "Expected File Quota not met";
+				}
+			}
+			
 			/**
 			 * Add all the lot items to the display
 			 */
@@ -47,26 +74,8 @@
 					return;
 				}
 				
-				// Set the X of Y file count
-				currentFileCount.text = fileArray.length + " of ";
-				fileCount.text = CaseController.currentERACase.fileCount + "";
-				fileCountLocked.text = CaseController.currentERACase.fileCount + " Files";
-				if(fileArray.length == CaseController.currentERACase.fileCount) {
-					// lets check that they are all approved
-					moveFilesToExhibitionButton.enabled = true;
-					for each(var file:Model_ERAFile in fileArray) {
-						if(!file.monitorApproved) {
-							moveFilesToExhibitionButton.enabled = false;
-							moveFilesToExhibitionButton.toolTip = "Files require monitor approval";
-							break;
-						}
-					}
-					
-				} else {
-					moveFilesToExhibitionButton.enabled = false;
-					moveFilesToExhibitionButton.toolTip = "Expected file count not met";
-				}
-				
+				setupFileCountDisplay(fileArray.length, CaseController.currentERACase.fileCount);
+				 
 				if(fileArray.length == 0) {
 					var label:Label = new Label();
 					label.text = "No Evidence Items Found.";
@@ -187,7 +196,7 @@
 				if(!(allGood && CaseController.currentERACase.downloadTitle != "")) {
 					// all files / package hasnt been renamed
 					var myAlert:Alert = Alert.show(
-						"Not all files have been assigned a specific download name, are you should you wish to proceed?", "Move Files", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
+						"Not all files have been assigned a revised download name. Do you wish to proceed?", "Move Files", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
 							if (e.detail==Alert.OK) {
 								moveFiles();
 							}
@@ -218,6 +227,8 @@
 				this.dispatchEvent(fileMoveEvent);
 				
 				fileGroup.removeAllElements();
+				
+				setupFileCountDisplay(0, Number(fileCount.text));
 			}
 			
 			protected function renameFilesButton_clickHandler(event:MouseEvent):void
@@ -228,14 +239,9 @@
 				renamePopup.includeInLayout = !renamePopup.includeInLayout;
 			}
 			
-			protected function button1_clickHandler(event:MouseEvent):void
+			protected function saveFileCount_clickHandler(event:MouseEvent):void
 			{
-				// enable the move button if its equal to the file count
-				if(fileCount.text == fileGroup.numElements + "") {
-					moveFilesToExhibitionButton.enabled = true;
-				} else {
-					moveFilesToExhibitionButton.enabled = false;
-				}
+				setupFileCountDisplay(fileGroup.numElements, Number(fileCount.text));
 				
 				var fileMoveEvent:IDEvent = new IDEvent(IDEvent.ERA_CHANGE_FILE_COUNT_FOR_CASE, true);
 				fileMoveEvent.data.fileCount = fileCount.text;
@@ -287,14 +293,43 @@
 				renamePopup.includeInLayout = false;
 			}
 			
+			/**
+			 * Shows the file quota bar
+			 * types ["ready", "exceeded", "off"]
+			 */
+			private function showFileCountBar(type:String) {
+				if(type == "ready" || type == "exceeded") {
+					// show the bar
+					fileCountBar.visible = true;
+					fileCountBar.includeInLayout = true;
+				} else if (type == "off") {
+					fileCountBar.visible = false;
+					fileCountBar.includeInLayout = false;
+				}
+				
+				// setup the label
+				switch(type) {
+					case "ready":
+						// set the colour
+						fileCountBar.setStyle('backgroundColor', '0x0AAF00');
+						message_text.text = "The allocated quota of files for the Review Lab has now been reached. You may now move your files to the Exhibition Room.";
+						break;
+					case "exceeded":
+						// set the colour
+						fileCountBar.setStyle('backgroundColor', '0xFF0000');
+						message_text.text = "The allocated quota of files for the Review Lab has been exceeded.";
+						break;
+				}
+			}
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:DropShadowFilter id="shadowy" distance="8" angle="90" color="0x000000" alpha="0.2" blurX="8" blurY="8" inner="false"/>
 	</fx:Declarations>
 	<!-- TITLE BAR WITH CREATION BUTTON -->
 	<s:VGroup width="100%" height="100%" gap="0">
-		
 		<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
 			<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
 				<mx:Image source="{AssetLookup.ScreeningLabIcon}" alpha="0.8" width="48" height="40" horizontalAlign="center" maintainAspectRatio="true" verticalAlign="middle"  />
@@ -305,23 +340,24 @@
 					</s:Label>
 				</s:VGroup>
 				<s:ToggleButton id="showConversationButton" chromeColor="0xFFFFFF" cornerRadius="10" label="Conversation (0)" height="30" />
-				<s:Button id="renameFilesButton" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="Assign Package Names" click="renameFilesButton_clickHandler(event)"/>
-				<s:Button id="moveFilesToExhibitionButton" enabled="false" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}" chromeColor="0xFFFFFF" cornerRadius="10" label="Move All Files to Exhibition →" height="30" click="moveFilesToExhibitionButton_clickHandler(event)" />
+				<s:Button id="renameFilesButton" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="Rename Case Files" click="renameFilesButton_clickHandler(event)"/>
+				<s:Button id="moveFilesToExhibitionButton" enabled="false" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}" chromeColor="0xFFFFFF" cornerRadius="10" label="Move Files to Exhibition Room →" height="30" click="moveFilesToExhibitionButton_clickHandler(event)" />
 			</s:HGroup>
 		</s:BorderContainer>
 		<!-- END OF TITLE BAR WITH CREATION BUTTON -->
+	
 		
 		<s:BorderContainer width="100%" height="40" borderVisible="false" backgroundColor="0xEEEFF1">
 			<s:HGroup verticalAlign="middle" paddingBottom="10" paddingLeft="20" paddingRight="10" paddingTop="10">
 				<!-- the file count display section -->
-				<s:Label text="File Count:" color="0x828F9A"/>
+				<s:Label text="File Quota:" color="0x828F9A"/>
 				<s:Label id="currentFileCount" color="0x828F9A" fontWeight="bold"/>
 				<!-- the section seen by production manager or admin (lets them adjust the number) -->
 				<s:HGroup verticalAlign="middle" visible="{Auth.getInstance().hasRoleForYear(Model_ERAUser.PRODUCTION_MANAGER, AppController.currentEraProject.year) || Auth.getInstance().isSysAdmin()}" 
 						  includeInLayout="{Auth.getInstance().hasRoleForYear(Model_ERAUser.PRODUCTION_MANAGER, AppController.currentEraProject.year) || Auth.getInstance().isSysAdmin()}">
 					<s:TextInput id="fileCount"  color="0x828F9A" fontWeight="bold" width="40" textAlign="center"/>
 					<s:Label color="0x828F9A" fontWeight="bold" text="Files"/>
-					<s:Button height="100%" label="Save" chromeColor="0xFFFFFF" cornerRadius="10" click="button1_clickHandler(event)"/>	
+					<s:Button height="100%" label="Save" chromeColor="0xFFFFFF" cornerRadius="10" click="saveFileCount_clickHandler(event)"/>	
 				</s:HGroup>
 				<!-- The section seen by others (just a display of the count) -->
 				<s:HGroup verticalAlign="middle" visible="{!(Auth.getInstance().hasRoleForYear(Model_ERAUser.PRODUCTION_MANAGER, AppController.currentEraProject.year) || Auth.getInstance().isSysAdmin())}" >
@@ -337,6 +373,12 @@
 				</s:HGroup>
 			</s:HGroup>
 			
+		</s:BorderContainer>
+		
+		<s:BorderContainer id="fileCountBar" width="100%" height="30" backgroundColor="0x00FF00" borderVisible="false" color="0xFFFFFF" visible="false" includeInLayout="false">
+			<s:HGroup verticalAlign="middle" width="100%" height="100%" paddingLeft="10" paddingRight="10">
+				<s:Label id="message_text" text="The allocated quota of files for the Review Lab has now been reached. You may now move your files to the Exhibition Room." width="100%"/>	
+			</s:HGroup>
 		</s:BorderContainer>
 		
 		<s:HGroup width="100%" height="100%" gap="0">
@@ -355,26 +397,34 @@
 
 	</s:VGroup>
 	
-	<s:VGroup id="renamePopup" includeInLayout="false" visible="false" width="400" maxHeight="600" paddingBottom="30" paddingLeft="10" paddingRight="10" paddingTop="30" horizontalCenter="0" verticalCenter="0">
+	<s:VGroup id="renamePopup" includeInLayout="false" filters="{shadowy}" visible="false" width="500" maxHeight="600" paddingBottom="30" paddingLeft="10" paddingRight="10" paddingTop="30" horizontalCenter="0" verticalCenter="0">
 		<s:BorderContainer width="100%" height="100%" backgroundColor="0xFFFFFF">
-			<s:VGroup width="100%" height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
-				<s:Label text="Assign Package Names" fontSize="30" fontWeight="bold" color="0x5e6469" paddingBottom="10" />
-				<s:Label width="100%" text="This area lets you set the name of the files when they are downloaded in a package and set the name of that package." fontSize="12" color="0x5e6469" paddingBottom="20" />
-				<s:HGroup verticalAlign="middle">
-					<s:Label text="Case Folder Download Name:" />
-					<s:TextInput id="caseFolderName" />
-				</s:HGroup>
+			<s:VGroup width="100%" height="100%">
+				<s:VGroup width="100%" paddingBottom="10" paddingLeft="20" paddingRight="20" paddingTop="20">
+					<s:Label text="Finalise the Names of your Files Ready for the Exhibition Room" fontSize="30" fontWeight="bold" color="0x5e6469" paddingBottom="10" width="100%" />
+					<s:Label width="100%" text="This area lets you rename any files in preparation for the Exhibition Room." fontSize="12" color="0x5e6469" paddingBottom="20" />
+					<s:HGroup verticalAlign="middle">
+						<s:Label text="Exhibition Folder Download Name:" />
+						<s:TextInput id="caseFolderName" />
+					</s:HGroup>
+				</s:VGroup>
+				
 				<mx:HRule width="100%"/>
+				
 				<s:Scroller width="100%" height="100%">
-					<s:VGroup id="renameFiles" width="100%" height="100%">
+					<s:VGroup id="renameFiles" width="100%" height="100%" paddingLeft="20" paddingRight="20">
 					</s:VGroup>	
-				</s:Scroller>	
+				</s:Scroller>
+				
 				<mx:HRule width="100%"/>
-				<s:HGroup width="100%">
+				
+				<s:HGroup width="100%" horizontalAlign="center" paddingLeft="20" paddingRight="20" paddingBottom="10" >
 					<s:Button id="saveRenamedFiles" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="Save" click="saveRenamedFiles_clickHandler(event)" />
 					<s:Button id="cancelRenamedFiles" chromeColor="0xFFFFFF" cornerRadius="10" height="30" label="Cancel" click="cancelRenamedFiles_clickHandler(event)"/>	
 				</s:HGroup>
+				
 			</s:VGroup>
+
 		</s:BorderContainer>
 		
 	</s:VGroup>

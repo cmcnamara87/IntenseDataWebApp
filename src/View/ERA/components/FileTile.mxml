@@ -110,6 +110,13 @@
 			
 			private function updateGUI():void {
 				title =  _fileData.title;
+				if(_fileData.downloadTitle != "") {
+					downloadTitleLabel.text = _fileData.downloadTitle;
+				} else {
+					downloadTitleLabel.visible = false;
+					downloadTitleLabel.includeInLayout = false;
+				}
+				
 				if(!_fileData.transcoded) {
 					title = "Transcoding... " + title;
 				}
@@ -149,55 +156,58 @@
 					tickBadge.includeInLayout = true;
 					
 					// Lets make the tooltip
-					var approvedTooltip:String = "";
+					var approvedResearcherTooltip:String = "";
+					var approvedMonitorTooltip:String = "";
 					// its going to show all the users who have approved/disappoved
 					if(_fileData.researcherApproved.length) {
-						approvedTooltip += "Approved By Researcher(s):\n";
+						approvedResearcherTooltip += "Approved By Researcher(s):\n";
 						for each(var researcherNameString:String in _fileData.researcherApproved) {
-							approvedTooltip += researcherNameString + "\n";
+							approvedResearcherTooltip += researcherNameString + "\n";
 						}
-						approvedTooltip += "\n";
+						approvedResearcherTooltip += "\n";
+						trace("RESEARCHER APPROVED");
 						tickBadge.show = true;
-						tickBadge.approved = true;
+						tickBadge.approvedResearcher = tickBadge.APPROVED;
 					}
 					
 					
 					if(_fileData.researcherNotApproved.length) {
-						approvedTooltip += "Not Approved By Researcher(s):\n";
+						approvedResearcherTooltip += "Not Approved By Researcher(s):\n";
 						for each(var researcherNameString:String in _fileData.researcherNotApproved) {
-							approvedTooltip += researcherNameString + "\n";
+							approvedResearcherTooltip += researcherNameString + "\n";
 						}
-						approvedTooltip += "\n";
+						approvedResearcherTooltip += "\n";
 						tickBadge.show = true;
-						tickBadge.approved = false;
+						tickBadge.approvedResearcher = tickBadge.NOT_APPROVED;
 					}
 					
 					
 					// if the monitor approves or disapproves, it overwrites whatever the others have said basically (just for how it appears as either a x or a tick)
 					if(_fileData.monitorNotApproved.length) {
-						approvedTooltip += "Not Approved By Monitor(s):\n";
+						approvedMonitorTooltip += "Not Approved By Monitor(s):\n";
 						for each(var monitorNameString:String in _fileData.monitorNotApproved) {
-							approvedTooltip += monitorNameString + "\n";
+							approvedMonitorTooltip += monitorNameString + "\n";
 						}
-						approvedTooltip += "\n";
+						approvedMonitorTooltip += "\n";
 						tickBadge.show = true;
-						tickBadge.approved = false;
+						tickBadge.approvedMonitor = tickBadge.NOT_APPROVED;
 					}
 					
 					
 					if(_fileData.monitorApproved.length) {
-						approvedTooltip += "Approved By Monitor(s):\n";
+						approvedMonitorTooltip += "Approved By Monitor(s):\n";
 						for each(var monitorNameString:String in _fileData.monitorApproved) {
-							approvedTooltip += monitorNameString + "\n";
+							approvedMonitorTooltip += monitorNameString + "\n";
 						}
-						approvedTooltip += "\n";
+						approvedMonitorTooltip += "\n";
 						
 						tickBadge.show = true;
-						tickBadge.approved = true;
+						tickBadge.approvedMonitor = tickBadge.APPROVED;
 					}
 					
 					// Now lets attach the tooltip
-					tickBadge.toolTip = approvedTooltip;
+					tickBadge.researcherLabel.toolTip = approvedResearcherTooltip;
+					tickBadge.monitorLabel.toolTip = approvedMonitorTooltip;
 					
 				} else {
 					tickBadge.show = false;
@@ -321,8 +331,9 @@
 		<mx:Image id="icon" height="100" width="100" verticalAlign="middle" horizontalAlign="center" maintainAspectRatio="true" toolTip="Description: {description}" alpha="{checkedOut ? 0.5 : 1}" mouseDown="vgroup1_mouseDownHandler(event)" 
 				  mouseUp="vgroup1_mouseUpHandler(event)" filters="{shadow123}" />
 		<components:NotificationBadge id="notificationBadge" left="75" notificationCount="{notificationCount}" click="notificationBadge_clickHandler(event)" />		
-		<components:TickBadge horizontalCenter="0" id="tickBadge" show="false" />
+		<components:TickBadge left="0" id="tickBadge" show="false" />
 	</s:Group>
 	
 	<s:Label id="fileLabel" text="{title}{version > 0 ? '_v' + version : ''}{screeningCount > 0 ? '_r' + screeningCount : ''}{exhibitionCount > 0 ? '_e' + exhibitionCount : ''} ({ext == 'pot' ? 'ppt' : ext})" width="100%" textAlign="center" />
+	<s:Label id="downloadTitleLabel" text="hello world" width="100%" textAlign="center" color="0x93259B" />
 </s:VGroup>

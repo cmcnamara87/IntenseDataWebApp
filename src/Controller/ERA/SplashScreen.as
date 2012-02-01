@@ -1,9 +1,12 @@
 package Controller.ERA
 {
 	import Controller.AppController;
+	import Controller.Utilities.Auth;
 	
 	import Model.AppModel;
+	import Model.Model_ERACase;
 	import Model.Model_ERAProject;
+	import Model.Model_ERAUser;
 	
 	import View.ERA.SplashScreen;
 	
@@ -71,6 +74,16 @@ package Controller.ERA
 				return;
 			}
 			trace("got all cases, adding to splash screen");
+			
+			if(Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year)) {
+				for(var i:Number; i < eraCaseArray.length; i++) {
+					var eraCase:Model_ERACase = eraCaseArray[i] as Model_ERACase;
+					if(!(eraCase.readyForDownload && !eraCase.libraryDownloaded)) {
+						eraCaseArray.splice(i, 1);
+						i--; // correcting for it being removed from the list
+					}
+				}
+			}
 			splashView.addCases(eraCaseArray);
 		
 			

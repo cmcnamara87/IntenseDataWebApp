@@ -16,6 +16,8 @@ package Controller.ERA
 	import Model.Model_ERAProject;
 	import Model.Model_ERARoom;
 	import Model.Model_ERAUser;
+	import Model.Model_Notification;
+	import Model.Transactions.ERAProject.Transaction_AddFileApproval;
 	import Model.Transactions.ERAProject.Transaction_CreateAllCases;
 	import Model.Transactions.ERAProject.Transaction_CreateAllResearchers;
 	import Model.Transactions.ERAProject.Transaction_SendMailFromNotification;
@@ -25,6 +27,7 @@ package Controller.ERA
 	import View.ERA.NoERAFound;
 	import View.ERA.components.EvidenceItem;
 	import View.ERA.components.NotificationBar;
+	import View.ERA.components.rooms.Exhibition;
 	
 	import flash.events.Event;
 	import flash.net.FileReference;
@@ -63,33 +66,6 @@ package Controller.ERA
 			if(AppController.eraProjectArray == null || AppController.eraProjectArray.length == 0) {
 				view = new NoERAFound();
 			}
-		
-			/*var test:Model_ERANotification = new Model_ERANotification();
-			test.eraCase = new Model_ERACase();
-			test.eraCase.rmCode = "123456789";
-			test.eraCase.title = "Test Case";
-			test.fullName = "John Smith";
-			test.file = new Model_ERAFile();
-			test.file.title = "Test File";
-			test.room = new Model_ERARoom();
-			test.room.roomTitle = "Test Room";
-			test.comment_room = new Model_ERAConversation();
-			test.comment_room.text = "Test Comment";
-			test.comment_file = new Model_Commentary();
-			test.comment_file.annotation_text = "Test Comment";
-			test.logItem = new Model_ERALogItem();
-			test.logItem.title = "Test Log Item Title";
-			
-			for each(var notificationType:String in Model_ERANotification.NOTIFICATION_TYPE_ARRAY) {
-				test.type = notificationType;
-				var emailObjectStaff:Object = Model_ERANotification.getEmailMessage(test, true, false);
-				AppModel.getInstance().sendEmail("mark@intensedata.com.au", emailObjectStaff.subject, emailObjectStaff.body);
-				var emailObjectStaff:Object = Model_ERANotification.getEmailMessage(test, false, true);
-				AppModel.getInstance().sendEmail("mark@intensedata.com.au", emailObjectStaff.subject, emailObjectStaff.body);
-			}*/
-//			var test:Transaction_CreateAllResearchers = new Transaction_CreateAllResearchers();
-			
-//			var test:Transaction_CreateAllCases = new Transaction_CreateAllCases();
 			
 			super();
 		}
@@ -188,9 +164,9 @@ package Controller.ERA
 		
 		private function packageFileNamesSaved(status:Boolean) {
 			if(!status) {
-				AppController.layout.notificationBar.showError("Could not update package names");
+				AppController.layout.notificationBar.showError("Could Not Update File Names");
 			} else {
-				AppController.layout.notificationBar.showGood("Package Names Updated");
+				AppController.layout.notificationBar.showGood("File Names Updated");
 			}
 		}
 		/* ====================================== END OF SAVE PACKAGE FILE NAMES ================================= */
@@ -202,6 +178,12 @@ package Controller.ERA
 		}
 		private function packageDownloaded(status:Boolean, packageUri:String = ""):void {
 			if(status) {
+				try {
+					(caseView.room as Exhibition).enableDownloadButton();
+				} catch (e:Error) {
+					
+				}
+				
 				layout.notificationBar.showGood("Package Downloaded");
 				
 				var req:URLRequest = new URLRequest("http://" + Recensio_Flex_Beta.serverAddress+ "/" + packageUri);
@@ -215,12 +197,7 @@ package Controller.ERA
 		/* ====================================== END OF DOWNLOAD PACKAGE ================================= */
 		
 		
-		private function resendLibraryNotification(e:IDEvent):void {
-			layout.notificationBar.showProcess("Sending Library Notification");
-		}
-		private function libraryNotificationSent(status:Boolean):void {
-			
-		}
+	
 		
 		/* ======================================= Change File Count ======================================= */
 		private function changeFileCount(e:IDEvent):void {
@@ -301,6 +278,20 @@ package Controller.ERA
 			}
 		}
 		/* ====================================== END OF MOVE ALL FILES TO DIFFERENT ROOM ================================= */
+		
+		
+		private function resendLibraryNotification(e:IDEvent):void {
+			layout.notificationBar.showProcess("Sending Library Notification");
+			// We basically just repeat the email for moving the files to the exhibition
+			AppModel.getInstance().createERANotification(AppController.currentEraProject.year, getRoom(Model_ERARoom.EXHIBIT).base_asset_id, Auth.getInstance().getUsername(),
+				Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
+				Model_ERANotification.ALL_FILES_MOVED_TO_EXHIBITION, 0, 0, 0);
+			
+			libraryNotificationSent();
+		}
+		private function libraryNotificationSent():void {
+			layout.notificationBar.showGood("Library Reminder Sent");
+		}
 		
 		
 		/* ======================================== CHANGE A FILE IN FORENSIC LAB TO BE ACTIVE/INACTIVE =============================== */
@@ -403,7 +394,7 @@ package Controller.ERA
 			if(!(Auth.getInstance().isSysAdmin() || isProductionManager 
 				|| Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)
 				|| Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year))) {
-				caseView.showAccessDenied("Sorry, the Exhibition can only be accessed by the " + Model_ERAUser.SYS_ADMIN + ", " + Model_ERAUser.PRODUCTION_MANAGER + 
+				caseView.showAccessDenied("Sorry, the Exhibition Room can only be accessed by the " + Model_ERAUser.SYS_ADMIN + ", " + Model_ERAUser.PRODUCTION_MANAGER + 
 					", " + Model_ERAUser.MONITOR + " or " + Model_ERAUser.LIBRARY_ADMIN);
 				
 				return;
@@ -421,7 +412,7 @@ package Controller.ERA
 		}
 		private function gotExhibitionFiles(status:Boolean, fileArray:Array):void {
 			if(!status) {
-				layout.notificationBar.showError("Failed to get forensic lab files");
+				layout.notificationBar.showError("Failed to get Exhibition Files");
 				return;
 			}
 			caseView.showExhibition(fileArray);
@@ -565,6 +556,23 @@ package Controller.ERA
 				return;
 			}
 			
+			// Okay now we need to filter the cases based on the user
+			// because we are doing this special thing for the library person? i think?
+			// so that they only see cases that they havent downloaded
+			// i should have just done this with acls but wtf i dont care.
+			if(Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year) && !(
+				Auth.getInstance().isSysAdmin() || Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year) ||
+				isResearcher || isProductionManager || isTeamManager || Auth.getInstance().hasRoleForYear(Model_ERAUser.VIEWER, AppController.currentEraProject.year)
+			)) {
+				for(var i:Number; i < this.eraCaseArray.length; i++) {
+					var eraCase:Model_ERACase = eraCaseArray[i] as Model_ERACase;
+					if(!(eraCase.readyForDownload && !eraCase.libraryDownloaded)) {
+						this.eraCaseArray.splice(i, 1);
+						i--; // correcting for it being removed from the list
+					}
+				}
+			}
+		
 			if(caseID == 0) {
 				// We havent been passed a case ID, so lets just default to the first case for this ERA
 				if(eraCaseArray.length > 0) {
@@ -634,7 +642,11 @@ package Controller.ERA
 				// Store all the rooms
 				roomArray = eraRoomArray;
 				
+				trace("era room array", eraRoomArray);
+				
 				// Add give the room data to the view
+				if(!caseView) return;
+				
 				caseView.addRoomData(eraRoomArray);
 				
 				switch(roomType) {
