@@ -73,6 +73,7 @@ package Model.Transactions.ERAProject
 		
 		private function deleteUser():void {
 			// Get out the ERA object
+			trace("DELETING USER", username);
 			var baseXML:XML = connection.packageRequest("user.destroy", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
@@ -88,6 +89,7 @@ package Model.Transactions.ERAProject
 				callback(false);
 				return;
 			} else {
+				trace("USER DELETED");
 				callback(true, username);
 				return;
 			}

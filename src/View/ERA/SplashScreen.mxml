@@ -326,7 +326,7 @@
 		</s:VGroup>
 		<s:VGroup width="620" height="100%" right="150" horizontalAlign="left">
 			<s:VGroup width="100%" horizontalAlign="center">
-				<s:Label text="What would you like to do now?" color="0xFFFFFF" fontSize="32" paddingTop="40" paddingBottom="40" filters="{myFilter}"/>
+				<s:Label text="What would you like to do now?" color="0xFFFFFF" fontSize="32" paddingTop="40" paddingBottom="40" paddingLeft="25" filters="{myFilter}"/>
 				
 				<s:HGroup verticalAlign="middle" gap="20" width="443">
 					<s:Button label="Create a Case" visible="{Auth.getInstance().isSysAdmin()}" includeInLayout="{Auth.getInstance().isSysAdmin()}" height="35" fontSize="16" cornerRadius="18" color="0xFFFFFF" chromeColor="0x538bbe" width="200" click="button1_clickHandler(event)"/>

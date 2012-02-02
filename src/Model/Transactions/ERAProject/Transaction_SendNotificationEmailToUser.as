@@ -91,12 +91,12 @@ package Model.Transactions.ERAProject
 			
 			if(isSysAdmin || isProductionManager || isProductionTeam) {
 				var messageObject:Object = Model_ERANotification.getEmailMessage(notification, true, false);
-				sendMailToUser(username, messageObject.subject, messageObject.body, "cifera@qut.edu.au");
+				sendMailToUser(username, messageObject.subject, messageObject.body, "p.hempenstall@qut.edu.au");
 			} else if(isMonitor || isResearcher || isLibraryAdmin) {
 				var messageObject:Object = Model_ERANotification.getEmailMessage(notification, false, true);
 				
  				// p.hempenstall@qut.edu.au
-				sendMailToUser(username, messageObject.subject, messageObject.body, "cifera@qut.edu.au");
+				sendMailToUser(username, messageObject.subject, messageObject.body, "p.hempenstall@qut.edu.au");
 			}
 			// so now we have the roles, lets get the message of what we need to say
 
@@ -116,6 +116,8 @@ package Model.Transactions.ERAProject
 			argsXML.to = username;
 			argsXML.subject = subject;
 			argsXML.body = body;
+//			argsXML.bcc = bcc
+//			argsXML.appendChild(XML("<bcc>" + "cifera@qut.edu.au" + "</bcc><bcc>" + bcc + "</bcc>"));
 			if(bcc != "") {
 				argsXML.bcc = bcc;
 			}
