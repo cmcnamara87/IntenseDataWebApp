@@ -92,7 +92,7 @@ package Controller.Utilities {
 			},
 			{
 				url: 'useradmin',
-				title: 'User Admin',
+				title: 'User Manager',
 				classname: UserAdminController
 			},
 			{

@@ -51,6 +51,20 @@
 				
 			}
 			
+			public function quickUpdateERAUserArray(eraUserArray:Array):void {
+				
+				this.allERAUsers = eraUserArray;
+				
+				// Update all the Role dropdowns (if there are any)
+				for(var i:Number = 0; i < roles.numElements; i++) {
+					var roleComponent:ERARole = roles.getElementAt(i) as ERARole;
+					
+					roleComponent.addAllUsers(eraUserArray);
+					
+					roleComponent.update();
+				}
+			}
+			
 			public function addERAUsers(eraUserArray:Array):void {
 				
 				this.allERAUsers = eraUserArray;
@@ -82,6 +96,7 @@
 					userListItem.firstName = user.firstName;
 					userListItem.lastName = user.lastName;
 					userListItem.username = user.username;
+					userListItem.showEditable = true;
 					userListItem.deleteEventToThrow = IDEvent.ERA_DELETE_USER;
 					allUsers.addElement(userListItem);
 					
@@ -137,6 +152,14 @@
 				}
 			}
 
+			/*protected function hello_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				hello.verticalScrollBar.stepSize = 5;
+				hello.verticalScrollBar.snapInterval = 1;
+				trace("clicked");
+			}*/
+			
 		]]>
 	</fx:Script>
 
@@ -147,7 +170,7 @@
 	<s:BorderContainer width="100%" backgroundColor="0xe4e5e6" height="80" borderVisible="false">
 		<s:HGroup verticalAlign="middle" height="100%" width="100%" paddingLeft="20" paddingRight="20">
 			<s:VGroup width="100%" paddingTop="10">
-					<s:Label text="User Administration {currentYear}" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
+					<s:Label text="User Manager {currentYear}" fontSize="30" fontWeight="bold" color="0x5e6469" height="40" width="100%">
 						<!--<s:filters>
 							<s:DropShadowFilter distance="2" angle="90" color="0xFFFFFF" blurX="0" blurY="0"/>
 						</s:filters>-->
@@ -157,7 +180,7 @@
 		</s:HGroup>
 	</s:BorderContainer>
 	
-	<s:Scroller width="100%" height="100%" >
+	<s:Scroller  id="hello" width="100%" height="100%" >
 		<s:VGroup horizontalAlign="center" width="100%">
 			<!-- Content box -->
 			<s:VGroup width="960" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">

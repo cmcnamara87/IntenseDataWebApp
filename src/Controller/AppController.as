@@ -49,7 +49,8 @@ package Controller {
 //		public static var ERARoles:Array = new Array("sys_admin", "monitor", "researcher", "production_manager", "production_team", "viewer");
 		
 		
-		private static var notificationTimer:Timer = new Timer(60000);
+		private static var notificationTimer:Timer = new Timer(300000);
+		private static var timeoutAvoidanceTimer:Timer = new Timer(600000);
 		
 		public function AppController() {
 			setLogoutButton();
@@ -61,7 +62,11 @@ package Controller {
 				setupEventListeners();
 			});
 			
-			//notificationTimer.addEventListener(TimerEvent.TIMER, updateNotifications);
+			notificationTimer.addEventListener(TimerEvent.TIMER, updateNotifications);
+			notificationTimer.start();
+			
+			timeoutAvoidanceTimer.addEventListener(TimerEvent.TIMER, timeoutUpdate);
+			timeoutAvoidanceTimer.start();
 			
 			// The content has finished loading
 			// means we have gone to another page, so lets update whats on the buttons
@@ -70,10 +75,14 @@ package Controller {
 			});
 			
 			layout.addEventListener(IDEvent.ERA_CHANGE_NOTIFICATION_READ_STATUS, notificationStatusChanged);
+			layout.addEventListener(IDEvent.ERA_MARK_ALL_NOTIFICATIONS_AS_READ, markAllAsReadButtonClicked);
 			
 			super();
 		}
 	
+		private static function timeoutUpdate(e:TimerEvent):void {
+			AppModel.getInstance().stayActiveRequest();
+		}
 		
 		private static function setupEventListeners():void {
 			layout.header.logoutButton.addEventListener(MouseEvent.CLICK, logoutButtonClicked);
@@ -93,7 +102,6 @@ package Controller {
 			
 			// Changing ERA years
 			layout.header.eraDropDown.addEventListener(IndexChangeEvent.CHANGE, eraChanged);
-			
 		}
 		
 		
@@ -244,6 +252,7 @@ package Controller {
 			Dispatcher.call("reports");
 		}
 		
+		
 		/**
 		 * Updates the buttons whenever we load a new page
 		 * 
@@ -284,6 +293,22 @@ package Controller {
 		}
 		
 		/* ============================ CHANGING READ STATUS =========================== */
+		private static function markAllAsReadButtonClicked(e:IDEvent):void {
+			if(notificationsArray != null) {
+				AppModel.getInstance().markAllNotificationsAsRead(notificationsArray, markedAllAsRead);
+			}
+		}
+		private static function markedAllAsRead(status:Boolean):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to mark all as read");
+			} else {
+				layout.notificationBar.showGood("Marked all as Read");
+				layout.header.notificationButton.setStyle('chromeColor', "0x222222");
+				layout.header.notificationButton.setStyle('font-weight', "normal");
+				layout.header.notificationButton.label = "0";
+			}
+		}
+		
 		/**
 		 * The user has changed the read status of a notification 
 		 * @param e
@@ -299,13 +324,15 @@ package Controller {
 		private static function notificationReadStatusUpdated(status:Boolean):void {
 			if(!status) {
 				layout.notificationBar.showError("Failed to mark as read");
+			} else {
+				layout.notificationBar.showGood("Marked as Read");
 			}
 		}
 		/* ============================ END OF CHANGING READ STATUS =========================== */
 		
-		/*private static function updateNotifications(e:TimerEvent):void {
+		private static function updateNotifications(e:TimerEvent):void {
 			getNotifications();
-		}*/
+		}
 		
 		/**
 		 * Get the notification for a the current user from the database. 
@@ -369,6 +396,7 @@ package Controller {
 		private static function showNotifications():void {
 						
 			// show the panel
+			layout.notificationPanel.showAllNotifications();
 			layout.notificationPanel.showPanel();
 			// position it near the notifiaction panel button
 			AppController.layout.notificationPanel.x = 	IDGUI.localToLocal(AppController.layout.header.logoNotificationGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x - AppController.layout.header.notificationButton.width/2;
@@ -380,7 +408,7 @@ package Controller {
 		
 		private static function hideNotifications():void {
 			layout.notificationPanel.hidePanel();
-			getNotifications();
+//			getNotifications();
 		}
 		
 		private function deleteNotification(e:IDEvent):void {

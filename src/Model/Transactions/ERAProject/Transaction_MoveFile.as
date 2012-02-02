@@ -81,8 +81,10 @@ package Model.Transactions.ERAProject
 			}
 			
 			// Update the move count
+			// counts the number of times we have moved a file to the exhibition or review lab
 			var moveCountUpdate:Transaction_UpdateMoveCount = new Transaction_UpdateMoveCount(fileID, toRoomType, connection);
 			
+			// If we should send a notification, go it
 			if(notifications) {
 				sendNotification();
 			}
@@ -90,19 +92,37 @@ package Model.Transactions.ERAProject
 			AppModel.getInstance().updateERAFileTemperature(fileID, true, function(status:Boolean):void {
 				trace("Made file hot");
 			});
+			
+			// if we are moving from the screening to the forensic lab
+			// we need to strip all the approvals
+			if(toRoomType == Model_ERARoom.FORENSIC_LAB) {
+				AppModel.getInstance().removeAllFileApprovals(fileID, approvalsRemoved);
+			} else {
+				callback(true);
+			}
+		}
+		
+		private function approvalsRemoved(status:Boolean) {
+			if(!status) {
+				callback(false);
+				return;
+			}
+			
 			callback(true);
 		}
 		
 		private function sendNotification():void {
-			// only send the ontification, if we are moving the file to the screening lab
 
+			// we only want to send notifications if we are moving it to the screening (from forensic)
+			// or to the forensic, from screening
+			// screening to exhibition (and reverse) are covered by the 'move all files' transaction
 			if(toRoomType == Model_ERARoom.SCREENING_ROOM) {
 				trace("creating screen room notification");
 				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, toRoomID, Auth.getInstance().getUsername(),
 					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
 					Model_ERANotification.FILE_MOVED_TO_SCREENING_LAB, 0, fileID, 0);
 			} else if(toRoomType == Model_ERARoom.FORENSIC_LAB) {
-				trace("creating exhibition notification");
+				trace("creating forensic lab notification");
 				AppModel.getInstance().createERANotification(AppController.currentEraProject.year, toRoomID, Auth.getInstance().getUsername(),
 					Auth.getInstance().getUserDetails().firstName, Auth.getInstance().getUserDetails().lastName,
 					Model_ERANotification.FILE_MOVED_TO_FORENSIC_LAB, 0, fileID, 0);

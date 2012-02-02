@@ -9,7 +9,7 @@ package Model.Transactions.ERAProject
 	
 	import flash.events.Event;
 
-	public class Transaction_AddFileApproval
+	public class Transaction_UpdateFileApproval
 	{
 		private var year:String;
 		private var roomID:Number;
@@ -20,7 +20,7 @@ package Model.Transactions.ERAProject
 		private var connection:Connection;
 		private var callback:Function;
 		
-		public function Transaction_AddFileApproval(year:String, caseID:Number, roomID:Number, fileID:Number, role:String, approval:Boolean, connection:Connection, callback:Function)
+		public function Transaction_UpdateFileApproval(year:String, caseID:Number, roomID:Number, fileID:Number, role:String, approval:Boolean, connection:Connection, callback:Function)
 			// year:String, roomID:Number, firstName:String, lastName:String, notificationType:String, caseID:Number, fileID:Number, username:String, connection:Connection, callback:Function)
 		{
 			this.year = year;
@@ -43,6 +43,11 @@ package Model.Transactions.ERAProject
 			connection.sendRequest(baseXML, gotFile);
 		}
 		
+		/**
+		 * Got the file. Now lets add on the new approval, and lock out that user from the file. 
+		 * @param e
+		 * 
+		 */		
 		private function gotFile(e:Event):void {
 			var data:XML;
 			if((data = AppModel.getInstance().getData("got the file", e)) == null) {

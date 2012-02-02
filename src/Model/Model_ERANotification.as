@@ -20,7 +20,11 @@ package Model
 			FILE_APPROVED_BY_RESEARCHER,
 			FILE_NOT_APPROVED_BY_RESEARCHER,
 			FILE_APPROVED_BY_MONITOR,
-			FILE_NOT_APPROVED_BY_MONITOR];
+			FILE_NOT_APPROVED_BY_MONITOR,
+			LIBRARIAN_PACKAGE_DOWNLOADED,
+			ALL_FILES_MOVED_TO_SCREENING_LAB,
+			ALL_FILES_MOVED_TO_EXHIBITION
+		];
 		// comment made
 		public static const FILE_COMMENT:String = "file_comment";
 		// {user} wrote {comment text/id} on {file name/id} {room name/id} -> have commen text/id, have file id, have room id, need filename and room name
@@ -46,6 +50,9 @@ package Model
 		
 		// When the librarian has downloaded a packge
 		public static const LIBRARIAN_PACKAGE_DOWNLOADED:String = "packageDOwnloaded";
+		
+		// When a user is deleted from the system
+		public static const USER_DELETED:String = "userDeleted";
 		
 		// file uploaded
 		public static const FILE_UPLOADED:String =  "file_uploaded";
@@ -124,6 +131,7 @@ package Model
 				room = new Model_ERARoom();
 				room.setData(rawData.related.(@type=="notification_room").asset[0]);
 			}
+			
 			if(rawData.related.(@type=="notification_comment").asset.length()) {
 				if(this.type == FILE_COMMENT || this.type == ANNOTATION) {
 					comment_file = new Model_Commentary();
@@ -159,6 +167,13 @@ package Model
 			
 			
 			switch(notificationData.type) {
+				case USER_DELETED:
+					if(isStaff) {
+						// DONE
+						messageObject.subject += " User Deleted ";
+						messageObject.body += notificationData.fullName + " downloaded the Exhibition package for Case: \"" + notificationData.eraCase.title + "\"."; 
+					}	
+					break;
 				case LIBRARIAN_PACKAGE_DOWNLOADED:
 					if(isStaff) {
 						// DONE
@@ -416,7 +431,9 @@ package Model
 					&& (eraRoom.roomType == Model_ERARoom.EVIDENCE_ROOM ||  eraRoom.roomType == Model_ERARoom.SCREENING_ROOM))
 			) {
 				for each(var researcher:Model_ERAUser in eraCase.researchersArray) {
-					if(productionTeamMember.username == Auth.getInstance().getUsername() && 
+					// Do not send the current user, any notification except for approval and disapproval confirmations, and evidence collected confirmations
+					// so dont send them an email about them commenting
+					if(researcher.username == Auth.getInstance().getUsername() && 
 						(	notificationType !=  Model_ERANotification.FILE_APPROVED_BY_RESEARCHER || 
 							notificationType !=  Model_ERANotification.FILE_NOT_APPROVED_BY_RESEARCHER || 
 							notificationType !=  Model_ERANotification.EVIDENCE_COLLECTED

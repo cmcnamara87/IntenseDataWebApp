@@ -67,6 +67,7 @@ package Controller.ERA.Admin
 		
 		
 		public static const REPORT_RESEARCHERS_IN_SCHOOLS:String = "REPORT_RESEARCHERS_IN_SCHOOLS";
+		public static const REPORT_RESEARCHERS_CASES:String = "REPORT_RESEARCHERS_CASES";
 		public static const REPORT_CASES_IN_EXHIBITION:String = "REPORT_CASES_IN_EXHIBITION";
 		public static const REPORT_CASES_DOWNLOADED:String = "REPORT_CASES_DOWNLOADED";
 		public static const REPORT_CASES_NOT_COLLECTED:String = "REPORT_CASES_NOT_COLLECTED";
@@ -106,6 +107,13 @@ package Controller.ERA.Admin
 				case REPORT_RESEARCHERS_IN_SCHOOLS:
 					return "CIF ERA " + AppController.currentEraProject.year + ": List of researchers";
 					break;
+				case REPORT_RESEARCHERS_CASES:
+					if(download) {
+						return "CIF ERA " + AppController.currentEraProject.year + " - Researchers Cases";
+					} else {
+						return "CIF ERA " + AppController.currentEraProject.year + ": Researcher's Cases";
+					}
+					break;
 				case REPORT_CASES_IN_EXHIBITION:
 					if(download) {
 						return "Exhibition Room - Cases ready to be exhibited";
@@ -115,9 +123,9 @@ package Controller.ERA.Admin
 					break;
 				case REPORT_CASES_DOWNLOADED:
 					if(download) {
-						return "Exhibition Room - Cases Downloaded";
+						return "Exhibition Room - Cases Downloaded Status";
 					} else {
-						return "Exhibition Room: Cases Downloaded";
+						return "Exhibition Room: Cases Downloaded Status";
 					}
 					break;
 				case REPORT_CASES_NOT_COLLECTED:
@@ -220,6 +228,9 @@ package Controller.ERA.Admin
 				case REPORT_RESEARCHERS_IN_SCHOOLS:
 					makeResearcherSchoolReport();
 					break;
+				case REPORT_RESEARCHERS_CASES:
+					makeReseracherCasesReport();
+					break;
 				case REPORT_CASES_IN_EXHIBITION:
 					makeCasesInExhibitionReport();
 					break;
@@ -251,6 +262,62 @@ package Controller.ERA.Admin
 			
 			p.save(Method.REMOTE, "http://" + Recensio_Flex_Beta.serverAddress + "/print_pdf.php", Download.INLINE , ReportController.getReportPrettyName(selectedReport, true) + "_" + dateString + ".pdf");
 		}
+		
+		/* =============================== MAKE makeReseracherCasesReport ===================================== */
+		private function makeReseracherCasesReport():void {
+			// Change button to say Generating...
+			reportsView.generateButton.label = "Generating...";
+			layout.notificationBar.showProcess("Generating Report...");
+			AppModel.getInstance().getResearchersCases(AppController.currentEraProject.year, gotResearcherCases);
+		}
+		private function gotResearcherCases(status:Boolean, researcherCaseArray:Array=null):void {
+			if(!status) {
+				reportsView.generateButton.label = "Generate";
+				layout.notificationBar.showError("Failed to generate Report");
+				return;
+			}
+			layout.notificationBar.showGood("Finished Generating");
+			reportsView.generateButton.label = 'Open Report';
+			
+			var p:PDF = makeReportWithHeader(getReportPrettyName(REPORT_RESEARCHERS_CASES));
+			
+			var dp:ArrayCollection = new ArrayCollection();
+			
+			p.setFont(myriadFont, 10);
+			p.textStyle( new RGBColor ( 0x000000) );
+			
+			for each(var researcherCasesObject:Object in researcherCaseArray) {
+				var researcher:Model_ERAUser = researcherCasesObject.researcher;
+				var caseArray:Array = researcherCasesObject.caseArray;
+				
+				
+				var caseString:String = "";
+				for each(var eraCase:Model_ERACase in caseArray) {
+					caseString += eraCase.rmCode + ", " + eraCase.title + "\n";
+				}
+
+				// add a table row
+				dp.addItem( { researcher : researcher.lastName + ", " + researcher.firstName + " (" + researcher.username + ")", cases: caseString } );
+			}
+			
+			var gridColumnAge:GridColumn = new GridColumn("Researcher", "researcher", 90, Align.LEFT, Align.LEFT);
+			var gridColumnEmail:GridColumn = new GridColumn("Cases", "cases", 95, Align.LEFT, Align.LEFT);
+			//			var gridColumnLastName:GridColumn = new GridColumn("Last Name", "lastName", 45, Align.LEFT, Align.LEFT);
+			
+			// create a columns Array
+			// it determines the order shown in the PDF
+			var columns:Array = new Array (gridColumnAge, gridColumnEmail);
+			
+			// create a Grid object as usual
+			var grid:Grid = new Grid( dp.toArray(), 200, 120, new RGBColor ( 0xAAAAAA ), new RGBColor (0xCCCCCC), true, new RGBColor(0x666666), 1, null, columns );
+			
+			
+			p.addGrid(grid);
+			//			reportData = p.save( Method.LOCAL );
+			sendPDFtoPHP(p);
+		}
+		
+		/* =============================== END OF FILES CHECKED IN OUT REPORT ===================================== */
 		
 		/* =============================== MAKE CASSES WITH EVIDENCE UNDER REVIEW REPORT ===================================== */
 		private function makeCasesWithEvidenceUnderReview():void {
@@ -544,8 +611,9 @@ package Controller.ERA.Admin
 			reportsView.generateButton.label = "Generating...";
 			layout.notificationBar.showProcess("Generating Report...");
 			
-			AppModel.getInstance().getCasesInExhibition(gotCasesDownloaded);
+			AppModel.getInstance().getCasesDownloaded(gotCasesDownloaded);
 		}
+		
 		private function gotCasesDownloaded(status:Boolean, eraCaseArray:Array=null):void {
 			if(!status) {
 				reportsView.generateButton.label = "Generate";
@@ -570,19 +638,20 @@ package Controller.ERA.Admin
 				}
 				
 				// add a table row
-				dp.addItem( { rmCode : eraCase.rmCode, title : eraCase.title, researchers : researchersString } );
+				dp.addItem( { rmCode : eraCase.rmCode, title : eraCase.title, readyForDownload : eraCase.readyForDownload ? "YES" : "NO", libraryDownloaded : eraCase.libraryDownloaded ? "YES" : "NO" } );
 			}
 			
 			// create columns to specify the column order
 			// 155 pixels wide?
 			var gridColumnAge:GridColumn = new GridColumn("RM Code", "rmCode", 30, Align.LEFT, Align.LEFT);
-			var gridColumnEmail:GridColumn = new GridColumn("Title", "title", 120, Align.LEFT, Align.LEFT);
-			var gridColumnFirstName:GridColumn = new GridColumn("Researchers", "researchers", 40, Align.LEFT, Align.LEFT);
+			var gridColumnEmail:GridColumn = new GridColumn("Title", "title", 80, Align.LEFT, Align.LEFT);
+			var gridColumnFirstName:GridColumn = new GridColumn("Ready to Download", "readyForDownload", 40, Align.LEFT, Align.LEFT);
+			var gridColumnFirstName2:GridColumn = new GridColumn("Downloaded", "libraryDownloaded", 40, Align.LEFT, Align.LEFT);
 			//			var gridColumnLastName:GridColumn = new GridColumn("Last Name", "lastName", 45, Align.LEFT, Align.LEFT);
 			
 			// create a columns Array
 			// it determines the order shown in the PDF
-			var columns:Array = new Array (gridColumnAge, gridColumnEmail, gridColumnFirstName);
+			var columns:Array = new Array (gridColumnAge, gridColumnEmail, gridColumnFirstName, gridColumnFirstName2);
 			
 			// create a Grid object as usual
 			var grid:Grid = new Grid( dp.toArray(), 200, 120, new RGBColor ( 0xAAAAAA ), new RGBColor (0xCCCCCC), true, new RGBColor(0x666666), 1, null, columns );

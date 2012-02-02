@@ -68,6 +68,12 @@ package Model.Transactions.ERAProject
 			trace("package created", data);
 			packageUri = data.reply.result.zip;
 			
+			if(!Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year)) {
+				callback(true, packageUri);
+				return;
+			}
+			
+			// This is just for library people
 			// now we need to mark that its been downloaded
 			var baseXML:XML = connection.packageRequest("asset.set", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;

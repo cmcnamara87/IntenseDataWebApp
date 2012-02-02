@@ -264,18 +264,18 @@ package Controller.ERA {
 				trace("finished commenting an approve", currentAssetID);
 				
 				if(CaseController.isResearcher) {
-					AppModel.getInstance().eraAddFileApproval(AppController.currentEraProject.year, caseID, roomID, currentAssetID, Model_ERAUser.RESEARCHER, true, lockOutStatusUpdated);
+					AppModel.getInstance().eraUpdateFileApproval(AppController.currentEraProject.year, caseID, roomID, currentAssetID, Model_ERAUser.RESEARCHER, true, lockOutStatusUpdated);
 				}
 				if(Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)) {
-					AppModel.getInstance().eraAddFileApproval(AppController.currentEraProject.year, caseID, roomID, currentAssetID, Model_ERAUser.MONITOR, true, lockOutStatusUpdated);
+					AppModel.getInstance().eraUpdateFileApproval(AppController.currentEraProject.year, caseID, roomID, currentAssetID, Model_ERAUser.MONITOR, true, lockOutStatusUpdated);
 				}
 			} else {
 				trace("finished commenting an DO NOT approve");
 				if(CaseController.isResearcher) {
-					AppModel.getInstance().eraAddFileApproval(AppController.currentEraProject.year, caseID, roomID, currentAssetID, Model_ERAUser.RESEARCHER, false, lockOutStatusUpdated);
+					AppModel.getInstance().eraUpdateFileApproval(AppController.currentEraProject.year, caseID, roomID, currentAssetID, Model_ERAUser.RESEARCHER, false, lockOutStatusUpdated);
 				}
 				if(Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)) {
-					AppModel.getInstance().eraAddFileApproval(AppController.currentEraProject.year, caseID, roomID, currentAssetID, Model_ERAUser.MONITOR, false, lockOutStatusUpdated);
+					AppModel.getInstance().eraUpdateFileApproval(AppController.currentEraProject.year, caseID, roomID, currentAssetID, Model_ERAUser.MONITOR, false, lockOutStatusUpdated);
 				}
 			}
 			

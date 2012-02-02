@@ -67,7 +67,7 @@ package Model.Transactions.ERAProject
 				if(role == Model_ERAUser.MONITOR + "_" + AppController.currentEraProject.year) {
 					isMonitor = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.MONITOR, username);
 				}
-				if(role == Model_ERAUser.MONITOR + "_" + AppController.currentEraProject.year) {
+				if(role == Model_ERAUser.LIBRARY_ADMIN + "_" + AppController.currentEraProject.year) {
 					isLibraryAdmin = AppController.currentEraProject.isEmailEnabled(Model_ERAUser.LIBRARY_ADMIN, username);
 				}
 				if(role == Model_ERAUser.SYS_ADMIN + "_" + AppController.currentEraProject.year) {
@@ -91,12 +91,12 @@ package Model.Transactions.ERAProject
 			
 			if(isSysAdmin || isProductionManager || isProductionTeam) {
 				var messageObject:Object = Model_ERANotification.getEmailMessage(notification, true, false);
-				sendMailToUser(username, messageObject.subject, messageObject.body);
+				sendMailToUser(username, messageObject.subject, messageObject.body, "cifera@qut.edu.au");
 			} else if(isMonitor || isResearcher || isLibraryAdmin) {
 				var messageObject:Object = Model_ERANotification.getEmailMessage(notification, false, true);
 				
  				// p.hempenstall@qut.edu.au
-				sendMailToUser(username, messageObject.subject, messageObject.body, "");
+				sendMailToUser(username, messageObject.subject, messageObject.body, "cifera@qut.edu.au");
 			}
 			// so now we have the roles, lets get the message of what we need to say
 
@@ -105,9 +105,9 @@ package Model.Transactions.ERAProject
 		private function sendMailToUser(username:String, subject:String, body:String, bcc:String=""):void {
 	
 			// only send an email to peter or andrew
-			if(Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP && !(username == "as.thomson@qut.edu.au" || username == "p.hempenstall@qut.edu.au")) {
+			/*if(Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP && !(username == "as.thomson@qut.edu.au" || username == "p.hempenstall@qut.edu.au")) {
 				return;
-			}
+			}*/
 			
 			trace("Final stage: Sending email to", username);
 			

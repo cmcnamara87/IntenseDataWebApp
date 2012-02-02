@@ -132,7 +132,7 @@ package Controller {
 						yearFound = Number(eraProject.year);
 					}
 				}
-				trace("Era saved is",AppController.currentEraProject); 
+				trace("Era saved is", AppController.currentEraProject); 
 				redirect();
 			}
 			

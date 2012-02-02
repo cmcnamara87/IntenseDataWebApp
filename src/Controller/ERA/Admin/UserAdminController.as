@@ -62,6 +62,8 @@ package Controller.ERA.Admin
 			userAdminView.addEventListener(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS, changeEmailOptions, false, 0, true);
 			
 			userAdminView.addEventListener(IDEvent.ERA_CHANGE_ERA_EMAIL_OPTIONS_ARRAY, changeEmailOptionsArray, false, 0, true);
+			
+			userAdminView.addEventListener(IDEvent.ERA_UPDATE_USER_INFO, updateUserInfo, false, 0, true);
 		}
 		
 		/* ========================================== CREATING ERA USER ========================================== */
@@ -257,6 +259,25 @@ package Controller.ERA.Admin
 			layout.notificationBar.showGood("Email options changed.");
 			// Update the current era project
 			AppController.currentEraProject = eraProject;
+		}
+		
+		private function updateUserInfo(e:IDEvent):void {
+			var lastName:String = e.data.lastName;
+			var firstName:String = e.data.firstName;
+			var username:String = e.data.username;
+			
+			layout.notificationBar.showProcess("Updating User Info...");
+			
+			AppModel.getInstance().updateERAUserInfo(username, firstName, lastName, userInfoUpdated);
+		}
+		private function userInfoUpdated(status:Boolean, userArray:Array = null):void {
+			if(!status) {
+				layout.notificationBar.showError("Failed to Update User Info");
+				return;
+			}
+			layout.notificationBar.showGood("User Info Updated");
+			userAdminView.quickUpdateERAUserArray(userArray);
+			
 		}
 		
 		

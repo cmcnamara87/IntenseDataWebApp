@@ -41,7 +41,7 @@ package Model.Transactions.ERAProject.Reports
 				return;
 			}
 			var eraCaseArray:Array = AppModel.getInstance().parseResults(data, Model_ERACase);
-			eraCaseArray.sortOn(["rmCode"], [Array.CASEINSENSITIVE]);
+			eraCaseArray.sortOn(["researcherLastName", "researcherFirstName", "rmCode"], [Array.CASEINSENSITIVE]);
 			
 			callback(true, eraCaseArray);
 		}

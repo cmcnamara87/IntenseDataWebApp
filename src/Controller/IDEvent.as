@@ -184,10 +184,12 @@ package Controller {
 			public static var ERA_SAVE_COMMENT:String = "era_saveComment";
 			public static var ERA_NOTIFICATIONS_UPDATED:String = "era_notificationsUpdated";
 			public static var ERA_CHANGE_NOTIFICATION_READ_STATUS:String = "era_changeNotificationReadStatus";
+			public static var ERA_MARK_ALL_NOTIFICATIONS_AS_READ:String = "era_markAllNotificationsAsRead";
 			public static var ERA_ERROR:String = "era_error";
 			public static var ERA_GO_BACK:String = "era_goBack";
 			public static var ERA_PROGRESS_EVENT:String = "era_progressEvent";
 			public static var ERA_COMPLETE_EVENT:String = "era_completeEvent";
+			public static var ERA_UPDATE_USER_INFO:String = "era_updateUserInfo";
 			
 			public static var ERA_ANNOTATION_CHOSEN_FOR_REFERENCE:String = "era_AnnotationChosenForReference";
 			

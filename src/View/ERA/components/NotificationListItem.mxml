@@ -30,7 +30,7 @@
 			private var timeStamp:String;
 			
 			[Bindable]
-			private var read:Boolean;
+			public var read:Boolean;
 			
 			public function isRead():Boolean {
 				return read;

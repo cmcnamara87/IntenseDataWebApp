@@ -47,18 +47,24 @@
 					var found:Boolean = false;
 					
 					for each (var eraUser:Model_ERAUser in allERAUsers) {
-						if(roleUser.username == eraUser.username) found = true;
+						if(roleUser.username == eraUser.username) {
+							// update any first name, last name stuff that might have changed
+							roleUser.firstName = eraUser.firstName;
+							roleUser.lastName = eraUser.lastName;
+							found = true;
+						}
 					}
 					if(found == false) {
 						userArray.splice(i, 1);
-						userlistDisplay();
+//						userlistDisplay();
 					}
 				}
+				updateUserlistDisplay();
 			}
 			
 			public function addUserWithRole(user:Model_ERAUser):void {
 				userArray.push(user);
-				userlistDisplay();
+				updateUserlistDisplay();
 			}
 			/**
 			 * Adds a list of users that have the set role
@@ -67,10 +73,10 @@
 			public function addUsersWithRole(userArray:Array):void {
 				// Save the user array (so we can update it later if need be)
 				this.userArray = userArray;
-				userlistDisplay();
+				updateUserlistDisplay();
 			}
 			
-			private function userlistDisplay():void {
+			private function updateUserlistDisplay():void {
 				currentUsers.removeAllElements();
 				
 				for each(var user:Model_ERAUser in userArray) {

@@ -9,6 +9,8 @@ package Controller.Utilities {
 	import Model.AppModel;
 	import Model.Model_ERAUser;
 	
+	import View.Layout;
+	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
@@ -183,6 +185,19 @@ package Controller.Utilities {
 			if(useConnection) {
 				AppModel.getInstance().logout();
 			}
+			
+			AppController.allNotificationsArray = new Array();
+			AppController.notificationsArray = new Array();
+			
+			// Reset the notification button
+			AppController.layout.header.notificationButton.label = "0";
+			AppController.layout.header.notificationButton.setStyle('chromeColor', "0x222222");
+			AppController.layout.header.notificationButton.setStyle('font-weight', "normal");
+			
+//			AppController.eraProjectArray = new Array(); // an array of all the era projects in the system
+//			AppController.currentEraProject = null; // the current era project we are looking at
+			
+			AppController.layout.notificationPanel.notificationList.removeAllElements();
 			
 			BrowserController.resetBrowserController();
 			

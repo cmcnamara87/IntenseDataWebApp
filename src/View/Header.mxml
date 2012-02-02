@@ -68,19 +68,37 @@
 			<!-- The logo -->
 			<mx:Image buttonMode="true" click="image1_clickHandler(event)" source="{logo}" width="135" height="32"></mx:Image>
 			<!--<s:TextArea id="mything" />-->
-			<s:ToggleButton chromeColor="0x222222" color="0xFFFFFF" id="notificationButton" fontWeight="bold" height="100%" width="50" label="0" toolTip="Notifications">
-			</s:ToggleButton>
+			<s:Label text="You are Logged in as" color="0xDDDDDD" paddingLeft="10" />
+			<s:Button chromeColor="0x222222" color="0xEEEEEE" id="profileButton" height="30" cornerRadius="15" label="Username" toolTip="Go to your Profile Page" />
+			
+			<s:Label text="  You have " color="0xDDDDDD" />
+			
+			<s:ToggleButton  chromeColor="0x222222" color="0xFFFFFF" id="notificationButton" fontWeight="bold" height="30" cornerRadius="15" width="50" label="0" toolTip="Notifications" />
+			
+			<s:Label text=" Notifications." color="0xDDDDDD" paddingRight="20"/>
+			
+			<s:Line height="100%">
+				<s:stroke>
+					<s:SolidColorStroke color="0x000000" weight="1" caps="round" />
+				</s:stroke>
+			</s:Line>
+			<s:Button chromeColor="0x222222" color="0xEEEEEE" id="adminToolsButton" height="30" cornerRadius="15" label="Admin Manager" toolTip="Switch to Admin View" />
+			<s:Line height="100%">
+				<s:stroke>
+					<s:SolidColorStroke color="0x000000" weight="1" caps="round" />
+				</s:stroke>
+			</s:Line>
 		</s:HGroup>
 		
 		<!-- Add in the button group -->
-		<s:HGroup id="adminToolButtons" includeInLayout="false" paddingLeft="70" visible="false"  width="100%"  height="100%" verticalAlign="middle" gap="0">
+		<s:HGroup id="adminToolButtons" includeInLayout="false" paddingLeft="650" visible="false"  width="100%"  height="100%" verticalAlign="middle" gap="10">
 			<s:Line height="100%">
 				<s:stroke>
 					<s:SolidColorStroke color="0x000000" weight="1" caps="round" />
 				</s:stroke>
 			</s:Line>
 			
-			<s:Button id="newERAButton" label="ERA Edition Manager" chromeColor="0x222222" height="100%" color="0xEEEEEE">
+			<s:Button id="newERAButton" label="ERA Edition Manager" chromeColor="0xc" height="30" cornerRadius="15" color="0xEEEEEE">
 			</s:Button>
 		
 			<s:Line height="100%">
@@ -89,25 +107,35 @@
 				</s:stroke>
 			</s:Line>
 		
-			<s:DropDownList id="eraDropDown" contentBackgroundColor="0x222222" chromeColor="0x222222" height="100%" color="0xEEEEEE" >
+			<s:DropDownList id="eraDropDown" contentBackgroundColor="0x222222" chromeColor="0x222222" height="30" cornerRadius="15" color="0xEEEEEE" >
 			</s:DropDownList>
-			<s:Button id="dashboardButton" enabled="false" label="Dashboard" visible="false" includeInLayout="false" chromeColor="0x222222" height="100%" color="0xEEEEEE">
+			<s:Button id="dashboardButton" enabled="false" label="Dashboard" visible="false" includeInLayout="false" chromeColor="0x222222" height="30" cornerRadius="15" color="0xEEEEEE">
 			</s:Button>
-			<s:Button id="userAdminButton" label="User Admin" chromeColor="0x222222" height="100%" color="0xEEEEEE">
+			<s:Button id="userAdminButton" label="User Manager" chromeColor="0x222222" height="30" cornerRadius="15" color="0xEEEEEE">
 			</s:Button>
-			<s:Button id="caseCreatorButton" label="Case Manager" chromeColor="0x222222" height="100%" color="0xEEEEEE">
+			<s:Button id="caseCreatorButton" label="Case Manager" chromeColor="0x222222" height="30" cornerRadius="15" color="0xEEEEEE">
 			</s:Button>
-			<s:Button id="reportButton" label="Activity Reports" chromeColor="0x222222" height="100%" color="0xEEEEEE">
+			<s:Button id="reportButton" label="Activity Reports" chromeColor="0x222222" height="30" cornerRadius="15" color="0xEEEEEE">
 			</s:Button>
+			
+			<s:Line height="100%">
+				<s:stroke>
+					<s:SolidColorStroke color="0x000000" weight="1" caps="round" />
+				</s:stroke>
+			</s:Line>
 		</s:HGroup>
 		<s:HGroup width="100%">
 		</s:HGroup>
-		<s:HGroup id="globalButtonGroup" visible="false" height="100%"  verticalAlign="middle" gap="0">
+		<s:HGroup id="globalButtonGroup" visible="false" height="100%"  verticalAlign="middle" gap="10" paddingRight="10">
 			<!-- paddingTop="5" paddingBottom="5" paddingRight="20" -->
-			<s:HGroup id="switchingModeButtonGroup"  width="100%" height="100%" gap="0">
-				<s:Button chromeColor="0x222222" color="0xEEEEEE" id="adminToolsButton" height="100%" label="Admin Manager" toolTip="Switch to Admin View" >
-				</s:Button>
-				<s:Button chromeColor="0x222222" color="0xEEEEEE" id="productionToolsButton" height="100%" label="Line of Inquiry" toolTip="Switch to Case View" >
+			<s:HGroup id="switchingModeButtonGroup"  width="100%" height="100%" gap="10" verticalAlign="middle">
+				<s:Line height="100%">
+					<s:stroke>
+						<s:SolidColorStroke color="0x000000" weight="1" caps="round" />
+					</s:stroke>
+				</s:Line>
+				
+				<s:Button chromeColor="0x222222" color="0xEEEEEE" id="productionToolsButton" height="30" cornerRadius="15" label="Line of Inquiry" toolTip="Switch to Case View" >
 				</s:Button>
 			</s:HGroup>
 			
@@ -120,10 +148,9 @@
 			<s:ToggleButton chromeColor="0x222222" color="0xFFFFFF" id="notificationButton" fontWeight="bold" height="100%" width="50" label="0" toolTip="Notifications">
 			</s:ToggleButton>
 			-->
-			<s:Button minWidth="120" chromeColor="0x222222" color="0xEEEEEE" id="profileButton" height="100%" label="Username" toolTip="Go to your Profile Page">
-			</s:Button>
 			
-			<s:Button chromeColor="0x222222" color="0xEEEEEE" id="logoutButton" height="100%" label="Logout" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
+			
+			<s:Button chromeColor="0x222222" color="0xEEEEEE" id="logoutButton" height="30" cornerRadius="15" label="Logout" toolTip="Logout of {Recensio_Flex_Beta.NAME}" >
 			</s:Button>
 			
 			<!--<Element:RoundButton id="logoutButton" width="101" height="22" top="21" right="-10" text="Logout" visible="false" toolTip="Log out of the system"></Element:RoundButton>-->

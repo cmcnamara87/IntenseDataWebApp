@@ -14,8 +14,8 @@ package Model {
 	import Model.Transactions.ERAProject.Reports.Transaction_GetCasesWithoutEvidence;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetCheckedInOutFilesPerCase;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetResearcherInvolvement;
+	import Model.Transactions.ERAProject.Reports.Transaction_GetResearchersCases;
 	import Model.Transactions.ERAProject.Reports.Transaction_GetResearchersInSchools;
-	import Model.Transactions.ERAProject.Transaction_AddFileApproval;
 	import Model.Transactions.ERAProject.Transaction_AddRoleToUser;
 	import Model.Transactions.ERAProject.Transaction_ChangeEmailOptions;
 	import Model.Transactions.ERAProject.Transaction_ChangeEmailOptionsUserArray;
@@ -52,17 +52,22 @@ package Model {
 	import Model.Transactions.ERAProject.Transaction_MoveAllFiles;
 	import Model.Transactions.ERAProject.Transaction_MoveFile;
 	import Model.Transactions.ERAProject.Transaction_RecoverPassword;
+	import Model.Transactions.ERAProject.Transaction_RemoveAllFileApprovals;
 	import Model.Transactions.ERAProject.Transaction_RemoveRoleFromUser;
 	import Model.Transactions.ERAProject.Transaction_RemoveUserFromCase;
 	import Model.Transactions.ERAProject.Transaction_SendMailFromNotification;
+	import Model.Transactions.ERAProject.Transaction_StayActiveRequest;
+	import Model.Transactions.ERAProject.Transaction_UpdateAllNotificationsAsRead;
 	import Model.Transactions.ERAProject.Transaction_UpdateCheckoutStatus;
 	import Model.Transactions.ERAProject.Transaction_UpdateERACase;
 	import Model.Transactions.ERAProject.Transaction_UpdateERAProject;
+	import Model.Transactions.ERAProject.Transaction_UpdateFileApproval;
 	import Model.Transactions.ERAProject.Transaction_UpdateFileLockOutStatus;
 	import Model.Transactions.ERAProject.Transaction_UpdateFileTemperature;
 	import Model.Transactions.ERAProject.Transaction_UpdateLogItemBooleanValue;
 	import Model.Transactions.ERAProject.Transaction_UpdateNotificationReadStatus;
 	import Model.Transactions.ERAProject.Transaction_UpdatePackageNames;
+	import Model.Transactions.ERAProject.Transaction_UpdateUserInfo;
 	import Model.Transactions.ERAProject.Transaction_UploadERAFile;
 	import Model.Transactions.ERAProject.Transaction_UploadFileVersion;
 	import Model.Transactions.Share.Transaction_SetUserAssetShare;
@@ -1872,6 +1877,9 @@ package Model {
 				_connection,
 				callback);
 		}
+		public function markAllNotificationsAsRead(notificationModelArray:Array, callback:Function):void {
+			var transaction:Transaction_UpdateAllNotificationsAsRead = new Transaction_UpdateAllNotificationsAsRead(notificationModelArray, _connection, callback);
+		}
 		public function sendMailFromNotification(notificationID:Number):void {
 			trace("sending email");
 			var sendMail:Transaction_SendMailFromNotification = new Transaction_SendMailFromNotification(_connection);
@@ -1889,6 +1897,10 @@ package Model {
 		public function getResearchersInSchools(schoolsArray:Array, callback:Function):void {
 			var transaction:Transaction_GetResearchersInSchools = new Transaction_GetResearchersInSchools(schoolsArray, _connection, callback);
 		}
+		public function getResearchersCases(year:String, callback:Function):void {
+			var trans:Transaction_GetResearchersCases = new Transaction_GetResearchersCases(year, _connection, callback);
+		}
+
 		public function getCasesInExhibition(callback:Function):void {
 			var transaction:Transaction_GetCasesInExhibition = new Transaction_GetCasesInExhibition(_connection, callback);
 		}
@@ -1930,8 +1942,17 @@ package Model {
 			var transaction:Transaction_UpdatePackageNames = new Transaction_UpdatePackageNames(caseID, folderName, filesArray, _connection, callback);
 		}
 		
-		public function eraAddFileApproval(year:String, caseID:Number, roomID:Number, fileID:Number, role:String, approval:Boolean, callback:Function):void {
-			var transaction:Transaction_AddFileApproval = new Transaction_AddFileApproval(year, caseID, roomID, fileID, role, approval, _connection, callback);
+		public function eraUpdateFileApproval(year:String, caseID:Number, roomID:Number, fileID:Number, role:String, approval:Boolean, callback:Function):void {
+			var transaction:Transaction_UpdateFileApproval = new Transaction_UpdateFileApproval(year, caseID, roomID, fileID, role, approval, _connection, callback);
+		}
+		public function removeAllFileApprovals(fileID:Number, callback:Function):void {
+			var transaction:Transaction_RemoveAllFileApprovals = new Transaction_RemoveAllFileApprovals(fileID, _connection, callback);
+		}
+		public function stayActiveRequest():void {
+			var transaction:Transaction_StayActiveRequest = new Transaction_StayActiveRequest(_connection);
+		}
+		public function updateERAUserInfo(username:String, firstName:String, lastName:String, callback:Function):void {
+			var transaction:Transaction_UpdateUserInfo = new Transaction_UpdateUserInfo(username, firstName, lastName, _connection, callback);
 		}
 	}
 		

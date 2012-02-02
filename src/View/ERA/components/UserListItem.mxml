@@ -39,6 +39,9 @@
 			[Bindable]
 			protected var showEmail:Boolean = false;
 			
+			[Bindable]
+			public var showEditable:Boolean = false;
+			
 			public var role:String = "";
 
 			protected function deleteButton_clickHandler(event:MouseEvent):void
@@ -70,11 +73,94 @@
 				throw new Error("Email handler called for non-UserRoleItem in UserListItem");
 			}
 			
+			protected function editButton_clickHandler(event:MouseEvent):void
+			{
+				lastNameInput.text = lastName;
+				firstNameInput.text = firstName;
+				
+				userInfo.visible = false;
+				userInfo.includeInLayout = false;
+				
+				editInfo.visible = true;
+				editInfo.includeInLayout = true;
+				
+				editButton.visible = false;
+				editButton.includeInLayout = false;
+				
+				saveButton.visible = true;
+				saveButton.includeInLayout = true;
+				
+				cancelButton.visible = true;
+				cancelButton.includeInLayout = true;
+				
+				deleteButton.visible = false;
+				deleteButton.includeInLayout = false;
+			}
+			
+			protected function saveButton_clickHandler(event:MouseEvent):void
+			{
+				lastName = lastNameInput.text;
+				firstName = firstNameInput.text;
+
+				var update:IDEvent = new IDEvent(IDEvent.ERA_UPDATE_USER_INFO, true);
+				update.data.lastName = lastName;
+				update.data.firstName = firstName;
+				update.data.username = username;
+				dispatchEvent(update);
+					
+				
+				userInfo.visible = true;
+				userInfo.includeInLayout = true;
+				
+				editInfo.visible = false;
+				editInfo.includeInLayout = false;
+				
+				editButton.visible = true;
+				editButton.includeInLayout = true;
+				
+				saveButton.visible = false;
+				saveButton.includeInLayout = false;
+				
+				cancelButton.visible = false;
+				cancelButton.includeInLayout = false;
+				
+				deleteButton.visible = true;
+				deleteButton.includeInLayout = true;
+			}
+			
+			protected function cancelButton_clickHandler(event:MouseEvent):void
+			{
+				userInfo.visible = true;
+				userInfo.includeInLayout = true;
+				
+				editInfo.visible = false;
+				editInfo.includeInLayout = false;
+				
+				editButton.visible = true;
+				editButton.includeInLayout = true;
+				
+				saveButton.visible = false;
+				saveButton.includeInLayout = false;
+				
+				cancelButton.visible = false;
+				cancelButton.includeInLayout = false;
+				
+				deleteButton.visible = true;
+				deleteButton.includeInLayout = true;
+			}
+			
 		]]>
 	</fx:Script>
 	<s:HGroup width="100%" verticalAlign="middle">
-		<mx:Text text="{lastName}, {firstName} ({username})" width="100%">
-		</mx:Text>
+		<mx:Text id="userInfo" width="100%" text="{lastName}, {firstName} ({username})" />
+		<s:HGroup width="100%" id="editInfo" visible="false" includeInLayout="false" >
+			<s:TextInput id="lastNameInput" text="{lastName}" />
+			<s:TextInput id="firstNameInput" text="{firstName}" />	
+		</s:HGroup>
+		<s:Button label="Edit" height="20" id="editButton" click="editButton_clickHandler(event)" visible="{showEditable}" includeInLayout="{showEditable}"/>
+		<s:Button label="Save" height="20" id="saveButton" click="saveButton_clickHandler(event)" visible="false" includeInLayout="false" />
+		<s:Button label="Cancel" height="20" id="cancelButton" click="cancelButton_clickHandler(event)" visible="false" includeInLayout="false" />
+		
 		<s:Button label="Remove" height="20" id="deleteButton" click="deleteButton_clickHandler(event)" width="85" >
 		</s:Button>
 		<mx:CheckBox id="email" labelPlacement="right" label="Enable Email" change="email_changeHandler(event)" visible="{showEmail}" includeInLayout="{showEmail}"/>

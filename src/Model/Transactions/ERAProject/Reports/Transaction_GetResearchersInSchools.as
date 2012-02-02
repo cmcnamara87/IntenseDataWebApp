@@ -54,7 +54,7 @@ package Model.Transactions.ERAProject.Reports
 			researcherObject[currentSchool] = new Array();
 			trace("researcher object current school", researcherObject[currentSchool]);
 			var eraCaseArray:Array = AppModel.getInstance().parseResults(data, Model_ERACase);
-			eraCaseArray.sortOn(["rmCode"], [Array.CASEINSENSITIVE]);
+			eraCaseArray.sortOn(["researcherLastName", "researcherFirstName", "rmCode"], [Array.CASEINSENSITIVE]);
 			
 			trace("looking at school", currentSchool, eraCaseArray.length);
 			

@@ -37,14 +37,26 @@ package Model.Transactions.ERAProject
 				return;
 			}
 			
+			// The Case's XML
+			var eraCaseXML:XML = data.reply.result.asset[0];
+
+			// Create our request and its XML
 			var baseXML:XML = connection.packageRequest("asset.set", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
-			// Setup create the new replacement data
+			// Request XML (we put in a copy of the current era case XML)
 			argsXML.id = caseID;
-			argsXML.meta.@action = "merge";
-			argsXML.meta["ERA-case"] = "";
+			argsXML.meta = "";
+			argsXML.meta.appendChild((eraCaseXML.meta["ERA-case"]).copy());
+			argsXML.meta.@action = "replace";
 			
+			// Lets remove all of the user access stuff, from our new copied XML document
+			// (the original is still in tact, and we will copy back what is still valid)
+			delete argsXML.meta["ERA-case"]["production_manager_username"];
+			delete argsXML.meta["ERA-case"]["production_team_username"];
+			delete argsXML.meta["ERA-case"]["researcher_username"];
+			
+			// Okay, now thast all gone, lets add back what we need
 			for each(var user:XML in data.reply.result.asset.meta["ERA-case"]["production_manager_username"]) {
 				if(user.username != removeUsername) { 
 					argsXML.meta["ERA-case"].appendChild(

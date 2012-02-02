@@ -27,7 +27,7 @@ package Model.Transactions.ERAProject.Reports
 			var argsXML:XMLList = baseXML.service.args;
 			
 			argsXML.where = "namespace>='ERA/" + AppController.currentEraProject.year + "' and ";
-			argsXML.where += "type>=ERA/case and ERA-case/library_downloaded=true";
+			argsXML.where += "type>=ERA/case";
 			argsXML.action = "get-meta";
 			
 			trace("query", baseXML);
@@ -40,7 +40,7 @@ package Model.Transactions.ERAProject.Reports
 				return;
 			}
 			var eraCaseArray:Array = AppModel.getInstance().parseResults(data, Model_ERACase);
-			eraCaseArray.sortOn(["rmCode"], [Array.CASEINSENSITIVE]);
+			eraCaseArray.sortOn(["readyForDownload", "libraryDownloaded", "researcherLastName", "researcherFirstName", "rmCode"], [Array.CASEINSENSITIVE]);
 			
 			callback(true, eraCaseArray);
 		}

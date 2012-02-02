@@ -17,11 +17,11 @@ package Controller.ERA
 	import Model.Model_ERARoom;
 	import Model.Model_ERAUser;
 	import Model.Model_Notification;
-	import Model.Transactions.ERAProject.Transaction_AddFileApproval;
 	import Model.Transactions.ERAProject.Transaction_CreateAllCases;
 	import Model.Transactions.ERAProject.Transaction_CreateAllResearchers;
 	import Model.Transactions.ERAProject.Transaction_SendMailFromNotification;
 	import Model.Transactions.ERAProject.Transaction_SendNotificationEmailToUser;
+	import Model.Transactions.ERAProject.Transaction_UpdateFileApproval;
 	
 	import View.ERA.CaseView;
 	import View.ERA.NoERAFound;
@@ -58,6 +58,7 @@ package Controller.ERA
 		
 		public function CaseController()
 		{
+
 			// Create the View
 			caseView = new CaseView();
 			view = caseView;
@@ -116,9 +117,8 @@ package Controller.ERA
 			caseView.addEventListener(IDEvent.ERA_RESEND_LIBRARY_NOTIFICATION, resendLibraryNotification, false, 0, true);
 			
 			// Listen for errors to show
-			caseView.addEventListener(IDEvent.ERA_ERROR, function(e:IDEvent):void {
-				layout.notificationBar.showError(e.data.error);
-			}, false, 0, true);
+			caseView.addEventListener(IDEvent.ERA_ERROR, gotError, false, 0, true);
+			
 		}
 		override public function init():void {
 			layout.header.adminToolButtons.visible = false;
@@ -152,7 +152,11 @@ package Controller.ERA
 			
 //			trace("displatching to", "file/" + caseID + "/" + escape(currentERACase.rmCode) + "/" + roomType + "/" + fileID);
 			Dispatcher.showFile(caseID, currentERACase.rmCode, roomType, currentRoom.base_asset_id, fileID);
-		}		
+		}	
+		
+		private function gotError(e:IDEvent) {
+			layout.notificationBar.showError(e.data.error);
+		}
 		
 		/* ====================================== SAVE PACKAGE FILE NAMES ================================= */		
 		private function savePackageFileNames(e:IDEvent):void {
@@ -179,9 +183,9 @@ package Controller.ERA
 		private function packageDownloaded(status:Boolean, packageUri:String = ""):void {
 			if(status) {
 				try {
-					(caseView.room as Exhibition).enableDownloadButton();
+					caseView.exhibition.enableDownloadButton();
 				} catch (e:Error) {
-					
+					trace("THERE WAS SOME ERROR with fixing up the download button");
 				}
 				
 				layout.notificationBar.showGood("Package Downloaded");
@@ -550,39 +554,43 @@ package Controller.ERA
 			
 			this.eraCaseArray = eraCaseArray;
 			
+			
+			
+			// Okay now we need to filter the cases based on the user
+			// because we are doing this special thing for the library person? i think?
+			// so that they only see cases that they havent downloaded
+			// i should have just done this with acls but wtf i dont care.
+			
+			if(Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year)) {
+				trace("IS A LIBRARIAN", this.eraCaseArray.length);
+				for(var i:Number = 0; i < this.eraCaseArray.length; i++) {
+					var eraCase:Model_ERACase = eraCaseArray[i] as Model_ERACase;
+					trace("case data", eraCase.title, eraCase.readyForDownload ? "READY" : "NOT READY", eraCase.libraryDownloaded ? "DOWNLOAD" : "NOT DOWNLOADED");
+					if(!(eraCase.readyForDownload && !eraCase.libraryDownloaded)) {
+						this.eraCaseArray.splice(i, 1);
+						i--; // correcting for it being removed from the list
+					}
+				}
+			} else {
+				trace("ISNT A LIBARIAN");
+			}
+		
 			// did we get no cases?
 			if(eraCaseArray.length == 0) {
 				caseView.showNoCases();
 				return;
 			}
 			
-			// Okay now we need to filter the cases based on the user
-			// because we are doing this special thing for the library person? i think?
-			// so that they only see cases that they havent downloaded
-			// i should have just done this with acls but wtf i dont care.
-			if(Auth.getInstance().hasRoleForYear(Model_ERAUser.LIBRARY_ADMIN, AppController.currentEraProject.year) && !(
-				Auth.getInstance().isSysAdmin() || Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year) ||
-				isResearcher || isProductionManager || isTeamManager || Auth.getInstance().hasRoleForYear(Model_ERAUser.VIEWER, AppController.currentEraProject.year)
-			)) {
-				for(var i:Number; i < this.eraCaseArray.length; i++) {
-					var eraCase:Model_ERACase = eraCaseArray[i] as Model_ERACase;
-					if(!(eraCase.readyForDownload && !eraCase.libraryDownloaded)) {
-						this.eraCaseArray.splice(i, 1);
-						i--; // correcting for it being removed from the list
-					}
-				}
-			}
-		
 			if(caseID == 0) {
 				// We havent been passed a case ID, so lets just default to the first case for this ERA
-				if(eraCaseArray.length > 0) {
+				if(this.eraCaseArray.length > 0) {
 					caseID = (eraCaseArray[0] as Model_ERACase).base_asset_id;
 					currentERACase = (eraCaseArray[0] as Model_ERACase);
 					Router.getInstance().setURL("case/" + caseID + "/" + roomType);
 				}
 			} else {
 				// We have been given an case ID, so lets just match it up to one of the era cases
-				for each(var eraCase:Model_ERACase in eraCaseArray) {
+				for each(var eraCase:Model_ERACase in this.eraCaseArray) {
 					if(eraCase.base_asset_id == caseID) {
 						currentERACase = eraCase;
 						break;

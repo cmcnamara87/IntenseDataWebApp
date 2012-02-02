@@ -48,7 +48,7 @@ package Model {
 //			trace("** CHECKING MATCH FOR", role, username);
 			
 			for each(var emailOptionsObject:Object in emailOptionArray) {
-				trace(" checking match with", emailOptionsObject.role, emailOptionsObject.username);
+//				trace(" checking match with", emailOptionsObject.role, emailOptionsObject.username);
 				// given role only
 				if(username == "" && emailOptionsObject.role == role && emailOptionsObject.username == "") return true;
 				// we have been given a user

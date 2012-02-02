@@ -10,6 +10,7 @@ package Controller.Utilities
 	import Model.Model_ERARoom;
 	import Model.Transactions.ERAProject.Transaction_CreateAllCases;
 	import Model.Transactions.ERAProject.Transaction_CreateAllResearchers;
+	import Model.Transactions.ERAProject.Transaction_RemoveAllFileApprovals;
 
 	public class TestScripts
 	{

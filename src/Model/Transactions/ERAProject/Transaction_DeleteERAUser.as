@@ -31,7 +31,7 @@ package Model.Transactions.ERAProject
 		
 		
 		private function findInvalidCases():void {
-			trace("*******************find invalid case");
+			trace("*******************find cases with user", username);
 			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
@@ -42,13 +42,20 @@ package Model.Transactions.ERAProject
 		
 		private function gotAllCases(e:Event):void {
 			var data:XML;
-			if((data = AppModel.getInstance().getData("find cases that need to be upadted", e)) == null) {		
+			if((data = AppModel.getInstance().getData("find cases that need to be upadted", e)) == null) {
+				trace("failed to find any cases", e);
 				callback(false);
 				return;
 			}
 			
 			var idList:XMLList = data.reply.result.id;
 			needToRemoveCount = idList.length();
+			trace("found", needToRemoveCount, "cases to remove user from");
+			
+			if(needToRemoveCount == 0) {
+				deleteUser();
+				return;
+			}
 			
 			for each(var caseID:Number in idList) {
 				trace("*******************removing user from case", caseID, username);
@@ -60,11 +67,11 @@ package Model.Transactions.ERAProject
 			removedCount++;
 			if(removedCount == needToRemoveCount) {
 				deleteUser();
+				return;
 			}
 		}
 		
 		private function deleteUser():void {
-			
 			// Get out the ERA object
 			var baseXML:XML = connection.packageRequest("user.destroy", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;

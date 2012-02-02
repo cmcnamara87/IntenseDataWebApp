@@ -48,7 +48,7 @@ package Model.Transactions.ERAProject.Reports
 				return;
 			}
 			allERACases = AppModel.getInstance().parseResults(data, Model_ERACase);
-			allERACases.sortOn(["rmCode"], [Array.CASEINSENSITIVE]);
+			allERACases.sortOn(["researcherLastName", "researcherFirstName", "rmCode"], [Array.CASEINSENSITIVE]);
 			// now we need to get out all the cases with evidence, and manually do a 'not'
 			// since this 
 			/*

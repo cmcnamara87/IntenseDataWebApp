@@ -47,6 +47,7 @@
 				<s:DropDownList id="reportDropdown" width="100%">
 					<s:ArrayCollection>						
 						<fx:Object data="{ReportController.REPORT_RESEARCHERS_IN_SCHOOLS}" label="{ReportController.getReportPrettyName(ReportController.REPORT_RESEARCHERS_IN_SCHOOLS)}" />
+						<fx:Object data="{ReportController.REPORT_RESEARCHERS_CASES}" label="{ReportController.getReportPrettyName(ReportController.REPORT_RESEARCHERS_CASES)}" />
 						<fx:Object data="{ReportController.REPORT_CASES_IN_EXHIBITION}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CASES_IN_EXHIBITION)}" />
 						<fx:Object data="{ReportController.REPORT_CASES_NOT_COLLECTED}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CASES_NOT_COLLECTED)}" />
 						<fx:Object data="{ReportController.REPORT_CASES_DOWNLOADED}" label="{ReportController.getReportPrettyName(ReportController.REPORT_CASES_DOWNLOADED)}" />

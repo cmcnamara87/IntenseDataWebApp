@@ -33,22 +33,22 @@
 			<s:VGroup width="960" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
 				<s:VGroup width="100%">
 					<s:HGroup width="100%">
-						<s:Label text="QUT Email:" width="150"/>
+						<s:Label text="QUT Email:" width="200"/>
 						<s:Label text="{Auth.getInstance().getUserDetails().username}" />
 					</s:HGroup>
 					<s:HGroup width="100%">
-						<s:Label text="First Name:" width="150" />
+						<s:Label text="First Name:" width="200" />
 						<s:Label text="{Auth.getInstance().getUserDetails().firstName}" />
 					</s:HGroup>
 					<s:HGroup width="100%">
-						<s:Label text="Last Name:" width="150" />
+						<s:Label text="Last Name:" width="200" />
 						<s:Label text="{Auth.getInstance().getUserDetails().lastName}" />	
 					</s:HGroup>
 				</s:VGroup>
 				<s:VGroup width="100%">
 					<s:HGroup width="100%" verticalAlign="middle">
-						<s:Label text="New Password:" width="150" />
-						<s:TextInput id="newPassword" />
+						<s:Label text="New Password (Minimum 6 Characters):" width="200" />
+						<s:TextInput id="newPassword" displayAsPassword="true" />
 					</s:HGroup>
 					<s:Button id="changePassword" label="Change Password"/>
 				</s:VGroup>

@@ -60,6 +60,7 @@
 					
 					// Create the file tile
 					var fileTile:FileTile = new FileTile();
+					fileTile.roomType = Model_ERARoom.EXHIBIT;
 					fileTile.fileData = file;
 					fileTile.dragEnabled = false;
 					fileTile.loadURL(file.base_asset_id);

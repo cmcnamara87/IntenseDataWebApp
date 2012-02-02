@@ -56,7 +56,7 @@ package Model.Transactions.ERAProject.Reports
 			trace("got cases");
 			//trace("something", data);
 			eraCaseArray = AppModel.getInstance().parseResults(data, Model_ERACase);
-			eraCaseArray.sortOn(["rmCode"], [Array.CASEINSENSITIVE]);
+			eraCaseArray.sortOn(["researcherLastName", "researcherFirstName", "rmCode"], [Array.CASEINSENSITIVE]);
 			
 			getFiles();
 		}

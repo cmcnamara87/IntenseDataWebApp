@@ -44,7 +44,7 @@ package Controller.ERA
 		}
 		private function passwordChanged(status:Boolean):void {
 			if(!status) {
-				layout.notificationBar.showError("Failed to change password");
+				layout.notificationBar.showError("Failed to change password. Please make sure your new password is 6 characters or more.");
 				return;
 			} else {
 				layout.notificationBar.showGood("Password Changed");

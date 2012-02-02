@@ -26,9 +26,14 @@
 			
 			private var fileArray:Array = new Array(); // Stores all the forensic lab items
 			
+			
 			public function addConversation(conversationArray):void {
 				showConversationButton.label = "Comments (" + conversationArray.length + ")";
 				conversationPanel.addConversation(conversationArray);
+			}
+			
+			public function decreaseFileCount(decByNumber:Number):void {
+				setupFileCountDisplay(fileGroup.numElements - 1,  Number(fileCount.text));
 			}
 			
 			private function setupFileCountDisplay(fileCountNow:Number, expectedTotal:Number):void {
@@ -93,6 +98,7 @@
 					
 					// Create the file tile
 					var fileTile:FileTile = new FileTile();
+					fileTile.roomType = Model_ERARoom.SCREENING_ROOM;
 					fileTile.fileData = file;
 					fileTile.loadURL(file.base_asset_id);
 					fileGroup.addElement(fileTile);
@@ -198,18 +204,18 @@
 					var myAlert:Alert = Alert.show(
 						"Not all files have been assigned a revised download name. Do you wish to proceed?", "Move Files", Alert.OK | Alert.CANCEL, null, function(e:CloseEvent):void {
 							if (e.detail==Alert.OK) {
-								moveFiles();
+								moveAllFiles();
 							}
 						}, null, Alert.CANCEL);
 					
 				} else {
 					// all files have been renamed
 					// so lets move them
-					moveFiles();
+					moveAllFiles();
 				}
 			} 
 			
-			private function moveFiles():void {
+			private function moveAllFiles():void {
 
 					
 				// Get together all the files we need to move

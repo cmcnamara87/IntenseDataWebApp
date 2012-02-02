@@ -19,6 +19,7 @@
 			
 			import Model.AppModel;
 			import Model.Model_ERAFile;
+			import Model.Model_ERARoom;
 			
 			import flash.utils.clearTimeout;
 			import flash.utils.setTimeout;
@@ -28,6 +29,8 @@
 			import mx.managers.DragManager;
 			
 			private var _fileData:Model_ERAFile;
+			
+			public var roomType:String = "";
 			
 			[Bindable] 
 			public var title:String = "";
@@ -74,7 +77,6 @@
 			public function set fileData(fileData:Model_ERAFile):void {
 				this._fileData = fileData;
 				
-				
 				if(!_fileData.transcoded) {
 					
 					transcodeTimer.addEventListener(TimerEvent.TIMER, checkIfTranscoded, false, 0, true);
@@ -110,11 +112,17 @@
 			
 			private function updateGUI():void {
 				title =  _fileData.title;
-				if(_fileData.downloadTitle != "") {
+				
+				/* Work out if the label should be visible */
+				if(_fileData.downloadTitle != "" && (this.roomType == Model_ERARoom.EXHIBIT || this.roomType == Model_ERARoom.SCREENING_ROOM)) {
 					downloadTitleLabel.text = _fileData.downloadTitle;
 				} else {
 					downloadTitleLabel.visible = false;
 					downloadTitleLabel.includeInLayout = false;
+				}
+				if(_fileData.downloadTitle != "" && (this.roomType == Model_ERARoom.EXHIBIT)) {
+					fileLabel.visible = false;
+					fileLabel.includeInLayout = false;
 				}
 				
 				if(!_fileData.transcoded) {
@@ -148,66 +156,69 @@
 				
 				notificationBadge.notificationCount = this.notificationCount;
 				
-				// If there are any researchers in the approval section
-				// make the tick visible, and make it approved
-				if(_fileData.researcherApproved.length || _fileData.researcherNotApproved.length || _fileData.monitorApproved.length || _fileData.monitorNotApproved.length) {
-					// make it visible
-					tickBadge.visible = true;
-					tickBadge.includeInLayout = true;
-					
-					// Lets make the tooltip
-					var approvedResearcherTooltip:String = "";
-					var approvedMonitorTooltip:String = "";
-					// its going to show all the users who have approved/disappoved
-					if(_fileData.researcherApproved.length) {
-						approvedResearcherTooltip += "Approved By Researcher(s):\n";
-						for each(var researcherNameString:String in _fileData.researcherApproved) {
-							approvedResearcherTooltip += researcherNameString + "\n";
-						}
-						approvedResearcherTooltip += "\n";
-						trace("RESEARCHER APPROVED");
-						tickBadge.show = true;
-						tickBadge.approvedResearcher = tickBadge.APPROVED;
-					}
-					
-					
-					if(_fileData.researcherNotApproved.length) {
-						approvedResearcherTooltip += "Not Approved By Researcher(s):\n";
-						for each(var researcherNameString:String in _fileData.researcherNotApproved) {
-							approvedResearcherTooltip += researcherNameString + "\n";
-						}
-						approvedResearcherTooltip += "\n";
-						tickBadge.show = true;
-						tickBadge.approvedResearcher = tickBadge.NOT_APPROVED;
-					}
-					
-					
-					// if the monitor approves or disapproves, it overwrites whatever the others have said basically (just for how it appears as either a x or a tick)
-					if(_fileData.monitorNotApproved.length) {
-						approvedMonitorTooltip += "Not Approved By Monitor(s):\n";
-						for each(var monitorNameString:String in _fileData.monitorNotApproved) {
-							approvedMonitorTooltip += monitorNameString + "\n";
-						}
-						approvedMonitorTooltip += "\n";
-						tickBadge.show = true;
-						tickBadge.approvedMonitor = tickBadge.NOT_APPROVED;
-					}
-					
-					
-					if(_fileData.monitorApproved.length) {
-						approvedMonitorTooltip += "Approved By Monitor(s):\n";
-						for each(var monitorNameString:String in _fileData.monitorApproved) {
-							approvedMonitorTooltip += monitorNameString + "\n";
-						}
-						approvedMonitorTooltip += "\n";
+				// Work out if we need to show approval
+				if(roomType == Model_ERARoom.SCREENING_ROOM) {
+					// If there are any researchers in the approval section
+					// make the tick visible, and make it approved
+					if(_fileData.researcherApproved.length || _fileData.researcherNotApproved.length || _fileData.monitorApproved.length || _fileData.monitorNotApproved.length) {
+						// make it visible
+						tickBadge.visible = true;
+						tickBadge.includeInLayout = true;
 						
-						tickBadge.show = true;
-						tickBadge.approvedMonitor = tickBadge.APPROVED;
+						// Lets make the tooltip
+						var approvedResearcherTooltip:String = "";
+						var approvedMonitorTooltip:String = "";
+						// its going to show all the users who have approved/disappoved
+						if(_fileData.researcherApproved.length) {
+							approvedResearcherTooltip += "Approved By Researcher(s):\n";
+							for each(var researcherNameString:String in _fileData.researcherApproved) {
+								approvedResearcherTooltip += researcherNameString + "\n";
+							}
+							approvedResearcherTooltip += "\n";
+							trace("RESEARCHER APPROVED");
+							tickBadge.show = true;
+							tickBadge.approvedResearcher = tickBadge.APPROVED;
+						}
+						
+						
+						if(_fileData.researcherNotApproved.length) {
+							approvedResearcherTooltip += "Not Approved By Researcher(s):\n";
+							for each(var researcherNameString:String in _fileData.researcherNotApproved) {
+								approvedResearcherTooltip += researcherNameString + "\n";
+							}
+							approvedResearcherTooltip += "\n";
+							tickBadge.show = true;
+							tickBadge.approvedResearcher = tickBadge.NOT_APPROVED;
+						}
+						
+						
+						// if the monitor approves or disapproves, it overwrites whatever the others have said basically (just for how it appears as either a x or a tick)
+						if(_fileData.monitorNotApproved.length) {
+							approvedMonitorTooltip += "Not Approved By Monitor(s):\n";
+							for each(var monitorNameString:String in _fileData.monitorNotApproved) {
+								approvedMonitorTooltip += monitorNameString + "\n";
+							}
+							approvedMonitorTooltip += "\n";
+							tickBadge.show = true;
+							tickBadge.approvedMonitor = tickBadge.NOT_APPROVED;
+						}
+						
+						
+						if(_fileData.monitorApproved.length) {
+							approvedMonitorTooltip += "Approved By Monitor(s):\n";
+							for each(var monitorNameString:String in _fileData.monitorApproved) {
+								approvedMonitorTooltip += monitorNameString + "\n";
+							}
+							approvedMonitorTooltip += "\n";
+							
+							tickBadge.show = true;
+							tickBadge.approvedMonitor = tickBadge.APPROVED;
+						}
+						
+						// Now lets attach the tooltip
+						tickBadge.researcherLabel.toolTip = approvedResearcherTooltip;
+						tickBadge.monitorLabel.toolTip = approvedMonitorTooltip;
 					}
-					
-					// Now lets attach the tooltip
-					tickBadge.researcherLabel.toolTip = approvedResearcherTooltip;
-					tickBadge.monitorLabel.toolTip = approvedMonitorTooltip;
 					
 				} else {
 					tickBadge.show = false;
@@ -331,7 +342,7 @@
 		<mx:Image id="icon" height="100" width="100" verticalAlign="middle" horizontalAlign="center" maintainAspectRatio="true" toolTip="Description: {description}" alpha="{checkedOut ? 0.5 : 1}" mouseDown="vgroup1_mouseDownHandler(event)" 
 				  mouseUp="vgroup1_mouseUpHandler(event)" filters="{shadow123}" />
 		<components:NotificationBadge id="notificationBadge" left="75" notificationCount="{notificationCount}" click="notificationBadge_clickHandler(event)" />		
-		<components:TickBadge left="0" id="tickBadge" show="false" />
+		<components:TickBadge left="0" id="tickBadge" show="false" visible="false" includeInLayout="false"/>
 	</s:Group>
 	
 	<s:Label id="fileLabel" text="{title}{version > 0 ? '_v' + version : ''}{screeningCount > 0 ? '_r' + screeningCount : ''}{exhibitionCount > 0 ? '_e' + exhibitionCount : ''} ({ext == 'pot' ? 'ppt' : ext})" width="100%" textAlign="center" />
