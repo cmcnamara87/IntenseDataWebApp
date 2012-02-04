@@ -47,10 +47,11 @@ package Model.Transactions.ERAProject
 			
 			// Remove all the approval
 			delete eraFileXML.meta["ERA-evidence"].exhibition_approval;
+			delete eraFileXML.meta["ERA-evidence"].locked_for_user;
 			
 			// Create a new doc for submission
 			var baseXML:XML = connection.packageRequest("asset.set", new Object(), true);
-			var argsXML:XMLList = baseXML.service.args;
+			var argsXML:XMLList = baseXML.service.args; 
 			
 			// Setup the era meta-data
 			argsXML.id = fileID;

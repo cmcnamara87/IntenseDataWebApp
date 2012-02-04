@@ -258,7 +258,7 @@ package Controller {
 		 * 
 		 */
 		private static function setupButtons():void {
-			if(Auth.getInstance().isSysAdmin() || Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year)) {
+			if(Auth.getInstance().isSysAdmin() || (AppController.currentEraProject != null && Auth.getInstance().hasRoleForYear(Model_ERAUser.MONITOR, AppController.currentEraProject.year))) {
 				layout.header.adminToolButtons.visible = true;
 				layout.header.adminToolButtons.includeInLayout = true;
 				layout.header.adminToolsButton.includeInLayout = true;

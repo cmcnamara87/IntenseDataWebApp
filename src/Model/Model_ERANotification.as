@@ -178,13 +178,13 @@ package Model
 					if(isStaff) {
 						// DONE
 						messageObject.subject += " Library Downloaded Files ";
-						messageObject.body += notificationData.fullName + " downloaded the Exhibition package for Case: \"" + notificationData.eraCase.title + "\"."; 
+						messageObject.body += "Librarian " + notificationData.fullName + " downloaded approved the CIF - ERA Case files for Case: \"" + notificationData.eraCase.title + "\"."; 
 					}					
 					break;
 				case ALL_FILES_MOVED_TO_EXHIBITION:
 					if(isStaff) {
 						// DONE
-						messageObject.subject += " Files moved to Exhibition ";
+						messageObject.subject += " Files moved to Exhibition Room ";
 						messageObject.body += notificationData.fullName + " moved all files from Review Lab to Exhibition for the Case: \"" + notificationData.eraCase.title + "\"."; 
 					} else if (isExternal) {
 						// DONE
@@ -193,7 +193,7 @@ package Model
 							notificationData.file.title + "\", in the " + notificationData.room.roomTitle + " for the Case: \"" + notificationData.eraCase.title + "\", for the CIF ERA " + AppController.currentEraProject.year + " submission.";*/
 						messageObject.subject += " CIF - ERA Non Traditional Research Outputs - Ready for Download ";
 						messageObject.body += "The most recent QUT CIF - ERA, Non Traditional Research Outputs for the Case: \"" + notificationData.eraCase.title + "\", are now ready for you to download" +
-							" from the nQuisitor website.\n\nClick on this link and enter your Username and Password. You then will be directed to the Exhibition Room to download the case."; 
+							" from the nQuisitor website.\n\nClick on this link and enter your Username and Password. You then will be directed to the Exhibition Room to download the approved CIF - ERA Case files."; 
 							
 							notificationData.fullName + " moved all files from Review Lab to Exhibition .";
 					}

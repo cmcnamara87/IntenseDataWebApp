@@ -45,7 +45,7 @@ package Model {
 				case VIEWER:
 					return "External Viewer"
 				case LIBRARY_ADMIN:
-					return "Library Admin";
+					return "Library Administrator";
 				default:
 					return "Unknown Role"
 			}
@@ -54,19 +54,19 @@ package Model {
 		public static function getRoleDescription(role:String):String {
 			switch(role) {
 				case SYS_ADMIN:
-					return "Users with access to all of the administration tools available and all cases.";
+					return "These users have access to all of the nQuisitor Administration tools. They have unrestricted access rights to all Case files.";
 				case MONITOR:
-					return "Users with access to all cases, and view and comment in the Screening Lab and view the Exhibition.";
+					return "These users have access to all Cases. They can view and comment on Case files in the Review Lab and view Case files the Exhibition Room.";
 				case RESEARCHER:
-					return "A QUT Researcher account. These users have access to view and comment in the Screening Lab of cases they are assigned to. ";
+					return "These users have access to their own Case files in the Review Lab. Here they can view and comment on their Case files.";
 				case PRODUCTION_MANAGER:
-					return "Users with access to all cases they are assigned to for all sections.";
+					return "These users have access to all Case files that they have been assigned by the System Administrator";
 				case PRODUCTION_TEAM:
-					return "Users with access to all cases they are assigned to for all sections except the Exhibition.";
+					return "These users have access to all Case files (excluding the Exhibition Room) that they have been assigned by the System Administrator";
 				case VIEWER:
-					return "Users with access to all cases, and view and comment in the Screening Lab and view the Exhibition.";
+					return "These users have access to all Cases. They can only view and comment on Case files that appear in the Review Lab and the Exhibition Room.";
 				case LIBRARY_ADMIN:
-					return "User with access to download files from Exhibition for library purposes.";
+					return "These users can download all Case files from the Exhibition Room.";
 				default:
 					return "Unknown Role"
 			}

@@ -89,9 +89,9 @@ package Controller.Utilities {
 		
 		}
 		
-		
 		private function gotUserDetails(status:Boolean, eraUser:Model_ERAUser=null):void {
 			if(!status) {
+				AppController.layout.notificationBar.showError("User Limit Reached");
 				Dispatcher.logout();
 				return;
 			}

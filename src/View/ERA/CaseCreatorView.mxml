@@ -582,7 +582,7 @@
 					</components:content>
 				</components:FormGroup>
 				
-				<components:FormGroup title="Number of Output Files">
+				<components:FormGroup title="File Quota">
 					<components:content>
 						<s:TextInput id="fileCount" text="" borderAlpha="0.5" width="100%"/>
 					</components:content>

@@ -304,6 +304,12 @@
 			 * types ["ready", "exceeded", "off"]
 			 */
 			private function showFileCountBar(type:String) {
+				
+				// Only do this if you are the admin
+				if(!Auth.getInstance().isSysAdmin()) {
+					return;
+				}
+				
 				if(type == "ready" || type == "exceeded") {
 					// show the bar
 					fileCountBar.visible = true;
@@ -318,12 +324,12 @@
 					case "ready":
 						// set the colour
 						fileCountBar.setStyle('backgroundColor', '0x0AAF00');
-						message_text.text = "The allocated quota of files for the Review Lab has now been reached. You may now move your files to the Exhibition Room.";
+						message_text.text = "The allocated quota of Case files for the Review Lab has now been reached. You may now move your Case files to the Exhibition Room.";
 						break;
 					case "exceeded":
 						// set the colour
 						fileCountBar.setStyle('backgroundColor', '0xFF0000');
-						message_text.text = "The allocated quota of files for the Review Lab has been exceeded.";
+						message_text.text = "The allocated quota of Case files for the Review Lab has been exceeded.";
 						break;
 				}
 			}
@@ -407,11 +413,11 @@
 		<s:BorderContainer width="100%" height="100%" backgroundColor="0xFFFFFF">
 			<s:VGroup width="100%" height="100%">
 				<s:VGroup width="100%" paddingBottom="10" paddingLeft="20" paddingRight="20" paddingTop="20">
-					<s:Label text="Finalise the Names of your Files Ready for the Exhibition Room" fontSize="30" fontWeight="bold" color="0x5e6469" paddingBottom="10" width="100%" />
-					<s:Label width="100%" text="This area lets you rename any files in preparation for the Exhibition Room." fontSize="12" color="0x5e6469" paddingBottom="20" />
+					<s:Label text="Finalise the names of your Case files in preparation for the Exhibition Room" fontSize="30" fontWeight="bold" color="0x5e6469" paddingBottom="10" width="100%" />
+					<s:Label width="100%" text="At this point, you can rename your Case files. If you choose not to rename your Case files, the original file name will remain." fontSize="12" color="0x5e6469" paddingBottom="20" />
 					<s:HGroup verticalAlign="middle">
-						<s:Label text="Exhibition Folder Download Name:" />
-						<s:TextInput id="caseFolderName" />
+						<s:Label text="Exhibition Room - Folder Download Name:" />
+						<s:TextInput id="caseFolderName" width="100%" />
 					</s:HGroup>
 				</s:VGroup>
 				

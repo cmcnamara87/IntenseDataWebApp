@@ -185,7 +185,7 @@
 			}
 			
 			public function enableDownloadButton():void {
-				downloadFilesButton.label = "↓ Download Files";
+				downloadFilesButton.label = "↓ Download Approved CIF - ERA Case files";
 				downloadFilesButton.enabled = true;
 			}
 		]]>

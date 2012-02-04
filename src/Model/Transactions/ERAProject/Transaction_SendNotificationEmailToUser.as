@@ -91,12 +91,12 @@ package Model.Transactions.ERAProject
 			
 			if(isSysAdmin || isProductionManager || isProductionTeam) {
 				var messageObject:Object = Model_ERANotification.getEmailMessage(notification, true, false);
-				sendMailToUser(username, messageObject.subject, messageObject.body, "p.hempenstall@qut.edu.au");
+				sendMailToUser(username, messageObject.subject, messageObject.body, "m.sanders@qut.edu.au");
 			} else if(isMonitor || isResearcher || isLibraryAdmin) {
 				var messageObject:Object = Model_ERANotification.getEmailMessage(notification, false, true);
 				
  				// p.hempenstall@qut.edu.au
-				sendMailToUser(username, messageObject.subject, messageObject.body, "p.hempenstall@qut.edu.au");
+				sendMailToUser(username, messageObject.subject, messageObject.body, "m.sanders@qut.edu.au");
 			}
 			// so now we have the roles, lets get the message of what we need to say
 

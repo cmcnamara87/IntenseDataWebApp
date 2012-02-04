@@ -194,7 +194,7 @@
 						
 						// if the monitor approves or disapproves, it overwrites whatever the others have said basically (just for how it appears as either a x or a tick)
 						if(_fileData.monitorNotApproved.length) {
-							approvedMonitorTooltip += "Not Approved By Monitor(s):\n";
+							approvedMonitorTooltip += "Not Marked as Final By Monitor(s):\n";
 							for each(var monitorNameString:String in _fileData.monitorNotApproved) {
 								approvedMonitorTooltip += monitorNameString + "\n";
 							}
@@ -205,7 +205,7 @@
 						
 						
 						if(_fileData.monitorApproved.length) {
-							approvedMonitorTooltip += "Approved By Monitor(s):\n";
+							approvedMonitorTooltip += "Mark as Final By Monitor(s):\n";
 							for each(var monitorNameString:String in _fileData.monitorApproved) {
 								approvedMonitorTooltip += monitorNameString + "\n";
 							}

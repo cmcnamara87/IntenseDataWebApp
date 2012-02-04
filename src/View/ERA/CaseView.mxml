@@ -478,7 +478,7 @@
 		<!-- END THE CONTENT SECTION -->
 		
 		<!-- START THE CASE NAV SECTION -->
-		<s:BorderContainer id="caseNav" backgroundColor="0x565656" width="100%" height="140" borderVisible="false" resizeEffect="Resize">
+		<s:BorderContainer id="caseNav" backgroundColor="0x565656" width="100%" height="160" borderVisible="false" resizeEffect="Resize">
 			<s:VGroup horizontalAlign="center" height="100%" width="100%" gap="0" paddingTop="10" paddingBottom="10">
 				<mx:Image source="{AssetLookup.line_of_inquiry_graphic}" width="900" height="31"></mx:Image>
 				<s:HGroup height="100%" verticalAlign="middle" gap="10" id="roomButtons">

@@ -53,11 +53,11 @@
 		<mx:Image source="{Recensio_Flex_Beta.serverAddress == Recensio_Flex_Beta.QUT_IP ? AssetLookup.login_logo_qut1 : AssetLookup.login_logo_id1}" width="824" height="400"></mx:Image>
 		
 		<Element:LoginBox id="loginbox" width="337" height="184" x="{5/6 * box.width}" y="{box.height/2}" toolTip="Login to the system"></Element:LoginBox>	
-		<s:Label id="forgotPassword" text="Forgot Your Password" color="0xDDDDDD" x="{loginbox.x - 150}" y="{loginbox.y + 55}" click="forgotPassword_clickHandler(event)" buttonMode="true"/>
+		<s:Label id="forgotPassword" text="Forgot your Password?" color="0xDDDDDD" x="{loginbox.x - 150}" y="{loginbox.y + 55}" click="forgotPassword_clickHandler(event)" buttonMode="true"/>
 	</s:BorderContainer>
 	<s:HGroup paddingBottom="10" paddingLeft="80" paddingRight="10" paddingTop="5" verticalAlign="bottom" width="100%">
 		<!--<s:Label text="Powered by" />	
 		<mx:Image source="{idLogo}" width="200" height="19" click="image1_clickHandler(event)"></mx:Image>-->
-		<s:Label text="v1.1.3.9" width="100%" textAlign="right" color="0xDDDDDD" />
+		<s:Label text="v1.2.0" width="100%" textAlign="right" color="0xBBBBBB" />
 	</s:HGroup>
 </s:VGroup>

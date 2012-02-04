@@ -60,7 +60,7 @@ package Model {
 				case SCREENING_ROOM:
 					return "Review Lab";
 				case EXHIBIT:
-					return "Exhibit";
+					return "Exhibition Room";
 				default:
 					return "Unknown";
 			}

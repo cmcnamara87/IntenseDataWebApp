@@ -168,9 +168,9 @@ package Controller.ERA
 		
 		private function packageFileNamesSaved(status:Boolean) {
 			if(!status) {
-				AppController.layout.notificationBar.showError("Could Not Update File Names");
+				AppController.layout.notificationBar.showError("Could Not Update Case File Names");
 			} else {
-				AppController.layout.notificationBar.showGood("File Names Updated");
+				AppController.layout.notificationBar.showGood("Case File Names Updated");
 			}
 		}
 		/* ====================================== END OF SAVE PACKAGE FILE NAMES ================================= */
@@ -178,6 +178,7 @@ package Controller.ERA
 		
 		/* ====================================== DOWNLOAD PACKAGE ================================= */
 		private function downloadPackage(e:IDEvent):void {
+			layout.notificationBar.showGood("Creating Downloading Package...");
 			AppModel.getInstance().downloadExhibitionFiles(caseID, currentERACase.downloadTitle == "" ? currentERACase.rmCode : currentERACase.downloadTitle, getRoom(Model_ERARoom.EXHIBIT).base_asset_id, Auth.getInstance().getUsername(), packageDownloaded);
 		}
 		private function packageDownloaded(status:Boolean, packageUri:String = ""):void {
@@ -416,7 +417,7 @@ package Controller.ERA
 		}
 		private function gotExhibitionFiles(status:Boolean, fileArray:Array):void {
 			if(!status) {
-				layout.notificationBar.showError("Failed to get Exhibition Files");
+				layout.notificationBar.showError("Failed to get Exhibition Room Files");
 				return;
 			}
 			caseView.showExhibition(fileArray);

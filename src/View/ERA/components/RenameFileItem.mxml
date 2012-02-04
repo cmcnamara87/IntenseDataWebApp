@@ -41,7 +41,7 @@
 	<mx:Image id="icon" maintainAspectRatio="true" width="50" height="50" verticalAlign="top"/>
 	<s:VGroup width="100%" height="100%">
 		<s:Label id="title" fontWeight="bold" />
-		<s:HGroup verticalAlign="middle">
+		<s:HGroup verticalAlign="middle" width="100%">
 			<s:Label text="Download Name:" />
 			<s:TextInput id="downloadName" width="100%" />
 		</s:HGroup>	

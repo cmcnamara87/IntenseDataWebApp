@@ -458,7 +458,7 @@
 		
 		<s:BorderContainer id="markAllAsReadGroup" backgroundColor="0xFFFFFF" borderStyle="solid" borderColor="0xEEEEEE" height="40" width="100%">
 			<s:HGroup  verticalAlign="middle" height="40" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%">
-				<s:Button id="markAllAsReadButton" label="Mark All as Read" chromeColor="0xFFFFFFF" cornerRadius="8" fontSize="11" width="100%" click="markAllAsReadButton_clickHandler(event)" />
+				<s:Button id="markAllAsReadButton" label="Mark All Notifications As Read" chromeColor="0xFFFFFFF" cornerRadius="8" fontSize="11" width="100%" click="markAllAsReadButton_clickHandler(event)" />
 			</s:HGroup>
 		</s:BorderContainer>
 		
