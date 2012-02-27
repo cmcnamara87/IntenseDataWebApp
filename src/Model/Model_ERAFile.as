@@ -30,8 +30,8 @@ package Model {
 		
 		public var notificationCount:Number = 0;
 		public var notificationArray:Array = new Array();
-		public var screeningCount:Number = 100;
-		public var exhibitionCount:Number = 100;
+		public var screeningCount:Number = 0;
+		public var exhibitionCount:Number = 0;
 		
 		public var researcherApproved:Array = new Array();
 		public var researcherNotApproved:Array = new Array();
@@ -126,18 +126,27 @@ package Model {
 			}
 			
 			if(eraEvidenceItem["exhibition_approval"].length()) {
+//				trace("approval xml found", base_asset_id);
 				for each(var approvalXML:XML in eraEvidenceItem["exhibition_approval"]) {
+//					trace("xml is", approvalXML.role, approvalXML.approval == true ? 'approved' : 'not approved');
+//					trace("xml is", approvalXML.role, approvalXML.role == Model_ERAUser.MONITOR ? 'MONITOR' : 'NOT MONITOR', approvalXML.approval == true ? 'approved' : 'not approved');
 					var approvalString:String = approvalXML.name + " (" + approvalXML.username + ") - " + approvalXML.date;
-					if(approvalXML.role == Model_ERAUser.RESEARCHER && (approvalXML.approval == "true")) {
+					if(approvalXML.role == Model_ERAUser.RESEARCHER && (approvalXML.approval == "true" || approvalXML.approval == true)) {
 						this.researcherApproved.push(approvalString);
-					} else if(approvalXML.role == Model_ERAUser.RESEARCHER && (approvalXML.approval == "false")) {
+					} else if(approvalXML.role == Model_ERAUser.RESEARCHER && (approvalXML.approval == "false" || approvalXML.approval == false)) {
 						this.researcherNotApproved.push(approvalString);
-					} else if (approvalXML.role == Model_ERAUser.MONITOR && (approvalXML.approval == "true")) {
+						
+						// NOTE: the reason the quotes are around the roles is, i wrote a lot of these approvals manually into mediaflux using aterm
+						// and i put quotes around the monitor role, so they have quotes around it
+					} else if ((approvalXML.role == Model_ERAUser.MONITOR || approvalXML.role == "'" + Model_ERAUser.MONITOR + "'") && (approvalXML.approval == "true" || approvalXML.approval == true)) {
+//						trace("pushing monitor approval");
 						this.monitorApproved.push(approvalString);
-					} else if (approvalXML.role == Model_ERAUser.MONITOR && (approvalXML.approval == "false")) {
+					} else if ((approvalXML.role == Model_ERAUser.MONITOR || approvalXML.role == "'" + Model_ERAUser.MONITOR + "'") && (approvalXML.approval == "false" || approvalXML.approval == false)) {
 						this.monitorNotApproved.push(approvalString);
 					}
 				}
+			} else {
+				trace("no approval xml");
 			}
 			
 			if(eraEvidenceItem["review_count"].length()) {

@@ -160,7 +160,9 @@
 				if(roomType == Model_ERARoom.SCREENING_ROOM) {
 					// If there are any researchers in the approval section
 					// make the tick visible, and make it approved
+					trace("FILE IN SCREENING ROOM");
 					if(_fileData.researcherApproved.length || _fileData.researcherNotApproved.length || _fileData.monitorApproved.length || _fileData.monitorNotApproved.length) {
+						trace("HAS APPROVAL DATA");
 						// make it visible
 						tickBadge.visible = true;
 						tickBadge.includeInLayout = true;
@@ -218,6 +220,8 @@
 						// Now lets attach the tooltip
 						tickBadge.researcherLabel.toolTip = approvedResearcherTooltip;
 						tickBadge.monitorLabel.toolTip = approvedMonitorTooltip;
+					} else {
+						trace("NO APPROVAL DATA");
 					}
 					
 				} else {

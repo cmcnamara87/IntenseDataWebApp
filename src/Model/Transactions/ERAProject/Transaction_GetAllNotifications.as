@@ -18,7 +18,7 @@ package Model.Transactions.ERAProject
 		private var connection:Connection;
 		private var callback:Function;
 		private var roomID:Number;
-		private var readStatus:Boolean;
+		private var readStatus:String;
 		
 		private var eraNotificationArray:Array;
 		private var notificationNumber:Number = 0;
@@ -43,18 +43,22 @@ package Model.Transactions.ERAProject
 			var baseXML:XML = connection.packageRequest("asset.query", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
+			trace("read status", this.readStatus);
+			
+			if(this.readStatus == Model_ERANotification.SHOW_ALL) {
+				argsXML.where = "type=ERA/notification";	
+			} else if (this.readStatus == Model_ERANotification.SHOW_READ) {
+				argsXML.where = "type>=ERA/notification and ERA-notification/read_by_users/username contains-all '" + Auth.getInstance().getUsername() + "'";	
+			} else if (this.readStatus == Model_ERANotification.SHOW_UNREAD) {
+				trace("Should be showing un read notifications");
+				argsXML.where = "type>=ERA/notification and not(ERA-notification/read_by_users/username contains-all '" + Auth.getInstance().getUsername() + "')";
+			}
+			
 			argsXML.action = "get-meta";
 			argsXML["get-related-meta"] = true;
 			argsXML.size = "infinity";
 			
-//			if(this.readStatus == Model_ERANotification.SHOW_ALL) {
-				argsXML.where = "type=ERA/notification";	
-//			} else if (this.readStatus == Model_ERANotification.SHOW_READ) {
-//				argsXML.where = "type>=ERA/notification and ERA-notification/read_by_users/username contains-all '" + Auth.getInstance().getUsername() + "'";	
-//			} else if (this.readStatus == Model_ERANotification.SHOW_UNREAD) {
-//				argsXML.where = "type>=ERA/notification and not(ERA-notification/read_by_users/username contains-all '" + Auth.getInstance().getUsername() + "')";
-//			}
-			
+			trace("GETTING ALL NOTIFICATIONS REQUEST", argsXML);
 			
 			connection.sendRequest(baseXML, gotAllNotifications);
 		}

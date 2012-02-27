@@ -178,7 +178,7 @@ package Controller.ERA
 		
 		/* ====================================== DOWNLOAD PACKAGE ================================= */
 		private function downloadPackage(e:IDEvent):void {
-			layout.notificationBar.showGood("Creating Downloading Package...");
+			layout.notificationBar.showProcess("Creating Downloading Package...");
 			AppModel.getInstance().downloadExhibitionFiles(caseID, currentERACase.downloadTitle == "" ? currentERACase.rmCode : currentERACase.downloadTitle, getRoom(Model_ERARoom.EXHIBIT).base_asset_id, Auth.getInstance().getUsername(), packageDownloaded);
 		}
 		private function packageDownloaded(status:Boolean, packageUri:String = ""):void {
