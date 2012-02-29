@@ -146,7 +146,7 @@ package Model {
 					}
 				}
 			} else {
-				trace("no approval xml");
+//				trace("no approval xml");
 			}
 			
 			if(eraEvidenceItem["review_count"].length()) {

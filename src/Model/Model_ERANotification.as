@@ -75,6 +75,7 @@ package Model
 		public static const SHOW_READ:String = "show_read";
 		public static const SHOW_UNREAD:String = "show_unread";
 		public static const SHOW_ALL:String = "show_all";
+		public static const SHOW_OTHERS:String = "show_others";
 		
 		public var type:String;
 		public var username:String;

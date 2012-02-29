@@ -123,7 +123,7 @@ package Controller {
 		}
 		private static function profileButtonClicked(e:MouseEvent):void {
 			trace("Profile button clicked");
-			Dispatcher.call("applesauce");
+			Dispatcher.call("profilepage");
 		}
 		
 		/**
@@ -323,9 +323,9 @@ package Controller {
 		}
 		private static function notificationReadStatusUpdated(status:Boolean):void {
 			if(!status) {
-				layout.notificationBar.showError("Failed to mark as read");
+				layout.notificationBar.showError("Failed to Changed Read Status");
 			} else {
-				layout.notificationBar.showGood("Marked as Read");
+				layout.notificationBar.showGood("Read Status Changed");
 			}
 		}
 		/* ============================ END OF CHANGING READ STATUS =========================== */
@@ -375,6 +375,7 @@ package Controller {
 			updateNotificationButtonColour(unreadNotificationCount);
 			
 			layout.notificationPanel.addNotifications(AppController.notificationsArray);
+			
 		}
 		private static function updateNotificationButtonColour(unreadNotificationCount:Number) {
 			// Setup the colour of the button
@@ -396,7 +397,7 @@ package Controller {
 		private static function showNotifications():void {
 						
 			// show the panel
-			layout.notificationPanel.showAllNotifications();
+			layout.notificationPanel.showAllUnreadNotifications();
 			layout.notificationPanel.showPanel();
 			// position it near the notifiaction panel button
 			AppController.layout.notificationPanel.x = 	IDGUI.localToLocal(AppController.layout.header.logoNotificationGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x - AppController.layout.header.notificationButton.width/2;

@@ -69,6 +69,7 @@ package Controller {
 			
 			// Listen for users changing their password
 			profileView.addEventListener(IDEvent.CHANGE_PASSWORD_CLICKED, changeUserPasswordClicked);
+			
 		} 
 		
 		

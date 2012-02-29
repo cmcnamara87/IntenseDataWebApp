@@ -86,7 +86,7 @@
 			private function renderEvidenceCount():void {
 				if(this.evidenceCount > 0) {
 					//hasEvidence = true;
-					trace("rendering");
+					trace("rendering room icon");
 					iconImage.source = AssetLookup.getRoomIcon(roomType, true);
 					iconImage.filters = new Array(darkFilter);
 				} else {

@@ -46,19 +46,26 @@ package Model.Transactions.ERAProject
 			trace("read status", this.readStatus);
 			
 			if(this.readStatus == Model_ERANotification.SHOW_ALL) {
-				argsXML.where = "type=ERA/notification";	
+				trace("GETTING ALL NOTIFICATIONS");
+				// gets even notifications you made
+				argsXML.where = "type=ERA/notification";
+			} else if (this.readStatus == Model_ERANotification.SHOW_OTHERS) {
+				argsXML.where = "type=ERA/notification and not(ERA-notification/username='" + Auth.getInstance().getUsername() + "')";
 			} else if (this.readStatus == Model_ERANotification.SHOW_READ) {
-				argsXML.where = "type>=ERA/notification and ERA-notification/read_by_users/username contains-all '" + Auth.getInstance().getUsername() + "'";	
+				// gets ones you didnt make, plus read
+				trace("GETTING READ NOTIFICATIONS");
+				argsXML.where = "type>=ERA/notification and not(ERA-notification/username='" + Auth.getInstance().getUsername() + "') and ERA-notification/read_by_users/username contains-all '" + Auth.getInstance().getUsername() + "'";	
 			} else if (this.readStatus == Model_ERANotification.SHOW_UNREAD) {
-				trace("Should be showing un read notifications");
-				argsXML.where = "type>=ERA/notification and not(ERA-notification/read_by_users/username contains-all '" + Auth.getInstance().getUsername() + "')";
+				trace("GETTING UNREAD NOTIFICATIONS");
+				// gets one you didnt make, plus unread
+				argsXML.where = "type>=ERA/notification and not(ERA-notification/username='" + Auth.getInstance().getUsername() + "') and not(ERA-notification/read_by_users/username contains-all '" + Auth.getInstance().getUsername() + "')";
 			}
 			
 			argsXML.action = "get-meta";
 			argsXML["get-related-meta"] = true;
 			argsXML.size = "infinity";
 			
-			trace("GETTING ALL NOTIFICATIONS REQUEST", argsXML);
+			trace("GETTING NOTIFICATIONS REQUEST", argsXML);
 			
 			connection.sendRequest(baseXML, gotAllNotifications);
 		}

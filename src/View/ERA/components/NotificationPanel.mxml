@@ -66,6 +66,7 @@
 				// if we have notifications awaiting render, lets render them now its invisible
 				if(this.notificationsAwaitingRender) {
 					// render now
+					trace("HIDING PANEL");
 					renderNotifications();
 				}
 			}
@@ -90,14 +91,17 @@
 					this.notificationsAwaitingRender = true;
 					trace("######## ITS SHOWING, AWAIT RENDER");
 					return;
+				} else {
+					trace("######## ITS NOT SHOWING, RENDER AWAY");
+					renderNotifications();
 				}
-				trace("######## ITS NOT SHOWING, RENDER AWAY");
-				renderNotifications();
 			}
 			
 			
 			private function renderNotifications() {
 				trace("######## RENDERING NOW");
+				notificationsAwaitingRender = false;
+				
 				// Setup buttons
 				showAllNotificationsButton.visible = false;
 				showAllNotificationsButton.includeInLayout = false;
@@ -188,7 +192,7 @@
 			/**
 			 * Shows all notifications
 			 */
-			public function showAllNotifications():void {
+			public function showAllUnreadNotifications():void {
 				
 				showAllNotificationsButton.visible = false;
 				showAllNotificationsButton.includeInLayout = false;
@@ -196,9 +200,10 @@
 				notificationFilterButtonsGroup.visible = true;
 				notificationFilterButtonsGroup.includeInLayout = true;
 				
-				
-				showAllButton.selected = true;
-				showAllButton_changeHandler();
+				showUnreadButton.selected = true;
+				showUnreadButton_changeHandler();
+//				showAllButton.selected = true;
+//				showAllButton_changeHandler();
 			}
 			
 			/**
@@ -212,6 +217,8 @@
 					return false;
 				}
 				
+				
+				
 				// Save the filtering ID
 				lastFilteredByID = id; 
 				
@@ -221,12 +228,25 @@
 				notificationFilterButtonsGroup.visible = false;
 				notificationFilterButtonsGroup.includeInLayout = false;
 				
+				movedMessage.visible = false;
+				movedMessage.includeInLayout = false;
+				
+				notificationScroller.visible = true;
+				notificationScroller.includeInLayout = true;
+				
+				
+				
 				AppController.layout.notificationPanel.x = 	IDGUI.localToLocal(AppController.layout.header.logoNotificationGroup, AppController.layout, new Point(AppController.layout.header.notificationButton.x, 0)).x - AppController.layout.header.notificationButton.width/2;
 				AppController.layout.notificationPanel.x -= 28;
 
 				return true;
 			}
 			
+			
+			/**
+			 * ONLY SHOW NOTIFICATIONS RELATING TO A SPECIFIC ID
+			 * ID OF NOTIFICATION
+			 */
 			public function filterNotifications(id:Number):void {
 				
 				if(!setupFiltering(id)) return;
@@ -338,7 +358,7 @@
 			
 			protected function label1_clickHandler(event:MouseEvent):void
 			{
-				showAllNotifications();
+				showAllUnreadNotifications();
 			}
 			
 			
@@ -356,7 +376,13 @@
 				showAllButton.selected = false;
 				showUnreadButton.selected = false;
 				
-				for(var i:Number = 0; i < notificationList.numElements; i++) {
+				movedMessage.visible = true;
+				movedMessage.includeInLayout = true;
+				
+				notificationScroller.includeInLayout = false;
+				notificationScroller.visible = false;
+				
+				/*for(var i:Number = 0; i < notificationList.numElements; i++) {
 					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
 					if(notificationListItem.isRead()) {
 						notificationListItem.visible = true;
@@ -365,7 +391,7 @@
 						notificationListItem.visible = false;
 						notificationListItem.includeInLayout = false;
 					}
-				}
+				}*/
 			}
 			
 			
@@ -382,6 +408,12 @@
 				
 				showAllButton.selected = false;
 				showReadButton.selected = false;
+				
+				movedMessage.visible = false;
+				movedMessage.includeInLayout = false;
+				
+				notificationScroller.visible = true;
+				notificationScroller.includeInLayout = true;
 				
 				for(var i:Number = 0; i < notificationList.numElements; i++) {
 					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
@@ -409,12 +441,17 @@
 				showReadButton.selected = false;
 				showUnreadButton.selected = false;
 				
-				// Make all visible
-				for(var i:Number = 0; i < notificationList.numElements; i++) {
-					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
-					notificationListItem.visible = true;
-					notificationListItem.includeInLayout = true;
-				}
+				// Make all visible notification of being moved
+				movedMessage.visible = true;
+				movedMessage.includeInLayout = true;
+				
+				notificationScroller.includeInLayout = false;
+				notificationScroller.visible = false;
+//				for(var i:Number = 0; i < notificationList.numElements; i++) {
+//					var notificationListItem:NotificationListItem = notificationList.getElementAt(i) as NotificationListItem;
+//					notificationListItem.visible = true;
+//					notificationListItem.includeInLayout = true;
+//				}
 			}			
 			
 			protected function markAllAsReadButton_clickHandler(event:MouseEvent):void
@@ -451,6 +488,9 @@
 		
 		<s:VGroup paddingBottom="10" paddingTop="15" id="showAllNotificationsButton" visible="false" includeInLayout="false" width="100%">
 			<s:Label width="100%" textAlign="center" text="Show All Notifications" color="0x0000FF" click="label1_clickHandler(event)" />	
+		</s:VGroup>
+		<s:VGroup id="movedMessage" width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10">
+			<mx:Text width="100%"><mx:htmlText><![CDATA[This functionality has been moved to the <font color='#0000FF'><a href='#profilepage'>User Profile Page</a></font>.]]></mx:htmlText></mx:Text>
 		</s:VGroup>
 		<s:Scroller id="notificationScroller" chromeColor="0xFFFFFF" width="100%" height="100%" filters="{notificationScroller.verticalScrollBar.value > 0 ? shadowy : null}">
 			<s:VGroup id="notificationList" width="100%" height="100%" gap="0"/>

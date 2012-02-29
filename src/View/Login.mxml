@@ -58,6 +58,6 @@
 	<s:HGroup paddingBottom="10" paddingLeft="80" paddingRight="10" paddingTop="5" verticalAlign="bottom" width="100%">
 		<!--<s:Label text="Powered by" />	
 		<mx:Image source="{idLogo}" width="200" height="19" click="image1_clickHandler(event)"></mx:Image>-->
-		<s:Label text="v1.2.0" width="100%" textAlign="right" color="0xBBBBBB" />
+		<s:Label text="v1.5.0" width="100%" textAlign="right" color="0x888888" />
 	</s:HGroup>
 </s:VGroup>

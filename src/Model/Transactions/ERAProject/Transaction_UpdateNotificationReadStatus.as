@@ -38,22 +38,32 @@ package Model.Transactions.ERAProject
 				return;
 			}
 			
+			// The Case's XML
+			var eraNotificationXML:XML = data.reply.result.asset[0];
+			
+			// Create our request and its XML
 			var baseXML:XML = connection.packageRequest("asset.set", new Object(), true);
 			var argsXML:XMLList = baseXML.service.args;
 			
-			// Setup the era meta-data
+			// Request XML (we put in a copy of the current era case XML)
 			argsXML.id = notificationID;
-			argsXML.meta.@action = "merge";
-			argsXML.meta["ERA-notification"] = "";
-							
-
+			argsXML.meta = "";
+			argsXML.meta.appendChild((eraNotificationXML.meta["ERA-notification"]).copy());
+			argsXML.meta.@action = "replace";
 			
-			argsXML.meta["ERA-notification"].appendChild(
-				XML('<read_by_users><username>' +  Auth.getInstance().getUsername() + '</username><read_status>' + readStatus + '</read_status><date_read>now</date_read></read_by_users>')
-			);
-				
+			// Lets remove all of the user access stuff, from our new copied XML document
+			// (the original is still in tact, and we will copy back what is still valid)
+			delete argsXML.meta["ERA-notification"]["read_by_users"];
+			
+			// Okay, now thast all gone, lets add back what we need
+			if(readStatus == true) {
+				argsXML.meta["ERA-notification"].appendChild(
+					XML('<read_by_users><username>' +  Auth.getInstance().getUsername() + '</username><read_status>' + readStatus + '</read_status><date_read>now</date_read></read_by_users>')
+				);
+			}
+			
 			var oldReadStatusList:XMLList = data.reply.result.asset.meta["ERA-notification"]["read_by_users"];
-
+			
 			for each(var readUser:XML in oldReadStatusList) {
 				if(readUser.username != Auth.getInstance().getUsername()) { 
 					argsXML.meta["ERA-notification"].appendChild(
@@ -61,6 +71,7 @@ package Model.Transactions.ERAProject
 					);
 				}
 			}
+			
 			trace("xml", argsXML);
 			connection.sendRequest(baseXML, readStatusUpdated);		
 		}

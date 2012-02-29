@@ -5,7 +5,7 @@ package Controller.Utilities {
 	import Controller.ERA.Admin.ERASetupController;
 	import Controller.ERA.Admin.ReportController;
 	import Controller.ERA.Admin.UserAdminController;
-	import Controller.ERA.AppSauce;
+	import Controller.ERA.ERAProfileController;
 	import Controller.ERA.CaseController;
 	import Controller.ERA.FileController;
 	import Controller.ERA.RecoverController;
@@ -76,9 +76,9 @@ package Controller.Utilities {
 				classname:ProfileController
 			},
 			{
-				url: 'applesauce',
+				url: 'profilepage',
 				title: 'Profile View',
-				classname: AppSauce
+				classname: ERAProfileController
 			},
 			{
 				url: 'dashboard',

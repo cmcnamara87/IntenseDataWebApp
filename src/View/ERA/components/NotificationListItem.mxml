@@ -11,6 +11,7 @@
 		<![CDATA[
 			import Controller.ERA.CaseController;
 			import Controller.IDEvent;
+			import Controller.Utilities.Auth;
 			import Controller.Utilities.Router;
 			
 			import Model.Model_ERANotification;
@@ -32,6 +33,9 @@
 			[Bindable]
 			public var read:Boolean;
 			
+			[Bindable]
+			public var showReadButton:Boolean = true;
+			
 			public function isRead():Boolean {
 				return read;
 			}
@@ -47,6 +51,13 @@
 				
 				this.read = notificationData.read;
 				
+				if(notificationData.username == Auth.getInstance().getUsername()) {
+					// if the current user is the user ... for who the notification was...of (that makes sense)
+					// then i just want to 'You' instead of the full name of hte user
+					notificationData.fullName = "You";
+					this.read = true;
+					this.showReadButton = false;
+				}
 				switch(notificationData.type) {
 					/*public static const ALL_FILES_MOVED_TO_SCREENING_LAB:String = "allFilesMovedToScreeningLab";
 					public static const ALL_FILES_MOVED_TO_EXHIBITION:String = "allFilesMovedToExhibition";
@@ -237,7 +248,7 @@
 	<s:VGroup id="notificationList" width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="8">
 		<mx:Text htmlText="{notificationText}" width="100%" fontSize="11"/>
 		<s:HGroup width="100%">
-			<s:Button chromeColor="0xFFFFFF" cornerRadius="7" label="{read ? 'Mark as Not Read' : 'Mark as Read'}" height="15" fontSize="10" id="markAsReadButton" click="markAsReadButton_clickHandler(event)" />
+			<s:Button visible="{showReadButton}" includeInLayout="{showReadButton}" chromeColor="0xFFFFFF" cornerRadius="7" label="{read ? 'Mark as Not Read' : 'Mark as Read'}" height="15" fontSize="10" id="markAsReadButton" click="markAsReadButton_clickHandler(event)" />
 			<mx:Text text="{timeStamp}" width="100%" color="0x888888" fontSize="10" textAlign="right"/>
 		</s:HGroup>
 		
